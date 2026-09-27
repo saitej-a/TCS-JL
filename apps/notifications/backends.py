@@ -4,11 +4,12 @@ Provides an abstract PushBackend seam decoupling notification task logic from
 FCM SDK calls:
 - SendResult: frozen dataclass tracking delivery counts and unregistered/stale tokens.
 - PushBackend: ABC defining the send() interface.
-- RecordingPushBackend: in-memory append-only test double (test/CI default).-	FirebasePushBackend: real production adapter calling firebase-admin messaging.
--	WebPushBackend: browser-standards Web Push (VAPID) adapter, 9.4 D2 — the WEB
-	  device path, where the token column carries a subscription JSON rather than an
-	  FCM id.
--	get_push_backend(): resolves backend based on settings.PUSH_BACKEND and environment.
+- RecordingPushBackend: in-memory append-only test double (test/CI default).
+- FirebasePushBackend: real production adapter calling firebase-admin messaging.
+- WebPushBackend: browser-standards Web Push (VAPID) adapter, 9.4 D2 — the WEB
+  device path, where the token column carries a subscription JSON rather than an
+  FCM id.
+- get_push_backend(): resolves backend based on settings.PUSH_BACKEND and environment.
 """
 
 from __future__ import annotations
@@ -226,9 +227,7 @@ class WebPushBackend(PushBackend):
     def __init__(self) -> None:
         self._vapid_public_key = _setting_or_env("VAPID_PUBLIC_KEY")
         self._vapid_private_key = _setting_or_env("VAPID_PRIVATE_KEY")
-        self._vapid_subject = (
-            _setting_or_env("VAPID_SUBJECT") or self.DEFAULT_VAPID_SUBJECT
-        )
+        self._vapid_subject = _setting_or_env("VAPID_SUBJECT") or self.DEFAULT_VAPID_SUBJECT
         if not (self._vapid_public_key and self._vapid_private_key):
             raise ValueError(
                 "WebPushBackend requires VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY; "

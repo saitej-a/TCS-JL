@@ -44,7 +44,7 @@ def captured_webpush(monkeypatch):
         return None
 
     monkeypatch.setattr(pywebpush, "webpush", fake_webpush)
-    return calls
+    return SimpleNamespace(calls=calls)
 
 
 def _subscription(endpoint: str) -> str:
