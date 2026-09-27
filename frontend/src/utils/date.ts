@@ -34,6 +34,24 @@ export function daysSince(isoDate: string): number {
   return Math.max(0, Math.floor((now - then) / 86_400_000));
 }
 
+/**
+ * Long-form relative time for §7.10's notification rows ("15 minutes ago",
+ * "2 hours ago", "3 days ago") — the spec's own wording, distinct from the
+ * compact `timeAgo` the feed cards use.
+ */
+export function timeAgoLong(isoTimestamp: string): string {
+  const seconds = Math.floor((Date.now() - new Date(isoTimestamp).getTime()) / 1000);
+  if (seconds < 60) return "just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return "Yesterday";
+  if (days < 30) return `${days} days ago`;
+  return formatDateShort(isoTimestamp);
+}
+
 /** Compact relative time ("just now", "2h ago", "5d ago") for feed cards. */
 export function timeAgo(isoTimestamp: string): string {
   const seconds = Math.floor((Date.now() - new Date(isoTimestamp).getTime()) / 1000);

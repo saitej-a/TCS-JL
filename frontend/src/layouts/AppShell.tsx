@@ -14,6 +14,8 @@ import { createPortal } from "react-dom";
 import { Link, NavLink, Outlet } from "react-router-dom";
 
 import { listAnnouncements } from "@/api/announcements";
+import { listNotifications } from "@/api/notifications";
+import { setUnreadCount, useUnreadCount } from "@/api/unreadStore";
 import { Disclaimer } from "@/components/Disclaimer";
 import {
   readDismissedAnnouncements,
@@ -103,6 +105,56 @@ function AnnouncementBanner() {
 }
 
 /**
+ * §7.10's bell (9.4 Task 7): the topbar's unread badge, fed by the same shared
+ * store the notification center publishes to.
+ *
+ * Signed in: links to /notifications and shows the count. Anonymous: the same
+ * icon, no badge, linking through the deep-link login (`next=/notifications`) so
+ * a visitor never lands on an authenticated route without a session.
+ *
+ * Chrome, not content: a failed count read leaves the badge at its last value
+ * rather than surfacing an error on every page in the app.
+ */
+function NotificationBell(): React.ReactElement {
+  const { isAuthenticated } = useAuth();
+  const unread = useUnreadCount();
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    let cancelled = false;
+    listNotifications()
+      .then((envelope) => {
+        if (!cancelled) setUnreadCount(envelope.unread_count);
+      })
+      .catch(() => {
+        // Silent: the bell is decoration around whatever page is open.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated]);
+
+  return (
+    <Link
+      to={isAuthenticated ? "/notifications" : "/login?next=%2Fnotifications"}
+      aria-label={isAuthenticated ? "Notifications" : "Sign in to see notifications"}
+      data-testid="notification-bell"
+      className="relative flex h-11 w-11 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+    >
+      <span aria-hidden="true">🔔</span>
+      {isAuthenticated && unread > 0 && (
+        <span
+          data-testid="notification-badge"
+          className="absolute -right-0.5 -top-0.5 min-w-[18px] rounded-full bg-brand-600 px-1 text-center text-[11px] font-semibold leading-[18px] text-white"
+        >
+          {unread > 99 ? "99+" : unread}
+        </span>
+      )}
+    </Link>
+  );
+}
+
+/**
  * Right-rail slot (9.3 Task 6): AppShell owns the rail's chrome and placement
  * (§5.2's 320px rail at ≥1280px only). Pages fill it through `RailPortal`,
  * which portals their content into the shell's slot node — a page never
@@ -161,13 +213,9 @@ export function AppShell({ children }: { children?: ReactNode }) {
             <div className="flex items-center justify-between px-4 py-2 lg:hidden">
               {BRAND}
               <div className="flex items-center gap-2">
-                <Link
-                  to="/notifications"
-                  aria-label="Notifications"
-                  className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  🔔
-                </Link>
+                {/* §7.10's bell: same component on both breakpoints, so the
+                    badge and its store stay in one place. */}
+                <NotificationBell />
               </div>
             </div>
             {/* Desktop/tablet search row (§7.4) */}
@@ -185,6 +233,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
                 >
                   + Post
                 </Link>
+                <NotificationBell />
                 {user !== null && (
                   <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
                     {user.email}

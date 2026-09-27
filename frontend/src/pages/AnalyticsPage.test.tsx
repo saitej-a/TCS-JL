@@ -16,10 +16,9 @@ import type { ReactElement } from "react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it } from "vitest";
-import type { AxiosAdapter, AxiosRequestConfig } from "axios";
 
-import { apiClient } from "@/api/client";
 import { ANALYTICS_DISCLAIMER } from "@/content/disclaimer";
+import { routeAdapter } from "@/test/axiosTestHelper";
 import {
   AnalyticsPage,
   INSUFFICIENT_DATA,
@@ -113,50 +112,6 @@ const DISTRIBUTION_SUPPRESSED = {
   message: "Not enough community data to display this breakdown.",
 };
 
-interface Route {
-  url: string;
-  /** Consumed in order; the last entry repeats. */
-  answers: Array<{ status: number; data?: unknown }>;
-}
-
-function routeAdapter(routes: Route[]): { calls: AxiosRequestConfig[] } {
-  const calls: AxiosRequestConfig[] = [];
-  const cursors = new Map<string, number>();
-  const adapter: AxiosAdapter = (config) => {
-    calls.push(config);
-    const url = String(config.url);
-    const route = routes.find((candidate) => url.includes(candidate.url));
-    if (route === undefined) {
-      return Promise.reject(new Error(`unrouted request: ${url}`));
-    }
-    const index = cursors.get(route.url) ?? 0;
-    const answer = route.answers[Math.min(index, route.answers.length - 1)];
-    cursors.set(route.url, index + 1);
-    const response = {
-      data: answer.data,
-      status: answer.status,
-      statusText: "",
-      headers: {},
-      config,
-      request: {},
-    };
-    if (answer.status >= 200 && answer.status < 300) {
-      return Promise.resolve(response);
-    }
-    const error = new Error(`Request failed with status code ${answer.status}`) as Error & {
-      config: unknown;
-      response: unknown;
-      isAxiosError: boolean;
-    };
-    error.config = config;
-    error.response = response;
-    error.isAxiosError = true;
-    return Promise.reject(error);
-  };
-  apiClient.defaults.adapter = adapter;
-  return { calls };
-}
-
 function renderPage(): ReturnType<typeof render> {
   const tree: ReactElement = (
     <MemoryRouter>
@@ -168,7 +123,7 @@ function renderPage(): ReturnType<typeof render> {
   return render(tree);
 }
 
-function defaultRoutes(extra: Route[] = []): Route[] {
+function defaultRoutes(extra: Parameters<typeof routeAdapter>[0] = []) {
   return [
     { url: "/analytics/overview/", answers: [{ status: 200, data: OVERVIEW_OK }] },
     { url: "/analytics/status-distribution/", answers: [{ status: 200, data: DISTRIBUTION_OK }] },

@@ -13,6 +13,8 @@ export { IdentityPill, ANONYMOUS_SENTINEL } from "./IdentityPill";
 export { Input } from "./Input";
 export { MilestoneStepper } from "./MilestoneStepper";
 export { Modal } from "./Modal";
+export { NotificationRow, NOTIFICATION_GLYPHS } from "./NotificationRow";
+export type { NotificationRowProps } from "./NotificationRow";
 export { PostCard } from "./PostCard";
 export type { PostCardProps } from "./PostCard";
 export { Skeleton, SkeletonCard } from "./Skeleton";

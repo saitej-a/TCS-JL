@@ -24,6 +24,7 @@ import { CommunityFeedPage } from "@/pages/CommunityFeedPage";
 import { CreatePostPage } from "@/pages/CreatePostPage";
 import { PostDetailPage } from "@/pages/PostDetailPage";
 import { AnalyticsPage } from "@/pages/AnalyticsPage";
+import { NotificationsPage } from "@/pages/NotificationsPage";
 
 export { LandingPage };
 export { LoginPage };
@@ -39,6 +40,7 @@ export { CommunityFeedPage };
 export { CreatePostPage };
 export { PostDetailPage };
 export { AnalyticsPage };
+export { NotificationsPage };
 
 function StubPage({
   title,
@@ -80,11 +82,9 @@ export function TermsPage(): ReactElement {
 // Auth surfaces (PublicOnly) — the real 9.2 screens are re-exported above.
 
 // Authenticated surfaces (RequireAuth) — 9.3 filled dashboard, timeline and
-// create-post; 9.4 fills post detail (§7.8, public read inside PublicShell),
-// analytics (§7.9, same) and — from Task 7 — notifications.
-export function NotificationsPage(): ReactElement {
-  return <StubPage title="Notifications" list />;
-}
+// create-post; 9.4 filled post detail (§7.8, public read inside PublicShell),
+// analytics (§7.9, same) and notifications (§7.10); production settings
+// screens remain stubs below.
 
 // Settings (+ children as 9.2 placeholders)
 export function SettingsPage(): ReactElement {
