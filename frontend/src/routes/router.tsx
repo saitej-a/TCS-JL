@@ -52,9 +52,11 @@ export const router = createBrowserRouter([
     children: [
       { path: "/community", element: <CommunityFeedPage /> },
       { path: "/community/posts/:id", element: <PostDetailPage /> },
+      // §7.9 fixes /analytics at the same read-public level as the community
+      // reads: visitors may view the aggregate, so it rides PublicShell too.
+      { path: "/analytics", element: <AnalyticsPage /> },
     ],
   },
-  { path: "/analytics", element: <AnalyticsPage /> },
   { path: "/about", element: <AboutPage /> },
   { path: "/privacy", element: <PrivacyPage /> },
   { path: "/terms", element: <TermsPage /> },
