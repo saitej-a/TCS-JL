@@ -4,6 +4,7 @@ export { Button } from "./Button";
 export type { ButtonVariant, ButtonSize } from "./Button";
 export { CategoryTabs, FEED_TABS } from "./CategoryTabs";
 export type { FeedTab } from "./CategoryTabs";
+export { CommentThread, DELETED_COMMENT_COPY } from "./CommentThread";
 export { Disclaimer } from "./Disclaimer";
 export type { DisclaimerVariant } from "./Disclaimer";
 export { EmptyState } from "./EmptyState";
