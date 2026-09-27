@@ -8,7 +8,7 @@
  * reconcile against the server. Anonymous reads work: the client attaches a
  * Bearer only when a token exists, and D1 opened GET to visitors.
  */
-import { apiDelete, apiGet, apiPost } from "@/api/client";
+import { apiDelete, apiGet, apiPatch, apiPost } from "@/api/client";
 import type { Paginated } from "@/types/api";
 import type { PostCategory } from "@/content/postCategories";
 
@@ -89,4 +89,54 @@ export function voteCommunityPost(id: string): Promise<VoteResult> {
 /** DELETE /vote/ answers 204 with no body. */
 export async function unvoteCommunityPost(id: string): Promise<void> {
   await apiDelete<unknown>(`/community/posts/${id}/vote/`);
+}
+
+// --- 9.4 (§7.8): comments, reports, share -----------------------------------
+
+import type {
+  CommentCreatePayload,
+  CommentNode,
+  CommentPage,
+  ReportCreatePayload,
+} from "@/types/community";
+
+/** `GET /community/posts/{id}/comments/` (04 §39) — one page, top-level + replies. */
+export function listPostComments(postId: string): Promise<CommentPage> {
+  return apiGet<CommentPage>(`/community/posts/${postId}/comments/`);
+}
+
+export function createPostComment(
+  postId: string,
+  payload: CommentCreatePayload,
+): Promise<CommentNode> {
+  return apiPost<CommentNode>(`/community/posts/${postId}/comments/`, payload);
+}
+
+/** Author edit (PATCH /community/comments/{id}/, 04 §44). */
+export function updateComment(id: string, body: string): Promise<CommentNode> {
+  return apiPatch<CommentNode>(`/community/comments/${id}/`, { body });
+}
+
+/** Author delete — a tombstone; the thread keeps its position. */
+export async function deleteComment(id: string): Promise<void> {
+  await apiDelete<unknown>(`/community/comments/${id}/`);
+}
+
+/** 8.1's real report endpoint (04 §63) — exactly one target, XOR-validated. */
+export function createReport(payload: ReportCreatePayload): Promise<void> {
+  return apiPost<void>("/reports/", payload);
+}
+
+/** §7.8's Share: the canonical post URL for the clipboard. */
+export function canonicalPostUrl(postId: string): string {
+  return `${window.location.origin}/community/posts/${postId}`;
+}
+
+export async function copyPostLink(postId: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(canonicalPostUrl(postId));
+    return true;
+  } catch {
+    return false;
+  }
 }
