@@ -10,6 +10,14 @@ import { VitePWA } from "vite-plugin-pwa";
 // forwards to web:8000. No CORS change anywhere in config/.
 const NGINX_DEV_ORIGIN = "http://localhost:80";
 
+/** Same-origin API access for both serving modes (dev and built preview). */
+const PROXY = {
+  "/api": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
+  "/admin": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
+  "/static": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
+  "/media": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
+};
+
 export default defineConfig({
   plugins: [
     react(),
@@ -68,7 +76,9 @@ export default defineConfig({
           },
         ],
       },
-      devOptions: { enabled: false },
+      // Dev mode serves a real worker at /sw.js so the drill (and any local
+      // session) exercises the genuine registration path, not a 404 shim.
+      devOptions: { enabled: true, type: "classic" },
     }),
   ],
   resolve: {
@@ -79,12 +89,15 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
-    proxy: {
-      "/api": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
-      "/admin": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
-      "/static": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
-      "/media": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
-    },
+    proxy: PROXY,
+  },
+  // `vite preview` serves the built bundle, which is the only way to exercise
+  // §10.1's service worker offline (the built shell), so it needs the same API
+  // proxy the dev server has — or the built app could not reach /api.
+  preview: {
+    port: 4173,
+    strictPort: true,
+    proxy: PROXY,
   },
   build: {
     outDir: "dist",

@@ -30,6 +30,20 @@ pytestmark = pytest.mark.django_db
 URL_NAME = "analytics-status-distribution"
 
 
+@pytest.fixture(autouse=True)
+def isolated_candidate_cohort(db):
+    """Counts in this module are absolute, so the table must start empty.
+
+    Every endpoint here counts `CandidateProfile` in full (the population the
+    screen shows). Most suites roll their rows back, but a module that commits
+    (or a `--reuse-db` run) can leave rows behind and silently inflate a count
+    — an intermittent, order-dependent failure. Emptying the table inside the
+    test's own transaction makes the module deterministic instead of lucky.
+    """
+    CandidateProfile.objects.all().delete()
+    yield
+
+
 def _seed(make_profile, count: int, **kwargs):
     """Seed `count` candidates with identical profile attributes.
 

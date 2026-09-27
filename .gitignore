@@ -28,3 +28,6 @@ staticfiles/
 .env*
 
 celerybeat-schedule
+
+# vite-plugin-pwa's dev-mode service worker output (regenerated on dev start)
+frontend/dev-dist/

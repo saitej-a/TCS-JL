@@ -34,7 +34,7 @@ import {
   subscribeToPush,
   urlBase64ToUint8Array,
 } from "@/pwa/pushClient";
-import { resolveClickAction } from "@/pwa/registerSW";
+import { resolveClickAction, SW_URL } from "@/pwa/registerSW";
 import { routeAdapter } from "@/test/axiosTestHelper";
 
 const SUBSCRIPTION_JSON = {
@@ -116,7 +116,8 @@ describe("§10.1 service worker and connectivity", () => {
     const { register } = mockServiceWorker();
 
     await expect(subscribeToPush()).resolves.toBe("subscribed");
-    expect(register).toHaveBeenCalledWith("/sw.js", { scope: "/" });
+    // The URL is the plugin's worker (build: /sw.js; dev: /dev-sw.js?dev-sw).
+    expect(register).toHaveBeenCalledWith(SW_URL, { scope: "/" });
   });
 
   it("shows the offline banner only while the browser reports offline", async () => {

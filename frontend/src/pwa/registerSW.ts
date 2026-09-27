@@ -9,8 +9,17 @@
  * installability and offline reads; it must never cost them the page.
  */
 
-/** vite-plugin-pwa's generated worker, at the site root. */
-export const SW_URL = "/sw.js";
+/**
+ * vite-plugin-pwa's worker URL. In a production build the generated worker is
+ * `/sw.js`; under `vite dev` with `devOptions.enabled` the plugin serves its
+ * dev worker at `/dev-sw.js?dev-sw` — same registration flow, same scope, so
+ * the drill (and local sessions) exercise the real path instead of a 404 shim
+ * that would make every registration fail silently.
+ */
+export const SW_URL =
+  typeof import.meta.env !== "undefined" && import.meta.env.DEV
+    ? "/dev-sw.js?dev-sw"
+    : "/sw.js";
 
 /** §10.1's offline banner is driven by the browser, not by the worker. */
 export const OFFLINE_COPY = "⚠️ Offline Mode. Showing cached data. Actions will sync when online.";
