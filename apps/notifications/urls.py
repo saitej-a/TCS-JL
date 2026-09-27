@@ -13,9 +13,12 @@ from apps.notifications.views import (
     NotificationPreferenceView,
     NotificationReadAllView,
     NotificationReadView,
+    VapidPublicKeyView,
 )
 
 urlpatterns = [
+    # Before `devices/<str:pk>/`, or "vapid-key" would be read as a device id.
+    path("devices/vapid-key/", VapidPublicKeyView.as_view(), name="device-vapid-key"),
     path("devices/", DeviceListCreateView.as_view(), name="device-list-create"),
     path("devices/<str:pk>/", DeviceDetailView.as_view(), name="device-detail"),
     path(

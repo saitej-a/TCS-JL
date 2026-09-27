@@ -29,6 +29,7 @@ import { TimelineRoadmap } from "@/components/TimelineRoadmap";
 import { useToast } from "@/components/Toast";
 import { Badge } from "@/components/Badge";
 import { TYPOGRAPHY } from "@/theme/tokens";
+import { recordMilestoneAdded } from "@/pwa/installSignals";
 
 interface ModalState {
   /** Add mode when null, edit mode otherwise. */
@@ -79,6 +80,9 @@ export function TimelinePage(): React.ReactElement {
     const editing = modal?.event ?? null;
     if (editing === null) {
       await createTimelineEvent(payload);
+      // §10.1's install trigger: account created + ≥1 timeline milestone
+      // (9.4 Task 8). Only a real creation counts, not an edit.
+      recordMilestoneAdded();
     } else {
       await updateTimelineEvent(editing.id, payload);
     }

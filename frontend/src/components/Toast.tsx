@@ -152,3 +152,12 @@ export function useToast(): ToastContextValue {
   }
   return context;
 }
+
+/**
+ * Non-throwing variant, for app chrome (the PWA layer, 9.4 Task 8) that must
+ * degrade rather than take the page down when it is mounted in a tree without
+ * a ToastProvider — a shell should never be the reason the app fails to boot.
+ */
+export function useOptionalToast(): ToastContextValue | null {
+  return useContext(ToastContext);
+}

@@ -10,6 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { register } from "@/api/auth";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
+import { recordAccountCreated } from "@/pwa/installSignals";
 import {
   AuthCard,
   AuthField,
@@ -44,6 +45,9 @@ export function RegisterPage() {
     setErrorMessage(null);
     try {
       await register({ email, password, password_confirm: confirm });
+      // §10.1's install trigger counts a created account as one of its two
+      // signals (9.4 Task 8) — recorded where the fact happens.
+      recordAccountCreated();
       navigate("/verify-email-pending", { replace: true });
     } catch (error) {
       const apiError = error as { code?: string; message?: string };

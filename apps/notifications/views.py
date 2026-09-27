@@ -4,12 +4,14 @@ from __future__ import annotations
 
 from uuid import UUID
 
+from django.conf import settings
+from django.core.cache import cache
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework.generics import ListAPIView, ListCreateAPIView
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -128,6 +130,38 @@ class DeviceListCreateView(NotificationErrorMixin, ListCreateAPIView):
             status=status.HTTP_201_CREATED,
             headers=headers,
         )
+
+
+# 9.4 Task 8: the frontend needs the VAPID public key before it can call
+# `PushManager.subscribe`, and the value never changes within a deploy — one
+# cache entry, so a cold public page cannot stampede the settings read.
+VAPID_KEY_CACHE_KEY = "notifications:vapid-public-key"
+VAPID_KEY_CACHE_TTL_SECONDS = 60 * 60
+
+
+class VapidPublicKeyView(NotificationErrorMixin, APIView):
+    """GET /api/v1/devices/vapid-key/ (9.4 Task 8) — the Web Push public key.
+
+    Anonymous by design: the VAPID public key is public by definition (every
+    subscribing browser receives it), and the page must read it before the
+    visitor has consented to anything. **Only** the public half is ever
+    rendered — with the private key absent from the response and from the
+    cache entry, the endpoint cannot leak the signing secret.
+
+    `configured` tells the client whether Web Push is set up at all, so the UI
+    can skip the push primer instead of subscribing against an empty key.
+    """
+
+    permission_classes = [AllowAny]
+    throttle_classes = [NotificationReadsThrottle]
+
+    def get(self, request):
+        payload = cache.get(VAPID_KEY_CACHE_KEY)
+        if payload is None:
+            public_key = getattr(settings, "VAPID_PUBLIC_KEY", "") or ""
+            payload = {"public_key": public_key, "configured": bool(public_key)}
+            cache.set(VAPID_KEY_CACHE_KEY, payload, VAPID_KEY_CACHE_TTL_SECONDS)
+        return Response(payload, status=status.HTTP_200_OK)
 
 
 class DeviceDetailView(NotificationErrorMixin, APIView):

@@ -23,6 +23,7 @@ import {
 } from "@/components/announcementStorage";
 import { useAuth } from "@/context/AuthContext";
 import { MobileTabBar } from "@/layouts/MobileTabBar";
+import { PwaLayer } from "@/pwa/PwaLayer";
 import { NAV_ITEMS } from "@/layouts/navItems";
 
 const BRAND = (
@@ -177,6 +178,8 @@ export function AppShell({ children }: { children?: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900" data-testid="app-shell">
+      {/* §10.1's offline strip, install promotion and push primer (9.4 Task 8). */}
+      <PwaLayer />
       <AnnouncementBanner />
       <div className="lg:grid lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)_320px]">
         {/* Sidebar: ≥640px (§5.3 persists it; §5.2 shows it beside the rail) */}
