@@ -28,6 +28,7 @@ import { NotificationsPage } from "@/pages/NotificationsPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { SettingsProfilePage } from "@/pages/SettingsProfilePage";
 import { SettingsPrivacyPage } from "@/pages/SettingsPrivacyPage";
+import { SettingsDevicesPage } from "@/pages/SettingsDevicesPage";
 
 export { LandingPage };
 export { LoginPage };
@@ -47,6 +48,7 @@ export { NotificationsPage };
 export { SettingsPage };
 export { SettingsProfilePage };
 export { SettingsPrivacyPage };
+export { SettingsDevicesPage };
 
 function StubPage({
   title,
@@ -96,9 +98,6 @@ export function TermsPage(): ReactElement {
 // Task 4; the rest remain stubs until their 9.5 tasks land.
 export function SettingsSecurityPage(): ReactElement {
   return <StubPage title="Password" />;
-}
-export function SettingsDevicesPage(): ReactElement {
-  return <StubPage title="Devices" />;
 }
 export function SettingsDangerPage(): ReactElement {
   return <StubPage title="Delete account" />;
