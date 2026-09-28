@@ -25,6 +25,7 @@ import { CreatePostPage } from "@/pages/CreatePostPage";
 import { PostDetailPage } from "@/pages/PostDetailPage";
 import { AnalyticsPage } from "@/pages/AnalyticsPage";
 import { NotificationsPage } from "@/pages/NotificationsPage";
+import { SettingsPage } from "@/pages/SettingsPage";
 
 export { LandingPage };
 export { LoginPage };
@@ -41,6 +42,7 @@ export { CreatePostPage };
 export { PostDetailPage };
 export { AnalyticsPage };
 export { NotificationsPage };
+export { SettingsPage };
 
 function StubPage({
   title,
@@ -86,10 +88,8 @@ export function TermsPage(): ReactElement {
 // analytics (§7.9, same) and notifications (§7.10); production settings
 // screens remain stubs below.
 
-// Settings (+ children as 9.2 placeholders)
-export function SettingsPage(): ReactElement {
-  return <StubPage title="Settings" />;
-}
+// Settings — the hub shipped in 9.5 Task 2; its children remain stubs until
+// their 9.5 tasks land.
 export function SettingsProfilePage(): ReactElement {
   return <StubPage title="Profile information" />;
 }
