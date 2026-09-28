@@ -88,6 +88,7 @@ export const router = createBrowserRouter([
       { path: "/settings/profile", element: <SettingsProfilePage /> },
       { path: "/settings/privacy", element: <SettingsPrivacyPage /> },
       { path: "/settings/security", element: <SettingsSecurityPage /> },
+      { path: "/settings/danger", element: <SettingsDangerPage /> },
       { path: "/settings/devices", element: <SettingsDevicesPage /> },
       { path: "/settings/danger", element: <SettingsDangerPage /> },
       // Staff routes: UI guard only; is_staff enforcement is server-side.

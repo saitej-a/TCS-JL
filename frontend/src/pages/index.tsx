@@ -30,6 +30,7 @@ import { SettingsProfilePage } from "@/pages/SettingsProfilePage";
 import { SettingsPrivacyPage } from "@/pages/SettingsPrivacyPage";
 import { SettingsDevicesPage } from "@/pages/SettingsDevicesPage";
 import { SettingsSecurityPage } from "@/pages/SettingsSecurityPage";
+import { SettingsDangerPage } from "@/pages/SettingsDangerPage";
 
 export { LandingPage };
 export { LoginPage };
@@ -51,6 +52,7 @@ export { SettingsProfilePage };
 export { SettingsPrivacyPage };
 export { SettingsDevicesPage };
 export { SettingsSecurityPage };
+export { SettingsDangerPage };
 
 function StubPage({
   title,
@@ -98,9 +100,6 @@ export function TermsPage(): ReactElement {
 
 // Settings — the hub shipped in 9.5 Task 2, profile in Task 3, privacy in
 // Task 4; the rest remain stubs until their 9.5 tasks land.
-export function SettingsDangerPage(): ReactElement {
-  return <StubPage title="Delete account" />;
-}
 
 // Staff-only enforcement stays server-side (04 §113)
 export function AdminReportsPage(): ReactElement {
