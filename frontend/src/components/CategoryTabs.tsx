@@ -38,9 +38,9 @@ export interface CategoryTabsProps {
 const VISIBLE_CATEGORY_COUNT = 5;
 
 const PILL_ACTIVE =
-  "inline-flex min-h-[36px] items-center rounded-full bg-brand-600 px-3 text-xs font-semibold text-white";
+  "inline-flex min-h-[36px] items-center rounded-full bg-brand-700 px-3 text-xs font-semibold text-white";
 const PILL_IDLE =
-  "inline-flex min-h-[36px] items-center rounded-full border border-slate-300 px-3 text-xs font-medium text-slate-600 hover:border-brand-300 hover:text-brand-600 dark:border-slate-600 dark:text-slate-300";
+  "inline-flex min-h-[36px] items-center rounded-full border border-slate-300 px-3 text-xs font-medium text-slate-600 hover:border-brand-300 hover:text-brand-700 dark:border-slate-600 dark:text-slate-300";
 
 const SEGMENT_TRACK =
   "inline-flex flex-wrap gap-1 rounded-lg bg-slate-100 p-1 dark:bg-slate-800";
@@ -107,7 +107,7 @@ export function CategoryTabs({ category, tab, onCategoryChange, onTabChange }: C
             className={tab === entry.value ? SEGMENT_ACTIVE : SEGMENT_IDLE}
           >
             {tab === entry.value && (
-              <span className="text-[8px] leading-none text-brand-600 dark:text-brand-400" aria-hidden="true">
+              <span className="text-[8px] leading-none text-brand-700 dark:text-brand-400" aria-hidden="true">
                 ●
               </span>
             )}

@@ -6,7 +6,7 @@ export type ButtonSize = "sm" | "md" | "lg";
 /** §6.1.1 — transcribed verbatim from the spec. */
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
-    "bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-medium rounded-lg shadow-sm focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 transition-colors",
+    "bg-brand-700 hover:bg-brand-800 active:bg-brand-900 text-white font-medium rounded-lg shadow-sm focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 transition-colors",
   secondary:
     "bg-slate-100 hover:bg-slate-200 active:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-medium rounded-lg shadow-xs transition-colors",
   outline:
@@ -49,7 +49,7 @@ export function Button({
     VARIANT_CLASSES[variant],
     SIZE_CLASSES[size],
     // §6.1.3 active/focus/disabled shared state classes.
-    "active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+    "active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2",
     disabled && "opacity-50 cursor-not-allowed pointer-events-none",
     fullWidth && "w-full",
     className,

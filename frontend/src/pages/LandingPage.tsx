@@ -63,7 +63,7 @@ export function LandingPage() {
       <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
           <Link to="/" className="flex items-center gap-2" aria-label="TCS Joining Tracker home">
-            <span className="inline-flex items-center justify-center rounded-lg bg-brand-600 px-2 py-1 text-xs font-bold text-white">
+            <span className="inline-flex items-center justify-center rounded-lg bg-brand-700 px-2 py-1 text-xs font-bold text-white">
               TJT
             </span>
             <span className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">
@@ -79,7 +79,7 @@ export function LandingPage() {
             </Link>
             <Link
               to="/register"
-              className="flex min-h-[44px] items-center rounded-lg bg-brand-600 px-4 text-sm font-medium text-white hover:bg-brand-700"
+              className="flex min-h-[44px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white hover:bg-brand-800"
             >
               Create account
             </Link>
@@ -107,7 +107,7 @@ export function LandingPage() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/register"
-              className="flex min-h-[44px] items-center rounded-lg bg-brand-600 px-6 text-sm font-medium text-white hover:bg-brand-700"
+              className="flex min-h-[44px] items-center rounded-lg bg-brand-700 px-6 text-sm font-medium text-white hover:bg-brand-800"
             >
               Track my joining journey
             </Link>

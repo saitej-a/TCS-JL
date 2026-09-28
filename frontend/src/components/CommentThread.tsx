@@ -171,7 +171,7 @@ export function CommentThread({
                   {!isLocked && canComment && (
                     <button
                       type="button"
-                      className="min-h-[32px] rounded-lg px-2 text-xs font-medium text-brand-600 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-brand-950/40"
+                      className="min-h-[32px] rounded-lg px-2 text-xs font-medium text-brand-700 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-brand-950/40"
                       aria-expanded={replyingTo === comment.id}
                       onClick={() => {
                         setReplyingTo((current) => (current === comment.id ? null : comment.id));
@@ -209,7 +209,7 @@ export function CommentThread({
                   <button
                     type="submit"
                     disabled={submitting || replyDraft.trim() === ""}
-                    className="flex min-h-[40px] items-center rounded-lg bg-brand-600 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-700 disabled:opacity-50"
+                    className="flex min-h-[40px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800 disabled:opacity-50"
                   >
                     {REPLY_SUBMIT_LABEL}
                   </button>

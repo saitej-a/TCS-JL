@@ -29,9 +29,11 @@ export const CATEGORY_BADGE_CLASSES: Record<PostCategory, BadgeClasses> = {
     border: "border-slate-200 dark:border-slate-700",
   },
   JOINING_LETTER: {
-    bg: "bg-indigo-50 dark:bg-indigo-950/50",
-    text: "text-indigo-700 dark:text-indigo-300",
-    border: "border-indigo-200 dark:border-indigo-800",
+    // v2 (9.5 Task 1): the brand triple replaces v1's indigo utilities so the
+    // badge rides the token swap instead of a hard-coded hue.
+    bg: "bg-brand-50 dark:bg-brand-950/50",
+    text: "text-brand-700 dark:text-brand-300",
+    border: "border-brand-200 dark:border-brand-800",
   },
   // The spec's `OFFER` row (emerald triple) — the API spells it OFFER_LETTER.
   OFFER_LETTER: {
@@ -126,8 +128,8 @@ export const STATUS_BADGE_CLASSES: Record<CandidateStatus, BadgeClasses> = {
     border: "border border-amber-300 dark:border-amber-600 animate-pulse",
   },
   JOINING_LETTER_RECEIVED: {
-    bg: "bg-indigo-100 dark:bg-indigo-950/60",
-    text: "text-indigo-700 dark:text-indigo-300",
+    bg: "bg-brand-100 dark:bg-brand-950/60",
+    text: "text-brand-700 dark:text-brand-300",
     border: "",
   },
   JOINING_DATE_RECEIVED: {

@@ -140,7 +140,7 @@ export function PostDetailPage(): React.ReactElement {
   if (failed || missing) {
     return (
       <main className="mx-auto max-w-3xl space-y-4">
-        <Link to="/community" className="text-sm font-medium text-brand-600 hover:text-brand-700 dark:text-brand-300">
+        <Link to="/community" className="text-sm font-medium text-brand-700 hover:text-brand-700 dark:text-brand-300">
           {BACK_LINK_COPY}
         </Link>
         <EmptyState
@@ -169,7 +169,7 @@ export function PostDetailPage(): React.ReactElement {
     <main className="mx-auto max-w-3xl space-y-4">
       <Link
         to="/community"
-        className="inline-flex min-h-[36px] items-center text-sm font-medium text-brand-600 hover:text-brand-700 dark:text-brand-300"
+        className="inline-flex min-h-[36px] items-center text-sm font-medium text-brand-700 hover:text-brand-700 dark:text-brand-300"
       >
         {BACK_LINK_COPY}
       </Link>
@@ -262,7 +262,7 @@ export function PostDetailPage(): React.ReactElement {
           <button
             type="submit"
             disabled={submitting || draft.trim() === ""}
-            className="mt-3 flex min-h-[40px] items-center rounded-lg bg-brand-600 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-700 disabled:opacity-50"
+            className="mt-3 flex min-h-[40px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800 disabled:opacity-50"
           >
             {COMPOSER_SUBMIT}
           </button>
@@ -272,7 +272,7 @@ export function PostDetailPage(): React.ReactElement {
           <span className="text-slate-600 dark:text-slate-300">{ANON_PROMPT_COPY}</span>
           <Link
             to={`/login?next=${encodeURIComponent(`/community/posts/${id}`)}`}
-            className="ml-2 font-medium text-brand-600 hover:text-brand-700 dark:text-brand-300"
+            className="ml-2 font-medium text-brand-700 hover:text-brand-700 dark:text-brand-300"
           >
             Sign in
           </Link>

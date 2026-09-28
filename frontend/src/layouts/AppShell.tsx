@@ -32,7 +32,7 @@ const BRAND = (
     aria-label="TCS Joining Tracker home"
     className="flex items-center gap-2 px-3 py-2"
   >
-    <span className="inline-flex items-center justify-center rounded-lg bg-brand-600 px-2 py-1 text-xs font-bold text-white">
+    <span className="inline-flex items-center justify-center rounded-lg bg-brand-700 px-2 py-1 text-xs font-bold text-white">
       TJT
     </span>
     <span className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">
@@ -146,7 +146,7 @@ function NotificationBell(): React.ReactElement {
       {isAuthenticated && unread > 0 && (
         <span
           data-testid="notification-badge"
-          className="absolute -right-0.5 -top-0.5 min-w-[18px] rounded-full bg-brand-600 px-1 text-center text-[11px] font-semibold leading-[18px] text-white"
+          className="absolute -right-0.5 -top-0.5 min-w-[18px] rounded-full bg-brand-700 px-1 text-center text-[11px] font-semibold leading-[18px] text-white"
         >
           {unread > 99 ? "99+" : unread}
         </span>
@@ -232,7 +232,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
               <div className="flex items-center gap-3">
                 <Link
                   to="/community/create"
-                  className="flex min-h-[40px] items-center rounded-lg bg-brand-600 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-700"
+                  className="flex min-h-[40px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800"
                 >
                   + Post
                 </Link>

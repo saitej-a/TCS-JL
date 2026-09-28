@@ -14,7 +14,7 @@ describe("Button (§6.1)", () => {
         <Button variant="danger">d</Button>
       </>,
     );
-    expect(screen.getByText("p")).toHaveClass("bg-brand-600");
+    expect(screen.getByText("p")).toHaveClass("bg-brand-700");
     expect(screen.getByText("s")).toHaveClass("bg-slate-100");
     expect(screen.getByText("o")).toHaveClass("border-slate-300");
     expect(screen.getByText("g")).toHaveClass("bg-transparent");

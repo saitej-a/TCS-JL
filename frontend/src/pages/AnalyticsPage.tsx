@@ -175,7 +175,7 @@ const KPIS: readonly Kpi[] = [
   {
     label: "Reported JL Recvd",
     key: "joining_letters_reported",
-    tone: "text-brand-600 dark:text-brand-300",
+    tone: "text-brand-700 dark:text-brand-300",
   },
   { label: "Reported Joined", key: "joined_reported", tone: "text-emerald-600 dark:text-emerald-400" },
 ];

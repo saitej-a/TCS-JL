@@ -182,7 +182,7 @@ export function NotificationsPage(): React.ReactElement {
             {tab === value && (
               <span
                 aria-hidden="true"
-                className="text-[8px] leading-none text-brand-600 dark:text-brand-400"
+                className="text-[8px] leading-none text-brand-700 dark:text-brand-400"
               >
                 ●
               </span>
@@ -204,7 +204,7 @@ export function NotificationsPage(): React.ReactElement {
             <button
               type="button"
               onClick={() => setPage((current) => current)}
-              className="mt-3 text-sm font-medium text-brand-600 hover:text-brand-700 dark:text-brand-300"
+              className="mt-3 text-sm font-medium text-brand-700 hover:text-brand-700 dark:text-brand-300"
             >
               Try again
             </button>

@@ -7,8 +7,9 @@ describe("Badge (§4.1.4 / §6.3.1)", () => {
   it("renders a category's mapped classes", () => {
     render(<Badge.category code="JOINING_LETTER" />);
     const badge = screen.getByText("Joining Letter");
-    expect(badge).toHaveClass("bg-indigo-50");
-    expect(badge).toHaveClass("text-indigo-700");
+    // v2 (9.5): the brand triple replaced the v1 indigo utilities.
+    expect(badge).toHaveClass("bg-brand-50");
+    expect(badge).toHaveClass("text-brand-700");
     expect(badge).toHaveClass("rounded-full");
     expect(badge).toHaveClass("text-[11px]");
   });

@@ -69,7 +69,7 @@ export function PostCard({
         <div className="flex flex-wrap items-center gap-2">
           <Badge.category code={post.category} />
           {post.is_pinned && (
-            <span className="text-[11px] font-medium text-brand-600 dark:text-brand-400">📌 Pinned</span>
+            <span className="text-[11px] font-medium text-brand-700 dark:text-brand-400">📌 Pinned</span>
           )}
           {tombstone && (
             <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">[removed]</span>
@@ -84,7 +84,7 @@ export function PostCard({
         {tombstone ? (
           post.title
         ) : (
-          <Link to={`/community/posts/${post.id}`} className="hover:text-brand-600 dark:hover:text-brand-400">
+          <Link to={`/community/posts/${post.id}`} className="hover:text-brand-700 dark:hover:text-brand-400">
             {post.title}
           </Link>
         )}

@@ -121,11 +121,11 @@ export function RegisterPage() {
             />
             <span>
               I agree to the{" "}
-              <Link to="/terms" className="text-brand-600 hover:underline dark:text-brand-400">
+              <Link to="/terms" className="text-brand-700 hover:underline dark:text-brand-400">
                 Terms
               </Link>{" "}
               and{" "}
-              <Link to="/privacy" className="text-brand-600 hover:underline dark:text-brand-400">
+              <Link to="/privacy" className="text-brand-700 hover:underline dark:text-brand-400">
                 Privacy Policy
               </Link>
             </span>
@@ -137,7 +137,7 @@ export function RegisterPage() {
       </form>
       <p className="text-center text-sm text-slate-500 dark:text-slate-400">
         Already have an account?{" "}
-        <Link to="/login" className="font-medium text-brand-600 hover:underline dark:text-brand-400">
+        <Link to="/login" className="font-medium text-brand-700 hover:underline dark:text-brand-400">
           Sign in
         </Link>
       </p>

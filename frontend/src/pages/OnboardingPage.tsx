@@ -74,7 +74,7 @@ function StepIndicator({ step }: { step: 1 | 2 | 3 }) {
   return (
     <div aria-label={`Step ${step} of 3`} className="space-y-2">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-400">
+        <p className="text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">
           Step {step} of 3 — {LABELS[step - 1]}
         </p>
         <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
@@ -91,7 +91,7 @@ function StepIndicator({ step }: { step: 1 | 2 | 3 }) {
       </div>
       <div className="flex justify-between text-[11px] text-slate-400 dark:text-slate-500">
         {LABELS.map((label, i) => (
-          <span key={label} className={i + 1 === step ? "font-semibold text-brand-600 dark:text-brand-400" : ""}>
+          <span key={label} className={i + 1 === step ? "font-semibold text-brand-700 dark:text-brand-400" : ""}>
             {i + 1}. {label}
           </span>
         ))}
@@ -455,7 +455,7 @@ export function OnboardingPage() {
                     <button
                       type="button"
                       onClick={() => setStep(targetStep as 1 | 2)}
-                      className="text-xs font-semibold text-brand-600 hover:underline dark:text-brand-400"
+                      className="text-xs font-semibold text-brand-700 hover:underline dark:text-brand-400"
                     >
                       Edit
                     </button>

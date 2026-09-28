@@ -102,7 +102,7 @@ export function LoginPage() {
           <p className="text-right text-sm">
             <Link
               to="/forgot-password"
-              className="font-medium text-brand-600 hover:underline dark:text-brand-400"
+              className="font-medium text-brand-700 hover:underline dark:text-brand-400"
             >
               Forgot password?
             </Link>

@@ -11,7 +11,7 @@ import { Disclaimer } from "@/components/Disclaimer";
 export function BrandRow() {
   return (
     <Link to="/" className="flex items-center gap-2" aria-label="TCS Joining Tracker home">
-      <span className="inline-flex items-center justify-center rounded-lg bg-brand-600 px-2 py-1 text-xs font-bold text-white">
+      <span className="inline-flex items-center justify-center rounded-lg bg-brand-700 px-2 py-1 text-xs font-bold text-white">
         TJT
       </span>
       <span className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">

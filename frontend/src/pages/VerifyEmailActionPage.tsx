@@ -40,7 +40,7 @@ export function VerifyEmailActionPage() {
             <SuccessStrip message="Your email is verified. You can sign in now." />
             <Link
               to="/login"
-              className="flex min-h-[44px] items-center justify-center rounded-lg bg-brand-600 px-4 text-sm font-medium text-white hover:bg-brand-700"
+              className="flex min-h-[44px] items-center justify-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white hover:bg-brand-800"
             >
               Sign in
             </Link>
@@ -61,7 +61,7 @@ export function VerifyEmailActionPage() {
             </Button>
             <Link
               to="/login"
-              className="block text-center text-sm font-medium text-brand-600 hover:underline dark:text-brand-400"
+              className="block text-center text-sm font-medium text-brand-700 hover:underline dark:text-brand-400"
             >
               Back to sign in
             </Link>

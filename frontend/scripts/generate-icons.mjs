@@ -1,11 +1,11 @@
 /**
- * PWA icon generator (9.4 Task 8).
+ * PWA icon generator (9.4 Task 8; re-skinned 9.5 Task 1).
  *
  * §10.1 asks for 192 + 512 maskable icons "generated from the existing brand
  * mark; no external icon package". The brand mark is the AppShell's `TJT`
- * indigo tile, so this script draws exactly that: a full-bleed #4F46E5 square
- * (maskable icons are cropped to a circle, so the mark is kept inside the safe
- * 80% zone) with the letters T, J, T in white.
+ * brand tile, so this script draws exactly that: a full-bleed v2 brand-700
+ * square (maskable icons are cropped to a circle, so the mark is kept inside
+ * the safe 80% zone) with the letters T, J, T in white.
  *
  * Deterministic and dependency-free: a hand-written 5×7 bitmap face, raw
  * pixels, and a minimal PNG encoder built on Node's own `zlib`. Re-running it
@@ -21,8 +21,8 @@ import { fileURLToPath } from "node:url";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = join(HERE, "..", "public", "icons");
 
-/** §4's brand-600, the same indigo the app's mark uses. */
-const BRAND = [0x4f, 0x46, 0xe5];
+/** §4's brand-700 anchor (v2 sky-700, 9.5 Task 1). */
+const BRAND = [0x03, 0x69, 0xa1];
 const WHITE = [0xff, 0xff, 0xff];
 
 /** 5×7 glyphs for the three letters of the mark. */

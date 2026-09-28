@@ -77,7 +77,7 @@ export function NotificationRow({ item, onSelect }: NotificationRowProps): React
             ) : (
               <span
                 data-testid={`marker-unread-${item.id}`}
-                className={`${TYPOGRAPHY.badgePill} text-brand-600 dark:text-brand-400`}
+                className={`${TYPOGRAPHY.badgePill} text-brand-700 dark:text-brand-400`}
               >
                 ● UNREAD
               </span>

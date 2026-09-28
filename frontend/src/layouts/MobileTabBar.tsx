@@ -22,7 +22,7 @@ export function MobileTabBar() {
                 [
                   "flex min-h-[56px] min-w-[44px] flex-col items-center justify-center gap-0.5 py-1 text-[11px] font-medium",
                   isActive
-                    ? "text-brand-600 dark:text-brand-400"
+                    ? "text-brand-700 dark:text-brand-400"
                     : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200",
                 ].join(" ")
               }

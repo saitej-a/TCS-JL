@@ -135,33 +135,73 @@ Candidates can toggle their public display mode at any time without disrupting h
 
 # 4. Design Tokens & Visual Style Guide
 
-The visual design system utilizes a modern, trust-inspiring palette grounded in professional slate neutrals, vibrant primary indigos, and unambiguous semantic status accents.
+The visual design system utilizes a modern, trust-inspiring palette grounded in professional slate neutrals, a professional-blue primary (v2), and unambiguous semantic status accents.
+
+> **Superseded in 9.5 (token v2).** The v1 indigo brand scale was replaced by the
+> professional-blue (Tailwind sky) spectrum of the 9.5 design pass — `#0369A1` (sky-700) is
+> the primary anchor. The indigo→sky mapping, the contrast rationale and the role rules live
+> in `.planning/phases/TCS-JL-09.5-ui-ux-design-pass-ui-ux-pro-max-stitch-screens/09.5-CONTEXT.md`
+> §4.2; §4.1–§4.3 below are already amended to v2. Shipped screens consume `brand-*` tokens,
+> so the swap re-skins without structural change.
 
 ```
        COLOR SYSTEM PALETTE
   ┌─────────────────────────────────┐
-  │ Primary Brand: Indigo / Blue    │  #4F46E5 (Indigo 600) / #3B82F6 (Blue 500)
+  │ Primary Brand: Sky Blue (v2)    │  #0369A1 (Sky 700) / #0EA5E9 (Sky 500)
   ├─────────────────────────────────┤
   │ Neutral Slate: Background & UI  │  #0F172A (Slate 900) to #F8FAFC (Slate 50)
   ├─────────────────────────────────┤
   │ Semantic Status:                │
   │ • Completed / Joined: Emerald   │  #10B981 (Emerald 500)
   │ • Waiting / Survey: Amber       │  #F59E0B (Amber 500)
-  │ • Letter Received: Indigo/Sky   │  #0EA5E9 (Sky 500)
+  │ • Letter Received: Sky          │  #0EA5E9 (Sky 500)
   │ • Error / Danger: Rose/Red      │  #EF4444 (Red 500)
   └─────────────────────────────────┘
 ```
 
 ## 4.1 Color Palette & Semantic System
 
-### 4.1.1 Primary Brand Colors
-- **`brand-50`:** `#EEF2FF` — Ultra-light tint for badge backgrounds, active item highlights.
-- **`brand-100`:** `#E0E7FF` — Subtle border accents, interactive pill hover states.
-- **`brand-500`:** `#6366F1` — Secondary brand button, interactive toggles.
-- **`brand-600`:** `#4F46E5` — **Primary Brand Anchor**. Buttons, active tab underlines, key links.
-- **`brand-700`:** `#4338CA` — Hover state for primary buttons and interactive brand elements.
-- **`brand-800`:** `#3730A3` — Active/pressed state for primary buttons.
-- **`brand-900`:** `#312E81` — Dark mode brand accents and highlighted surfaces.
+### 4.1.1 Primary Brand Colors (v2 — professional blue)
+
+Amended in 9.5: the v1 indigo scale (50 `#EEF2FF` … 950 `#1E1B4B`) was superseded by the sky
+mapping below (values are Tailwind's own sky scale, byte-exact).
+
+- **`brand-50`:** `#F0F9FF` — Ultra-light tint for badge backgrounds, active item highlights.
+- **`brand-100`:** `#E0F2FE` — Subtle border accents, interactive pill hover states.
+- **`brand-200` / `brand-300`:** `#BAE6FD` / `#7DD3FC` — kept from v1's scale so §6.8's
+  upvote-pill classes (`brand-300`, `brand-950`) continue to resolve.
+- **`brand-400`:** `#38BDF8` — Dark-mode brand text accents, links and active labels (the
+  bright family; sky-700 never reaches 4.5:1 on slate-900).
+- **`brand-500`:** `#0EA5E9` — Secondary brand button, interactive toggles, focus rings.
+- **`brand-600`:** `#0284C7` — Non-text brand fills (bars, dots, tiles). White text on it is
+  4.10:1 — below AA — so it never carries a resting primary action in v2.
+- **`brand-700`:** `#0369A1` — **Primary Brand Anchor**. Buttons, active tab underlines, key
+  links. White on it is 5.51:1 (AA).
+- **`brand-800`:** `#075985` — Hover state for primary buttons and interactive brand elements.
+- **`brand-900`:** `#0C4A6E` — Active/pressed state for primary buttons.
+- **`brand-950`:** `#082F49` — Deepest brand surface; dark-mode `brand-950/xx` fills.
+
+Indigo → sky mapping (v1 → v2), for traceability against pre-9.5 records:
+
+| Token | v1 (indigo) | v2 (sky) |
+|---|---|---|
+| `brand-50` | `#eef2ff` | `#f0f9ff` |
+| `brand-100` | `#e0e7ff` | `#e0f2fe` |
+| `brand-200` | `#c7d2fe` | `#bae6fd` |
+| `brand-300` | `#a5b4fc` | `#7dd3fc` |
+| `brand-400` | `#818cf8` | `#38bdf8` |
+| `brand-500` | `#6366f1` | `#0ea5e9` |
+| `brand-600` | `#4f46e5` | `#0284c7` |
+| `brand-700` | `#4338ca` | `#0369a1` |
+| `brand-800` | `#3730a3` | `#075985` |
+| `brand-900` | `#312e81` | `#0c4a6e` |
+| `brand-950` | `#1e1b4b` | `#082f49` |
+
+Two role rules that differ from a naive re-hex (09.5-CONTEXT §4.2):
+- **Hover is darker, not brighter:** the primary anchor *rests* at `brand-700`, hover is
+  `brand-800`, pressed is `brand-900` (v1: rest 600 / hover 700 / active 800).
+- **Dark-mode text accents stay on `brand-400`/`brand-500`**; `brand-700` on `#0F172A` is
+  ≈1.9:1 and is never used for text there.
 
 ### 4.1.2 Neutral Palette (Slate Spectrum)
 - **`slate-50`:** `#F8FAFC` — App background (Light Mode), card hover fills.
@@ -203,7 +243,7 @@ To facilitate rapid visual scanning in the community feed, each post category is
 
 | Category Code | Human Label | Badge Background | Badge Text | Border Accent |
 |---|---|---|---|---|
-| `JOINING_LETTER` | Joining Letter | `bg-indigo-50 dark:bg-indigo-950/50` | `text-indigo-700 dark:text-indigo-300` | `border-indigo-200 dark:border-indigo-800` |
+| `JOINING_LETTER` | Joining Letter | `bg-brand-50 dark:bg-brand-950/50` | `text-brand-700 dark:text-brand-300` | `border-brand-200 dark:border-brand-800` |
 | `JOINING_DATE` | Joining Date | `bg-sky-50 dark:bg-sky-950/50` | `text-sky-700 dark:text-sky-300` | `border-sky-200 dark:border-sky-800` |
 | `OFFER` | Offer Letter | `bg-emerald-50 dark:bg-emerald-950/50` | `text-emerald-700 dark:text-emerald-300` | `border-emerald-200 dark:border-emerald-800` |
 | `INTERVIEW` | Interview | `bg-purple-50 dark:bg-purple-950/50` | `text-purple-700 dark:text-purple-300` | `border-purple-200 dark:border-purple-800` |
@@ -231,7 +271,7 @@ The application supports explicit theme switching (`Light`, `Dark`, and `System 
 | **Borders & Dividers** | `#E2E8F0` (`slate-200`) | `#334155` (`slate-700`) | `border-default` (`border-slate-200 dark:border-slate-700`) |
 | **Input Background** | `#FFFFFF` (`white`) | `#0F172A` (`slate-900`) | `bg-input` (`bg-white dark:bg-slate-900`) |
 | **Input Border (Idle)** | `#CBD5E1` (`slate-300`) | `#475569` (`slate-600`) | `border-input` (`border-slate-300 dark:border-slate-600`) |
-| **Input Border (Focus Ring)** | `#4F46E5` (`brand-600`) | `#6366F1` (`brand-500`) | `ring-2 ring-brand-500` |
+| **Input Border (Focus Ring)** | `#0EA5E9` (`brand-500`) | `#0EA5E9` (`brand-500`) | `ring-2 ring-brand-500` |
 | **Top Navigation / Header Bar** | `rgba(255,255,255,0.85)` + blur | `rgba(30,41,59,0.85)` + blur | `backdrop-blur-md border-b` |
 | **Bottom Mobile Tab Bar** | `rgba(255,255,255,0.95)` + blur | `rgba(15,23,42,0.95)` + blur | `backdrop-blur-lg border-t` |
 | **Modal / Dialog Backdrop** | `rgba(15,23,42,0.60)` | `rgba(2,6,23,0.80)` | `bg-black/60 dark:bg-black/80` |
@@ -241,8 +281,9 @@ The application supports explicit theme switching (`Light`, `Dark`, and `System 
 
 ## 4.3 Typography Scale & Font Hierarchy
 
-- **Primary Typeface:** `Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`
-- **Monospace Typeface (Tokens/IDs/Timestamps):** `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`
+- **Primary Typeface (v2):** `Fira Sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif` — superseded v1's Inter (which shipped as a fallback name only; no webfont was ever loaded).
+- **Monospace Typeface (Tokens/IDs/Timestamps, v2):** `Fira Code, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`
+- **v2 boundary rule (9.5):** the mono face is for *machine data only* — analytics KPI values, counts, table dates/times, device IDs, trace/reference IDs, OTP fields. Never body copy; never below 12px; prefer tabular alignment on numeric columns.
 
 | Typographic Role | Font Size (px / rem) | Line Height | Weight | Tracking (Letter Spacing) | Tailwind Class |
 |---|---|---|---|---|---|

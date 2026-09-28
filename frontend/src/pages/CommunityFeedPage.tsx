@@ -181,7 +181,7 @@ export function CommunityFeedPage(): React.ReactElement {
     () => (
       <Link
         to="/community/create"
-        className="flex min-h-[40px] items-center rounded-lg bg-brand-600 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-700"
+        className="flex min-h-[40px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800"
       >
         + Create New Post
       </Link>
@@ -215,7 +215,7 @@ export function CommunityFeedPage(): React.ReactElement {
         ) : (
           <Link
             to="/login?next=%2Fcommunity%2Fcreate"
-            className="flex min-h-[40px] items-center rounded-lg bg-brand-600 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-700"
+            className="flex min-h-[40px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800"
           >
             Sign in to post
           </Link>

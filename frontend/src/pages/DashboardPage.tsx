@@ -36,7 +36,7 @@ const CARD =
   "rounded-xl border border-slate-200 bg-white p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-800";
 
 const CTA_PRIMARY =
-  "flex min-h-[40px] items-center rounded-lg bg-brand-600 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-700";
+  "flex min-h-[40px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800";
 const CTA_SECONDARY =
   "flex min-h-[40px] items-center rounded-lg border border-slate-300 px-4 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800";
 
@@ -279,7 +279,7 @@ export function DashboardPage(): React.ReactElement {
         <section className={CARD}>
           <div className="flex items-center justify-between">
             <p className={TYPOGRAPHY.subheadLabel}>Latest community discussions</p>
-            <Link to="/community" className="text-sm font-medium text-brand-600 hover:text-brand-700 dark:text-brand-300">
+            <Link to="/community" className="text-sm font-medium text-brand-700 hover:text-brand-700 dark:text-brand-300">
               View all community discussions →
             </Link>
           </div>
@@ -313,7 +313,7 @@ export function DashboardPage(): React.ReactElement {
                       </div>
                       <Link
                         to={`/community/posts/${post.id}`}
-                        className="mt-1 block text-sm font-medium text-slate-900 hover:text-brand-600 dark:text-slate-100 dark:hover:text-brand-400"
+                        className="mt-1 block text-sm font-medium text-slate-900 hover:text-brand-700 dark:text-slate-100 dark:hover:text-brand-400"
                       >
                         {post.title}
                       </Link>

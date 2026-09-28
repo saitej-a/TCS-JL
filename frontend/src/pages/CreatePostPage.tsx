@@ -174,8 +174,8 @@ export function CreatePostPage(): React.ReactElement {
                 className={[
                   "min-h-[36px] rounded-full px-3 text-xs font-medium transition-colors",
                   category === key
-                    ? "bg-brand-600 text-white"
-                    : "border border-slate-300 text-slate-600 hover:border-brand-300 hover:text-brand-600 dark:border-slate-600 dark:text-slate-300",
+                    ? "bg-brand-700 text-white"
+                    : "border border-slate-300 text-slate-600 hover:border-brand-300 hover:text-brand-700 dark:border-slate-600 dark:text-slate-300",
                 ].join(" ")}
               >
                 {CATEGORY_LABELS[key]}

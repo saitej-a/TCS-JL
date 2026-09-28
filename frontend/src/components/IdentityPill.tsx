@@ -5,7 +5,7 @@ export const ANONYMOUS_SENTINEL = "Anonymous Candidate";
 
 /** §6.5's deterministic pastel pairs — indexed by a stable hash of the name. */
 const PASTELS = [
-  "bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300",
+  "bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300",
   "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300",
   "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300",
   "bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300",

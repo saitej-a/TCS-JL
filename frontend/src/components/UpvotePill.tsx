@@ -20,9 +20,9 @@ import { useToast } from "@/components/Toast";
 
 /** §6.8's exact class sets. */
 const IDLE_CLASSES =
-  "flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 text-xs font-semibold hover:bg-brand-50 hover:border-brand-300 hover:text-brand-600 transition-all";
+  "flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 text-xs font-semibold hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700 transition-all";
 const ACTIVE_CLASSES =
-  "flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-50 dark:bg-brand-950/80 border border-brand-500 text-brand-600 dark:text-brand-400 text-xs font-semibold shadow-xs";
+  "flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-50 dark:bg-brand-950/80 border border-brand-500 text-brand-700 dark:text-brand-400 text-xs font-semibold shadow-xs";
 
 export interface CommitVote {
   voted: boolean;

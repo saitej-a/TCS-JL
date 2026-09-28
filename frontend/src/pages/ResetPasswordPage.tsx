@@ -91,7 +91,7 @@ export function ResetPasswordPage() {
         </div>
       </form>
       <p className="text-center text-sm">
-        <Link to="/login" className="font-medium text-brand-600 hover:underline dark:text-brand-400">
+        <Link to="/login" className="font-medium text-brand-700 hover:underline dark:text-brand-400">
           ← Back to sign in
         </Link>
       </p>
