@@ -44,8 +44,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### In-App & Browser Push Notifications (NOTIF)
 
-- [ ] **NOTIF-01**: Candidates receive in-app notifications with read tracking for comments, replies, upvote milestones, and announcements. *(model layer shipped in 6.1 — `Notification`/`Device`/`NotificationPreference` with read tracking, the `notification_read_state` constraint, compound indexes, and the `unread_count_for` seam; creation and the list/mark-read endpoints arrive in 6.2)*
-- [ ] **NOTIF-02**: Candidates can register multiple browser/mobile devices with FCM tokens stored via write-only serializers.
+- [x] **NOTIF-01**: Candidates receive in-app notifications with read tracking for comments, replies, upvote milestones, and announcements. *(model layer shipped in 6.1 — `Notification`/`Device`/`NotificationPreference` with read tracking, the `notification_read_state` constraint, compound indexes, and the `unread_count_for` seam; creation and the list/mark-read endpoints arrive in 6.2; **9.4 shipped the §7.10 notification center, the unread bell badge and the deep-link rows, and the 2026-09-28 verification confirmed `count: 3` / `unread_count: 3` with the badge on the wire and in the browser**)*
+- [x] **NOTIF-02**: Candidates can register multiple browser/mobile devices with FCM tokens stored via write-only serializers. *(6.2 shipped the registration path and the write-only serializer; **9.4 D2 extended it to browser subscriptions — `POST /devices/` with a WEB subscription JSON returned 201 with `fcm_token` withheld, verified on the wire 2026-09-28**)*
 - [ ] **NOTIF-03**: Celery background tasks dispatch FCM push notifications with exponential backoff and zero PII payloads.
 - [ ] **NOTIF-04**: System suppresses self-action notifications and applies Redis thread push debouncing (15m window).
 - [ ] **NOTIF-05**: Stale/unregistered FCM tokens are automatically marked inactive; inactive devices older than 30 days are pruned daily.
@@ -66,15 +66,22 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **MOD-03**: Duplicate pending reports on the same target by the same user are blocked, and reporting is throttled (10/hr). *(8.1: two conditional UniqueConstraints + service check with IntegrityError mapping; `reports` scope with `throttle_scope` on the view per 7.2 R1, 429 asserted)*
 - [x] **MOD-04**: Automated regex heuristics scan post bodies for paid job scams, fee extortion, and NextStep password requests. *(8.1: `heuristics.py` with 08 §8.1's four patterns as code constants; hard-block 400 `scam_pattern_detected` pre-publication on all four write call sites — post/comment, create/edit with merged-state scanning — and a category-naming message that never echoes the regex; T8.5's 60-min debounce extended with a body hash, posts only)*
 - [x] **MOD-05**: Moderators can review reports in Django Admin with bulk actions (Dismiss, Soft-Delete, Lock, Warn, Ban). *(8.2: `ReportAdmin` with the five bulk actions + the REST queue/review/ban surface, both delegating to `moderation.services` so they cannot drift; queue ordered by 08 §4.1's static severity weights — the log2 velocity multiplier is a recorded divergence (CONTEXT D6))*
+- [ ] **MOD-07**: A moderator console covers the report queue and announcement broadcasting, and never renders an unmasked email address or phone number. *(Added by 9.5: 8.2 shipped the APIs and Admin actions but no frontend; reference screens `736288d341c24ac9bfd49aeaaa577bfd` and `404937bf61c04f4f93885cd1aa7ace23`; plan 09.5-01 Tasks 8–9, with a PII test that fails if an unmasked value reaches the DOM.)*
 - [x] **MOD-06**: Banning an account atomically sets `is_active=False`, blacklists refresh tokens, and halts device push alerts. *(8.2: §6's own two-step shape — one transaction commits `is_active=False` + `banned_until` + the §11.1 audit line, then an idempotent Celery task blacklists every outstanding refresh token and deactivates all devices; temporary suspensions auto-reinstate hourly; banned login returns 403 `ACCOUNT_SUSPENDED` after credential validation)*
+
+### Settings & Account Management (SET) *(added by 9.5)*
+
+- [ ] **SET-01**: A settings suite covering profile, privacy, security, devices/notifications and a danger zone — reachable from the app shell, stating real state on every control, and gating irreversible actions behind typed confirmation. *(9.5: six routes exist as 9.1 stub pages; implementation is plan 09.5-01 Tasks 2–7 against Stitch screens `8926c8724c174a81817e8a8e4f5712aa`, `6a758b8acdad4480835bc57cbdfea0cc`, `d88ec4c0e3684fb3a9c4f9e157b5f614`, `8f6ebe935fce467f9804244d4d04da9c`.)*
 
 ### User Interface & PWA Client (UI)
 
 - [ ] **UI-01**: Responsive Single Page Application (React 18 + Tailwind) supporting desktop 3-col, tablet 2-col, and mobile bottom tab bar. *(Foundation (9.1) + layout shells (9.2) shipped: AppShell with sidebar ≥640px, 320px rail ≥1280px, mobile tab bar <640px — proven live at 1440px and 400px. 9.3 added the first three content views inside that shell — dashboard, timeline roadmap and community feed + create post, each checked at 1440px and ≤400px — and fixed `/community` rendering **outside** the shell entirely (a public-read route mounted without `AppShell`, now via the `PublicShell` layout). Still owed: §7.8 post detail, analytics, notification center, settings — 9.4.)*
 - [x] **UI-02**: Centralized Axios API client with automatic silent JWT refresh interceptors upon receiving HTTP 401. *(Shipped in 9.1: `src/api/client.ts` single-flight 401 → refresh → replay-once; evidence — `client.test.ts` concurrent-401 call-count proof, `tokenStore.test.ts` storage contract, and the live browser observation (401 → one refresh POST → replayed 200, no logout); backend suite unchanged at 788.)*
 - [x] **UI-03**: Optimistic UI state updates on upvoting with automatic rollback on network failure. *(Shipped + **proven live 9.3**: the pill is controlled by the feed's per-card store, so the optimistic overlay is the only thing a failure can desync. Observed verbatim in a browser with the vote request failed at the transport layer — committed `▲ Upvote | 1` · pressed=false → **during flight `▲ Upvoted | 2`, aria-busy=true** → **after the failure `▲ Upvote | 1`, pressed=false, toast "Your vote could not be saved. Please try again."** → real vote re-run: `▲ Upvoted | 2`, no toast, and an independent read reported `vote_count: 2`. A 409 `already_voted` commits the vote rather than rolling it back; five unit tests cover the optimism, the rollback, the 409 and §6.8's two class sets. Fixed en route: the card was reading the stale list snapshot for its count, so a **successful** vote reverted to the pre-vote number once the overlay cleared.)*
-- [ ] **UI-04**: Mandatory TCS non-affiliation disclaimer displayed on all public views, headers, footers, and analytics screens. *(9.2: footer disclaimer from the single §5.6 content module on the shell at every breakpoint, the landing page, all six auth screens, and the wizard — proven live. Analytics header is 9.4.)*
-- [ ] **UI-05**: PWA service worker registered for background push display, deep-link routing, and offline mode indicators.
+- [x] **UI-04**: Mandatory TCS non-affiliation disclaimer displayed on all public views, headers, footers, and analytics screens. *(9.2: footer disclaimer from the single §5.6 content module on the shell at every breakpoint, the landing page, all six auth screens, and the wizard — proven live. 9.4's analytics half verified 2026-09-28: the §7.9 screen renders that module's header line + notice and the §5.6 footer, and every analytics payload carries the disclaimer.)*
+- [x] **UI-05**: PWA service worker registered for background push display, deep-link routing, and offline mode indicators. *(9.4, verified 2026-09-28: SW registration, the `click_action` deep-link plumbing, WEB device registration, the offline shell **and** offline content all proven live — the built shell loads a deep link, and `/analytics` renders from cache, with the origin unreachable. The device-type routing defect found by verification (F-94-1, which had been deactivating native devices once VAPID was configured) is fixed and pinned. **One observation remains:** an actual OS notification display could not be driven here because this machine blocks notifications at OS level; the delivery contract behind it is proven server-side and in jsdom.)*
+- [ ] **UI-06**: Design-token layer v2 — professional-blue brand scale and a Fira Sans/Fira Code type pairing landed through the single `@theme` layer, with both themes stated and 05 §4 reconciled. *(Added by 9.5. Design system `assets/9909951007419684952`; the mapping table and the deliberate rejections of the skill's flat/tinted-canvas branch are in `09.5-CONTEXT.md` §3.1/§4. Code work is plan 09.5-01 Task 1.)*
+- [ ] **UI-07**: Error and empty states — a 404 route panel, a render/fetch error boundary carrying a copyable reference id, and an inline per-section retry that leaves the rest of the page usable. *(Added by 9.5; reference screen `93aa0ebe4cac42c3bf43cd521ec84056`; plan 09.5-01 Task 10.)*
 
 ## v2 Requirements
 
@@ -126,8 +133,8 @@ Deferred to future post-MVP release.
 | COMM-06 | Phase 5 | Complete — 5.2: staff-only lock/pin (+unlock/unpin additions); locked posts refuse comments |
 | COMM-07 | Phase 5 | Complete — 5.2: AuthorPublicSerializer + HMAC avatar_seed server-side |
 | COMM-08 | Phase 5 | Complete — 5.2: query budgets as tests (feed ≤3, thread ≤5); distinct=True counts |
-| NOTIF-01 | Phase 6 | Partial — 6.1: model layer (three models, read-state CheckConstraint, compound indexes, unread-count seam); notification creation + list/mark-read endpoints in 6.2 |
-| NOTIF-02 | Phase 6 | Pending |
+| NOTIF-01 | Phase 6 | Complete — 6.1 models + 6.2 producers/list/mark-read; 9.4's center + bell badge confirmed on the wire and in a browser (2026-09-28) |
+| NOTIF-02 | Phase 6 | Complete — 6.2 registration endpoints + 9.4's WEB-subscription path; `POST /devices/` → 201 with the token withheld, verified on the wire (2026-09-28) |
 | NOTIF-03 | Phase 6 | Pending |
 | NOTIF-04 | Phase 6 | Pending |
 | NOTIF-05 | Phase 6 | Pending |
@@ -145,12 +152,16 @@ Deferred to future post-MVP release.
 | UI-01 | Phase 9 | In Progress (foundation 9.1 + responsive shells 9.2 **verified**; content views 9.3–9.4) |
 | UI-02 | Phase 9 | Complete (shipped + **verified 9.1** — VERIFICATION.md PASS: 76 frontend tests, wire-level family-reuse drill, live browser concurrency drill: 2×401 → 1 refresh → 2×200) |
 | UI-03 | Phase 9 | Complete (shipped + **proven live 9.3** — optimistic increment observed in flight before the response, rollback of count AND toggle with the §6.7.1 error toast on a transport failure, 409 treated as already-voted, server reconciliation confirmed by an independent vote_count read; 5 unit tests) |
-| UI-04 | Phase 9 | In Progress (shell/landing/auth/wizard disclaimers shipped in 9.2 from the single content module, **verified live**; analytics 9.4) |
-| UI-05 | Phase 9 | Pending |
+| UI-04 | Phase 9 | **Complete** — 9.2's half (shell/landing/auth/wizard from the single content module, verified live) plus 9.4's analytics half: the §7.9 page renders the module's header line + notice and the §5.6 footer, and every analytics payload carries the disclaimer (verified 2026-09-28) |
+| UI-05 | Phase 9 | **Complete** — registration, deep-link plumbing, WEB device rows, the offline shell and cached offline content all verified live (built shell served a deep link, `/analytics` rendered from cache, with the origin killed); F-94-1 fixed and pinned. The OS notification display itself is unobservable on this machine (OS-level block), recorded as an observation |
+| UI-06 | Phase 9.5 | Planned — token v2 landed in `src/index.css`, 05 §4 reconciled, both themes contrast-checked (plan 09.5-01 Task 1) |
+| UI-07 | Phase 9.5 | Planned — 404 panel, error boundary with copyable reference id, inline section retry (Task 10) |
+| SET-01 | Phase 9.5 | Planned — six `/settings*` routes implemented from their Stitch references, irreversible actions typed-confirmed (Tasks 2–7) |
+| MOD-07 | Phase 9.5 | Planned — admin shell (role-guarded) + report queue + announcements composer, masked PII enforced by test (Tasks 8–9) |
 
 **Coverage:**
-- v1 requirements: 43 total
-- Mapped to phases: 43
+- v1 requirements: 47 total *(was 43 before 9.5 added SET-01, UI-06, UI-07, MOD-07)*
+- Mapped to phases: 47
 - Unmapped: 0 ✓
 
 ## Sub-Phase Traceability
@@ -178,7 +189,8 @@ Phases are decomposed into decimal sub-phases (directories under `.planning/phas
 | 9.1 SPA Foundation & API Client | UI-01, UI-02 | 09-01 |
 | 9.2 Auth, Onboarding & Layout Views | UI-01, UI-04 | 09-02 |
 | 9.3 Dashboard, Timeline & Feed Views | UI-03 | 09-03 |
-| 9.4 Post, Analytics, Notifications & PWA | UI-05 | 09-04 |
+| 9.4 Post, Analytics, Notifications & PWA | UI-05 | 09-04 — executed 2026-09-27, verified 2026-09-28 (**CONDITIONAL**: F-94-1 open) |
+| 9.5 UI/UX Design Pass (ui-ux-pro-max + Stitch) | SET-01, UI-06, UI-07, MOD-07 (+ UI-04, UI-05) | 09.5-01 — planned 2026-09-28; **design work done** (token v2 proposed, design system + 8 Stitch screens generated), implementation pending |
 | 10.1 Seed Data & E2E Journeys | Full system verification | 10-01 |
 | 10.2 Security Audits, Hardening & Signoff | Full system verification | 10-02 |
 

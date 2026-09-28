@@ -1,21 +1,23 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "9.4"
-current_phase_name: Post, Analytics, Notifications & PWA
+current_phase: "9.5"
+current_phase_name: "UI/UX design pass: ui-ux-pro-max + Stitch screens (INSERTED)"
 status: executing
-stopped_at: "Phase 9.3 EXECUTED (2026-09-24): 4 backend repairs (D1–D4) + the three content views + create post; gates green (frontend 130 tests / lint / typecheck / build, backend 804, config-settings clean); both halves of the done-when observed live in a browser; the 7 Stitch mockups reconciled to the code (09.3-DESIGN-RECONCILIATION.md); next: verify 09-03"
-last_updated: "2026-09-24T10:30:09.867Z"
-last_activity: 2026-09-24
-last_activity_desc: Phase 9.4 execution started
-state_head: 9a4a8d60ed66d18c13b8f320e51b5e591fbbf2d3
+stopped_at: "Phase 9.4 VERIFIED — PASS (2026-09-28): the verification pass found 4 defects (1 HIGH) and all 4 are fixed and re-derived green — device-type routing so VAPID can never deactivate native FCM devices, the primer's already-denied path no longer wedges and persists the denial, the push suite is hermetic (849 passed with AND without VAPID), and the worker now caches the viewer-independent public reads so the offline copy is true (proven: /analytics renders from cache with the origin killed); gates: backend 849 / frontend 182 / lint 0 errors / build clean; remaining residuals (per-type backend fan-out, offline write queue, timeline-cache privacy question, install triggers not driven live, OS-blocked push display) are recorded, not silent"
+last_updated: "2026-09-28T14:27:01.750Z"
+last_activity: 2026-09-28
+last_activity_desc: Phase 9.5 execution started
+state_head: 7527fd5eeef0421b47f30ad00ca8ed9b2078c1ea
 progress:
-  total_phases: 32
+  total_phases: 29
   completed_phases: 6
-  total_plans: 21
+  total_plans: 18
   completed_plans: 19
 milestone_name: milestone
 ---
+
+Total Phases: 22
 
 # Project State
 
@@ -24,16 +26,97 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-09-19)
 
 **Core value:** Provide anxious candidates with complete clarity on their recruitment progress and community benchmarks without requiring them to expose their real identity or personal credentials.
-**Current focus:** Phase 9.4 — Post, Analytics, Notifications & PWA
+**Current focus:** Phase 9.5 — UI/UX design pass: ui-ux-pro-max + Stitch screens (INSERTED)
 
 ## Current Position
 
-Phase: 9.4 (Post, Analytics, Notifications & PWA) — EXECUTING
+Phase: 9.5 (UI/UX design pass: ui-ux-pro-max + Stitch screens (INSERTED)) — EXECUTING
 Plan: 1 of 1
-Status: Executing Phase 9.4
-Last activity: 2026-09-24 — Phase 9.4 execution started
+Status: Executing Phase 9.5
+the four defects the pass found repaired with tests + live re-proofs — see
+`.planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/VERIFICATION.md`.
+Last activity: 2026-09-28 — Phase 9.5 execution started
 
-Progress: [███████░░░] 70%
+**Next up: Phase 09.5 — *UI/UX design pass: ui-ux-pro-max + Stitch screens* (INSERTED after Phase 9, 2026-09-28, URGENT).**
+**PLANNED 2026-09-28** → `09.5-01-PLAN.md`; the design half is **done and on disk** (`09.5-CONTEXT.md`):
+`design-system/tcs-joining-tracker/MASTER.md` from the `ui-ux-pro-max` pass, Stitch design system
+`assets/9909951007419684952` (*TJT Professional Blue (9.5)*, `#0369A1` + Fira Sans/Fira Code), and **8 screens**
+in Stitch project `3852118218307261541`, covering every undesigned surface: settings hub, profile, privacy,
+devices & notifications, danger zone, admin moderation queue, admin announcements, and the 404/500 + inline
+retry states (catalogue + ids in `09.5-CONTEXT.md` §5). One of them (`…b10ebf59`) was recovered with
+`list_screens` after its generation call timed out rather than re-generated. Only the `/settings/security`
+panel still has no screen.
+Directory: `.planning/phases/TCS-JL-09.5-ui-ux-design-pass-ui-ux-pro-max-stitch-screens/`.
+**Next action:** plan 09.5-01 Task 1 — land token v2 and reconcile 05 §4. **No application source has been
+changed by this pass yet**; nothing is committed.
+*(Pointer set by hand: the workflow's `state.patch` handler matches field names this project's customized
+STATE.md does not carry — it returned `updated: []` for both `Current Phase`/`Next recommended run` and the
+frontmatter keys. The `state.add-roadmap-evolution` handler did match and logged the insertion.)*
+
+Progress: [█████████░] 90%
+
+### 9.4 verification record (2026-09-28)
+
+**Verdict: PASS** — every surface ships, every gate re-derives green in **both** push configurations, and the
+four defects the pass found were repaired in-pass with tests and a live re-proof each. One item stays
+unobservable in this environment (the OS-level push display), and it is named, not buried. Detail + repro
+recipes: `.planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/VERIFICATION.md`.
+
+**Defects found — all fixed:** **F-94-1 (HIGH)** `auto` + VAPID handed native FCM tokens to `WebPushBackend`,
+which classes an opaque token as permanently invalid, so the stale-token sweep deactivated the user's
+Android/iOS row on the first push — fixed by giving the seam a device-type vocabulary
+(`PushBackend.device_types` / `handles_device_type()`: WEB owns Web Push, ANDROID/IOS/OTHER own FCM, the
+double stays permissive) and filtering the recipient's devices before dispatch, pinned by
+`test_push_device_routing.py`. **F-94-2 (MEDIUM)** the primer called `requestPermission()` on an origin that
+had already decided, which Chromium can leave pending forever — the modal wedged with a disabled button and
+the denial was never persisted; fixed by treating an existing `granted`/`denied` state as the answer and
+returning `"failed"` (persisting nothing) when the ask itself throws; re-proved live (modal closes, flag set,
+toast shown, primer absent on reload). **F-94-3 (MEDIUM)** six tests were not hermetic w.r.t. VAPID (the
+`auto`-resolution pair never cleared it; four capture tests were guarded by
+`if isinstance(backend, RecordingPushBackend)` and silently asserted nothing), so the recorded "842 passed"
+only held without push keys — fixed with `no_vapid_config` / `recording_push_backend` fixtures in the root
+conftest and by removing the conditional guards. **F-94-4 (LOW)** the offline strip's spec copy ("Showing
+cached data") had nothing behind it — the worker now caches the **viewer-independent public reads**
+(announcements/analytics/public) under a stated rule, proven by reloading `/analytics` from cache with the
+origin killed; the "Actions will sync when online" clause still has no write queue and is recorded as a gap.
+**O-94-1** (in-pass fix): `frontend/eslint.config.js` now ignores `dev-dist`, the gitignored dev-mode worker
+Task 8's `devOptions` generates — the recorded lint gate failed with 10 errors inside that generated file.
+
+**Gates re-derived** (this tree, not execution's): backend `python -m pytest -q` = **849 passed**, and the
+same **849 passed with `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY` set** — the configuration that used to produce
+6 failures; frontend lint **0 errors / 13 pre-existing warnings**, `npm run typecheck` clean, `npx vitest run`
+= **182 passed / 33 files**, `npm run build` clean and emitting `dist/sw.js`, `dist/sw-push.js`,
+`dist/manifest.webmanifest`.
+
+**Wire drills (curl, live stack):** D1's `status-distribution` answers with `COMMUNITY_REPORTED` + the
+disclaimer and per-row counts/shares (`WAITING_FOR_JL` 9 / 13.8 %), combines filters
+(`?batch=2025&hiring_type=DIGITAL` → 48), **suppresses** a below-floor slice with no counts, and **400s**
+`?batch=1999` naming the parameter; `devices/vapid-key/` returns the public half only (the 209-char private
+key from the drill override never appears in the body); notifications = 3 rows / `unread_count` 3;
+`POST /devices/` with a WEB subscription → **201** with `fcm_token` withheld; post detail 200 with the
+anonymized author; comment create **201** and `comment_count` 0 → 1 — the created comment and its cascaded
+notification were then deleted, so the drill left no rows behind.
+
+**Browser drills (Chromium, 1440×900):** the bell renders **3** (the API's unread count — no second source);
+the offline strip renders `⚠️ Offline Mode. Showing cached data. Actions will sync when online.` and clears on
+`online`; the push primer renders the UI-SPEC copy, gated to `/notifications`, before any native dialog.
+**The production offline shell — the leg execution left open — is closed:** over `vite preview` the worker
+registers as `/sw.js`, precaches 7 entries including `/index.html` and `/sw-push.js`, and after the preview
+server was **killed** a deep-link navigation to `/community/posts/…` still loaded the document and mounted the
+shell from cache.
+
+**Fixed and re-proved live:** the denied-origin primer now closes on **Enable Alerts**, persists
+`tjt.push_denied`, shows the "Push alerts stay off" toast, and stays closed after a reload carrying only the
+persisted flag; the worker's new `public-reads` cache (6 entries, announcements + analytics) answers a full
+`/analytics` render with the preview server killed and **no skeletons**, caching nothing account-scoped
+(account-scoped `/api/` cache entries: 0). The deep-link shell leg was already proven by the same technique (origin dead,
+deep link loads the app from precache).
+
+**Not re-derived (recorded, not silent):** the Stitch side-by-side (execution's `09.4-PROOFS.md` record
+stands; 9.3's unreadable-`htmlCode` limitation still applies), the install-banner triggers live (pinned by
+tests only), and the OS push display itself — this machine's Chromium profile has notifications blocked at
+the OS level in both the persistent and a fresh incognito profile, so the *display* leg cannot be observed
+here; the delivery contract behind it is proven server-side and in jsdom.
 
 ### 9.3 execution record (2026-09-24)
 
@@ -112,6 +195,7 @@ with `feed_queryset`'s `is_deleted=False` removed the test **FAILED** (Assertion
 
 - Phases 1–10 decomposed into 22 decimal sub-phases (X.1/X.2 pattern; Phase 9 has four) as focused planning/execution units — directories scaffolded under `.planning/phases/`, mappings logged in ROADMAP.md Phase Details and REQUIREMENTS.md Sub-Phase Traceability.
 - **Stitch (MCP server) is the designated UI-design tool** (user directive, 2026-09-23): generate and iterate screen mockups through the `stitch` connector (`generate_screen_from_text`, `generate_variants`, `create_design_system`/`upload_design_md`) instead of hand-describing layouts. **Applied for 9.2 (discuss stage):** Stitch project `3852118218307261541` holds design system `assets/9887579562818178405` (seeded from 05 §4 tokens) and **10 screen mockups** (desktop shell light+dark, mobile shell, landing, login, register, forgot-password, onboarding steps 1–3) — screen IDs catalogued in `09.2-CONTEXT.md`. **Planned for 9.3:** 7 more mockups (dashboard desktop+mobile, timeline roadmap, timeline modal, feed desktop+mobile, create post) from the same project/design system, generated as plan 09.3-01's Task 1 with IDs recorded in `09.3-CONTEXT.md`'s design table. Boundary: Stitch output is design reference, not code; implementation stays in `frontend/` against the 9.1 token layer.
+- Phase 09.5 inserted after Phase 9: UI/UX design pass driven by the ui-ux-pro-max skill: generate the screens on Stitch MCP and implement them one by one (URGENT). **Design half executed 2026-09-28:** the skill selected a professional-blue + Fira Sans/Fira Code direction for the Job Board/Recruitment category; its palette was adopted as the Tailwind `sky` scale with the neutrals/radii/elevation deliberately kept from 05 §4 (the skill's flat, shadowless, tinted-canvas branch was overridden — approval item O-9.5-1 in `09.5-CONTEXT.md` §3.1). Stitch design system `assets/9909951007419684952` created and used for **8 new screens** covering the undesigned surfaces; the project default was **not** changed (the `update_design_system` call was rejected as an invalid argument twice), and the 32 existing screens were **not** re-themed (`apply_design_system` deliberately deferred to plan Task 11). A real trap found by inspecting a generated screenshot: the mocks carry visible "DESIGN NOTE" annotation captions and an appended dark-mode mapping strip — reference-only, never UI.
 
 ### Decisions
 
@@ -171,6 +255,24 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
+- **Per-type backend fan-out: one deployment cannot serve browser *and* native push** (NEW — surfaced by the
+  9.4 F-94-1 repair): routing now keeps the vocabularies apart, but `get_push_backend()` still resolves **one**
+  backend per deployment, so `PUSH_BACKEND=auto` with VAPID configured serves browsers and *skips* native
+  devices (`PUSH_SKIPPED_NO_COMPATIBLE_DEVICES`) rather than dropping them. That is strictly better than the
+  silent deactivation it replaced, and it matches D2's "FCM stays the explicit setting for Android/iOS paths"
+  — but an operator fielding both clients must currently choose. A per-device-type backend registry (group the
+  recipient's devices, dispatch each group through its own backend, aggregate the results) is the real fix.
+- **O-94-2 (privacy question, undecided) — the `/api/v1/timeline/` runtime cache is account-scoped** (NEW —
+  9.4 verification): a Cache Storage entry outlives a logout inside the browser profile, so after user A signs
+  out, user B could be served *A's* timeline while offline. Narrow (two accounts, one profile, offline) but
+  real; the fix is a cache purge on logout or dropping the entry. Annotated in `frontend/vite.config.ts`
+  beside the entry.
+- **Offline writes have no queue** (NEW — 9.4 F-94-4 residual): the offline strip's "Actions will sync when
+  online" implies one, and mutations made offline simply fail with their error surfaced. Reads are now cached
+  for the viewer-independent public endpoints; a write queue (or narrower copy) is a feature decision.
+- **The 9.4 install-banner triggers were never driven live** (NEW — 9.4 verification): the milestone and
+  two-distinct-community-days rules are pinned by `pwa.test.ts` and the never-before-trigger case, but no live
+  cross-session drive happened.
 - **`/me/`'s `profile_completed` is still a hardcoded `False`** (NEW — surfaced while binding 9.1's client to the real payload). `UserPrivateSerializer.get_profile_completed` returns `False` with a comment saying CandidateProfile arrives in Phase 3.1 — 3.1 shipped and the stub never changed, and `apps/accounts/tests/test_me.py` asserts the stub. **9.2's onboarding wizard gates on this flag**, so every candidate would be sent through onboarding on every sign-in until it reads the real profile. Fix belongs with `/me/` plus a deliberate test update.
 - **The private user payload carries no role flag** (NEW — 9.1 planning). `is_staff` appears in no serializer, so the SPA cannot render 05 §3.1's staff-only nav (`/admin/moderation/reports`, `/admin/announcements`) from `/me/`. Either add it to `UserPrivateSerializer` (1 line — needed before 9.2's nav can exist) or keep staff gating purely server-side and reveal no admin affordance. Recorded, not decided.
 - **The public author payload exposes no identity mode** (NEW — 9.1 planning). `display_name` collapses to the literal `"Anonymous Candidate"` both for anonymous profiles and for profile-less/blank-name users, so 9.1's `IdentityPill` keys off that sentinel string. An explicit `identity_mode` field in `AuthorPublicSerializer` would remove the coupling if preferred. *(9.1 execution addendum: the serializer also ships NO `avatar_seed` despite 04/plan assuming one — IdentityPill derives the pastel deterministically from `display_name` instead; an `avatar_seed` field is typed optional for when the API adds it.)*
@@ -188,6 +290,10 @@ Recent decisions affecting current work:
 
 ### Blockers/Concerns
 
+- ~~**`auto` + VAPID silently kills native push devices (HIGH)**~~ — **FIXED 2026-09-28 (9.4 verification):**
+  the backend seam now declares its token vocabulary and dispatch filters devices on it, so a Web Push backend
+  is never handed an FCM id; pinned by `test_push_device_routing.py`. The residual is not data loss but
+  reach — see the fan-out item in Pending Todos.
 - **Phase 5 is marked COMPLETE while independently verified FAIL (HIGH):** 05-02's `VERIFICATION.md` verdict is FAIL on two HIGH acceptance-criteria defects, both re-confirmed live in the current tree (deleted posts in the feed/search; unthrottled post creation). STATE.md's prose, REQUIREMENTS.md (`COMM-01`/`COMM-02` = Complete) and ROADMAP.md (05-02/05-03 ticked, Phase 5 = 3/3) all contradict that verdict, and 05.2's findings were dropped from Pending Todos by later phases writing over this section. Do not carry a Phase 5 or milestone COMPLETE claim until F1/F2 are fixed and re-probed. Details: `.planning/phases/TCS-JL-05.2-feed-comments-and-voting-endpoints/VERIFICATION.md`, summarised in `.planning/reports/MILESTONE_SUMMARY-v1.0.md` § 6.
 - **F1 (HIGH, pre-existing in Phase 2.2, surfaced by 4.2 verification):** deleted candidates retain their profile row (with `display_name`, `batch`, `region`, `current_status`) and all private timeline events. Not a 4.2 regression — 4.1/4.2 assumed the deletion flow was implemented. Blocks any milestone claim of 06 §4.2 compliance until decided. 7.1 inherits it directly: the aggregation cohorts count those retained profiles, so the analytics themselves now include anonymized-but-present candidates (the 4.2 F2 exclusion question is still unanswered).
 - ~~**Per-bucket suppression gap (MEDIUM)**~~ — **RESOLVED 2026-09-22 by 7.2 D-01/D-02** (per-row floor; whole-response suppression when nothing survives). The vector closes when 7.2 executes; until then the live endpoints do not yet exist, so there is no exposure window in the current tree.
@@ -215,12 +321,14 @@ Items acknowledged and deferred at milestone close, most recent first:
 | Moderation | Admin-editable scam patterns (carried from 8.1) | Still needs a roadmap edit before any phase takes it; not folded into 8.2 | 2026-09-23 | v1.0 |
 | Feed/dashboard | `GET /community/categories/` endpoint (04's inventory lists it; `settings/base.py:169` claims it ships) | **Declined for 9.3 (D7)**: the 12-key vocabulary is duplicated into one frontend constant module pinned by test; reclaim this row the moment the endpoint is built | 2026-09-23 | v1.0 |
 | Dashboard | §7.4's "latest discussions in your stream" hiring-stream filter | **Diverged by 9.3 D6**: the block shows the community's newest posts; a genuine stream filter is new feed API surface (posts carry a category, the stream lives on the author's profile) — buy deliberately later | 2026-09-23 | v1.0 |
+| PWA offline | An offline **write** queue (the strip's "Actions will sync when online") | **Half-closed 2026-09-28**: F-94-4 was fixed by caching the viewer-independent public reads, so "Showing cached data" is now true (proven offline); the sync clause still has no queue behind it | 2026-09-28 | v1.0 |
+| PWA install | The install promotion's live triggers (milestone added / community on two distinct days) | **Verified by test only** (9.4 verification §6): `pwa.test.ts` pins both rules and the never-before-trigger case; no live cross-session drive was performed | 2026-09-28 | v1.0 |
 
 ## Session Continuity
 
-Last session: 2026-09-24T12:00:00.000Z
-Stopped at: Phase 9.3 EXECUTED — all 9 plan tasks done, gates green, both halves of the done-when proven live, tracking updated; run `/gsd-ns-workflow verify 9.3` next (the directive's §4: visually compare the running app against the Stitch screens and append divergences to `09.3-DESIGN-RECONCILIATION.md`)
-Resume files: .planning/phases/TCS-JL-09.3-dashboard-timeline-and-feed-views/09.3-DESIGN-RECONCILIATION.md (the design record + what is still open), .planning/phases/TCS-JL-09.3-dashboard-timeline-and-feed-views/09.3-CONTEXT.md, frontend/ (the workspace), .planning/STATE.md
+Last session: 2026-09-28T04:45:00.000Z
+Stopped at: Phase 9.4 VERIFIED — **PASS**: the verification pass found 4 defects (1 HIGH) and all 4 are fixed and re-derived green (device-type routing for push dispatch; the primer's already-denied path; VAPID-hermetic push tests; the worker's viewer-independent public-read cache), each re-proved live. Residuals are recorded, not silent: per-type backend fan-out, the offline write queue, the timeline-cache privacy question, install triggers not driven live, and the OS-blocked push display. 9.3's own verification is still owed (unchanged).
+Resume files: .planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/VERIFICATION.md (verdict, drills, defect repros + repairs), .planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/09.4-PROOFS.md (execution's live proofs), apps/notifications/tests/test_push_device_routing.py (the F-94-1 pin), .planning/STATE.md
 
 **Owed from 9.3's execution — open items, none silent:**
 
