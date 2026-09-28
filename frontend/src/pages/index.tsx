@@ -27,6 +27,7 @@ import { AnalyticsPage } from "@/pages/AnalyticsPage";
 import { NotificationsPage } from "@/pages/NotificationsPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { SettingsProfilePage } from "@/pages/SettingsProfilePage";
+import { SettingsPrivacyPage } from "@/pages/SettingsPrivacyPage";
 
 export { LandingPage };
 export { LoginPage };
@@ -45,6 +46,7 @@ export { AnalyticsPage };
 export { NotificationsPage };
 export { SettingsPage };
 export { SettingsProfilePage };
+export { SettingsPrivacyPage };
 
 function StubPage({
   title,
@@ -90,11 +92,8 @@ export function TermsPage(): ReactElement {
 // analytics (§7.9, same) and notifications (§7.10); production settings
 // screens remain stubs below.
 
-// Settings — the hub shipped in 9.5 Task 2, profile in Task 3; the rest
-// remain stubs until their 9.5 tasks land.
-export function SettingsPrivacyPage(): ReactElement {
-  return <StubPage title="Identity mode" />;
-}
+// Settings — the hub shipped in 9.5 Task 2, profile in Task 3, privacy in
+// Task 4; the rest remain stubs until their 9.5 tasks land.
 export function SettingsSecurityPage(): ReactElement {
   return <StubPage title="Password" />;
 }
