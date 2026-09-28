@@ -31,3 +31,6 @@ celerybeat-schedule
 
 # vite-plugin-pwa's dev-mode service worker output (regenerated on dev start)
 frontend/dev-dist/
+
+# Temporary 9.4 drill override (throwaway VAPID keypair; delete after prod keys)
+docker-compose.override.yml

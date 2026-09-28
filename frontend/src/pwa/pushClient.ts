@@ -3,8 +3,8 @@
  *
  * Flow, in the order §10.1 requires:
  *   1. the primer's "Enable Alerts" (caller's job — `subscribeToPush` is only
- *      ever invoked from that button, and it is the app's ONLY caller of
- *      `Notification.requestPermission()`);
+ *      ever invoked from that button, and `askNotificationPermission` below is
+ *      the app's ONLY caller of `Notification.requestPermission()`);
  *   2. read the VAPID public key from the anonymous endpoint;
  *   3. ask for permission (never before step 1);
  *   4. `PushManager.subscribe({userVisibleOnly: true, applicationServerKey})`;
@@ -84,6 +84,29 @@ export function describeBrowser(agent = typeof navigator === "undefined" ? "" : 
 }
 
 /**
+ * Ask for notification permission — and never ask an origin that has already
+ * answered (§10.1's "a denial is never re-prompted").
+ *
+ * The state check is load-bearing, not a micro-optimisation. On an origin the
+ * browser has already blocked, `requestPermission()` may never settle (no dialog
+ * can be raised), which left the primer's button permanently disabled and the
+ * denial unpersisted — so the primer re-offered every session, the exact opposite
+ * of the rule (9.4 F-94-2). An existing `denied`/`granted` state *is* the answer.
+ *
+ * A rejected call is not a denial: it returns `null` so the caller reports
+ * `"failed"` without recording a decision the user never made.
+ */
+async function askNotificationPermission(): Promise<NotificationPermission | null> {
+  if (typeof Notification === "undefined") return "denied";
+  if (Notification.permission !== "default") return Notification.permission;
+  try {
+    return await Notification.requestPermission();
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Run the subscription flow. Every failure mode returns a value instead of
  * throwing: the caller is a modal that must close either way.
  */
@@ -101,10 +124,11 @@ export async function subscribeToPush(): Promise<PushOutcome> {
   // an opaque `InvalidStateError`, so the UI skips it and can say why.
   if (!key.configured || key.public_key.trim() === "") return "unconfigured";
 
-  const alreadyGranted =
-    typeof Notification !== "undefined" && Notification.permission === "granted";
-  const permission = alreadyGranted ? "granted" : await Notification.requestPermission();
+  const permission = await askNotificationPermission();
+  if (permission === null) return "failed";
   if (permission !== "granted") {
+    // Already denied elsewhere, or refused just now: persist it so the primer
+    // never asks again, and let the caller say why alerts stay off.
     markPushDenied();
     return "denied";
   }

@@ -114,13 +114,16 @@ def make_comment(db):
 
 @pytest.fixture(autouse=True)
 def clear_cache():
-    """LocMemCache and recording backend isolation between test runs."""
-    cache.clear()
-    from apps.notifications.backends import RecordingPushBackend, get_push_backend
+    """LocMemCache and recording backend isolation between test runs.
 
-    backend = get_push_backend()
-    if isinstance(backend, RecordingPushBackend):
-        backend.clear()
+    The double is cleared unconditionally: with VAPID keys in the environment
+    `auto` resolves to Web Push, so a capture left behind by another test would
+    stay invisible here and leak into the next one (9.4 F-94-3).
+    """
+    cache.clear()
+    from apps.notifications.backends import get_recording_push_backend
+
+    get_recording_push_backend().clear()
 
 
 @pytest.fixture

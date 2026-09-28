@@ -61,6 +61,17 @@ function mockNotification(
   return requestPermission;
 }
 
+/** `requestPermission()` throwing (a locked-down or non-promptable context). */
+function mockNotificationRejecting(): ReturnType<typeof vi.fn> {
+  const requestPermission = vi.fn(async () => {
+    throw new TypeError("permission request unavailable");
+  });
+  class FakeNotification {}
+  Object.assign(FakeNotification, { permission: "default", requestPermission });
+  vi.stubGlobal("Notification", FakeNotification);
+  return requestPermission;
+}
+
 function mockServiceWorker(): {
   register: ReturnType<typeof vi.fn>;
   subscribe: ReturnType<typeof vi.fn>;
@@ -210,7 +221,9 @@ describe("§10.1 push subscription", () => {
   });
 
   it("never re-prompts after a denial, on this load or the next", async () => {
-    const requestPermission = mockNotification("denied");
+    // A `default` origin answering "denied" — the one case where the prompt is
+    // the only way to learn the answer.
+    const requestPermission = mockNotification("default", "denied");
     vapidRoutes();
 
     await expect(subscribeToPush()).resolves.toBe("denied");
@@ -223,6 +236,52 @@ describe("§10.1 push subscription", () => {
     const laterPrompt = mockNotification("default");
     await expect(subscribeToPush()).resolves.toBe("denied");
     expect(laterPrompt).not.toHaveBeenCalled();
+  });
+
+  it("treats an already-denied origin as the answer instead of asking again", async () => {
+    // Deliberate supersession (9.4 F-94-2): this assertion used to read
+    // `toHaveBeenCalledTimes(1)`. In a real browser `requestPermission()` on an
+    // origin that is already blocked may never settle — the jsdom stub resolved
+    // instantly, so the suite stayed green while the live primer wedged, with the
+    // denial unpersisted and the modal's button disabled forever.
+    const requestPermission = mockNotification("denied");
+    vapidRoutes();
+
+    await expect(subscribeToPush()).resolves.toBe("denied");
+    expect(requestPermission).not.toHaveBeenCalled();
+    expect(isPushDenied()).toBe(true);
+    expect(localStorage.getItem(PUSH_DENIED_FLAG)).toBe("1");
+  });
+
+  it("closes the primer on a blocked origin rather than leaving it disabled", async () => {
+    const requestPermission = mockNotification("denied");
+    vapidRoutes();
+    const onClose = vi.fn();
+
+    render(<PushPrimer open onClose={onClose} />);
+    await userEvent.click(screen.getByRole("button", { name: "Enable Alerts" }));
+
+    await waitFor(() => {
+      expect(onClose).toHaveBeenCalledWith("denied");
+    });
+    expect(requestPermission).not.toHaveBeenCalled();
+  });
+
+  it("reports a failed ask without recording a decision the user never made", async () => {
+    const requestPermission = mockNotificationRejecting();
+    vapidRoutes();
+    const onClose = vi.fn();
+
+    render(<PushPrimer open onClose={onClose} />);
+    await userEvent.click(screen.getByRole("button", { name: "Enable Alerts" }));
+
+    await waitFor(() => {
+      expect(onClose).toHaveBeenCalledWith("failed");
+    });
+    expect(requestPermission).toHaveBeenCalledTimes(1);
+    // Nothing was persisted: an ask that threw is not a refusal, so a later
+    // session may legitimately offer the primer again.
+    expect(isPushDenied()).toBe(false);
   });
 
   it("reports unsupported browsers instead of throwing", async () => {

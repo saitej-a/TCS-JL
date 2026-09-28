@@ -10,7 +10,6 @@ from django.utils import timezone
 from apps.accounts.models import User
 from apps.community.models import Announcement
 from apps.community.tasks import broadcast_announcement_dispatch, clean_expired_announcements
-from apps.notifications.backends import get_push_backend
 from apps.notifications.models import Device, Notification, NotificationPreference
 from apps.notifications.services import create_notification
 from apps.notifications.tasks import broadcast_announcement, send_push_notification
@@ -168,7 +167,9 @@ class TestBroadcastFanOut:
 
 
 class TestPushGatingAndPrivacy:
-    def test_push_text_is_the_generic_template_never_the_body(self, announcement):
+    def test_push_text_is_the_generic_template_never_the_body(
+        self, announcement, recording_push_backend
+    ):
         user = _make_user("pusher")
         Device.objects.create(user=user, fcm_token="fcm-ann-1", is_active=True)
         notification = create_notification(
@@ -177,8 +178,7 @@ class TestPushGatingAndPrivacy:
             title=announcement.title,
             message=announcement.body,
         )
-        backend = get_push_backend()
-        backend.clear()
+        backend = recording_push_backend
 
         send_push_notification(str(notification.pk))
 
@@ -188,7 +188,7 @@ class TestPushGatingAndPrivacy:
         assert "Never pay for a joining letter" not in payload["body"]
         assert "announcement" not in str(payload.get("data", {})).lower() or True
 
-    def test_opted_out_user_gets_no_push(self, announcement):
+    def test_opted_out_user_gets_no_push(self, announcement, recording_push_backend):
         user = _make_user("silent")
         Device.objects.create(user=user, fcm_token="fcm-ann-2", is_active=True)
         pref, _ = NotificationPreference.get_or_create_for(user)
@@ -200,8 +200,7 @@ class TestPushGatingAndPrivacy:
             title=announcement.title,
             message=announcement.body,
         )
-        backend = get_push_backend()
-        backend.clear()
+        backend = recording_push_backend
 
         result = send_push_notification(str(notification.pk))
 
@@ -212,7 +211,9 @@ class TestPushGatingAndPrivacy:
 class TestPublishBroadcastEndToEnd:
     """publish (REST-equivalent transition) → fan-out → gated push (T8.10)."""
 
-    def test_publish_then_broadcast_reaches_every_active_verified_user(self, announcement):
+    def test_publish_then_broadcast_reaches_every_active_verified_user(
+        self, announcement, recording_push_backend
+    ):
         opted_in = _make_user("e2e-in")
         opted_out = _make_user("e2e-out")
         pref, _ = NotificationPreference.get_or_create_for(opted_out)
@@ -238,8 +239,7 @@ class TestPublishBroadcastEndToEnd:
             ).exists()
 
         # Push fan-out: the gating lives in the push task, not the fan-out.
-        backend = get_push_backend()
-        backend.clear()
+        backend = recording_push_backend
         for notification in Notification.objects.filter(
             type=Notification.NotificationType.ANNOUNCEMENT
         ):

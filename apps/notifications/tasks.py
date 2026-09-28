@@ -106,7 +106,24 @@ def send_push_notification(self, notification_id: str, **kwargs: Any) -> bool:
         logger.debug("PUSH_SKIPPED_NO_DEVICES: user %s has no active push devices.", recipient.id)
         return False
 
-    # 3. Debounce check for thread pushes (D3)
+    # 3. Keep only the devices whose token vocabulary the resolved backend speaks
+    #    (9.4 F-94-1). The vocabularies are not interchangeable — a Web Push
+    #    backend sees an FCM id as a malformed subscription and classifies it
+    #    **permanent**, and step 7 then deactivates a live device. Routing by
+    #    `device_type` is what keeps a native row alive under PUSH_BACKEND=auto
+    #    with VAPID configured, which is the only configuration Web Push works in.
+    backend = get_push_backend()
+    deliverable_devices = [d for d in devices if backend.handles_device_type(d.device_type)]
+    if not deliverable_devices:
+        logger.info(
+            "PUSH_SKIPPED_NO_COMPATIBLE_DEVICES: recipient_id=%s backend=%s devices=%d",
+            recipient.id,
+            type(backend).__name__,
+            len(devices),
+        )
+        return False
+
+    # 4. Debounce check for thread pushes (D3)
     # Only COMMENT and REPLY on a specific post are debounced within 15 minutes.
     # VOTE_MILESTONE and post-less notifications are exempt.
     if (
@@ -123,7 +140,7 @@ def send_push_notification(self, notification_id: str, **kwargs: Any) -> bool:
             )
             return False
 
-    # 4. Construct clean zero-PII lock-screen push payload (D5, T-6.2-03, §8)
+    # 5. Construct clean zero-PII lock-screen push payload (D5, T-6.2-03, §8)
     template_title, template_body = PUSH_TEXT_TEMPLATES.get(
         notif_type,
         ("Notification", "You have a new update in TCS Joining Tracker."),
@@ -154,15 +171,14 @@ def send_push_notification(self, notification_id: str, **kwargs: Any) -> bool:
         ),
     }
 
-    tokens = [d.fcm_token for d in devices]
+    tokens = [d.fcm_token for d in deliverable_devices]
 
-    # 5. Dispatch via PushBackend seam
-    backend = get_push_backend()
+    # 6. Dispatch via PushBackend seam
     start_time = time.monotonic()
     result = backend.send_multicast(tokens=tokens, title=title, body=body, data=data_payload)
     duration_ms = int((time.monotonic() - start_time) * 1000)
 
-    # 6. Deactivate stale tokens (R9, §13.1)
+    # 7. Deactivate stale tokens (R9, §13.1)
     if result.invalid_tokens:
         Device.objects.filter(fcm_token__in=result.invalid_tokens).update(
             is_active=False,

@@ -12,6 +12,7 @@ from apps.notifications.backends import (
     PushBackend,
     RecordingPushBackend,
     SendResult,
+    WebPushBackend,
     get_push_backend,
 )
 
@@ -28,7 +29,13 @@ def test_get_push_backend_explicit_firebase():
         assert isinstance(backend, FirebasePushBackend)
 
 
-def test_get_push_backend_auto_no_credentials(monkeypatch):
+def test_get_push_backend_auto_no_credentials(monkeypatch, no_vapid_config):
+    """`auto` with no Web Push keys and no FCM credentials lands on the double.
+
+    `no_vapid_config` is part of the assertion, not decoration: VAPID keys *are* a
+    credential for `auto` since 9.4 D2, so without pinning their absence this test
+    would be asserting a different branch on a machine that has them (9.4 F-94-3).
+    """
     monkeypatch.delenv("FIREBASE_CREDENTIALS_PATH", raising=False)
     monkeypatch.delenv("GOOGLE_APPLICATION_CREDENTIALS", raising=False)
     with override_settings(PUSH_BACKEND="auto", FIREBASE_CREDENTIALS_PATH=""):
@@ -36,12 +43,21 @@ def test_get_push_backend_auto_no_credentials(monkeypatch):
         assert isinstance(backend, RecordingPushBackend)
 
 
-def test_get_push_backend_auto_with_credentials_file(tmp_path):
+def test_get_push_backend_auto_with_credentials_file(tmp_path, no_vapid_config):
+    """With FCM credentials present and no VAPID keys, `auto` picks Firebase."""
     cred_file = tmp_path / "firebase-creds.json"
     cred_file.write_text('{"type": "service_account"}')
     with override_settings(PUSH_BACKEND="auto", FIREBASE_CREDENTIALS_PATH=str(cred_file)):
         backend = get_push_backend()
         assert isinstance(backend, FirebasePushBackend)
+
+
+def test_get_push_backend_auto_prefers_webpush_when_vapid_is_configured(settings):
+    """The 9.4 D2 precedence, pinned explicitly rather than left to the ambient env."""
+    settings.PUSH_BACKEND = "auto"
+    settings.VAPID_PUBLIC_KEY = "BFakePublicKey"
+    settings.VAPID_PRIVATE_KEY = "RfakePrivateKey"
+    assert isinstance(get_push_backend(), WebPushBackend)
 
 
 def test_get_push_backend_unknown_setting_raises():

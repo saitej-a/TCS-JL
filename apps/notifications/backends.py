@@ -10,6 +10,10 @@ FCM SDK calls:
   device path, where the token column carries a subscription JSON rather than an
   FCM id.
 - get_push_backend(): resolves backend based on settings.PUSH_BACKEND and environment.
+
+Each real adapter declares the device token vocabularies it speaks
+(`PushBackend.device_types`), and the dispatch task filters a recipient's devices
+on it — so a backend is never handed a token it would call permanently invalid.
 """
 
 from __future__ import annotations
@@ -20,13 +24,25 @@ import os
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, ClassVar
 
 from django.conf import settings
 
 logger = logging.getLogger("notifications")
 
 _firebase_app: Any = None
+
+#: `Device.DeviceType` values, held as literals so this module stays model-free
+#: (the tests pin them against the model's own choices).
+#:
+#: The two push vocabularies are **not** interchangeable: an FCM registration id
+#: is opaque to Web Push, and a subscription JSON is not a registration id. A
+#: backend handed the wrong one classifies that device as permanently invalid,
+#: and `send_push_notification` then deactivates a live device row — silently
+#: (9.4 F-94-1). So every real adapter declares the types it speaks through
+#: `device_types`, and dispatch filters the recipient's devices on it.
+WEB_DEVICE_TYPE = "WEB"
+FCM_DEVICE_TYPES = frozenset({"ANDROID", "IOS", "OTHER"})
 
 
 @dataclass(frozen=True)
@@ -44,7 +60,21 @@ class SendResult:
 
 
 class PushBackend(ABC):
-    """Abstract interface for push notification delivery."""
+    """Abstract interface for push notification delivery.
+
+    A backend also declares *which* device token vocabularies it can deliver to
+    (`device_types`). An empty set means "any type" — the permissive stance the
+    recording double takes, so dev/CI keeps seeing every device.
+    """
+
+    #: The `Device.DeviceType` values this backend can deliver to; empty = all.
+    device_types: ClassVar[frozenset[str]] = frozenset()
+
+    def handles_device_type(self, device_type: str) -> bool:
+        """Whether this backend speaks this device's token vocabulary."""
+        if not self.device_types:
+            return True
+        return device_type in self.device_types
 
     @abstractmethod
     def send(
@@ -69,7 +99,13 @@ class PushBackend(ABC):
 
 
 class RecordingPushBackend(PushBackend):
-    """Test double recording all send() invocations in an in-memory list."""
+    """Test double recording all send() invocations in an in-memory list.
+
+    Deliberately type-agnostic (`device_types` empty): the double stands in for
+    whichever backend a test configures, so it must record a WEB subscription and
+    an Android FCM id alike — filtering here would hide the very routing bug the
+    real adapters are pinned against.
+    """
 
     def __init__(self, result: SendResult | None = None) -> None:
         self.calls: list[dict[str, Any]] = []
@@ -108,7 +144,14 @@ class RecordingPushBackend(PushBackend):
 
 
 class FirebasePushBackend(PushBackend):
-    """Production push backend backed by firebase-admin."""
+    """Production push backend backed by firebase-admin.
+
+    Owns the native token vocabulary (ANDROID/IOS/OTHER) — and deliberately not
+    `WEB`: since 9.4 D2 a WEB row holds a browser subscription JSON, which FCM
+    would reject as a malformed registration token.
+    """
+
+    device_types = FCM_DEVICE_TYPES
 
     def __init__(self) -> None:
         self._app = None
@@ -208,8 +251,13 @@ class WebPushBackend(PushBackend):
     The token argument is the **subscription JSON** a browser produced through
     `PushManager.subscribe()` — not an FCM id. 6.2's `Device.fcm_token` is a unique
     opaque-text column, so a WEB device stores the same object there without a
-    migration (9.4 research R1), and the two token vocabularies never share a
-    backend: FCM stays the explicit setting for Android/iOS paths.
+    migration (9.4 research R1).
+
+    Only `WEB` devices are ever dispatched here (`device_types`), because the two
+    token vocabularies are not interchangeable and this backend classifies a
+    non-subscription token as **permanent** — which would let the stale-token
+    sweep deactivate a live Android/iOS row (9.4 F-94-1). Native clients keep
+    their own backend; see `device_types` on `PushBackend`.
 
     Failure classification mirrors FirebasePushBackend's SendResult contract:
     404/410 (and a token that is not a subscription at all) are permanent, so the
@@ -223,6 +271,8 @@ class WebPushBackend(PushBackend):
     """
 
     DEFAULT_VAPID_SUBJECT = "mailto:no-reply@tcsjoiningtracker.local"
+
+    device_types = frozenset({WEB_DEVICE_TYPE})
 
     def __init__(self) -> None:
         self._vapid_public_key = _setting_or_env("VAPID_PUBLIC_KEY")

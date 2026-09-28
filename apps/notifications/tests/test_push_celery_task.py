@@ -1,4 +1,13 @@
-"""Tests for Celery push notification task (Phase 6.2 — 07 §5, §8, §12, D3, D5, D14)."""
+"""Tests for Celery push notification task (Phase 6.2 — 07 §5, §8, §12, D3, D5, D14).
+
+Every test here is about **task orchestration**, not backend selection, so each
+pins the recording double with the `recording_push_backend` fixture. Before that
+pin the captures were guarded with `if isinstance(backend, RecordingPushBackend)`,
+which meant that in any environment with VAPID keys configured `auto` resolved to
+Web Push and the assertions silently stopped running — one test even went red,
+because the WEB row was deactivated mid-test (9.4 F-94-3). A conditional
+assertion is not an assertion.
+"""
 
 from __future__ import annotations
 
@@ -6,7 +15,6 @@ import uuid
 
 from django.core.cache import cache
 
-from apps.notifications.backends import RecordingPushBackend, get_push_backend
 from apps.notifications.models import Notification, NotificationPreference
 from apps.notifications.tasks import prune_stale_devices, send_push_notification
 
@@ -23,7 +31,7 @@ def test_task_discards_if_notification_does_not_exist():
     assert result is False
 
 
-def test_task_skipped_when_push_globally_disabled(make_user, make_device):
+def test_task_skipped_when_push_globally_disabled(make_user, make_device, recording_push_backend):
     """push_enabled=False short-circuits before devices or debounce (D14)."""
     user = make_user()
     make_device(user=user, fcm_token="token_123")
@@ -38,18 +46,17 @@ def test_task_skipped_when_push_globally_disabled(make_user, make_device):
         message="In-app message",
     )
 
-    backend = get_push_backend()
-    if isinstance(backend, RecordingPushBackend):
-        backend.clear()
+    backend = recording_push_backend
 
     result = send_push_notification.apply(args=[str(notif.id)]).get()
     assert result is False
 
-    if isinstance(backend, RecordingPushBackend):
-        assert len(backend.sent_messages) == 0
+    assert backend.sent_messages == []
 
 
-def test_task_skipped_when_category_flag_disabled(make_user, make_post, make_device):
+def test_task_skipped_when_category_flag_disabled(
+    make_user, make_post, make_device, recording_push_backend
+):
     """Category-level preference flags suppress push for that specific type (D14)."""
     user = make_user()
     post = make_post(author=user)
@@ -67,18 +74,17 @@ def test_task_skipped_when_category_flag_disabled(make_user, make_post, make_dev
         message="Comment message",
     )
 
-    backend = get_push_backend()
-    if isinstance(backend, RecordingPushBackend):
-        backend.clear()
+    backend = recording_push_backend
 
     result = send_push_notification.apply(args=[str(notif.id)]).get()
     assert result is False
 
-    if isinstance(backend, RecordingPushBackend):
-        assert len(backend.sent_messages) == 0
+    assert backend.sent_messages == []
 
 
-def test_task_allowed_for_system_and_moderation_when_push_enabled(make_user, make_device):
+def test_task_allowed_for_system_and_moderation_when_push_enabled(
+    make_user, make_device, recording_push_backend
+):
     """SYSTEM and MODERATION are operational alerts gated only by push_enabled (D14)."""
     user = make_user()
     make_device(user=user, fcm_token="token_operational")
@@ -99,20 +105,17 @@ def test_task_allowed_for_system_and_moderation_when_push_enabled(make_user, mak
         message="System alert body",
     )
 
-    backend = get_push_backend()
-    if isinstance(backend, RecordingPushBackend):
-        backend.clear()
+    backend = recording_push_backend
 
     result = send_push_notification.apply(args=[str(notif.id)]).get()
     assert result is True
 
-    if isinstance(backend, RecordingPushBackend):
-        assert len(backend.sent_messages) == 1
-        msg = backend.sent_messages[0]
-        assert msg["title"] == "System Alert"
+    assert len(backend.sent_messages) == 1
+    msg = backend.sent_messages[0]
+    assert msg["title"] == "System Alert"
 
 
-def test_task_skipped_when_no_active_devices(make_user):
+def test_task_skipped_when_no_active_devices(make_user, recording_push_backend):
     """User without active devices logs and skips dispatch cleanly."""
     user = make_user()
     notif = Notification.objects.create(
@@ -122,15 +125,15 @@ def test_task_skipped_when_no_active_devices(make_user):
         message="System alert body",
     )
 
-    backend = get_push_backend()
-    if isinstance(backend, RecordingPushBackend):
-        backend.clear()
+    backend = recording_push_backend
 
     result = send_push_notification.apply(args=[str(notif.id)]).get()
     assert result is False
 
 
-def test_push_payload_carries_clean_template_zero_pii(make_user, make_post, make_device):
+def test_push_payload_carries_clean_template_zero_pii(
+    make_user, make_post, make_device, recording_push_backend
+):
     """T-6.2-03: No comment body, preview, or actor name in title/body/data."""
     author = make_user()
     post = make_post(author=author, title="Safe Post Title")
@@ -144,26 +147,25 @@ def test_push_payload_carries_clean_template_zero_pii(make_user, make_post, make
         message="John Doe commented on 'Safe Post Title': 'Sensitive body text'",
     )
 
-    backend = get_push_backend()
-    if isinstance(backend, RecordingPushBackend):
-        backend.clear()
+    backend = recording_push_backend
 
     result = send_push_notification.apply(args=[str(notif.id)]).get()
     assert result is True
 
-    if isinstance(backend, RecordingPushBackend):
-        assert len(backend.sent_messages) == 1
-        msg = backend.sent_messages[0]
-        # Verify title & body come from template, not from stored message
-        assert msg["title"] == "New Discussion Reply"
-        assert 'Someone commented on your post: "Safe Post Title"' in msg["body"]
-        assert "Sensitive body text" not in msg["body"]
-        assert "John Doe" not in msg["body"]
-        assert "Sensitive body text" not in str(msg["data"])
-        assert "John Doe" not in str(msg["data"])
+    assert len(backend.sent_messages) == 1
+    msg = backend.sent_messages[0]
+    # Title & body come from the template, never from the stored message.
+    assert msg["title"] == "New Discussion Reply"
+    assert 'Someone commented on your post: "Safe Post Title"' in msg["body"]
+    assert "Sensitive body text" not in msg["body"]
+    assert "John Doe" not in msg["body"]
+    assert "Sensitive body text" not in str(msg["data"])
+    assert "John Doe" not in str(msg["data"])
 
 
-def test_thread_debounce_suppresses_second_push_within_window(make_user, make_post, make_device):
+def test_thread_debounce_suppresses_second_push_within_window(
+    make_user, make_post, make_device, recording_push_backend
+):
     """D3: Second push on the same post within 15 minutes is debounced."""
     cache.clear()
     author = make_user()
@@ -185,21 +187,19 @@ def test_thread_debounce_suppresses_second_push_within_window(make_user, make_po
         message="Message 2",
     )
 
-    backend = get_push_backend()
-    if isinstance(backend, RecordingPushBackend):
-        backend.clear()
+    backend = recording_push_backend
 
     res_1 = send_push_notification.apply(args=[str(notif_1.id)]).get()
     assert res_1 is True
 
     res_2 = send_push_notification.apply(args=[str(notif_2.id)]).get()
     assert res_2 is False
-
-    if isinstance(backend, RecordingPushBackend):
-        assert len(backend.sent_messages) == 1
+    assert len(backend.sent_messages) == 1
 
 
-def test_thread_debounce_exempts_vote_milestones(make_user, make_post, make_device):
+def test_thread_debounce_exempts_vote_milestones(
+    make_user, make_post, make_device, recording_push_backend
+):
     """D3: VOTE_MILESTONE is exempt from thread debounce even with post_id."""
     cache.clear()
     author = make_user()
@@ -221,21 +221,19 @@ def test_thread_debounce_exempts_vote_milestones(make_user, make_post, make_devi
         message="10 upvotes",
     )
 
-    backend = get_push_backend()
-    if isinstance(backend, RecordingPushBackend):
-        backend.clear()
+    backend = recording_push_backend
 
     res_1 = send_push_notification.apply(args=[str(notif_comment.id)]).get()
     assert res_1 is True
 
     res_2 = send_push_notification.apply(args=[str(notif_milestone.id)], kwargs={"count": 10}).get()
     assert res_2 is True
-
-    if isinstance(backend, RecordingPushBackend):
-        assert len(backend.sent_messages) == 2
+    assert len(backend.sent_messages) == 2
 
 
-def test_data_payload_structure_matches_spec_contract(make_user, make_post, make_device):
+def test_data_payload_structure_matches_spec_contract(
+    make_user, make_post, make_device, recording_push_backend
+):
     """D16, §6.1: data dictionary carries notification_id, type, and click_action."""
     author = make_user()
     post = make_post(author=author)
@@ -249,14 +247,11 @@ def test_data_payload_structure_matches_spec_contract(make_user, make_post, make
         message="Test Message",
     )
 
-    backend = get_push_backend()
-    if isinstance(backend, RecordingPushBackend):
-        backend.clear()
+    backend = recording_push_backend
 
     send_push_notification.apply(args=[str(notif.id)]).get()
 
-    if isinstance(backend, RecordingPushBackend):
-        data = backend.sent_messages[0]["data"]
-        assert data["notification_id"] == str(notif.id)
-        assert data["type"] == "COMMENT"
-        assert data["click_action"] == f"/community/posts/{post.id}"
+    data = backend.sent_messages[0]["data"]
+    assert data["notification_id"] == str(notif.id)
+    assert data["type"] == "COMMENT"
+    assert data["click_action"] == f"/community/posts/{post.id}"

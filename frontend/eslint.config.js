@@ -7,7 +7,10 @@ import tseslint from "typescript-eslint";
 // 11 §3.2's frontend lint matrix: typescript-eslint + react-hooks
 // (rules-of-hooks + exhaustive-deps) + react-refresh, flat config.
 export default tseslint.config(
-  { ignores: ["dist", "coverage"] },
+  // `dev-dist` is vite-plugin-pwa's dev-mode worker output (gitignored, and
+  // regenerated on every `npm run dev`); without it here, ESLint lints the
+  // minified workbox bundle and the gate goes red after any dev-server run.
+  { ignores: ["dist", "dev-dist", "coverage"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],

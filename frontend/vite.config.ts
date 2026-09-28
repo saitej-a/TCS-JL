@@ -63,8 +63,32 @@ export default defineConfig({
         importScripts: ["sw-push.js"],
         // Read-only caching. No POST/PATCH/DELETE pattern exists here on
         // purpose: a cached write would replay a mutation.
+        //
+        // The rule for what may be cached: only payloads that are **identical for
+        // every visitor**. The §10.1 strip promises "Showing cached data", and a
+        // cache entry outlives a logout inside the browser profile — so caching a
+        // viewer-scoped payload (the feed carries `has_voted`, notifications and
+        // the dashboard carry account content) could serve one account's state to
+        // another while offline. Those stay uncached; these three endpoints are
+        // public reads (9.3 D1, 7.2 D-08) and carry nothing account-specific.
         runtimeCaching: [
           {
+            urlPattern: /\/api\/v1\/(announcements|analytics|public)\//,
+            handler: "NetworkFirst",
+            method: "GET",
+            options: {
+              cacheName: "public-reads",
+              networkTimeoutSeconds: 5,
+              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 },
+            },
+          },
+          {
+            // Account-scoped, so this entry is a **recorded privacy question**
+            // rather than a pattern to copy: after a logout it still holds the
+            // previous session's timeline and could answer for a second account
+            // on the same browser while offline (9.4 verification O-94-2). Left
+            // exactly as 9.4 shipped it — the fix is a cache purge on logout or
+            // dropping this entry, and that call is not this file's to make.
             urlPattern: /\/api\/v1\/timeline\//,
             handler: "NetworkFirst",
             method: "GET",
