@@ -6,7 +6,7 @@
  * public since D1.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import {
   listCommunityPosts,
@@ -17,6 +17,7 @@ import {
 import { listAnnouncements, type AnnouncementPublic } from "@/api/announcements";
 import { getDashboard } from "@/api/dashboard";
 import { CategoryTabs, FEED_TABS, type FeedTab } from "@/components/CategoryTabs";
+import { CreatePostModal } from "@/components/CreatePostModal";
 import { EmptyState } from "@/components/EmptyState";
 import { PostCard } from "@/components/PostCard";
 import { RailStatusSummary } from "@/components/RailStatusSummary";
@@ -46,7 +47,22 @@ interface RailState {
 
 export function CommunityFeedPage(): React.ReactElement {
   const { status } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  // D-03 hand-off: /community/create (the former page) redirects here with
+  // `createOpen: true` in location state — the modal opens on arrival.
+  const [createOpen, setCreateOpen] = useState(
+    (location.state as { createOpen?: boolean } | null)?.createOpen === true,
+  );
+  useEffect(() => {
+    if ((location.state as { createOpen?: boolean } | null)?.createOpen === true) {
+      setCreateOpen(true);
+      // Clear the hand-off state so back/forward does not re-open the dialog.
+      navigate("/community", { replace: true, state: null });
+    }
+  }, [location.state, navigate]);
 
   const tabParam = searchParams.get("tab") ?? "newest";
   const tab: FeedTab = VALID_TABS.has(tabParam as FeedTab) ? (tabParam as FeedTab) : "newest";
@@ -179,12 +195,13 @@ export function CommunityFeedPage(): React.ReactElement {
   const loading = posts === null && !failed;
   const createCta = useMemo(
     () => (
-      <Link
-        to="/community/create"
+      <button
+        type="button"
+        onClick={() => setCreateOpen(true)}
         className="flex min-h-[40px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800"
       >
         + Create New Post
-      </Link>
+      </button>
     ),
     [],
   );
@@ -214,7 +231,7 @@ export function CommunityFeedPage(): React.ReactElement {
           createCta
         ) : (
           <Link
-            to="/login?next=%2Fcommunity%2Fcreate"
+            to="/login?next=%2Fcommunity"
             className="flex min-h-[40px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800"
           >
             Sign in to post
@@ -304,7 +321,7 @@ export function CommunityFeedPage(): React.ReactElement {
           }
           support="Be the first candidate to share an update or question."
           actionLabel="Create Post"
-          onAction={() => window.location.assign("/community/create")}
+          onAction={() => setCreateOpen(true)}
         />
       ) : (
         <>
@@ -353,6 +370,18 @@ export function CommunityFeedPage(): React.ReactElement {
           )}
         </>
       )}
+
+      {/* D-03: posting is a dialog on the feed, per the create-post modal
+          composition. A 201 closes the dialog and refreshes the feed. */}
+      <CreatePostModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onPublished={() => {
+          setCreateOpen(false);
+          setPage(1);
+          load(1);
+        }}
+      />
     </main>
   );
 }
