@@ -372,7 +372,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -386,3 +386,23 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 8. Moderation, Anti-Spam & Administration | 3/3 | Verified — 8.1 (UAT), 8.2 (round-2 PASS, 58/58 live drill) | - |
 | 9. Frontend Single Page Application (React + Tailwind) | 0/4 | Not started | - |
 | 10. Security Audits, E2E Testing, Seed Data & Launch Readiness | 0/2 | Not started | - |
+| 11. Unlimited nested comment replies | 0/0 | Not planned | - |
+
+### Phase 11: Unlimited nested comment replies
+
+**Goal**: A comment can be replied to at any depth — a reply may itself receive replies, with no application-level depth cap. **This supersedes a shipped, spec'd rule and is the phase's first decision, not a silent edit:** 05 §1183 mandates *"Strict 1-Level Nesting … (`parent.parent == NULL` enforced by backend and UI)"*, 05 §75 justifies it ("no complex nested comment trees"), and PROJECT.md carries it as both requirement **COMM-03** and a key decision (*"Strict 1-Level Reply Depth … ✓ Good"*). The shipped code implements that rule three ways: `validate_reply_depth` (`apps/community/validators.py`, code `nested_reply`), the `Comment.parent = SET_NULL` promotion rule (a deleted parent **promotes** its reply to top level — 5.1 P4), and the UI's single indent unit with no Reply affordance past depth 1 (`CommentThread.tsx`). Recording the supersession deliberately (COMM-03 in REQUIREMENTS.md, the two 05 sections, the PROJECT.md decision row) is part of the work.
+**Requirements**: supersedes COMM-03; 04's comment contracts and 05 §7.7's thread UI to be re-derived
+**Depends on**: Phase 10
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run /gsd-plan-phase 11 to break down)
+
+**Known surface at add time** (for the planner, from a quick scan — not a design):
+
+- **Write path**: `validate_reply_depth` (`nested_reply`), `parent_post_mismatch`, `parent_deleted` — the depth rule is the one that changes; the other two are cross-post/parent-integrity checks that stay.
+- **`Comment.parent` is `SET_NULL`**: today a deleted parent promotes its reply instead of destroying it (5.1 P4). At unlimited depth, "promote vs keep the branch anchored vs tombstone-in-place" is a real decision, and the reply's indent unit no longer identifies its level.
+- **Read path**: the thread is assembled top-level + one `replies` level. Depth-N assembly is a new query shape (recursive CTE vs `prefetch_related` walk) with N+1 and pagination consequences — `MAX_DEPTH` is **not** in the current model.
+- **UI**: indentation stops being a level marker; 05's mobile rationale for the cap (runaway indentation) has to be answered by the actual design (depth rails, "replying to @author" context, collapse, or a focus-in thread) — `CommentThread.tsx` today renders exactly one `border-l-2 pl-4` unit and a Reply button only on top-level rows.
+- **Tests that pin the old rule by name**: `apps/community/tests/test_reply_depth.py` and `test_comment_api.py`'s `nested_reply` case — these must be rewritten deliberately with the supersession documented, never silently greened.

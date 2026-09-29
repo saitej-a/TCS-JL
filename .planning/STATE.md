@@ -5,12 +5,12 @@ current_phase: 09.5.1
 current_phase_name: Legal pages + auth reconciliation
 status: halted
 stopped_at: Phase 09.5.1 halted at the D-15/D-16 copy gate (the user's legal-page copy is pending)
-last_updated: "2026-09-29T10:05:09.634Z"
+last_updated: "2026-09-29T10:12:00.213Z"
 last_activity: 2026-09-29
 last_activity_desc: Phase 09.5.1 halted at the copy gate — 5 of 6 tasks shipped and committed; the user's legal copy is the only outstanding input
-state_head: 7643bc879479bd2fa19ba4837890f9c17fd9458b
+state_head: 87d14d145805d611993c30a77fb755bad3837732
 progress:
-  total_phases: 30
+  total_phases: 31
   completed_phases: 6
   total_plans: 19
   completed_plans: 19
@@ -222,6 +222,7 @@ with `feed_queryset`'s `is_deleted=False` removed the test **FAILED** (Assertion
 - Phase 09.5 inserted after Phase 9: UI/UX design pass driven by the ui-ux-pro-max skill: generate the screens on Stitch MCP and implement them one by one (URGENT). **Design half executed 2026-09-28:** the skill selected a professional-blue + Fira Sans/Fira Code direction for the Job Board/Recruitment category; its palette was adopted as the Tailwind `sky` scale with the neutrals/radii/elevation deliberately kept from 05 §4 (the skill's flat, shadowless, tinted-canvas branch was overridden — approval item O-9.5-1 in `09.5-CONTEXT.md` §3.1). Stitch design system `assets/9909951007419684952` created and used for **8 new screens** covering the undesigned surfaces; the project default was **not** changed (the `update_design_system` call was rejected as an invalid argument twice), and the 32 existing screens were **not** re-themed (`apply_design_system` deliberately deferred to plan Task 11). A real trap found by inspecting a generated screenshot: the mocks carry visible "DESIGN NOTE" annotation captions and an appended dark-mode mapping strip — reference-only, never UI.
 - Phase 09.5.1 inserted after Phase 9.5: Generate the missing Stitch screens with ui-ux-pro-max design intelligence (URGENT). **Design half + read-out done 2026-09-29:** the five screens are generated with the v2 design system attached (ids in `09.5.1-CONTEXT.md` §3) and were then read as markup rather than trusted from the generator's summary — screens #3/#4 carry printed states-strip/route artifacts and the copy invents security machinery (passwordless auth, SHA-256 HMAC hashing, a DPO inbox, a WebAuthn rollout promise, and a "three visibility modes" claim that contradicts the shipped single-field API). Layout references only; do-not-copy ledger in `09.5.1-CONTEXT.md` §3.3. The same read-out **corrects a limit carried since 9.3**: the generated `htmlCode` downloads *are* readable via `read_url`. **Both annotated screens were then cleaned in place** (`edit_screens`, session `492342116204158631`, user-approved — editing rather than regenerating keeps one reference per route) and re-read clean; screen #5's fiction-laden copy stays as the build half's do-not-copy list.
 - Phase 09.5.1 changed: Phase 09.5.1 executed through Task 5's structure and HALTED at the D-15/D-16 copy gate (2026-09-29) — a designed stop, not a failure. Committed: the cross-stack passwordRules module with its backend parity guard (fixing the shipped 8-character client/server mismatch), the in-card resend prefill, honest 60-minute reset copy with wrapping-safe tokens, the auth-aware §5.4 visitor shell that Landing now composes, and LegalLayout + three content modules replacing the last three StubPage stubs. Gates at the halt: frontend 264 tests / lint 0 errors / build clean, backend 855 passed, contrast audit all real pairs PASS. Outstanding: the user's own copy for /about, /privacy and /terms; the modules render the honest awaiting-copy state rather than placeholder prose, and VERIFICATION.md is withheld until the copy lands.
+- Phase 11 added: **Unlimited nested comment replies** (2026-09-29) — a comment can be replied to at any depth. Added at the end of the milestone (after Phase 10's launch readiness) because it was invoked as an *add*; landing it pre-launch needs an explicit move. It **supersedes a shipped, documented rule** — 05 §1183's Strict 1-Level Nesting (`parent.parent == NULL` on backend and UI), 05 §75's rationale, PROJECT.md requirement COMM-03 and its *Strict 1-Level Reply Depth* decision row — so recording that supersession deliberately (REQUIREMENTS.md + the two 05 sections + the PROJECT.md row) is part of its work, alongside `validate_reply_depth`'s `nested_reply` code, `Comment.parent`'s `SET_NULL` promotion behaviour at depth, thread assembly beyond one replies level, and the UI's single indent unit. Known surfaces listed in the ROADMAP entry.
 
 ### Decisions
 
