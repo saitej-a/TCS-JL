@@ -2,17 +2,17 @@
 gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 09.5.1
-current_phase_name: Generate the missing Stitch screens with ui-ux-pro-max design intelligence (INSERTED)
+current_phase_name: Legal pages + auth reconciliation
 status: planning
 stopped_at: Phase 09.5.1 context gathered
-last_updated: "2026-09-29T06:38:31.563Z"
+last_updated: "2026-09-29T08:08:51.904Z"
 last_activity: 2026-09-29
 last_activity_desc: Phase 09.5.1 inserted — 5 missing Stitch screens generated and read out; the 2 annotated screens cleaned in place (session 492342116204158631), copy ledger recorded, awaiting plan
-state_head: 116ade4f6f33e0d28318085eade1a071c6385858
+state_head: da16b97c3dd50efdfed725641bbb4bfac58bd3a6
 progress:
   total_phases: 30
   completed_phases: 6
-  total_plans: 18
+  total_plans: 19
   completed_plans: 19
 milestone_name: milestone
 ---
@@ -30,22 +30,21 @@ See: .planning/PROJECT.md (updated 2026-09-19)
 
 ## Current Position
 
-Phase: 09.5.1 (Generate the missing Stitch screens with ui-ux-pro-max design intelligence) — INSERTED, AWAITING PLAN
-Plan: 0 of 0 — run `/gsd-plan-phase 09.5.1` to break it down
-Status: the phase was inserted after 9.5 (roadmap + evolution entry logged); the design
-half — five missing screens (security settings, verification pending, verification action,
-reset password, informational/legal) — is generated and catalogued in `09.5.1-CONTEXT.md`.
-A text-level read-out of all five (same file, §3.3) found two screens carrying printed
-"states strip" annotation artifacts and invented security-mechanism copy throughout —
-including a "three visibility modes" claim that contradicts the shipped one-field API — so
-the screens stand as **layout** references only, with the do-not-copy list recorded there; the two
-annotated screens were then cleaned in place and re-read clean (§3.3).
+Phase: 09.5.1 (Legal pages + auth reconciliation) — READY TO EXECUTE
+Plan: `09.5.1-01-PLAN.md` — 6 tasks, gates green (structure / command-paths 15/15 /
+failing-directions 15/15 / decision coverage 16/16). Copy gate: the three legal content
+modules ship with the user's own words (D-15/D-16) — paste any time before Task 5 ends.
+Status: planned 2026-09-29 — `09.5.1-01-PLAN.md` turns the three legal stubs into real
+pages on the §5.4 visitor shell (user-authored copy via LegalLayout + content modules),
+reconciles the auth pages (shared passwordRules module guarded by a backend parity test,
+in-card resend prefill, honest 60-minute copy, wrapping-safe tokens), and records every
+divergence in VERIFICATION. The design half — five missing screens — stays catalogued in
+`09.5.1-CONTEXT.md` (§1–§5); the screens are layout references, cleaned of annotation artifacts (§3.3).
 Previous phase: 9.5 EXECUTED + VERIFIED (2026-09-29) — gates re-derived in
 `.planning/phases/TCS-JL-09.5-ui-ux-design-pass-ui-ux-pro-max-stitch-screens/VERIFICATION.md`
 (backend 849 / frontend 231 / lint 0 errors / build clean / contrast 10-of-10; the Stitch
 re-theme of all 40 instances is VERIFICATION §4).
-Last activity: 2026-09-29 — Phase 09.5.1 inserted; 5 missing screens generated and read out
-(2 annotated, copy fiction-laden)
+Last activity: 2026-09-29 — Phase 09.5.1 planned (09.5.1-01-PLAN.md, all gates green)
 
 **Next up: Phase 09.5 — *UI/UX design pass: ui-ux-pro-max + Stitch screens* (INSERTED after Phase 9, 2026-09-28, URGENT).**
 **PLANNED 2026-09-28** → `09.5-01-PLAN.md`; the design half is **done and on disk** (`09.5-CONTEXT.md`):
