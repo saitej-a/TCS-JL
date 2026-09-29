@@ -327,14 +327,14 @@ Plans:
 
 ### Phase 09.5.1: Generate the missing Stitch screens with ui-ux-pro-max design intelligence (INSERTED)
 
-**Goal:** [Urgent work - to be planned]
-**Requirements**: TBD
-**Depends on:** Phase 9.5
-**Plans:** 0 plans
+**Goal**: Close the design pass's last gap and pay off what reading it exposed — the five Stitch screens generated for 9.2/9.5's undesigned auth/security/legal surfaces are read as markup (not trusted from the generator's summary), the four auth/security screens are reconciled against the shipped pages, and the three informational/legal routes stop being `StubPage` skeletons and become real pages on a §5.4 visitor shell telling the truth about the shipped API.
+**Requirements**: UI-01..UI-07 close in 9.5; this phase's contract is `09.5.1-CONTEXT.md` D-01..D-16 + `09.5.1-UI-SPEC.md` (no new REQUIREMENTS ids)
+**Depends on**: Phase 9.5
+**Plans:** 1 plan
 
 Plans:
 
-- [ ] TBD (run /gsd-plan-phase 09.5.1 to break down)
+- [ ] 09.5.1-01 — **HALTED 2026-09-29 at the D-15/D-16 copy gate (a designed stop, not a failure).** Shipped and committed: the cross-stack `passwordRules` module + backend parity guard (kills the shipped "8 characters" bug both password forms carried), the in-card resend field replacing `window.prompt`, honest 60-minute reset copy with wrapping-safe tokens, the shared auth-aware §5.4 visitor shell, and `LegalLayout` + the three content modules with the last three stubs replaced. Outstanding: the **user's own copy** for `/about`, `/privacy`, `/terms` — the modules hold the paste map and `copy.test.ts` the banned-fiction ledger; the awaiting-copy state renders title + honesty line rather than placeholder prose. Gates at the halt: frontend 264 tests / lint 0 errors / build clean, backend 855, contrast clean apart from 9.5's two deliberate demo rows. Resume steps in `09.5.1-01-SUMMARY.md`; halt handoff in the phase dir's `.continue-here.md`.
 
 ### Phase 10: Security Audits, E2E Testing, Seed Data & Launch Readiness
 

@@ -3,12 +3,12 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 09.5.1
 current_phase_name: Legal pages + auth reconciliation
-status: planning
-stopped_at: Phase 09.5.1 context gathered
-last_updated: "2026-09-29T08:08:51.904Z"
+status: halted
+stopped_at: Phase 09.5.1 halted at the D-15/D-16 copy gate (the user's legal-page copy is pending)
+last_updated: "2026-09-29T10:05:09.634Z"
 last_activity: 2026-09-29
-last_activity_desc: Phase 09.5.1 inserted — 5 missing Stitch screens generated and read out; the 2 annotated screens cleaned in place (session 492342116204158631), copy ledger recorded, awaiting plan
-state_head: da16b97c3dd50efdfed725641bbb4bfac58bd3a6
+last_activity_desc: Phase 09.5.1 halted at the copy gate — 5 of 6 tasks shipped and committed; the user's legal copy is the only outstanding input
+state_head: 7643bc879479bd2fa19ba4837890f9c17fd9458b
 progress:
   total_phases: 30
   completed_phases: 6
@@ -26,38 +26,53 @@ Total Phases: 22
 See: .planning/PROJECT.md (updated 2026-09-19)
 
 **Core value:** Provide anxious candidates with complete clarity on their recruitment progress and community benchmarks without requiring them to expose their real identity or personal credentials.
-**Current focus:** Phase 09.5.1 — Generate the missing Stitch screens (INSERTED after 9.5)
+**Current focus:** Phase 09.5.1 — Legal pages + auth reconciliation (**HALTED at the copy gate**)
 
 ## Current Position
 
-Phase: 09.5.1 (Legal pages + auth reconciliation) — READY TO EXECUTE
-Plan: `09.5.1-01-PLAN.md` — 6 tasks, gates green (structure / command-paths 15/15 /
-failing-directions 15/15 / decision coverage 16/16). Copy gate: the three legal content
-modules ship with the user's own words (D-15/D-16) — paste any time before Task 5 ends.
-Status: planned 2026-09-29 — `09.5.1-01-PLAN.md` turns the three legal stubs into real
-pages on the §5.4 visitor shell (user-authored copy via LegalLayout + content modules),
-reconciles the auth pages (shared passwordRules module guarded by a backend parity test,
-in-card resend prefill, honest 60-minute copy, wrapping-safe tokens), and records every
-divergence in VERIFICATION. The design half — five missing screens — stays catalogued in
-`09.5.1-CONTEXT.md` (§1–§5); the screens are layout references, cleaned of annotation artifacts (§3.3).
+Phase: 09.5.1 (Legal pages + auth reconciliation) — **HALTED at the D-15/D-16 copy gate**
+Plan: 1 of 1 — `09.5.1-01-PLAN.md` (6 tasks; 5 shipped, the copy half of Task 5 outstanding)
+Status: **Task 1** (shared `passwordRules.ts` + the backend parity test that reads it — kills the
+"8 characters" bug both password forms shipped against the server's min-10 + four classes),
+**Task 2** (the resend `window.prompt` replaced by an in-card labelled email prefilled through
+router state), **Task 3** (Reset on the real rules, the real **60-minute** single-use window,
+wrapping-safe token display, toggles verified not rebuilt), **Task 4** (the auth-aware §5.4
+visitor shell — `VisitorHeader`/`VisitorFooter`/`VisitorShell` — with Landing composed onto it)
+and **Task 5's structure** (`LegalLayout` + the three content modules + real `/about`,
+`/privacy`, `/terms` pages replacing the last three `StubPage` stubs) are committed —
+`36214e0`, `201bebf`, `0c47016`, `64a3246`, `7643bc8`. **Task 6**'s gate sweep ran green
+(frontend 264 tests / 49 files, lint 0 errors, typecheck + `tsc -b --force` clean, build clean;
+backend **855 passed**; contrast audit all 10 real pairs PASS, 9.5's two deliberate demo rows
+unchanged) but its `VERIFICATION.md` is deliberately withheld until the copy lands.
+**Why halted:** D-16 — the legal pages ship the user's own words or nothing. The modules
+currently render the honest awaiting-copy state (title + the shared honesty line +
+"This page has no published sections yet."); no placeholder prose and no invented policy text
+is on disk. Copy goes into `frontend/src/pages/legal/{about,privacy,terms}.ts` as data; the
+paste maps live in each module's doc comment and the banned-fiction ledger in `copy.test.ts`.
+Resume list: `09.5.1-01-SUMMARY.md`; halt handoff: the phase dir's `.continue-here.md`.
+The design half — five missing screens — stays catalogued in `09.5.1-CONTEXT.md` (§1–§5);
+the screens are layout references, cleaned of annotation artifacts (§3.3).
 Previous phase: 9.5 EXECUTED + VERIFIED (2026-09-29) — gates re-derived in
 `.planning/phases/TCS-JL-09.5-ui-ux-design-pass-ui-ux-pro-max-stitch-screens/VERIFICATION.md`
 (backend 849 / frontend 231 / lint 0 errors / build clean / contrast 10-of-10; the Stitch
 re-theme of all 40 instances is VERIFICATION §4).
-Last activity: 2026-09-29 — Phase 09.5.1 planned (09.5.1-01-PLAN.md, all gates green)
+Last activity: 2026-09-29 — Phase 09.5.1 executed through Task 5's structure, then halted at the copy gate
 
-**Next up: Phase 09.5 — *UI/UX design pass: ui-ux-pro-max + Stitch screens* (INSERTED after Phase 9, 2026-09-28, URGENT).**
-**PLANNED 2026-09-28** → `09.5-01-PLAN.md`; the design half is **done and on disk** (`09.5-CONTEXT.md`):
-`design-system/tcs-joining-tracker/MASTER.md` from the `ui-ux-pro-max` pass, Stitch design system
-`assets/9909951007419684952` (*TJT Professional Blue (9.5)*, `#0369A1` + Fira Sans/Fira Code), and **8 screens**
-in Stitch project `3852118218307261541`, covering every undesigned surface: settings hub, profile, privacy,
-devices & notifications, danger zone, admin moderation queue, admin announcements, and the 404/500 + inline
-retry states (catalogue + ids in `09.5-CONTEXT.md` §5). One of them (`…b10ebf59`) was recovered with
-`list_screens` after its generation call timed out rather than re-generated. Only the `/settings/security`
-panel still has no screen.
-Directory: `.planning/phases/TCS-JL-09.5-ui-ux-design-pass-ui-ux-pro-max-stitch-screens/`.
-**Phase complete** — see `09.5-01-SUMMARY.md` (commits `18db11c`…`97b4f6d` + planning records)
-and `VERIFICATION.md`. **Next up: Phase 10.1 — seed data and E2E journeys.**
+**Next up: paste the legal copy, then resume Phase 09.5.1.** The three modules are data files —
+`frontend/src/pages/legal/about.ts` (mission + the non-affiliation boundary, no contribution-guidelines
+section), `privacy.ts` (the seven slots in its doc comment: what we collect, email handling **masked**
+(`a***@example.com`) not hashed, the scoped no-tracker claim with FCM's transport role, per-device
+notification scoping, the ONE shipped identity-mode field, immediate/irreversible deletion,
+threshold-suppressed community data) and `terms.ts` (acceptable use mirroring the six report reasons,
+the report flow, non-affiliation). With the copy in place: re-run Task 5's verify block and Task 6's full
+sweep, write `VERIFICATION.md`, flip `09.5.1-01-SUMMARY.md`'s `status:` to `complete`, delete
+`.continue-here.md`, then `/gsd-verify-work 09.5.1`.
+**Delivery order worth knowing:** 9.5.1's second half is what unblocks the design pass's own gap —
+the info/legal routes were the last three stubs (9.1 D9), and `landing`'s header/footer links exist
+because 9.5.1 Task 4 built the §5.4 shell they needed.
+*(Pointer set by hand: the workflow's `state.patch` handler matches field names this project's customized
+STATE.md does not carry — it returned `updated: []` for both `Current Phase`/`Next recommended run` and the
+frontmatter keys. The `state.add-roadmap-evolution` handler did match and logged the insertion.)*
 *(Pointer set by hand: the workflow's `state.patch` handler matches field names this project's customized
 STATE.md does not carry — it returned `updated: []` for both `Current Phase`/`Next recommended run` and the
 frontmatter keys. The `state.add-roadmap-evolution` handler did match and logged the insertion.)*
@@ -206,6 +221,7 @@ with `feed_queryset`'s `is_deleted=False` removed the test **FAILED** (Assertion
 - **Stitch (MCP server) is the designated UI-design tool** (user directive, 2026-09-23): generate and iterate screen mockups through the `stitch` connector (`generate_screen_from_text`, `generate_variants`, `create_design_system`/`upload_design_md`) instead of hand-describing layouts. **Applied for 9.2 (discuss stage):** Stitch project `3852118218307261541` holds design system `assets/9887579562818178405` (seeded from 05 §4 tokens) and **10 screen mockups** (desktop shell light+dark, mobile shell, landing, login, register, forgot-password, onboarding steps 1–3) — screen IDs catalogued in `09.2-CONTEXT.md`. **Planned for 9.3:** 7 more mockups (dashboard desktop+mobile, timeline roadmap, timeline modal, feed desktop+mobile, create post) from the same project/design system, generated as plan 09.3-01's Task 1 with IDs recorded in `09.3-CONTEXT.md`'s design table. Boundary: Stitch output is design reference, not code; implementation stays in `frontend/` against the 9.1 token layer.
 - Phase 09.5 inserted after Phase 9: UI/UX design pass driven by the ui-ux-pro-max skill: generate the screens on Stitch MCP and implement them one by one (URGENT). **Design half executed 2026-09-28:** the skill selected a professional-blue + Fira Sans/Fira Code direction for the Job Board/Recruitment category; its palette was adopted as the Tailwind `sky` scale with the neutrals/radii/elevation deliberately kept from 05 §4 (the skill's flat, shadowless, tinted-canvas branch was overridden — approval item O-9.5-1 in `09.5-CONTEXT.md` §3.1). Stitch design system `assets/9909951007419684952` created and used for **8 new screens** covering the undesigned surfaces; the project default was **not** changed (the `update_design_system` call was rejected as an invalid argument twice), and the 32 existing screens were **not** re-themed (`apply_design_system` deliberately deferred to plan Task 11). A real trap found by inspecting a generated screenshot: the mocks carry visible "DESIGN NOTE" annotation captions and an appended dark-mode mapping strip — reference-only, never UI.
 - Phase 09.5.1 inserted after Phase 9.5: Generate the missing Stitch screens with ui-ux-pro-max design intelligence (URGENT). **Design half + read-out done 2026-09-29:** the five screens are generated with the v2 design system attached (ids in `09.5.1-CONTEXT.md` §3) and were then read as markup rather than trusted from the generator's summary — screens #3/#4 carry printed states-strip/route artifacts and the copy invents security machinery (passwordless auth, SHA-256 HMAC hashing, a DPO inbox, a WebAuthn rollout promise, and a "three visibility modes" claim that contradicts the shipped single-field API). Layout references only; do-not-copy ledger in `09.5.1-CONTEXT.md` §3.3. The same read-out **corrects a limit carried since 9.3**: the generated `htmlCode` downloads *are* readable via `read_url`. **Both annotated screens were then cleaned in place** (`edit_screens`, session `492342116204158631`, user-approved — editing rather than regenerating keeps one reference per route) and re-read clean; screen #5's fiction-laden copy stays as the build half's do-not-copy list.
+- Phase 09.5.1 changed: Phase 09.5.1 executed through Task 5's structure and HALTED at the D-15/D-16 copy gate (2026-09-29) — a designed stop, not a failure. Committed: the cross-stack passwordRules module with its backend parity guard (fixing the shipped 8-character client/server mismatch), the in-card resend prefill, honest 60-minute reset copy with wrapping-safe tokens, the auth-aware §5.4 visitor shell that Landing now composes, and LegalLayout + three content modules replacing the last three StubPage stubs. Gates at the halt: frontend 264 tests / lint 0 errors / build clean, backend 855 passed, contrast audit all real pairs PASS. Outstanding: the user's own copy for /about, /privacy and /terms; the modules render the honest awaiting-copy state rather than placeholder prose, and VERIFICATION.md is withheld until the copy lands.
 
 ### Decisions
 
@@ -336,10 +352,11 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-**Resume file:** .planning/phases/TCS-JL-09.5.1-generate-the-missing-stitch-screens-with-ui-ux-pro-max-desig/09.5.1-CONTEXT.md
+**Resume file:** .planning/phases/TCS-JL-09.5.1-generate-the-missing-stitch-screens-with-ui-ux-pro-max-desig/.continue-here.md
+(decisions + contract: `09.5.1-CONTEXT.md`; resume list: `09.5.1-01-SUMMARY.md`)
 
-Last session: 2026-09-29T06:38:31.095Z
-Stopped at: Phase 09.5.1 context gathered
+Last session: 2026-09-29T10:03:33.487Z
+Stopped at: Phase 09.5.1 halted at the D-15/D-16 copy gate — Tasks 1–5's structure committed and green, awaiting the user's legal-page copy
 Resume files: .planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/VERIFICATION.md (verdict, drills, defect repros + repairs), .planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/09.4-PROOFS.md (execution's live proofs), apps/notifications/tests/test_push_device_routing.py (the F-94-1 pin), .planning/STATE.md
 
 **Owed from 9.3's execution — open items, none silent:**
