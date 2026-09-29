@@ -4,13 +4,13 @@ milestone: v1.0
 current_phase: 11
 current_phase_name: Unlimited nested comment replies
 status: ready
-stopped_at: Phase 11 executed + verified — 1/1 plan complete (Phase 09.5.1 remains halted at the D-15/D-16 copy gate)
-last_updated: "2026-09-29T15:10:23.224Z"
+stopped_at: Phase 12 context gathered (Phase 09.5.1 remains halted at the D-15/D-16 copy gate)
+last_updated: "2026-09-29T16:18:42.443Z"
 last_activity: 2026-09-29
-last_activity_desc: Phase 11 executed + verified (VERIFICATION.md status: passed)
-state_head: a91430258cf8e9ef39a3c60c23a76f19ec1b32b1
+last_activity_desc: "Phase 11 executed + verified (VERIFICATION.md status: passed)"
+state_head: 7174693104bc70539f88d8fae2f34fd7b70a39c8
 progress:
-  total_phases: 31
+  total_phases: 32
   completed_phases: 6
   total_plans: 21
   completed_plans: 20
@@ -340,15 +340,15 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-**Resume files (two open threads):**
+**Resume file:** .planning/phases/TCS-JL-12-replace-current-screens-with-the-stitch-designs/12-CONTEXT.md
 
-- **Phase 11 — ready to plan:** `.planning/phases/TCS-JL-11-unlimited-nested-comment-replies/11-CONTEXT.md`
-  (12 decisions + the supersession of COMM-03; the UI-SPEC is written during planning, per the plan-phase gate).
+**Resume files (one open thread):**
+
 - **Phase 09.5.1 — halted at the copy gate:** `.planning/phases/TCS-JL-09.5.1-generate-the-missing-stitch-screens-with-ui-ux-pro-max-desig/.continue-here.md`
   (resume list in `09.5.1-01-SUMMARY.md`; the user's legal copy is the only outstanding input).
 
-Last session: 2026-09-29T15:10:23.224Z
-Stopped at: Phase 11 executed + verified (1/1 plans); Phase 09.5.1 still halted at the copy gate
+Last session: 2026-09-29T16:18:42.252Z
+Stopped at: Phase 12 context gathered (12-CONTEXT.md); Phase 09.5.1 still halted at the copy gate
 Resume files: .planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/VERIFICATION.md (verdict, drills, defect repros + repairs), .planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/09.4-PROOFS.md (execution's live proofs), apps/notifications/tests/test_push_device_routing.py (the F-94-1 pin), .planning/STATE.md
 
 **Owed from 9.3's execution — open items, none silent:**
