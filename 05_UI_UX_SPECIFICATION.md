@@ -72,7 +72,7 @@ Candidates can toggle their public display mode at any time without disrupting h
 - Disclaimers appear alongside metric cards and chart legends.
 
 ### 2.5 Simplicity & Focused Velocity
-- Zero superfluous UI clutter. No complex nested comment trees (strictly capped at 1-level child replies).
+- Zero superfluous UI clutter. Deep threads render through capped-indent rails (~3) with an explicit "replying to @author" context line, so any nesting depth costs the same width — the mobile concern the former single-level reply cap served, answered by rendering rather than by the cap (Phase 11).
 - Fast page loads via server-assisted pagination (20 items per page), lightweight SVG icons (Lucide React), and optimized client-side state caching.
 
 ### 2.6 Accessibility (WCAG 2.1 Level AA)
@@ -1180,7 +1180,7 @@ The community feed organizes discussions, timeline questions, and peer verificat
 ```
 
 ### Comment & Reply Rules:
-1. **Strict 1-Level Nesting:** Top-level comments can receive direct replies. Replies cannot receive further nested replies (`parent.parent == NULL` enforced by backend and UI).
+1. **Unlimited Nested Replies:** Any comment may receive replies at any depth (same post, parent not deleted, branch open). Rendering depth is bounded by capped-indent rails plus the context line — never by truncation; breadth past a small visible window collapses behind a control carrying the true count.
 2. **Inline Reply Form:** Clicking `[Reply]` inserts an indented input box directly beneath the target parent comment with autofocus.
 3. **Deleted Comments:** If `is_deleted = True`, the card retains position in the thread hierarchy but displays the muted placeholder: `[This comment was removed]`.
 4. **Locked Post State:** If `is_locked = True`, the comment input box is replaced by an amber banner:
@@ -1669,7 +1669,7 @@ When an AI coding agent generates, updates, or refactors frontend code based on 
 1. **Follow the Spec Verbatim:** Never invent arbitrary styling, non-standard colors, or unorthodox layouts that conflict with this document.
 2. **Never Omit Non-Affiliation Disclaimers:** Every public page and analytics component must render the mandated TCS non-affiliation statement.
 3. **Enforce Public Identity Separation:** Never expose `email`, `user_id`, or `fcm_token` in public UI components.
-4. **Enforce 1-Level Reply Depth:** In comment components, do not permit recursive nesting beyond 1 level (`parent.parent == NULL`).
+4. **Enforce Branch-Closed Writes:** In comment components, never offer a reply affordance beneath a removed ancestor (`is_branch_closed`); render the closure reason inline on a disabled composer.
 5. **Implement Loading Skeletons:** Never leave users looking at raw blank screens while waiting for network responses. Use designated structural shimmer components.
 6. **Preserve Mobile Ergonomics:** Always verify that buttons and touch targets meet the 44px minimum height and width on viewports < 768px.
 7. **Handle Form Errors Gracefully:** Map backend API validation errors (`code: VALIDATION_ERROR`) directly to the corresponding input field labels.

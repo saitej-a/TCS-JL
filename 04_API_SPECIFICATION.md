@@ -23,7 +23,7 @@ The API must provide secure and predictable endpoints for:
 - Candidate recruitment timeline management.
 - Dashboard data.
 - Community posts.
-- Comments and one-level replies.
+- Comments and nested replies (unbounded depth, bounded response shape).
 - Post voting.
 - Community search and filtering.
 - Community-reported analytics.
@@ -1353,9 +1353,13 @@ GET /api/v1/posts/{post_id}/comments/
 }
 ```
 
-The backend should avoid returning unlimited nested structures.
+The backend should avoid returning unlimited nested structures. Subtrees are
+assembled to a bounded render depth; nodes beyond it are summarised by a true
+descendant count and fetched on demand via `GET /community/posts/{id}/comments/?parent=<id>`.
 
-For MVP, one-level replies are enough.
+*(Superseded by Phase 11, 2026-09-29: replies nest to unlimited depth. The
+bounded-response rule above is the part of this section that survives; the
+former single-level reply cap does not.)*
 
 ---
 
@@ -1402,7 +1406,7 @@ The backend must validate:
 
 - Parent belongs to the same post.
 - Parent is not deleted.
-- Parent is a top-level comment.
+- Parent's branch is open (`branch_closed` false — no removed ancestor above).
 - Post is not locked.
 - User has permission to comment.
 

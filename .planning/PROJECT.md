@@ -36,7 +36,7 @@ Provide anxious candidates with complete clarity on their recruitment progress a
 - [ ] **TIME-03**: Insecure Direct Object Reference (IDOR) defense with strict ownership checks returning HTTP 404.
 - [ ] **COMM-01**: Community discussion feed with category filtering, search, and sorting (Latest vs Trending).
 - [ ] **COMM-02**: Discussion posts supporting plain text, upvoting, soft-deletion, pinning, and locking.
-- [ ] **COMM-03**: Discussion comments supporting strict 1-level reply nesting.
+- [x] **COMM-03**: Discussion comments supporting nested replies (unlimited depth).
 - [ ] **COMM-04**: Unique post upvoting enforcing `UNIQUE(user, post)` database constraint.
 - [ ] **NOTIF-01**: In-app notifications with read tracking for comments, replies, vote milestones, and announcements.
 - [ ] **NOTIF-02**: Multi-device FCM registration with write-only token security.
@@ -82,7 +82,7 @@ Provide anxious candidates with complete clarity on their recruitment progress a
 | Celery + Redis for Push | Decouples third-party Google FCM latency from core web request cycles | ✓ Good |
 | React + Tailwind + Vite SPA | Provides instant optimistic UI, native-feeling mobile bottom tab bar, and PWA capabilities | ✓ Good |
 | Soft Deletion for Content | Preserves reply trees and conversation context; keeps evidence for moderation audit | ✓ Good |
-| Strict 1-Level Reply Depth | Prevents runaway mobile indentation and complex nested queries while supporting clear dialogue | ✓ Good |
+| Unlimited Nested Reply Depth | Reversed by Phase 11 (2026-09-29). Original rule: strict single-level reply cap — rationale was preventing runaway mobile indentation and complex nested queries; depth now renders through capped-indent rails and reads are bounded by the response shape, not the data | Reversed |
 | Stitch UI generation deferred to Phase 9.1 | User decision 2026-09-21: MCP-based mockups stay untouched until the SPA phase starts; backend phases 3–8 first. Generate the design system from `05_UI_UX_SPECIFICATION.md` then the 12 views in 9.1–9.4 order | Pending |
 
 ---

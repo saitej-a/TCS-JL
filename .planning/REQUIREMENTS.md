@@ -35,7 +35,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **COMM-01**: Candidates can browse a paginated community feed filtered by category, search keywords, and sort order (Latest vs Trending). *(5.2: `GET /community/posts/` with category/search filters, tab + whitelist orderings; trending = windowed activity score)*
 - [x] **COMM-02**: Candidates can create discussion posts categorized by topic (JOINING_LETTER, OFFER, LOCATION, etc.) with rate limiting (5/hr). *(5.2: `POST /community/posts/` via 5.1's create_post; 30/min `community_writes` bucket — spec's 5/hr read as per-action floor, recorded deviation)*
-- [x] **COMM-03**: Candidates can add comments and 1-level replies to discussion posts.
+- [x] **COMM-03**: Candidates can add comments and nested replies (unlimited depth) to discussion posts.
 - [x] **COMM-04**: Candidates can upvote/unvote posts with database-level uniqueness enforcement (1 vote per user per post).
 - [x] **COMM-05**: Content authors and moderators can soft-delete posts and comments, replacing body text with clean tombstones. *(model layer: flags + tombstone helpers; the delete endpoints are 5.2)*
 - [x] **COMM-06**: Moderators can pin announcements and lock controversial threads to disable new comments. *(5.2: staff-only /lock//unlock/ + /pin//unpin/; author cannot lock own thread; locked posts 400 post_locked)*
@@ -127,7 +127,7 @@ Deferred to future post-MVP release.
 | TIME-05 | Phase 4 | Complete — 4.2: /dashboard/ aggregates completion, current status, latest milestone, and threshold-suppressed COMMUNITY_REPORTED benchmarks; `unread_notifications` placeholder until Phase 6 |
 | COMM-01 | Phase 5 | Complete — 5.2: feed with category/search filters, newest/oldest/votes/trending tabs, global pagination |
 | COMM-02 | Phase 5 | Complete — 5.2: post create via 5.1 service; community_writes 30/min (spec's 5/hr deviated, recorded) |
-| COMM-03 | Phase 5 | Complete — 5.1: Comment model with strict 1-level reply validation (nested_reply / parent_post_mismatch / parent_deleted) on the create_comment path |
+| COMM-03 | Phase 5, rev. Phase 11 | Complete — 5.1 introduced the Comment model; Phase 11 (2026-09-29) removed the single-level reply cap (nested_reply is gone), added branch closure on removal, and bounded thread assembly. Create-path validation today: parent_post_mismatch / parent_deleted / branch_closed |
 | COMM-04 | Phase 5 | Complete — 5.1: unique_user_post_vote UNIQUE constraint on (user, post), verified at the DB level; toggle endpoints in 5.2 |
 | COMM-05 | Phase 5 | Complete — 5.1+5.2: flags + tombstone helpers; author DELETE endpoints (soft, originals retained); writes into tombstones 404 content_deleted |
 | COMM-06 | Phase 5 | Complete — 5.2: staff-only lock/pin (+unlock/unpin additions); locked posts refuse comments |
