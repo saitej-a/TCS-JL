@@ -46,8 +46,8 @@ class InvalidPostError(CommunityContentError):
 
 class InvalidCommentError(CommunityContentError):
     """A comment could not be created (codes: blank_body, parent_post_mismatch,
-    parent_deleted). The former ``nested_reply`` code is gone — Phase 11 removed
-    the depth rule (D-01/D-03) and its wire vocabulary with it."""
+    parent_deleted, branch_closed). The former ``nested_reply`` code is gone —
+    Phase 11 removed the depth rule (D-01/D-03) and its wire vocabulary with it."""
 
 
 # Validator codes → service codes, per field. Kept explicit so a code change is a
@@ -126,17 +126,107 @@ def soft_delete_post(post: Post) -> Post:
     """Flag a post as removed (COMM-05). Idempotent; the row is never deleted, and
     the original title/body stay in the database (08 §390).
 
-    Reversal is simply `is_deleted = False` (08 §415) — a moderator correcting a
-    mistake needs no special path, which is exactly why this must never become a
-    hard delete.
+    Reversal is `restore_post` (08 §415) — a moderator correcting a mistake needs
+    no special path, which is exactly why this must never become a hard delete.
     """
     return _soft_delete(post)
 
 
+def restore_post(post: Post) -> Post:
+    """Reopen a removed post (08 §415's reversal). Comments are untouched: a
+    post's removal never closed a comment branch — D-04's rule is per-comment."""
+    if post.is_deleted:
+        post.is_deleted = False
+        post.save(update_fields=["is_deleted", "updated_at"])
+    return post
+
+
 def soft_delete_comment(comment: Comment) -> Comment:
     """Flag a comment as removed, keeping `parent_id` so replies still resolve
-    (5.1 D4 / roadmap criterion 4: tombstones preserve reply trees)."""
-    return _soft_delete(comment)
+    (5.1 D4 / roadmap criterion 4: tombstones preserve reply trees).
+
+    Phase 11 D-04/D-05: removal also **closes the branch** — every descendant is
+    stamped `branch_closed_by = this comment` (only where still open; a node that
+    already names a nearer removed ancestor keeps that name, which preserves the
+    nearest-closer meaning the restore comparison relies on). The branch stays
+    readable — this closes growth, not visibility.
+    """
+    if not comment.is_deleted:
+        comment.is_deleted = True
+        comment.save(update_fields=["is_deleted", "updated_at"])
+        # One `update()` over the descendant set — the write-side traversal runs
+        # once per removal, never per read (the read side is Task 3's bounded
+        # assembly and never walks this way).
+        Comment.objects.filter(id__in=_descendant_ids(comment)).filter(
+            branch_closed_by__isnull=True
+        ).update(branch_closed_by=comment)
+    return comment
+
+
+def restore_comment(comment: Comment) -> Comment:
+    """Reopen a removed comment (08 §415's reversal, now branch-aware).
+
+    The sanctioned restore path (Task 2's single-writer rule with
+    `soft_delete_comment`). Flips the flag, then re-points the descendants that
+    named THIS comment as their closer (D-05's comparison semantics): each keeps
+    its branch closed only if another removed ancestor still exists above it, in
+    which case the flag names that ancestor instead; otherwise it reopens. A node
+    under two removed ancestors therefore stays closed until **both** are
+    restored — the case that makes a plain boolean wrong.
+    """
+    if comment.is_deleted:
+        comment.is_deleted = False
+        comment.save(update_fields=["is_deleted", "updated_at"])
+        # Only descendants that named THIS comment as their closer are in play
+        # (a node naming another removed ancestor is not touched — D-05).
+        for descendant_id in Comment.objects.filter(branch_closed_by=comment).values_list(
+            "id", flat=True
+        ):
+            _repoint_after_restore(descendant_id, restored=comment)
+    return comment
+
+
+def _descendant_ids(comment: Comment) -> list:
+    """Breadth-first ids of every descendant of `comment`.
+
+    In-Python walk over `parent_id` batches (the id-indexed parent lookup serves
+    each level). Parents always precede children in storage (a child is created
+    after its parent and soft delete never rewires `parent_id`), so the tree
+    cannot cycle and the walk terminates at the leaves.
+    """
+    frontier = [comment.id]
+    ids: list = []
+    while frontier:
+        children = list(
+            Comment.objects.filter(parent_id__in=frontier).values_list("id", flat=True)
+        )
+        ids.extend(children)
+        frontier = children
+    return ids
+
+
+def _repoint_after_restore(descendant_id, restored: Comment) -> None:
+    """Re-point one descendant's closer after `restored` reopened (D-05).
+
+    Walks the ancestor chain from the node upward; the first *still-removed*
+    ancestor becomes the named closer (None if the branch is genuinely open
+    again). Called only for nodes naming `restored`, so the walk stops scanning
+    at worst at `restored`'s position.
+    """
+    closer = None
+    node_id = Comment.objects.filter(id=descendant_id).values_list("parent_id", flat=True).first()
+    while node_id is not None:
+        row = Comment.objects.filter(id=node_id).values_list("id", "is_deleted", "parent_id").first()
+        if row is None:
+            break
+        ancestor_id, ancestor_deleted, next_parent_id = row
+        if ancestor_deleted:
+            closer = ancestor_id
+            break
+        node_id = next_parent_id
+    Comment.objects.filter(id=descendant_id, branch_closed_by=restored).update(
+        branch_closed_by=closer
+    )
 
 
 def _soft_delete(content: models.Model):

@@ -113,8 +113,8 @@ class Comment(models.Model):
         related_name="community_comments",
     )
     # SET_NULL, not CASCADE (5.1 P1): if a parent ever disappears, its replies are
-    # promoted to top-level rather than deleted with it. (Phase 11 Task 2 adds
-    # `branch_closed_by` here — removal closes a branch; this attribute's
+    # promoted to top-level rather than deleted with it. (Phase 11 adds
+    # `branch_closed_by` below — removal closes a branch; this attribute's
     # hard-delete promotion rule is unchanged.)
     parent = models.ForeignKey(
         "self",
@@ -125,6 +125,20 @@ class Comment(models.Model):
     )
     body = models.TextField(validators=[validate_not_blank])
     is_deleted = models.BooleanField(default=False)  # soft delete (COMM-05, 03 §20)
+    # Phase 11 D-04/D-05: a removed comment closes its whole branch. This names the
+    # removed ancestor responsible for THIS node's closure (null = open); the write
+    # path refuses a reply under it (`branch_closed`). Maintained only by
+    # `services.soft_delete_comment` / `services.restore_comment` (single-writer),
+    # which is what makes a plain boolean wrong: a node can have two removed
+    # ancestors, so restore must compare names rather than clear a bit.
+    branch_closed_by = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="branch_closed_descendants",
+        help_text="The removed ancestor responsible for closing this node's branch.",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

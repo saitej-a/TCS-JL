@@ -22,6 +22,7 @@ BLANK_CODE = "blank_content"
 TITLE_LENGTH_CODE = "title_too_long"
 PARENT_MISMATCH_CODE = "parent_post_mismatch"
 PARENT_DELETED_CODE = "parent_deleted"
+BRANCH_CLOSED_CODE = "branch_closed"
 
 
 def post_categories() -> list[tuple[str, str]]:
@@ -70,12 +71,16 @@ def validate_reply_depth(comment) -> None:
     The name stays accurate: this still validates the *reply's parent*. There is
     deliberately **no depth check** — "unlimited" is literal (Phase 11 D-01), and
     re-introducing a cap would contradict rows already stored beyond it. What
-    remains:
+    remains, in a fixed order:
 
     1. ``parent_post_mismatch`` — the parent belongs to a different post.
     2. ``parent_deleted`` — the parent is soft-deleted; a removed comment accepts
        no new replies (its tombstone stays visible in the thread, but the
        conversation under it is closed).
+    3. ``branch_closed`` — an ancestor above the parent was removed (Phase 11
+       D-04): the whole branch beneath a removal closes to new replies. Checked
+       from the denormalized `branch_closed_by` flag (D-05) — O(1), and the flag
+       is maintained by the single-writer services, never recomputed here.
 
     A `None` parent (a top-level comment) is always valid. The former
     ``nested_reply`` depth check is gone — a reply-to-a-reply is now a normal
@@ -96,4 +101,10 @@ def validate_reply_depth(comment) -> None:
         raise ValidationError(
             "This comment has been removed and cannot receive replies.",
             code=PARENT_DELETED_CODE,
+        )
+
+    if parent.branch_closed_by_id is not None:
+        raise ValidationError(
+            "Replies are closed above a removed comment.",
+            code=BRANCH_CLOSED_CODE,
         )

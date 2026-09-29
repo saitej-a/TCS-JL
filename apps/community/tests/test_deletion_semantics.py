@@ -14,7 +14,7 @@ Two properties carry the requirement:
 import pytest
 
 from apps.community.models import Comment, Post
-from apps.community.services import soft_delete_comment, soft_delete_post
+from apps.community.services import restore_comment, restore_post, soft_delete_comment, soft_delete_post
 from apps.community.tombstones import TOMBSTONE_TEXT, display_body, display_title
 
 pytestmark = pytest.mark.django_db
@@ -102,7 +102,9 @@ def test_tombstone_makes_no_moderation_claim():
 
 
 def test_tombstoned_comment_keeps_its_reply_tree(make_post, make_comment):
-    """Roadmap success criterion 4: reply hierarchies survive a tombstone."""
+    """Roadmap success criterion 4: reply hierarchies survive a tombstone.
+    Phase 11 D-04 adds the closure assertions: the tree is retained AND the
+    branch is flagged closed (growth closes, visibility doesn't)."""
     post = make_post()
     parent = make_comment(post)
     reply = make_comment(post, parent=parent)
@@ -115,6 +117,8 @@ def test_tombstoned_comment_keeps_its_reply_tree(make_post, make_comment):
     assert reply.parent_id == parent.id
     assert list(parent.replies.all()) == [reply]
     assert post.comments.count() == 2
+    assert reply.branch_closed_by_id == parent.id  # Phase 11: the branch closed
+    assert reply.is_deleted is False  # the descendant itself is not removed
 
 
 def test_tombstoned_post_keeps_its_comments(make_post, make_comment):
@@ -138,23 +142,27 @@ def test_soft_deletion_never_removes_rows(make_post, make_comment):
 
 
 def test_reversal_restores_the_content(make_post, make_comment):
-    """08 §415: correcting a mistaken removal is literally flipping the flag back —
-    which is only possible because the text was never overwritten."""
+    """08 §415: correcting a mistaken removal is flipping the flag back — through
+    the sanctioned path. Phase 11 D-05: restore now runs branch-aware reaping
+    (`restore_comment`), so the assertions gain the reopen of named nodes."""
     post = make_post(title="Real title", body="Real body")
     comment = make_comment(post, body="Same here.")
+    reply = make_comment(post, parent=comment)
     soft_delete_post(post)
     soft_delete_comment(comment)
+    reply.refresh_from_db()
+    assert reply.branch_closed_by_id == comment.id  # closed by the removal
+
+    restore_post(post)
+    restore_comment(comment)
 
     post.refresh_from_db()
     comment.refresh_from_db()
-    post.is_deleted = False
-    comment.is_deleted = False
-    post.save(update_fields=["is_deleted"])
-    comment.save(update_fields=["is_deleted"])
-
+    reply.refresh_from_db()
     assert display_title(post) == "Real title"
     assert display_body(post) == "Real body"
     assert display_body(comment) == "Same here."
+    assert reply.branch_closed_by_id is None  # Phase 11: the branch reopened
 
 
 def test_deleted_content_still_carries_its_author_and_timestamps(make_post, make_comment):
