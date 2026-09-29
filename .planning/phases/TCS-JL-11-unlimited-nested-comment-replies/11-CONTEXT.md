@@ -92,12 +92,13 @@ budget. The contract above constrains those; it does not pick them.
   neither silently truncating. — **Reversibility:** reversible.
 
 ### The supersession record
-- **D-11:** **Update the sources of truth and record the reversal.** 05 §1183 (*Strict
-  1-Level Nesting*) and §1672 (*Enforce 1-Level Reply Depth*) are rewritten; 05 §75's
-  rationale is replaced with what now protects mobile; 04 §40's "For MVP, one-level replies
-  are enough" is replaced (its read-shape sentence is kept); COMM-03 is reworded to nested
-  replies; PROJECT.md's *Strict 1-Level Reply Depth* decision row is flipped with a dated
-  "reversed by Phase 11" note rather than deleted, so the history reads. — **Reversibility:**
+- **D-11:** **Update the sources of truth and record the reversal.** 05 §7.8 item 1 (*Strict
+  1-Level Nesting*, line 1183) and §16 item 4 (*Enforce 1-Level Reply Depth*, line 1672) are
+  rewritten; §2.5's rationale (line 75) is replaced with what now protects mobile; 04 §40's
+  "For MVP, one-level replies are enough" is replaced (its read-shape sentence is kept);
+  COMM-03 is reworded to nested replies; PROJECT.md's *Strict 1-Level Reply Depth* decision
+  row is flipped with a dated "reversed by Phase 11" note rather than deleted, so the history
+  reads. — **Reversibility:**
   reversible (the reversal note keeps the original rationale legible).
 - **D-12:** **The two rule-pinning tests are rewritten in place**, not deleted —
   `apps/community/tests/test_reply_depth.py` and `test_comment_api.py`'s `nested_reply`
@@ -141,9 +142,20 @@ None — `todo.match-phase 11` returned 0 matches.
 **Downstream agents MUST read these before planning or implementing.**
 
 ### The rule being overturned
-- `05_UI_UX_SPECIFICATION.md` §1183 — "Strict 1-Level Nesting … (`parent.parent == NULL` enforced by backend and UI)" — the rule to rewrite
-- `05_UI_UX_SPECIFICATION.md` §1672 — "Enforce 1-Level Reply Depth … do not permit recursive nesting beyond 1 level" — the enforcement clause to rewrite
-- `05_UI_UX_SPECIFICATION.md` §75 — the rationale ("no complex nested comment trees") that D-07 must replace
+
+> **Citation convention — read this first.** This repo cites `05_UI_UX_SPECIFICATION.md` and
+> `08_MODERATION.md` by **line number** (`05 §1183` ⇒ line 1183), not by heading. Both forms
+> are given below so a reader can find the text either way. `04_API_SPECIFICATION.md` **is**
+> numbered by heading (`# 39.`, `# 40.`).
+
+- `05_UI_UX_SPECIFICATION.md` §7.8 *Post Detail & Discussion Screen* → the "Comment & Reply
+  Rules" list, item 1 (line 1183, cited as `05 §1183`) — "Strict 1-Level Nesting …
+  (`parent.parent == NULL` enforced by backend and UI)" — the rule to rewrite
+- `05_UI_UX_SPECIFICATION.md` §16 *AI Agent Implementation Rules for UI/UX Frontend Build*,
+  item 4 (line 1672, cited as `05 §1672`) — "Enforce 1-Level Reply Depth … do not permit
+  recursive nesting beyond 1 level" — the enforcement clause to rewrite
+- `05_UI_UX_SPECIFICATION.md` §2.5 *Simplicity & Focused Velocity* (line 75) — the rationale
+  ("no complex nested comment trees") that D-07 must replace with what now protects mobile
 - `04_API_SPECIFICATION.md` §40 — "The backend should avoid returning unlimited nested structures. For MVP, one-level replies are enough." (first sentence survives as D-02; second is overturned)
 - `04_API_SPECIFICATION.md` §42 — "Parent is a top-level comment" — the write contract to rewrite
 - `.planning/REQUIREMENTS.md` (COMM block) — **COMM-03** ("1-level replies"), **COMM-08** ("assertNumQueries budgets — feed ≤3, trending ≤3, thread ≤5")
@@ -153,8 +165,7 @@ None — `todo.match-phase 11` returned 0 matches.
 - `03_DATABASE_DESIGN.md` §9–§11 — Post/Comment/PostVote shape
 - `03_DATABASE_DESIGN.md` §17 — the ordering/index contract the pagination depends on
 - `03_DATABASE_DESIGN.md` §20 — soft-delete semantics
-- `08_MODERATION.md` §390 — removed content is retained in the row
-- `08_MODERATION.md` §415 — removal is reversible (D-05's reopen path)
+- `08_MODERATION.md` §5 *Soft Deletion & Content Preservation Architecture* — removed content is retained in the row (the code cites this as `08 §390`, a line number) and its "Why Soft Deletion is Mandatory" items make removal reversible (`08 §415`; D-05's reopen path)
 - `04_API_SPECIFICATION.md` §39–§44 — the comment read/write contract
 - `04_API_SPECIFICATION.md` §86 — the comment notification flow (C-01)
 

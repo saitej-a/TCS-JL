@@ -399,7 +399,9 @@ Plans:
 
 - [ ] TBD (run /gsd-plan-phase 11 to break down)
 
-**Planning preflight (2026-09-29)** — `init.plan-phase` ran with `has_context: false`, so the workflow's context gate stopped planning after the first question. Deterministic gates: context-drift **skipped** (no CONTEXT.md to compare), `assumption-delta` **detected: false**, API-coverage detector **detected: false**. The UI safety gate **blocks** (`frontend: true`, `hasUiSpec: false`) — decided: **the UI-SPEC is written during planning** (as 9.5.1's was), not skipped. Required order: `/gsd-discuss-phase 11` → `/gsd-plan-phase 11`.
+**Planning preflight (2026-09-29)** — `init.plan-phase` ran with `has_context: false`, so the workflow's context gate stopped planning after the first question. Deterministic gates: context-drift **skipped** (no CONTEXT.md to compare), `assumption-delta` **detected: false**, API-coverage detector **detected: false**. The UI safety gate **blocks** (`frontend: true`, `hasUiSpec: false`) — decided: **the UI-SPEC is written during planning** (as 9.5.1's was), not skipped.
+
+**Context gathered (2026-09-29)** — `11-CONTEXT.md` (12 decisions across three areas: the depth rule + supersession, removal/closed branches, and how depth renders; `11-DISCUSSION-LOG.md` holds the alternatives). The read/assembly mechanism, the render-depth number and the re-derived COMM-08 budget were deliberately left to the planner. **Next: `/gsd-plan-phase 11`** (the UI-SPEC is written during planning).
 
 **Known surface at add time** (for the planner, from a quick scan — not a design):
 
