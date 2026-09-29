@@ -399,6 +399,8 @@ Plans:
 
 - [ ] TBD (run /gsd-plan-phase 11 to break down)
 
+**Planning preflight (2026-09-29)** — `init.plan-phase` ran with `has_context: false`, so the workflow's context gate stopped planning after the first question. Deterministic gates: context-drift **skipped** (no CONTEXT.md to compare), `assumption-delta` **detected: false**, API-coverage detector **detected: false**. The UI safety gate **blocks** (`frontend: true`, `hasUiSpec: false`) — decided: **the UI-SPEC is written during planning** (as 9.5.1's was), not skipped. Required order: `/gsd-discuss-phase 11` → `/gsd-plan-phase 11`.
+
 **Known surface at add time** (for the planner, from a quick scan — not a design):
 
 - **Write path**: `validate_reply_depth` (`nested_reply`), `parent_post_mismatch`, `parent_deleted` — the depth rule is the one that changes; the other two are cross-post/parent-integrity checks that stay.
