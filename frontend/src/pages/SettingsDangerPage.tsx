@@ -13,6 +13,9 @@
  *   never hints which credential was wrong.
  * - Data export: NO endpoint exists server-side. The row states that and
  *   offers nothing fake — recorded as a 9.5 divergence.
+ *
+ * Phase 12 reconciliation: the composition's rose top-strip marks the delete
+ * card, and the typed confirmation gets the rose-tinted mono chip treatment.
  */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -80,9 +83,11 @@ export function SettingsDangerPage(): ReactElement {
       </section>
 
       <section
-        className="rounded-xl border border-rose-200 bg-rose-50/60 p-4 shadow-sm dark:border-rose-900/60 dark:bg-rose-950/30 sm:p-5"
+        className="relative overflow-hidden rounded-xl border border-rose-200 bg-rose-50/60 p-4 shadow-sm dark:border-rose-900/60 dark:bg-rose-950/30 sm:p-5"
         aria-label="Delete account"
       >
+        {/* Composition's 4px rose top-strip: visible severity without extra copy. */}
+        <span aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-rose-600 dark:bg-rose-500" />
         <h2 className={TYPOGRAPHY.cardTitle}>Delete account</h2>
         <div className="mt-2 space-y-2 text-sm text-slate-700 dark:text-slate-200">
           <p>
@@ -110,7 +115,11 @@ export function SettingsDangerPage(): ReactElement {
               htmlFor="delete-confirm"
               className="block text-sm font-medium text-slate-900 dark:text-slate-100"
             >
-              Type <span className="font-mono font-semibold">DELETE</span> to confirm
+              Type{" "}
+              <span className="rounded border border-rose-200 bg-rose-100 px-1.5 py-0.5 font-mono text-rose-800 dark:border-rose-900/60 dark:bg-rose-950/60 dark:text-rose-300">
+                DELETE
+              </span>{" "}
+              to confirm
             </label>
             <input
               id="delete-confirm"

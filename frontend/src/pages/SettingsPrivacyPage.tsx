@@ -21,6 +21,9 @@
  * changes it within the same render — the cheapest place to ship a lying UI
  * is here, so the preview and the control cannot diverge.
  *
+ * Phase 12 reconciliation: cards adopt the composition's bordered-header
+ * anatomy (title + subtitle over a divider); rows and switches unchanged.
+ *
  * Screen #3 minus its annotation artifacts (09.5-CONTEXT §5.2).
  */
 import { useEffect, useState } from "react";
@@ -36,7 +39,9 @@ import { TYPOGRAPHY } from "@/theme/tokens";
 import type { ReactElement } from "react";
 
 const CARD =
-  "rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-800 sm:p-5";
+  "rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800";
+const CARD_HEAD = "border-b border-slate-100 p-4 pb-3.5 dark:border-slate-800 sm:p-5 sm:pb-4";
+const CARD_BODY = "p-4 pt-4 sm:p-5 sm:pt-4";
 const ROW =
   "flex items-start justify-between gap-4 py-3 border-b border-slate-100 dark:border-slate-800 last:border-b-0";
 
@@ -114,8 +119,13 @@ export function SettingsPrivacyPage(): ReactElement {
       {profile !== null && (
         <>
           <section className={CARD} aria-label="Visibility controls">
-            <h2 className={TYPOGRAPHY.cardTitle}>Visibility</h2>
-            <div className="mt-1">
+            <div className={CARD_HEAD}>
+              <h2 className={TYPOGRAPHY.cardTitle}>Visibility</h2>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                You control what other candidates can see.
+              </p>
+            </div>
+            <div className={`${CARD_BODY} mt-0`}>
               <div className={ROW}>
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
@@ -185,30 +195,42 @@ export function SettingsPrivacyPage(): ReactElement {
 
           {/* Live preview — derived from the same `mode` the toggle edits. */}
           <section className={CARD} aria-label="What others see">
-            <h2 className={TYPOGRAPHY.cardTitle}>What others see</h2>
-            <div
+            <div className={CARD_HEAD}>
+              <h2 className={TYPOGRAPHY.cardTitle}>What others see</h2>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                Live preview — updates with the toggle above.
+              </p>
+            </div>
+            <div className={CARD_BODY}>
+              <div
               data-testid="identity-preview"
               className="mt-3 flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900"
             >
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-xs font-semibold text-brand-700 dark:bg-brand-950/60 dark:text-brand-300">
                 {isAnonymous ? "🎭" : initialsOf(profile.display_name || "Anonymous Candidate")}
               </div>
-              <div className="min-w-0">
-                <p data-testid="preview-name" className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
-                  {isAnonymous ? "Anonymous Candidate" : profile.display_name || "Anonymous Candidate"}
-                </p>
-                <p className="truncate text-xs text-slate-500 dark:text-slate-400">
-                  {[profile.batch, profile.hiring_type, profile.region]
-                    .filter((part) => part !== null && part !== "")
-                    .join(" • ")}
-                </p>
-              </div>
+                  <div className="min-w-0">
+                    <p data-testid="preview-name" className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
+                      {isAnonymous ? "Anonymous Candidate" : profile.display_name || "Anonymous Candidate"}
+                    </p>
+                    <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+                      {[profile.batch, profile.hiring_type, profile.region]
+                        .filter((part) => part !== null && part !== "")
+                        .join(" • ")}
+                    </p>
+                  </div>
+                </div>
             </div>
           </section>
 
           <section className={CARD} aria-label="Data controls">
-            <h2 className={TYPOGRAPHY.cardTitle}>Your data</h2>
-            <div className="mt-2 space-y-3">
+            <div className={CARD_HEAD}>
+              <h2 className={TYPOGRAPHY.cardTitle}>Your data</h2>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                Export and search-engine visibility.
+              </p>
+            </div>
+            <div className={`${CARD_BODY} space-y-3`}>
               <div className={ROW}>
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-slate-900 dark:text-slate-100">

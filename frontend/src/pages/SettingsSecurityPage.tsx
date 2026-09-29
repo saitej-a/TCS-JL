@@ -11,6 +11,9 @@
  *   the API exposes no session list. The one real action is
  *   "sign out everywhere" = the logout endpoint blacklists THIS refresh
  *   token family server-side (06 §3.3). The row says exactly that.
+ *
+ * Phase 12 reconciliation: cards adopt the composition's bordered-header
+ * anatomy (title + subtitle over a divider); rows unchanged.
  */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +26,9 @@ import { TYPOGRAPHY } from "@/theme/tokens";
 import type { ReactElement } from "react";
 
 const CARD =
-  "rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-800 sm:p-5";
+  "rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800";
+const CARD_HEAD = "border-b border-slate-100 p-4 pb-3.5 dark:border-slate-800 sm:p-5 sm:pb-4";
+const CARD_BODY = "p-4 pt-4 sm:p-5 sm:pt-4";
 const ROW =
   "flex items-start justify-between gap-4 py-3 border-b border-slate-100 dark:border-slate-800 last:border-b-0";
 
@@ -70,8 +75,13 @@ export function SettingsSecurityPage(): ReactElement {
       description="Password, sign-in sessions and account access controls."
     >
       <section className={CARD} aria-label="Password">
-        <h2 className={TYPOGRAPHY.cardTitle}>Password</h2>
-        <div className="mt-1">
+        <div className={CARD_HEAD}>
+          <h2 className={TYPOGRAPHY.cardTitle}>Password</h2>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            Ensure your account uses a strong passphrase to prevent unauthorized changes.
+          </p>
+        </div>
+        <div className={`${CARD_BODY} mt-0`}>
           <div className={ROW}>
             <div className="min-w-0">
               <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
@@ -101,8 +111,13 @@ export function SettingsSecurityPage(): ReactElement {
       </section>
 
       <section className={CARD} aria-label="Additional security">
-        <h2 className={TYPOGRAPHY.cardTitle}>Additional security</h2>
-        <div className="mt-1">
+        <div className={CARD_HEAD}>
+          <h2 className={TYPOGRAPHY.cardTitle}>Additional security</h2>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            Extra protections for how your account is accessed.
+          </p>
+        </div>
+        <div className={`${CARD_BODY} mt-0`}>
           <div className={ROW}>
             <div className="min-w-0">
               <p className="text-sm font-medium text-slate-900 dark:text-slate-100">

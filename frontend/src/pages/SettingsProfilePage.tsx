@@ -1,7 +1,11 @@
 /**
- * /settings/profile (9.5 Task 3, screen #2) — identity + recruitment details +
- * timeline-visibility radios, with a sticky action bar and an unsaved-changes
- * guard.
+ * /settings/profile (9.5 Task 3, screen #2; Phase 12 reconciliation) — identity
+ * + recruitment details + timeline-visibility radios, with a sticky action bar
+ * and an unsaved-changes guard.
+ *
+ * Composition anatomy adopted: cards with bordered section headers + subtitles,
+ * uppercase field labels (via the shared Input), the joining-date note as an
+ * amber callout, and the save bar's amber "Unsaved changes" pill.
  *
  * Reconciled against the real API (not the mock):
  * - Category options are the backend's HiringType vocabulary (PRIME/DIGITAL/
@@ -9,13 +13,11 @@
  * - PATCH /profile/ is partial and returns DRF field errors as
  *   `{field: [messages]}` inside ApiError.details; they render inline under
  *   the named field, with a focused error summary when several fail.
- * - The mock's "changing the joining date after a survey response" amber note
- *   has NO backend rule behind it (update_profile clamps nothing, warns about
- *   nothing) — the copy states only what is true: analytics wait-time metrics
- *   use survey/offer/JL event dates, and changing a past date re-dates the
- *   record. Recorded divergence, not silent mock-copy.
- *
- * Screen #2 minus its annotation artifacts (09.5-CONTEXT §5.2).
+ * - The composition's amber "changing the joining date may re-open the survey"
+ *   note has NO backend rule behind it (update_profile clamps nothing, warns
+ *   about nothing) — the callout keeps the 9.5 honest copy instead. The
+ *   composition's avatar/upload block, cohort visibility radios and "category
+ *   badge on posts" checkbox are also omitted: no API fields back them.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useBlocker } from "react-router-dom";
@@ -32,7 +34,11 @@ import { SettingsLayout } from "@/layouts/SettingsLayout";
 import { TYPOGRAPHY } from "@/theme/tokens";
 import type { ReactElement } from "react";
 
-const CARD = "rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-800 sm:p-5";
+const CARD =
+  "rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800";
+const CARD_HEAD = "border-b border-slate-100 p-4 pb-3.5 dark:border-slate-800 sm:p-5 sm:pb-4";
+const CARD_BODY = "p-4 pt-4 sm:p-5 sm:pt-4";
+const CARD_SUB = "mt-1 text-xs text-slate-500 dark:text-slate-400";
 
 const HIRING_LABELS: Record<HiringType, string> = {
   PRIME: "TCS Prime",
@@ -221,8 +227,11 @@ export function SettingsProfilePage(): ReactElement {
           )}
 
           <section className={CARD} aria-label="Identity">
-            <h2 className={TYPOGRAPHY.cardTitle}>Identity</h2>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className={CARD_HEAD}>
+              <h2 className={TYPOGRAPHY.cardTitle}>Identity</h2>
+              <p className={CARD_SUB}>How you appear to the community.</p>
+            </div>
+            <div className={`${CARD_BODY} grid gap-3 sm:grid-cols-2`}>
               <Input
                 label="Display name"
                 value={form.display_name}
@@ -248,8 +257,13 @@ export function SettingsProfilePage(): ReactElement {
           </section>
 
           <section className={CARD} aria-label="Recruitment details">
-            <h2 className={TYPOGRAPHY.cardTitle}>Recruitment details</h2>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className={CARD_HEAD}>
+              <h2 className={TYPOGRAPHY.cardTitle}>Recruitment details</h2>
+              <p className={CARD_SUB}>
+                These fields match your official letter metadata to benchmark your wait duration.
+              </p>
+            </div>
+            <div className={`${CARD_BODY} grid gap-3 sm:grid-cols-2`}>
               <div>
                 <label
                   htmlFor="sp-batch"
@@ -313,15 +327,22 @@ export function SettingsProfilePage(): ReactElement {
                 errorText={errors.expected_joining_date}
               />
             </div>
-            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-              Community wait-time metrics are computed from survey, offer and joining-letter
-              event dates. Changing a past date changes the record your timeline shows.
-            </p>
+            {/* Composition's amber callout, honest copy (no survey rule exists). */}
+            <div className="col-span-full mt-1 flex items-start gap-2.5 rounded-lg border border-amber-200/80 bg-amber-50/80 p-3 text-xs text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
+              <span aria-hidden="true" className="mt-0.5">⚠️</span>
+              <span>
+                Community wait-time metrics are computed from survey, offer and joining-letter
+                event dates. Changing a past date changes the record your timeline shows.
+              </span>
+            </div>
           </section>
 
           <section className={CARD} aria-label="Timeline visibility">
-            <h2 className={TYPOGRAPHY.cardTitle}>Timeline visibility</h2>
-            <fieldset className="mt-2 space-y-2">
+            <div className={CARD_HEAD}>
+              <h2 className={TYPOGRAPHY.cardTitle}>Timeline visibility</h2>
+              <p className={CARD_SUB}>Control who can inspect your milestone pacing.</p>
+            </div>
+            <fieldset className={`${CARD_BODY} space-y-2`}>
               <legend className="sr-only">Who can see your timeline activity</legend>
               <label
                 className={`flex min-h-[44px] cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm ${
@@ -380,7 +401,11 @@ export function SettingsProfilePage(): ReactElement {
           <div className="sticky bottom-0 -mx-4 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur dark:border-slate-700 dark:bg-slate-900/95 sm:-mx-6 sm:px-6">
             <div className="flex items-center justify-between gap-3">
               {dirty ? (
-                <span data-testid="unsaved-indicator" className="text-xs font-medium text-amber-700 dark:text-amber-300">
+                <span
+                  data-testid="unsaved-indicator"
+                  className="inline-flex items-center gap-2 rounded-md border border-amber-200/70 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300"
+                >
+                  <span aria-hidden="true" className="h-2 w-2 animate-pulse rounded-full bg-amber-500" />
                   Unsaved changes
                 </span>
               ) : (

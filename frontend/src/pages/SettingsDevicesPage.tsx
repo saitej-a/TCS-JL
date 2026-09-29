@@ -11,6 +11,9 @@
  *   no such column) — no fake control is rendered.
  * - Revoke = DELETE /devices/{id}/ (soft deactivate). The F-94-1 routing rule
  *   is untouched: this row action revokes exactly the row it is on.
+ *
+ * Phase 12 reconciliation: cards adopt the composition's bordered-header
+ * anatomy; the push banner, switches and device rows are unchanged.
  */
 import { useCallback, useEffect, useState } from "react";
 
@@ -30,7 +33,9 @@ import { TYPOGRAPHY } from "@/theme/tokens";
 import type { ReactElement } from "react";
 
 const CARD =
-  "rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-800 sm:p-5";
+  "rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800";
+const CARD_HEAD = "border-b border-slate-100 p-4 pb-3.5 dark:border-slate-800 sm:p-5 sm:pb-4";
+const CARD_BODY = "p-4 pt-4 sm:p-5 sm:pt-4";
 const ROW =
   "flex items-start justify-between gap-4 py-3 border-b border-slate-100 dark:border-slate-800 last:border-b-0";
 
@@ -195,11 +200,13 @@ export function SettingsDevicesPage(): ReactElement {
           )}
 
           <section className={CARD} aria-label="Alert types">
-            <h2 className={TYPOGRAPHY.cardTitle}>Alert types</h2>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              These control the push channel. In-app notifications always arrive.
-            </p>
-            <div className="mt-1">
+            <div className={CARD_HEAD}>
+              <h2 className={TYPOGRAPHY.cardTitle}>Alert types</h2>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                These control the push channel. In-app notifications always arrive.
+              </p>
+            </div>
+            <div className={`${CARD_BODY} mt-0`}>
               {ALERT_TOGGLES.map(({ key, label }) => (
                 <div className={ROW} key={key}>
                   <p className="min-w-0 text-sm font-medium text-slate-900 dark:text-slate-100">
@@ -229,7 +236,12 @@ export function SettingsDevicesPage(): ReactElement {
           </section>
 
           <section className={CARD} aria-label="Registered devices">
-            <h2 className={TYPOGRAPHY.cardTitle}>Registered devices</h2>
+            <div className={CARD_HEAD}>
+              <h2 className={TYPOGRAPHY.cardTitle}>Registered devices</h2>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                Browsers registered for push on your account.
+              </p>
+            </div>
             {activeDevices.length === 0 ? (
               <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
                 No active devices. Enable push alerts from the Notifications page to register
