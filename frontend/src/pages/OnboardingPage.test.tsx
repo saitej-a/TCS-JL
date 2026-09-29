@@ -80,7 +80,7 @@ describe("OnboardingPage", () => {
     });
     await user.type(screen.getByLabelText("Community display name"), "Sai");
     await user.type(screen.getByLabelText("Region of joining"), "Hyderabad");
-    await user.click(screen.getByRole("radio", { name: "digital" }));
+    await user.click(screen.getByRole("radio", { name: /^digital/ }));
     await user.type(screen.getByLabelText("Offer letter date"), "2025-03-15");
     await user.click(screen.getByRole("button", { name: "Continue" }));
 

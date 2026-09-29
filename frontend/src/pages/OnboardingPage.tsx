@@ -1,13 +1,20 @@
 /**
- * The §7.3 three-step onboarding wizard (Stitch steps 1–3 as visual
- * reference). Per-step persistence (the plan's resolution): step 1 saves via
- * POST/PATCH /profile/, step 2 saves `current_status` via PATCH (the
- * walk-the-chain side-channel), step 3 is review + confirm → refreshUser()
- * flips the truthful gate and releases /dashboard.
+ * The §7.3 three-step onboarding wizard, rebuilt to the
+ * `onboarding_wizard_step_1..3` compositions (Phase 12): the brand header row
+ * with the live pill, the connected 3-segment progress tracker, the
+ * radio-card hiring-type grid, selects with helper lines, and the
+ * action-row-with-top-border footer pattern.
  *
- * Real API vocabulary (recorded divergences from the mockups): hiring types
- * are PRIME/DIGITAL/NINJA/OTHER — no "BPS"; there is no role field; region is
- * free text; completion requires offer_letter_date.
+ * Per-step persistence (the plan's resolution): step 1 saves via POST/PATCH
+ * /profile/, step 2 saves `current_status` via PATCH (the walk-the-chain
+ * side-channel), step 3 is review + confirm → refreshUser() flips the
+ * truthful gate and releases /dashboard.
+ *
+ * Real API vocabulary (recorded divergences from the compositions, in
+ * RECONCILIATION.md): hiring types are PRIME/DIGITAL/NINJA/OTHER — the
+ * composition's "BPS" card does not exist in the API; there is no role
+ * field (the composition's Role/Designation input is omitted); region is
+ * free text (no city list); completion requires offer_letter_date.
  */
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
@@ -60,6 +67,9 @@ const STATUS_LABELS: Record<CandidateStatus, string> = {
   OTHER: "Not sure / other",
 };
 
+/** The composition's step names for the tracker (differs from the mocks'). */
+const STEP_LABELS = ["Offer details", "Timeline status", "Review"] as const;
+
 interface Step1State {
   display_name: string;
   public_identity_mode: "ANONYMOUS" | "DISPLAY_NAME";
@@ -69,32 +79,68 @@ interface Step1State {
   offer_letter_date: string;
 }
 
-function StepIndicator({ step }: { step: 1 | 2 | 3 }) {
-  const LABELS = ["Offer details", "Current status", "Review"] as const;
+/** Brand header row + live pill (the composition's card header). */
+function CardHeader() {
   return (
-    <div aria-label={`Step ${step} of 3`} className="space-y-2">
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">
-          Step {step} of 3 — {LABELS[step - 1]}
-        </p>
-        <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-          {step === 1 ? "33" : step === 2 ? "66" : "100"}% completed
-        </p>
-      </div>
-      <div className="flex gap-1.5">
-        {([1, 2, 3] as const).map((s) => (
-          <span
-            key={s}
-            className={`h-1.5 flex-1 rounded-full ${s <= step ? "bg-brand-600" : "bg-slate-200 dark:bg-slate-700"}`}
-          />
-        ))}
-      </div>
-      <div className="flex justify-between text-[11px] text-slate-400 dark:text-slate-500">
-        {LABELS.map((label, i) => (
-          <span key={label} className={i + 1 === step ? "font-semibold text-brand-700 dark:text-brand-400" : ""}>
-            {i + 1}. {label}
+    <header className="flex items-center justify-between border-b border-slate-100 pb-6 dark:border-slate-700">
+      <div className="flex items-center gap-3">
+        <span className="rounded-md bg-brand-700 px-2.5 py-1 text-xs font-bold tracking-wide text-white shadow-sm">
+          TJT
+        </span>
+        <div className="flex flex-col">
+          <span className="text-base font-semibold leading-tight text-slate-900 dark:text-slate-100">
+            TCS Joining Tracker
           </span>
-        ))}
+          <span className="text-xs font-normal text-slate-400 dark:text-slate-500">
+            Candidate Onboarding Portal
+          </span>
+        </div>
+      </div>
+      <div className="flex items-center gap-1.5 rounded-full border border-slate-200/60 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+        <span aria-hidden="true" className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+        <span>Candidate Onboarding</span>
+      </div>
+    </header>
+  );
+}
+
+/**
+ * The composition's connected 3-segment tracker: each segment is a bar with
+ * its numbered label under it; completed/active segments are brand-filled.
+ */
+function StepIndicator({ step }: { step: 1 | 2 | 3 }) {
+  return (
+    <div aria-label={`Step ${step} of 3`} className="pt-6">
+      <div className="mb-2.5 flex items-center justify-between">
+        <span className="text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">
+          Step {step} of 3 — {STEP_LABELS[step - 1]}
+        </span>
+        <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
+          {step === 1 ? "33" : step === 2 ? "66" : "100"}% Completed
+        </span>
+      </div>
+      <div className="mb-2 grid grid-cols-3 gap-2.5">
+        {STEP_LABELS.map((label, i) => {
+          const seg = i + 1;
+          return (
+            <div key={label} className="flex flex-col gap-1.5">
+              <div
+                className={`h-2 w-full rounded-full ${seg <= step ? "bg-brand-600" : "bg-slate-200 dark:bg-slate-700"}`}
+              />
+              <span
+                className={`truncate text-[11px] ${
+                  seg === step
+                    ? "font-semibold text-brand-700 dark:text-brand-400"
+                    : seg < step
+                      ? "font-medium text-emerald-600 dark:text-emerald-400"
+                      : "font-medium text-slate-400 dark:text-slate-500"
+                }`}
+              >
+                {seg}. {label}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -123,7 +169,7 @@ export function OnboardingPage() {
   const [status, setStatus] = useState<CandidateStatus>("OFFER_RECEIVED");
   const [statusEvent, setStatusEvent] = useState<TimelineEventType>("OFFER_LETTER");
   const [statusDate, setStatusDate] = useState<string>("");
-  // Step 3 state (Stitch step-3 mockup: review rows + accuracy confirmation)
+  // Step 3 state (review rows + accuracy confirmation)
   const [confirmed, setConfirmed] = useState(false);
 
   // Boot: load any existing profile (resumed wizard) and seed the fields.
@@ -232,7 +278,8 @@ export function OnboardingPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <div className="rounded-2xl border border-slate-100 bg-white p-8 shadow-xl dark:border-slate-800 dark:bg-slate-800">
+      <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-xl transition-all sm:p-8 md:p-10 dark:border-slate-800 dark:bg-slate-800">
+        <CardHeader />
         <StepIndicator step={step} />
 
         {error !== null && (
@@ -243,13 +290,13 @@ export function OnboardingPage() {
 
         {step === 1 && (
           <form onSubmit={persistStep1} noValidate>
-            <h1 className="mt-4 text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-50">
+            <h1 className="mt-4 text-[22px] font-semibold tracking-tight text-slate-900 dark:text-slate-50">
               Tell us about your offer
             </h1>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            <p className="mb-6 mt-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
               This powers your personal timeline. You can change it later in Settings.
             </p>
-            <div className="mt-6 space-y-4">
+            <div className="space-y-5">
               <div>
                 <label
                   htmlFor="ob-display-name"
@@ -281,17 +328,23 @@ export function OnboardingPage() {
               </div>
 
               <fieldset>
-                <legend className="mb-1.5 text-sm font-medium text-slate-700 dark:text-slate-200">
-                  Hiring type
-                </legend>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div className="mb-1.5 flex items-center justify-between">
+                  <legend className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                    Hiring type
+                  </legend>
+                  <span className="text-xs text-slate-400 dark:text-slate-500">
+                    Determines onboarding track
+                  </span>
+                </div>
+                {/* The composition's radio-card grid, real vocabulary. */}
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
                   {(["PRIME", "DIGITAL", "NINJA", "OTHER"] as const).map((ht) => (
                     <label
                       key={ht}
-                      className={`flex min-h-[44px] cursor-pointer items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium capitalize ${
+                      className={`flex min-h-[44px] cursor-pointer flex-col justify-center rounded-xl border-2 px-3.5 py-2.5 transition-all ${
                         s1.hiring_type === ht
-                          ? "border-brand-600 bg-brand-50 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300"
-                          : "border-slate-200 text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:text-slate-300"
+                          ? "border-brand-600 bg-brand-50/70 shadow-sm dark:bg-brand-950/60"
+                          : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
                       }`}
                     >
                       <input
@@ -302,13 +355,30 @@ export function OnboardingPage() {
                         onChange={() => setS1({ ...s1, hiring_type: ht })}
                         className="sr-only"
                       />
-                      {ht.toLowerCase()}
+                      <span
+                        className={`text-sm font-semibold ${
+                          s1.hiring_type === ht
+                            ? "text-brand-800 dark:text-brand-200"
+                            : "text-slate-900 dark:text-slate-100"
+                        }`}
+                      >
+                        {ht.toLowerCase()}
+                      </span>
+                      <span
+                        className={`text-xs ${
+                          s1.hiring_type === ht
+                            ? "text-brand-700/80 dark:text-brand-300/80"
+                            : "text-slate-500 dark:text-slate-400"
+                        }`}
+                      >
+                        {ht === "OTHER" ? "Not sure yet" : "Track"}
+                      </span>
                     </label>
                   ))}
                 </div>
               </fieldset>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label htmlFor="ob-region" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">
                     Region of joining
@@ -320,6 +390,9 @@ export function OnboardingPage() {
                     placeholder="e.g. Hyderabad"
                     required
                   />
+                  <p className="mt-1 text-[12px] text-slate-500 dark:text-slate-400">
+                    Based on allocated ILP / base office
+                  </p>
                 </div>
                 <div>
                   <label htmlFor="ob-batch" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">
@@ -329,7 +402,7 @@ export function OnboardingPage() {
                     id="ob-batch"
                     value={s1.batch}
                     onChange={(e) => setS1({ ...s1, batch: e.target.value })}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-900"
                   >
                     {BATCHES.map((b) => (
                       <option key={b} value={b}>
@@ -337,6 +410,9 @@ export function OnboardingPage() {
                       </option>
                     ))}
                   </select>
+                  <p className="mt-1 text-[12px] text-slate-500 dark:text-slate-400">
+                    Graduation or recruitment cycle
+                  </p>
                 </div>
               </div>
 
@@ -351,11 +427,13 @@ export function OnboardingPage() {
                   onChange={(e) => setS1({ ...s1, offer_letter_date: e.target.value })}
                   required
                 />
+                <p className="mt-1 text-[12px] text-slate-500 dark:text-slate-400">
+                  Found on page 1 of your official offer letter
+                </p>
               </div>
 
-              <div className="flex items-center justify-between pt-2">
-                <span className="text-xs text-slate-500 dark:text-slate-400">Step 1 — your details</span>
-                <Button type="submit" variant="primary" loading={saving}>
+              <div className="mt-2 flex items-center justify-end border-t border-slate-100 pt-6 dark:border-slate-700">
+                <Button type="submit" variant="primary" loading={saving} className="h-11 px-6">
                   Continue
                 </Button>
               </div>
@@ -365,14 +443,14 @@ export function OnboardingPage() {
 
         {step === 2 && (
           <div>
-            <h1 className="mt-4 text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-50">
+            <h1 className="mt-4 text-[22px] font-bold tracking-tight text-slate-900 dark:text-slate-50">
               Where are you in the process?
             </h1>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            <p className="mb-6 mt-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
               Pick the option that matches your latest official communication. It becomes a
               milestone on your timeline.
             </p>
-            <div className="mt-6 space-y-2">
+            <div className="space-y-2">
               {STATUS_PICKS.map((pick) => (
                 <label
                   key={pick.status}
@@ -412,16 +490,16 @@ export function OnboardingPage() {
                 />
               </div>
             </div>
-            <div className="mt-6 flex items-center justify-between">
+            <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-6 dark:border-slate-700">
               <Button type="button" variant="ghost" onClick={() => setStep(1)}>
                 ← Back
               </Button>
-              <Button type="button" variant="primary" loading={saving} onClick={persistStep2}>
+              <Button type="button" variant="primary" loading={saving} onClick={persistStep2} className="h-11 px-6">
                 Continue
               </Button>
             </div>
             <p className="mt-4 flex items-center gap-2 rounded-xl border border-sky-100 bg-sky-50 px-3 py-2 text-xs text-sky-800 dark:border-sky-900 dark:bg-sky-950/40 dark:text-sky-300">
-              <span aria-hidden="true">ℹ️</span>
+              <span aria-hidden="true">ⓘ</span>
               Reporting an accurate status keeps the community timeline trustworthy.
             </p>
           </div>
@@ -429,17 +507,13 @@ export function OnboardingPage() {
 
         {step === 3 && (
           <div>
-            <h1 className="mt-4 text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-50">
+            <h1 className="mt-4 text-[22px] font-semibold tracking-tight text-slate-900 dark:text-slate-50">
               Review your details
             </h1>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            <p className="mb-6 mt-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
               Everything here can be updated later in Settings.
             </p>
-            <p className="mt-4 flex items-center gap-2 rounded-xl border border-emerald-200/80 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
-              <span aria-hidden="true">✓</span>
-              Your timeline will start from your offer date.
-            </p>
-            <dl className="mt-6 divide-y divide-slate-100 rounded-xl border border-slate-200 dark:divide-slate-700 dark:border-slate-700">
+            <dl className="divide-y divide-slate-100 rounded-xl border border-slate-200 dark:divide-slate-700 dark:border-slate-700">
               {[
                 ["Display name", s1.public_identity_mode === "ANONYMOUS" ? "Anonymous" : s1.display_name, 1],
                 ["Hiring type", s1.hiring_type.toLowerCase(), 1],
@@ -473,7 +547,7 @@ export function OnboardingPage() {
               />
               <span>I confirm these details are accurate to the best of my knowledge.</span>
             </label>
-            <div className="mt-6 flex items-center justify-between">
+            <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-6 dark:border-slate-700">
               <Button type="button" variant="ghost" onClick={() => setStep(2)}>
                 ← Back
               </Button>
@@ -483,6 +557,7 @@ export function OnboardingPage() {
                 loading={saving}
                 disabled={!confirmed}
                 onClick={finish}
+                className="h-11 px-6"
               >
                 Finish and go to dashboard
               </Button>
