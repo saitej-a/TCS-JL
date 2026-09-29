@@ -4,11 +4,11 @@ milestone: v1.0
 current_phase: 09.5.1
 current_phase_name: Legal pages + auth reconciliation
 status: halted
-stopped_at: Phase 09.5.1 halted at the D-15/D-16 copy gate (the user's legal-page copy is pending)
-last_updated: "2026-09-29T10:12:00.213Z"
+stopped_at: Phase 11 context gathered (Phase 09.5.1 still halted at the D-15/D-16 copy gate)
+last_updated: "2026-09-29T10:57:40.169Z"
 last_activity: 2026-09-29
-last_activity_desc: Phase 09.5.1 halted at the copy gate — 5 of 6 tasks shipped and committed; the user's legal copy is the only outstanding input
-state_head: 87d14d145805d611993c30a77fb755bad3837732
+last_activity_desc: Phase 11 context gathered — 12 decisions across 3 areas (depth rule, tombstone/closed branches, rendering); Phase 09.5.1 remains halted at the copy gate
+state_head: ee30215778313e790be4a3cf5422b0a97efe0627
 progress:
   total_phases: 31
   completed_phases: 6
@@ -58,7 +58,8 @@ Previous phase: 9.5 EXECUTED + VERIFIED (2026-09-29) — gates re-derived in
 re-theme of all 40 instances is VERIFICATION §4).
 Last activity: 2026-09-29 — Phase 09.5.1 executed through Task 5's structure, then halted at the copy gate
 
-**Next up: paste the legal copy, then resume Phase 09.5.1.** The three modules are data files —
+**Next up: plan Phase 11** (`/gsd-plan-phase 11` — its context is gathered; the UI safety gate requires a UI-SPEC, which is written during planning).
+**Also open: the 09.5.1 copy gate.** The three legal content modules are data files —
 `frontend/src/pages/legal/about.ts` (mission + the non-affiliation boundary, no contribution-guidelines
 section), `privacy.ts` (the seven slots in its doc comment: what we collect, email handling **masked**
 (`a***@example.com`) not hashed, the scoped no-tracker claim with FCM's transport role, per-device
@@ -353,11 +354,15 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-**Resume file:** .planning/phases/TCS-JL-09.5.1-generate-the-missing-stitch-screens-with-ui-ux-pro-max-desig/.continue-here.md
-(decisions + contract: `09.5.1-CONTEXT.md`; resume list: `09.5.1-01-SUMMARY.md`)
+**Resume files (two open threads):**
 
-Last session: 2026-09-29T10:03:33.487Z
-Stopped at: Phase 09.5.1 halted at the D-15/D-16 copy gate — Tasks 1–5's structure committed and green, awaiting the user's legal-page copy
+- **Phase 11 — ready to plan:** `.planning/phases/TCS-JL-11-unlimited-nested-comment-replies/11-CONTEXT.md`
+  (12 decisions + the supersession of COMM-03; the UI-SPEC is written during planning, per the plan-phase gate).
+- **Phase 09.5.1 — halted at the copy gate:** `.planning/phases/TCS-JL-09.5.1-generate-the-missing-stitch-screens-with-ui-ux-pro-max-desig/.continue-here.md`
+  (resume list in `09.5.1-01-SUMMARY.md`; the user's legal copy is the only outstanding input).
+
+Last session: 2026-09-29T10:57:40.089Z
+Stopped at: Phase 11 context gathered (Phase 09.5.1 still halted at the copy gate)
 Resume files: .planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/VERIFICATION.md (verdict, drills, defect repros + repairs), .planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/09.4-PROOFS.md (execution's live proofs), apps/notifications/tests/test_push_device_routing.py (the F-94-1 pin), .planning/STATE.md
 
 **Owed from 9.3's execution — open items, none silent:**
