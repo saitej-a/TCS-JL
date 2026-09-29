@@ -1,16 +1,23 @@
 /**
- * The §7.2.3 "check your inbox" screen with a resend-with-cooldown button.
+ * The §7.2.3 "check your inbox" screen: the resend address lives in a labeled,
+ * editable in-card field (9.5.1 D-11 — never a window.prompt), prefilled from
+ * the router state RegisterPage passes ({ email }).
  */
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 import { resendVerification } from "@/api/auth";
 import { Button } from "@/components/Button";
-import { AuthCard, ErrorStrip, SuccessStrip } from "@/pages/authCard";
+import { Input } from "@/components/Input";
+import { AuthCard, AuthField, ErrorStrip, SuccessStrip } from "@/pages/authCard";
 
 const RESEND_SECONDS = 60;
 
 export function VerifyEmailPendingPage() {
-  const [email, setEmail] = useState("");
+  const location = useLocation();
+  const stateEmail =
+    (location.state as { email?: string } | null)?.email ?? "";
+  const [email, setEmail] = useState(stateEmail);
   const [cooldown, setCooldown] = useState(0);
   const [resent, setResent] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,13 +31,12 @@ export function VerifyEmailPendingPage() {
 
   async function handleResend() {
     if (sending || cooldown > 0) return;
-    const entered = window.prompt("Enter the email you registered with:");
-    if (entered === null || entered.trim() === "") return;
-    setEmail(entered.trim());
+    const target = email.trim();
+    if (target === "") return;
     setSending(true);
     setError(null);
     try {
-      await resendVerification(entered.trim());
+      await resendVerification(target);
       setResent(true);
       setCooldown(RESEND_SECONDS);
     } catch (error) {
@@ -54,9 +60,23 @@ export function VerifyEmailPendingPage() {
       <div className="space-y-4">
         {resent && <SuccessStrip message="Verification email sent." />}
         {error !== null && <ErrorStrip message={error} />}
+        <AuthField
+          label="Registered email address"
+          htmlFor="verify-email-field"
+          hint="The address the verification link was sent to."
+        >
+          <Input
+            id="verify-email-field"
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </AuthField>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          {email !== "" && <>Requested for {email}. </>}
-          Didn't get it? Check your spam folder or resend the email.
+          Didn't get it? Check your spam folder, correct the address above if it
+          is wrong, then resend.
         </p>
         <Button
           type="button"
@@ -64,7 +84,7 @@ export function VerifyEmailPendingPage() {
           fullWidth
           onClick={handleResend}
           loading={sending}
-          disabled={cooldown > 0}
+          disabled={cooldown > 0 || email.trim() === ""}
         >
           {cooldown > 0 ? `Resend available in ${cooldown}s` : "Resend verification email"}
         </Button>

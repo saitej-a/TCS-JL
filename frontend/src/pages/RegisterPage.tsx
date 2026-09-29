@@ -55,7 +55,7 @@ export function RegisterPage() {
       // §10.1's install trigger counts a created account as one of its two
       // signals (9.4 Task 8) — recorded where the fact happens.
       recordAccountCreated();
-      navigate("/verify-email-pending", { replace: true });
+      navigate("/verify-email-pending", { replace: true, state: { email } });
     } catch (error) {
       const apiError = error as { code?: string; message?: string };
       if (apiError?.code === "EMAIL_TAKEN" || /already/i.test(apiError?.message ?? "")) {
