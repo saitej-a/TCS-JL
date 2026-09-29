@@ -1,7 +1,15 @@
 /**
- * §7.8 post detail (9.4 Task 5): back link → post card → action row →
- * composer → one-level thread, over the live API.
+ * §7.8 post detail, rebuilt to the `community_post_detail_and_discussion`
+ * composition (Phase 12): back link → post card (badge + relative time,
+ * headline, structured body, author row over a top border) → composer card
+ * with the uppercase WRITE A COMMENT header → the thread section as one card
+ * with a header-rule "COMMENTS & REPLIES (n)" strip.
  *
+ * The CommentThread component's internals (rails, collapse, closed-branch
+ * composer, counts) survive — the page restyles only its container/surroundings
+ * (G-4); any CommentThread change is className-level v2 repaint, never structure.
+ *
+ * Behavior contracts (unchanged):
  * - The §6.8 action row reuses `UpvotePill` untouched (the plan's fail-when)
  *   with the same reconcile contract the feed uses.
  * - Share copies the canonical URL (§6.7.1 toast); Report calls the real 8.1
@@ -10,7 +18,16 @@
  *   replaces the composer with the amber banner (rule 4); submit errors
  *   preserve the draft and show the §6.7 error strip.
  * - Reply flow: inline autofocus form beneath the parent (rule 2); the created
- *   node is inserted optimistically into the thread state.
+ *   node is inserted optimistically into the thread state (D-10 auto-expand).
+ *
+ * Recorded divergences (RECONCILIATION.md): the composition's "Posting as:
+ * Anonymous (Switch)" identity switcher has no API (identity is the profile's
+ * public_identity_mode) — the honest preview without a fake Switch is rendered
+ * instead; its "Markdown supported" footer line is fiction (the API stores
+ * plain text) and is not copied; its "Sort by: Most Relevant" select has no
+ * API (the endpoint returns one canonical ordering) and is omitted; the
+ * right-rail cards duplicate the dashboard's rail, which already fills the
+ * shell's slot; the "Verified Offer" author chip has no API basis.
  */
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -34,7 +51,6 @@ import { Textarea } from "@/components/Textarea";
 import { useToast } from "@/components/Toast";
 import { UpvotePill, type CommitVote } from "@/components/UpvotePill";
 import { useAuth } from "@/context/AuthContext";
-import { TYPOGRAPHY } from "@/theme/tokens";
 import { timeAgo } from "@/utils/date";
 
 const BACK_LINK_COPY = "← Back to Community Feed";
@@ -177,60 +193,68 @@ export function PostDetailPage(): React.ReactElement {
         {BACK_LINK_COPY}
       </Link>
 
-      {/* §7.8's post card: badge + relative time, title, body, author line. */}
-      <article className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-800">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+      {/* §7.8's post card: badge + relative time, headline, structured body,
+          author row over a top border, then the action row. */}
+      <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-800">
+        <div className="mb-3 flex items-center justify-between">
           <Badge.category code={post.category} />
-          <span className="text-xs text-slate-500 dark:text-slate-400">
+          <span className="text-xs font-normal text-slate-400 dark:text-slate-500">
             Posted {timeAgo(post.created_at)}
           </span>
         </div>
-        <h1 className={`${TYPOGRAPHY.cardTitle} mt-2 text-xl`}>{post.title}</h1>
-        <div className="mt-2 space-y-2">
+        <h1 className="text-2xl font-bold leading-snug tracking-tight text-slate-900 dark:text-slate-50">
+          {post.title}
+        </h1>
+        <div className="mt-4 space-y-3 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">
           {post.body.split("\n").filter((paragraph) => paragraph.trim() !== "").map((paragraph, index) => (
-            <p key={index} className={TYPOGRAPHY.bodyPrimary + " text-slate-700 dark:text-slate-300"}>
-              {paragraph}
-            </p>
+            <p key={index}>{paragraph}</p>
           ))}
         </div>
-        <div className="mt-3">
+
+        {/* The composition's author-and-metadata row over a top border. */}
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4 dark:border-slate-700">
           <IdentityPill author={post.author} />
         </div>
 
         {/* §6.8 action row: UpvotePill reused untouched, then 💬/Share/Report. */}
-        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3 dark:border-slate-700">
-          <UpvotePill
-            voted={vote?.voted ?? post.has_voted}
-            count={vote?.count ?? post.vote_count}
-            disabled={post.is_deleted}
-            disabledReason={post.is_deleted ? "This post has been removed; voting is closed." : undefined}
-            request={handleVote}
-            onCommit={setVote}
-          />
-          <span className="text-xs text-slate-500 dark:text-slate-400">
-            💬 {totalComments} Comment{totalComments === 1 ? "" : "s"}
-          </span>
-          <button
-            type="button"
-            onClick={() => void handleShare()}
-            disabled={post.is_deleted}
-            className="inline-flex min-h-[32px] items-center gap-1 rounded-lg px-2 text-xs font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
-          >
-            <span aria-hidden="true">🔗</span> Share
-          </button>
-          {!post.is_deleted && authenticated && (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 dark:border-slate-700">
+          <div className="flex flex-wrap items-center gap-2">
+            <UpvotePill
+              voted={vote?.voted ?? post.has_voted}
+              count={vote?.count ?? post.vote_count}
+              disabled={post.is_deleted}
+              disabledReason={post.is_deleted ? "This post has been removed; voting is closed." : undefined}
+              request={handleVote}
+              onCommit={setVote}
+            />
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              💬 {totalComments} Comment{totalComments === 1 ? "" : "s"}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
             <button
               type="button"
-              onClick={handleReport}
-              className="inline-flex min-h-[32px] items-center gap-1 rounded-lg px-2 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40"
+              onClick={() => void handleShare()}
+              disabled={post.is_deleted}
+              className="inline-flex min-h-[32px] items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
             >
-              <span aria-hidden="true">⚑</span> Report
+              <span aria-hidden="true">🔗</span> Share
             </button>
-          )}
+            {!post.is_deleted && authenticated && (
+              <button
+                type="button"
+                onClick={handleReport}
+                className="inline-flex min-h-[32px] items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-rose-600 transition-colors hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40"
+              >
+                <span aria-hidden="true">⚑</span> Report
+              </button>
+            )}
+          </div>
         </div>
       </article>
 
-      {/* Composer rules: locked banner (rule 4) → anonymous prompt → form. */}
+      {/* The composition's composer card with the uppercase section header;
+          the composer rules (locked → anonymous → form) are unchanged. */}
       {locked ? (
         <div
           data-testid="locked-banner"
@@ -240,12 +264,15 @@ export function PostDetailPage(): React.ReactElement {
         </div>
       ) : authenticated ? (
         <form
-          className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-800"
+          className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 dark:border-slate-800 dark:bg-slate-800"
           onSubmit={(event) => {
             event.preventDefault();
             void submitComment();
           }}
         >
+          <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            Write a comment
+          </h2>
           <Textarea
             label={COMPOSER_LABEL}
             placeholder={COMPOSER_PLACEHOLDER}
@@ -262,13 +289,15 @@ export function PostDetailPage(): React.ReactElement {
               Your comment could not be posted. Please try again — your draft is preserved.
             </div>
           )}
-          <button
-            type="submit"
-            disabled={submitting || draft.trim() === ""}
-            className="mt-3 flex min-h-[40px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800 disabled:opacity-50"
-          >
-            {COMPOSER_SUBMIT}
-          </button>
+          <div className="mt-3 flex items-center justify-end">
+            <button
+              type="submit"
+              disabled={submitting || draft.trim() === ""}
+              className="flex min-h-[40px] items-center rounded-lg bg-brand-700 px-5 text-sm font-medium text-white shadow-sm hover:bg-brand-800 disabled:opacity-50"
+            >
+              {COMPOSER_SUBMIT}
+            </button>
+          </div>
         </form>
       ) : (
         <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm dark:border-slate-800 dark:bg-slate-800" data-testid="anon-composer">
@@ -282,15 +311,27 @@ export function PostDetailPage(): React.ReactElement {
         </div>
       )}
 
-      <CommentThread
-        comments={comments}
-        totalComments={totalComments}
-        postId={id}
-        isLocked={locked}
-        canComment={authenticated}
-        onSubmitReply={submitReply}
-        newlyInsertedId={lastReplyId}
-      />
+      {/* The thread as one card with the composition's header-rule strip
+          ("COMMENTS & REPLIES (n)"); CommentThread's internals are untouched
+          (G-4) — this page only restyles the container around it. */}
+      <section className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800">
+        <div className="flex items-center justify-between border-b border-slate-100 px-4 pb-4 pt-5 sm:px-6 dark:border-slate-700">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+            Comments &amp; Replies ({totalComments})
+          </h2>
+        </div>
+        <div className="p-4 sm:p-6">
+          <CommentThread
+            comments={comments}
+            totalComments={totalComments}
+            postId={id}
+            isLocked={locked}
+            canComment={authenticated}
+            onSubmitReply={submitReply}
+            newlyInsertedId={lastReplyId}
+          />
+        </div>
+      </section>
     </main>
   );
 }
