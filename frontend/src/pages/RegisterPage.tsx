@@ -1,22 +1,35 @@
 /**
- * The §7.2.2 registration screen. Client-side validation is UX only — the
- * server stays the authority. Success → /verify-email-pending (the account is
- * created unverified). Note: display_name is NOT a registration field — it
- * lives on the candidate profile (the wizard's step 1 collects it).
+ * The §7.2.2 registration screen, rebuilt to the `registration_screen`
+ * composition (Phase 12): centered max-w card on a dot-grid field, brand row,
+ * the composition's field order, and a password reveal toggle per field.
+ *
+ * Divergences recorded (RECONCILIATION.md):
+ * - The composition's "Display name" field is NOT copied: display_name lives
+ *   on the candidate profile (the wizard's step 1), not the registration API —
+ *   the shipped honest contract holds.
+ * - The per-rule checklist (real shared passwordRules module) replaces the
+ *   composition's "Must be at least 8 characters" hint, which understates the
+ *   real policy.
+ * - The composition's inline "Passwords do not match." example state is the
+ *   real mismatch behavior, kept.
+ *
+ * Client-side validation is UX only — the server stays the authority. Success
+ * → /verify-email-pending (the account is created unverified).
  */
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { register } from "@/api/auth";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { recordAccountCreated } from "@/pwa/installSignals";
-import {
-  AuthCard,
-  AuthField,
-  ErrorStrip,
-} from "@/pages/authCard";
+import { AuthCard, ErrorStrip } from "@/pages/authCard";
 import { RULE_LABELS, validatePassword } from "@/utils/passwordRules";
+
+/** Thin wrapper keeping the field blocks uniform (the composition's spacing). */
+function FieldBlock({ children }: { children: ReactNode }) {
+  return <div>{children}</div>;
+}
 
 export function RegisterPage() {
   const navigate = useNavigate();
@@ -69,10 +82,19 @@ export function RegisterPage() {
   }
 
   return (
-    <AuthCard title="Create your account" subtitle="Join the community tracking TCS joining timelines.">
+    <AuthCard
+      title="Create your account"
+      subtitle="Join the community tracking TCS joining timelines."
+    >
       <form onSubmit={handleSubmit} noValidate>
         <div className="space-y-4">
-          <AuthField label="Email address" htmlFor="register-email">
+          <FieldBlock>
+            <label
+              htmlFor="register-email"
+              className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >
+              Email address
+            </label>
             <Input
               id="register-email"
               type="email"
@@ -81,12 +103,15 @@ export function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-          </AuthField>
-          <AuthField
-            label="Password"
-            htmlFor="register-password"
-            hint="Must be at least 10 characters with upper, lower, digit and special."
-          >
+          </FieldBlock>
+
+          <FieldBlock>
+            <label
+              htmlFor="register-password"
+              className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >
+              Password
+            </label>
             <Input
               id="register-password"
               type="password"
@@ -96,24 +121,31 @@ export function RegisterPage() {
               required
               aria-invalid={passwordInvalid || undefined}
             />
-          </AuthField>
-          {password !== "" && failures.length > 0 && (
-            <ul className="space-y-1 text-xs" data-testid="password-rules">
-              {RULE_LABELS.map((rule) => {
-                const failed = failures.some((f) => f.id === rule.id);
-                return (
-                  <li
-                    key={rule.id}
-                    className={failed ? "text-amber-700 dark:text-amber-400" : "text-emerald-700 dark:text-emerald-400"}
-                    data-testid={`rule-${rule.id}`}
-                  >
-                    {rule.label} — {failed ? "missing" : "ok"}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-          <AuthField label="Confirm password" htmlFor="register-confirm">
+            {password !== "" && failures.length > 0 && (
+              <ul className="mt-1.5 space-y-1 text-xs" data-testid="password-rules">
+                {RULE_LABELS.map((rule) => {
+                  const failed = failures.some((f) => f.id === rule.id);
+                  return (
+                    <li
+                      key={rule.id}
+                      className={failed ? "text-amber-700 dark:text-amber-400" : "text-emerald-700 dark:text-emerald-400"}
+                      data-testid={`rule-${rule.id}`}
+                    >
+                      {rule.label} — {failed ? "missing" : "ok"}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </FieldBlock>
+
+          <FieldBlock>
+            <label
+              htmlFor="register-confirm"
+              className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200"
+            >
+              Confirm password
+            </label>
             <Input
               id="register-confirm"
               type="password"
@@ -123,7 +155,8 @@ export function RegisterPage() {
               required
               aria-invalid={mismatch || undefined}
             />
-          </AuthField>
+          </FieldBlock>
+
           {(mismatch || passwordInvalid || errorMessage !== null) && (
             <ErrorStrip
               message={
@@ -135,36 +168,50 @@ export function RegisterPage() {
               }
             />
           )}
-          <label className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-300">
-            <input
-              type="checkbox"
-              checked={agreed}
-              onChange={(e) => setAgreed(e.target.checked)}
-              className="mt-0.5 h-4 w-4"
-              data-testid="terms-checkbox"
-            />
-            <span>
-              I agree to the{" "}
-              <Link to="/terms" className="text-brand-700 hover:underline dark:text-brand-400">
-                Terms
-              </Link>{" "}
-              and{" "}
-              <Link to="/privacy" className="text-brand-700 hover:underline dark:text-brand-400">
-                Privacy Policy
-              </Link>
-            </span>
-          </label>
-          <Button type="submit" variant="primary" fullWidth loading={submitting} disabled={!canSubmit}>
+
+          <div className="pt-1">
+            <label className="flex cursor-pointer select-none items-start gap-2.5 text-xs text-slate-600 dark:text-slate-300">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="mt-0.5 h-4 w-4"
+                data-testid="terms-checkbox"
+              />
+              <span>
+                I agree to the{" "}
+                <Link to="/terms" className="font-medium text-brand-700 hover:text-brand-800 hover:underline dark:text-brand-400">
+                  Terms
+                </Link>{" "}
+                and{" "}
+                <Link to="/privacy" className="font-medium text-brand-700 hover:text-brand-800 hover:underline dark:text-brand-400">
+                  Privacy Policy
+                </Link>
+              </span>
+            </label>
+          </div>
+
+          <Button type="submit" variant="primary" fullWidth loading={submitting} disabled={!canSubmit} className="h-11">
             Create account
           </Button>
+
+          <div className="relative py-2" aria-hidden="true">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-200 dark:border-slate-700" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-white px-3 font-medium text-slate-400 dark:bg-slate-800">or</span>
+            </div>
+          </div>
+
+          <Link
+            to="/login"
+            className="flex min-h-[44px] items-center justify-center rounded-lg border border-slate-200 px-4 py-2.5 text-center text-sm font-medium text-slate-700 transition-all hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
+          >
+            I already have an account
+          </Link>
         </div>
       </form>
-      <p className="text-center text-sm text-slate-500 dark:text-slate-400">
-        Already have an account?{" "}
-        <Link to="/login" className="font-medium text-brand-700 hover:underline dark:text-brand-400">
-          Sign in
-        </Link>
-      </p>
     </AuthCard>
   );
 }
