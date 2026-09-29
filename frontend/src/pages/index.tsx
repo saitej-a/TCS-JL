@@ -32,6 +32,7 @@ import { SettingsDevicesPage } from "@/pages/SettingsDevicesPage";
 import { SettingsSecurityPage } from "@/pages/SettingsSecurityPage";
 import { SettingsDangerPage } from "@/pages/SettingsDangerPage";
 import { AdminReportsPage } from "@/pages/AdminReportsPage";
+import { AdminAnnouncementsPage } from "@/pages/AdminAnnouncementsPage";
 
 export { LandingPage };
 export { LoginPage };
@@ -55,6 +56,7 @@ export { SettingsDevicesPage };
 export { SettingsSecurityPage };
 export { SettingsDangerPage };
 export { AdminReportsPage };
+export { AdminAnnouncementsPage };
 
 function StubPage({
   title,
@@ -97,17 +99,11 @@ export function TermsPage(): ReactElement {
 
 // Authenticated surfaces (RequireAuth) — 9.3 filled dashboard, timeline and
 // create-post; 9.4 filled post detail (§7.8, public read inside PublicShell),
-// analytics (§7.9, same) and notifications (§7.10); production settings
-// screens remain stubs below.
+// analytics (§7.9, same) and notifications (§7.10); 9.5 filled every settings
+// screen and both staff surfaces.
 
-// Settings — the hub shipped in 9.5 Task 2, profile in Task 3, privacy in
-// Task 4; the rest remain stubs until their 9.5 tasks land.
-
-// Staff-only surfaces: RequireStaff gates on the caller's own is_staff
-// (04 §113); server-side enforcement remains authoritative.
-export function AdminAnnouncementsPage(): ReactElement {
-  return <StubPage title="Announcements" list />;
-}
+// Settings — hub (T2), profile (T3), privacy (T4), devices (T5), security
+// (T6) and danger (T7) all shipped in 9.5; no settings stubs remain.
 
 export function NotFoundPage(): ReactElement {
   return (
