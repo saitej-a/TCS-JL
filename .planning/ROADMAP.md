@@ -387,6 +387,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 9. Frontend Single Page Application (React + Tailwind) | 0/4 | Not started | - |
 | 10. Security Audits, E2E Testing, Seed Data & Launch Readiness | 0/2 | Not started | - |
 | 11. Unlimited nested comment replies | 1/1 | Complete    | 2026-09-29 |
+| 12. Replace current screens with the Stitch designs | 0/1 | Planned | - |
 
 ### Phase 11: Unlimited nested comment replies
 
@@ -418,8 +419,14 @@ Plans:
 Two constraints carried into the work: (1) where a composition encodes mock fiction the backend never shipped (9.5's divergence ledger — e.g. profile categories, identity fields), the screen adopts the composition's **layout** but keeps the honest data contract, and the divergence stays recorded; (2) everything this phase moves stays under the v2 token system and passes the same contrast/accessibility gates (05 §4.1.1, the contrast-audit script). Also decided at planning: whether the 47 compositions are committed as the reference library or consumed untracked, and how the desktop/mobile variants map onto the responsive build.
 **Requirements**: TBD
 **Depends on:** Phase 11
-**Plans:** 0 plans
+**Plans:** 1 plan
 
 Plans:
 
-- [ ] TBD (run /gsd-plan-phase 12 to break down)
+- [ ] `12-01-PLAN.md` — Stitch-designs screen reconciliation (14 tasks, single wave: tracer
+  foundation + first screen → shell → auth/onboarding → dashboard → timeline+modals →
+  community+create-post modal → post detail → settings → admin → analytics → visitor/system
+  states → full gates → 45/45 RECONCILIATION audit). Decisions locked in `12-CONTEXT.md`:
+  structure-from-stale-HTML + v2 repaint (D-01), library committed (D-02), full parity (D-03),
+  landing/privacy now with awaiting-copy intact (D-04), lucide-react (D-05), per-screen-first
+  (D-06). UI contract: `12-UI-SPEC.md`.

@@ -1,14 +1,14 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 11
-current_phase_name: Unlimited nested comment replies
+current_phase: 12
+current_phase_name: Replace current screens with the Stitch designs
 status: ready
 stopped_at: Phase 12 context gathered (Phase 09.5.1 remains halted at the D-15/D-16 copy gate)
-last_updated: "2026-09-29T16:18:42.443Z"
+last_updated: "2026-09-29T16:45:54.952Z"
 last_activity: 2026-09-29
-last_activity_desc: "Phase 11 executed + verified (VERIFICATION.md status: passed)"
-state_head: 7174693104bc70539f88d8fae2f34fd7b70a39c8
+last_activity_desc: Phase 12 planned (12-01-PLAN.md, all gates green)
+state_head: 7d949a1fd526788efab091d08d147dd128161a2c
 progress:
   total_phases: 32
   completed_phases: 6
@@ -30,17 +30,19 @@ See: .planning/PROJECT.md (updated 2026-09-19)
 
 ## Current Position
 
-Phase: 11 (Unlimited nested comment replies) — EXECUTED + VERIFIED (2026-09-29)
-Plan: 1 of 1 — `11-01-PLAN.md`, all six tasks committed (T1 depth-rule deletion, T2 branch closure,
-T3 bounded assembly `8d2062f`, T4 deep thread UI `cb09409`, T5 gates, T6 supersession record `a914302`)
-Status: VERIFICATION.md `status: passed` — backend 878 passed / frontend 274 of 274 / lint 0 errors /
-build clean / makemigrations --check clean / contrast clean apart from the 2 documented demo rows;
-both fail-on-revert drills proven (depth-rule revert → 5 FAIL, flag bypass → 11 FAIL)
+Phase: 12 (Replace current screens with the Stitch designs) — READY TO EXECUTE
+Plan: 1 of 1 — `12-01-PLAN.md`, 14 tasks, single wave: tracer (lucide-react + custody +
+NotificationsPage) → shell → auth → onboarding → dashboard → timeline+modals → community+
+create-post modal → post detail → settings → admin → analytics → visitor/system states →
+full gates → the 45/45 RECONCILIATION audit. All gates green at plan time: 41/41 verify
+command paths, 41/41 failing directions, decision coverage 6/6, UI gate satisfied by
+`12-UI-SPEC.md` (structure-from-HTML + v2 repaint, Modal.tsx reuse, lucide icon contract,
+45-row reconciliation record).
 Previous phase: 9.5 EXECUTED + VERIFIED (2026-09-29) — gates re-derived in
 `.planning/phases/TCS-JL-09.5-ui-ux-design-pass-ui-ux-pro-max-stitch-screens/VERIFICATION.md`
 (backend 849 / frontend 231 / lint 0 errors / build clean / contrast 10-of-10; the Stitch
 re-theme of all 40 instances is VERIFICATION §4).
-Last activity: 2026-09-29 — Phase 11 executed + verified (VERIFICATION.md status: passed)
+Last activity: 2026-09-29 — Phase 12 planned (12-01-PLAN.md, all gates green)
 
 **Next up: the 09.5.1 copy gate.** The three legal content modules are data files —
 `frontend/src/pages/legal/about.ts` (mission + the non-affiliation boundary, no contribution-guidelines
