@@ -42,6 +42,7 @@ import { PublicOnly } from "@/routes/PublicOnly";
 import { PublicShell } from "@/routes/PublicShell";
 import { RequireAuth } from "@/routes/RequireAuth";
 import { RequireStaff } from "@/routes/RequireStaff";
+import { VisitorShell } from "@/layouts/VisitorShell";
 
 export const router = createBrowserRouter([
   { path: "/", element: <LandingPage /> },
@@ -58,9 +59,16 @@ export const router = createBrowserRouter([
       { path: "/analytics", element: <AnalyticsPage /> },
     ],
   },
-  { path: "/about", element: <AboutPage /> },
-  { path: "/privacy", element: <PrivacyPage /> },
-  { path: "/terms", element: <TermsPage /> },
+  // 9.5.1 Task 5: the three legal pages ride the shared §5.4 visitor shell
+  // (one layout route, three distinct URLs per §3.1 — D-05/D-13).
+  {
+    element: <VisitorShell />,
+    children: [
+      { path: "/about", element: <AboutPage /> },
+      { path: "/privacy", element: <PrivacyPage /> },
+      { path: "/terms", element: <TermsPage /> },
+    ],
+  },
   // Verification surfaces (§3.1: accessible; :token is "Unauthenticated / All")
   { path: "/verify-email-pending", element: <VerifyEmailPendingPage /> },
   { path: "/verify-email/:token", element: <VerifyEmailActionPage /> },

@@ -10,7 +10,6 @@
 import type { ReactElement } from "react";
 import { useLocation } from "react-router-dom";
 
-import { SkeletonCard, Skeleton as SkeletonLine } from "@/components/Skeleton";
 import { NotFoundPanel } from "@/components/ErrorPanels";
 import { LandingPage } from "@/pages/LandingPage";
 import { LoginPage } from "@/pages/LoginPage";
@@ -35,6 +34,9 @@ import { SettingsSecurityPage } from "@/pages/SettingsSecurityPage";
 import { SettingsDangerPage } from "@/pages/SettingsDangerPage";
 import { AdminReportsPage } from "@/pages/AdminReportsPage";
 import { AdminAnnouncementsPage } from "@/pages/AdminAnnouncementsPage";
+import { AboutPage } from "@/pages/AboutPage";
+import { PrivacyPage } from "@/pages/PrivacyPage";
+import { TermsPage } from "@/pages/TermsPage";
 
 export { LandingPage };
 export { LoginPage };
@@ -59,43 +61,13 @@ export { SettingsSecurityPage };
 export { SettingsDangerPage };
 export { AdminReportsPage };
 export { AdminAnnouncementsPage };
+export { AboutPage };
+export { PrivacyPage };
+export { TermsPage };
 
-function StubPage({
-  title,
-  list = false,
-}: {
-  title: string;
-  list?: boolean;
-}): ReactElement {
-  return (
-    <main className="p-6 max-w-3xl mx-auto space-y-4">
-      <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{title}</h1>
-      <SkeletonLine />
-      {list ? (
-        <>
-          <SkeletonCard />
-          <SkeletonCard />
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Nothing here yet.
-          </p>
-        </>
-      ) : (
-        <SkeletonCard />
-      )}
-    </main>
-  );
-}
-
-// 05 §3 sitemap — public / informational
-export function AboutPage(): ReactElement {
-  return <StubPage title="About" />;
-}
-export function PrivacyPage(): ReactElement {
-  return <StubPage title="Privacy Policy" />;
-}
-export function TermsPage(): ReactElement {
-  return <StubPage title="Terms of Service" />;
-}
+// 05 §3 sitemap — public / informational: the three legal pages shipped in
+// 9.5.1 Task 5 as real components (AboutPage/PrivacyPage/TermsPage files);
+// exported above. No stubs remain — the 9.1 stub era ends here.
 
 // Auth surfaces (PublicOnly) — the real 9.2 screens are re-exported above.
 

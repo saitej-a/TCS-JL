@@ -4,6 +4,7 @@
  * booting hides the zone — plus the footer link row and disclaimer.
  */
 import { render, screen, waitFor, within } from "@testing-library/react";
+import type { AxiosAdapter } from "axios";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -11,7 +12,6 @@ import { apiClient } from "@/api/client";
 import { routeAdapter } from "@/test/axiosTestHelper";
 import { AuthProvider } from "@/context/AuthContext";
 import { VisitorFooter } from "@/layouts/VisitorFooter";
-import { VisitorHeader } from "@/layouts/VisitorHeader";
 import { VisitorShell } from "@/layouts/VisitorShell";
 import * as tokenStore from "@/api/tokenStore";
 
@@ -36,7 +36,7 @@ beforeEach(() => {
   vi.spyOn(tokenStore, "getAccessToken").mockReturnValue(null);
 });
 
-const bootingAdapter = () => new Promise(() => undefined); // never resolves
+const bootingAdapter: AxiosAdapter = () => new Promise(() => undefined); // never resolves
 
 describe("VisitorFooter", () => {
   it("renders the §5.4 link row above the shipped footer disclaimer", () => {
