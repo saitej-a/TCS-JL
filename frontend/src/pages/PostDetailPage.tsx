@@ -59,6 +59,8 @@ export function PostDetailPage(): React.ReactElement {
 
   const [comments, setComments] = useState<import("@/types/community").CommentNode[] | null>(null);
   const [totalComments, setTotalComments] = useState(0);
+  /** The most recent reply's id — CommentThread auto-expands its path (D-10). */
+  const [lastReplyId, setLastReplyId] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(false);
@@ -133,7 +135,8 @@ export function PostDetailPage(): React.ReactElement {
   }
 
   async function submitReply(parentId: string, body: string): Promise<void> {
-    await createPostComment(id, { body, parent_id: parentId });
+    const created = await createPostComment(id, { body, parent_id: parentId });
+    setLastReplyId(created.id);
     loadComments();
   }
 
@@ -282,9 +285,11 @@ export function PostDetailPage(): React.ReactElement {
       <CommentThread
         comments={comments}
         totalComments={totalComments}
+        postId={id}
         isLocked={locked}
         canComment={authenticated}
         onSubmitReply={submitReply}
+        newlyInsertedId={lastReplyId}
       />
     </main>
   );

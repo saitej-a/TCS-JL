@@ -100,9 +100,18 @@ import type {
   ReportCreatePayload,
 } from "@/types/community";
 
-/** `GET /community/posts/{id}/comments/` (04 §39) — one page, top-level + replies. */
+/** `GET /community/posts/{id}/comments/` (04 §39) — one page, bounded subtrees. */
 export function listPostComments(postId: string): Promise<CommentPage> {
   return apiGet<CommentPage>(`/community/posts/${postId}/comments/`);
+}
+
+/**
+ * The "continue this thread" fetch (Phase 11 D-08, R3): `?parent=<id>` returns
+ * that node's bounded subtree with the same depth bound and true counts. One
+ * owner (this function); no new route.
+ */
+export function fetchCommentSubtree(postId: string, parentId: string): Promise<CommentPage> {
+  return apiGet<CommentPage>(`/community/posts/${postId}/comments/`, { parent: parentId });
 }
 
 export function createPostComment(

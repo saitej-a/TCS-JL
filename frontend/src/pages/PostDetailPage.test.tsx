@@ -45,6 +45,8 @@ function topLevel(overrides: Partial<CommentNode> = {}): CommentNode {
     author: { ...POST.author, id: "a2" },
     body: "Mine arrived last week.",
     is_deleted: false,
+    descendant_count: 1,
+    is_branch_closed: false,
     replies: [
       {
         id: "r1",
@@ -53,6 +55,8 @@ function topLevel(overrides: Partial<CommentNode> = {}): CommentNode {
         author: { ...POST.author, id: "a3" },
         body: "Congrats! Mine is still pending.",
         is_deleted: false,
+        descendant_count: 0,
+        is_branch_closed: false,
         replies: [],
         created_at: "2026-09-21T10:00:00Z",
         updated_at: "2026-09-21T10:00:00Z",
@@ -130,26 +134,22 @@ function scriptPost(overrides: Partial<typeof POST> = {}) {
 }
 
 describe("PostDetailPage (§7.8)", () => {
-  it("renders the post card, action row and one-level thread", async () => {
+  it("renders the post card, action row and the nested thread", async () => {
     authenticatedScript([
       { url: "/posts/p1/", respond: () => ({ status: 200, data: POST }) },
       { url: "/posts/p1/comments/", respond: () => commentPage([topLevel()]) },
     ]);
 
-    // The page's own fetches consume the first steps; the boot refresh resolves
-    // out of band and flips the provider to authenticated (composer appears).
     expect(await screen.findByText("Anyone from Hyderabad got JL?")).toBeInTheDocument();
-    await waitFor(() => {
-      expect(screen.getByRole("button", { name: "Reply" })).toBeInTheDocument();
-    });
     expect(screen.getByText("Asking for the August batch.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Upvote/ })).toBeInTheDocument();
     expect(screen.getByText(/3 Comments/)).toBeInTheDocument();
-    // Top-level row + nested reply, exactly one level deep.
+    // Nested reply renders in place.
     expect(await screen.findByText("Mine arrived last week.")).toBeInTheDocument();
-    expect(screen.getByText("Congrats! Mine is still pending.")).toBeInTheDocument();
-    // Replies render Report only — no Reply button inside a reply.
-    expect(screen.getAllByRole("button", { name: "Reply" }).length).toBe(1);
+    expect(await screen.findByText("Congrats! Mine is still pending.")).toBeInTheDocument();
+    // D-09 (supersedes the old "replies render Report only" rule): every node
+    // offers Reply — root + its reply, parent's button first in document order.
+    expect(screen.getAllByRole("button", { name: "Reply" })).toHaveLength(2);
   });
 
   it("autofocuses the inline reply form beneath its parent and POSTs parent_id", async () => {
@@ -174,7 +174,9 @@ describe("PostDetailPage (§7.8)", () => {
     );
     await screen.findByText("Mine arrived last week.");
 
-    await user.click(screen.getByRole("button", { name: "Reply" }));
+    // Document order puts the root's Reply first; the POST assertion below
+    // proves it opened c1's form (not the nested reply's).
+    await user.click(screen.getAllByRole("button", { name: "Reply" })[0]);
     const box = screen.getByLabelText("Write a reply");
     expect(box).toHaveFocus();
     await user.type(box, "Thanks, hopeful news!");

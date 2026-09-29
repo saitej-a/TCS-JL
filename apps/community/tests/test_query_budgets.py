@@ -150,21 +150,41 @@ def test_subtree_fetch_returns_the_branch(api, auth_api, make_post, make_comment
     assert node["descendant_count"] == 2  # leaf + deep
 
 
-def test_subtree_fetch_rejects_closed_or_removed_parent(api, auth_api, make_post, make_comment):
-    """A removed or branch-closed parent 400s (branch_closed) — the fetch
-    cannot reopen what the write path closes."""
+def test_subtree_fetch_serves_closed_branches_read_only(api, auth_api, make_post, make_comment):
+    """D-04: closure stops growth, not visibility — a `?parent=` read inside a
+    closed branch still serves the subtree (the branch's present is already on
+    screen; this extends what is visible). Only the WRITE path rejects."""
     _client, author = auth_api()
     post = make_post(author=author)
     top = make_comment(post, author=author)
     mid = make_comment(post, author=author, parent=top)
+    make_comment(post, author=author, parent=mid)
     soft_delete_comment(top)
 
     reader_client, _reader = auth_api()
     response = reader_client.get(
         f"/api/v1/community/posts/{post.id}/comments/?parent={mid.id}"
     )
-    assert response.status_code == 400
-    assert response.json()["error"]["code"] == "branch_closed"
+    assert response.status_code == 200
+    (node,) = response.json()["results"]
+    assert node["is_branch_closed"] is True
+    assert node["descendant_count"] == 1
+
+
+def test_subtree_fetch_unknown_or_foreign_parent_404s(api, auth_api, make_post, make_comment):
+    """`_resolve_parent`'s verdict: missing or cross-post parent → 404."""
+    _client, author = auth_api()
+    post = make_post(author=author)
+    foreign_post = make_post(author=author)
+    foreign_parent = make_comment(foreign_post, author=author)
+
+    reader_client, _reader = auth_api()
+    missing = reader_client.get(f"/api/v1/community/posts/{post.id}/comments/?parent=00000000-0000-0000-0000-000000000000")
+    assert missing.status_code == 404
+    foreign = reader_client.get(
+        f"/api/v1/community/posts/{post.id}/comments/?parent={foreign_parent.id}"
+    )
+    assert foreign.status_code == 404
 
 
 def test_throttle_scope_registered(settings):

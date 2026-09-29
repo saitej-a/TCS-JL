@@ -490,10 +490,11 @@ class CommentListCreateView(CommunityErrorMixin, APIView):
         post = _get_live_post(kwargs["pk"], for_read=True)
 
         # Phase 11 R3: `?parent=<id>` returns that node's bounded subtree —
-        # the "continue this thread" fetch. Same post required; a removed or
-        # branch-closed parent 404s/400s like the write path (the branch's
-        # *present* was already delivered in the page response; this only ever
-        # extends what is already visible).
+        # the "continue this thread" fetch. Same post required (foreign or
+        # missing parent → 404, `_resolve_parent`'s verdict). A removed or
+        # branch-closed parent is still a **read** — D-04 closes growth, never
+        # visibility — so the fetch serves it like any other read; only the
+        # WRITE path rejects closed branches.
         parent_param = request.query_params.get("parent")
         if parent_param:
             parent = (
@@ -503,11 +504,6 @@ class CommentListCreateView(CommunityErrorMixin, APIView):
             )
             if parent is None:
                 raise _ContentNotFound("comment")
-            if parent.is_deleted or parent.branch_closed_by_id is not None:
-                return Response(
-                    {"error": {"code": "branch_closed", "message": "Replies are closed above a removed comment."}},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
             page = svc.subtree(post, parent)
         else:
             page_size = _page_size(request)
