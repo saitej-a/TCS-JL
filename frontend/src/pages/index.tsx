@@ -8,8 +8,10 @@
  * below remain for the routes later sub-phases own.
  */
 import type { ReactElement } from "react";
+import { useLocation } from "react-router-dom";
 
 import { SkeletonCard, Skeleton as SkeletonLine } from "@/components/Skeleton";
+import { NotFoundPanel } from "@/components/ErrorPanels";
 import { LandingPage } from "@/pages/LandingPage";
 import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
@@ -106,12 +108,10 @@ export function TermsPage(): ReactElement {
 // (T6) and danger (T7) all shipped in 9.5; no settings stubs remain.
 
 export function NotFoundPage(): ReactElement {
+  const location = useLocation();
   return (
-    <main className="p-6 max-w-3xl mx-auto space-y-4">
-      <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Page not found</h1>
-      <p className="text-sm text-slate-500 dark:text-slate-400">
-        The page you are looking for does not exist or may have moved.
-      </p>
+    <main className="flex min-h-screen items-center justify-center p-6">
+      <NotFoundPanel path={location.pathname + location.search} />
     </main>
   );
 }

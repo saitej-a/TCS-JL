@@ -1,10 +1,13 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 
+import { ServerErrorPanel, makeReferenceId } from "@/components/ErrorPanels";
+
 /**
- * The route-level Error Boundary (Task 3). 11 §4.2's copy VERBATIM:
- * "Something went wrong." + a "Reload Application" button. Raw error details
- * go to the console (the single logging place) and are never rendered to the
- * user.
+ * The route-level Error Boundary (Task 3, upgraded by 9.5 Task 10): 11 §4.2's
+ * copy, plus a copyable reference id and a collapsible technical detail.
+ * The id shown to the user is the same one logged — one console line per
+ * crash, resolvable by reference. Raw error text only ever appears inside the
+ * collapsed detail; the headline copy stays verbatim.
  */
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -12,18 +15,29 @@ interface ErrorBoundaryProps {
 
 interface ErrorBoundaryState {
   hasError: boolean;
+  referenceId: string | null;
+  detail: string;
 }
 
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  state: ErrorBoundaryState = { hasError: false };
+  state: ErrorBoundaryState = { hasError: false, referenceId: null, detail: "" };
 
-  static getDerivedStateFromError(): ErrorBoundaryState {
+  static getDerivedStateFromError(): Partial<ErrorBoundaryState> {
+    // The id is minted in componentDidCatch: getDerivedStateFromError must
+    // stay pure, and the catch hook always follows it before render.
     return { hasError: true };
   }
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
-    // One logging place — no raw error surfaces in the UI.
-    console.error("[ErrorBoundary]", error, info.componentStack);
+    const referenceId = makeReferenceId();
+    const detail = [String(error.message), info.componentStack ?? ""]
+      .filter((part) => part !== "")
+      .join("\n");
+    // One logging place — the same id the panel displays.
+    console.error(`[ErrorBoundary] ${referenceId}`, error, info.componentStack);
+    // React may re-enter before the state update flushes (e.g. StrictMode
+    // double-invoke); the latest id wins and it is the one logged last.
+    this.setState({ referenceId, detail });
   }
 
   private handleReload = (): void => {
@@ -33,22 +47,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   render(): ReactNode {
     if (this.state.hasError) {
       return (
-        <div
-          role="alert"
-          className="min-h-screen flex flex-col items-center justify-center gap-4 p-8 text-center"
-        >
-          <h1 className="text-2xl font-bold">Something went wrong.</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            An unexpected error occurred. Reloading the application usually resolves it.
-          </p>
-          <button
-            type="button"
-            onClick={this.handleReload}
-            className="bg-brand-700 hover:bg-brand-800 active:bg-brand-900 text-white font-medium rounded-lg shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 transition-colors h-10 px-4 text-sm"
-          >
-            Reload Application
-          </button>
-        </div>
+        <ServerErrorPanel
+          referenceId={this.state.referenceId ?? "E-UNKNOWN"}
+          detail={this.state.detail === "" ? undefined : this.state.detail}
+          onReload={this.handleReload}
+        />
       );
     }
 

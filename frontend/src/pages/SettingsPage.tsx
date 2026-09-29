@@ -10,7 +10,7 @@
  * Annotation artifacts of the mock (DESIGN NOTE captions, dark-mapping strips,
  * the "Mode: Light" label) are deliberately absent — 09.5-CONTEXT §5.2.
  */
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { getProfile } from "@/api/profile";
@@ -18,6 +18,7 @@ import { listDevices } from "@/api/notifications";
 import { isPushDenied } from "@/pwa/pushClient";
 import { useAuth } from "@/context/AuthContext";
 import { Disclaimer } from "@/components/Disclaimer";
+import { SectionRetry } from "@/components/ErrorPanels";
 import { SettingsLayout } from "@/layouts/SettingsLayout";
 import { TYPOGRAPHY } from "@/theme/tokens";
 import { STATUS_BADGE_CLASSES, STATUS_LABELS } from "@/theme/badges";
@@ -64,20 +65,39 @@ function pushStateCopy(): { label: string; detail: string } {
 function AccountSummary(): ReactElement {
   const { user } = useAuth();
   const [profile, setProfile] = useState<CandidateProfilePrivate | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [retrying, setRetrying] = useState(false);
 
-  useEffect(() => {
+  const loadProfile = useCallback((): (() => void) => {
     let cancelled = false;
+    setRetrying(true);
     getProfile()
       .then((p) => {
-        if (!cancelled) setProfile(p);
+        if (!cancelled) {
+          setProfile(p);
+          setFailed(false);
+        }
       })
       .catch(() => {
-        if (!cancelled) setProfile(null);
+        // Unknown stays unknown; the failure additionally raises the inline
+        // retry so the section can recover without a page reload (Task 10).
+        if (!cancelled) {
+          setProfile(null);
+          setFailed(true);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setRetrying(false);
       });
     return () => {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    const cleanup = loadProfile();
+    return cleanup;
+  }, [loadProfile]);
 
   const status = profile === null ? null : profile.current_status;
   const statusClasses =
@@ -139,6 +159,19 @@ function AccountSummary(): ReactElement {
           </dd>
         </div>
       </dl>
+      {failed && (
+        <div className="mt-3">
+          <SectionRetry
+            message="The account summary could not be loaded."
+            // Retry clicks discard the cleanup — harmless for an idempotent
+            // GET (a stale in-flight response carries the same data).
+            onRetry={() => {
+              loadProfile();
+            }}
+            retrying={retrying}
+          />
+        </div>
+      )}
     </section>
   );
 }

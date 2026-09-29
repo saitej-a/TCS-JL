@@ -100,9 +100,17 @@ export const router = createBrowserRouter([
           { path: "/admin/announcements", element: <AdminAnnouncementsPage /> },
         ],
       },
+      // 9.5 Task 10: an unknown route inside the app keeps the shell —
+      // the catch-all is a child of RequireAuth, so AppShell renders around
+      // it. Static segments score above splats, so /dashboard etc. still
+      // win; only genuinely unknown paths land here. A 404 below /community
+      // (an unknown post id, say) is DATA — that page's own error state —
+      // not this routing panel.
+      { path: "*", element: <NotFoundPage /> },
     ],
   },
-  // Catch-all 404
+  // Chromeless 404 for unknown routes outside the app (visitors): same
+  // panel, no shell, per the screen's public-frame variant.
   { path: "*", element: <NotFoundPage /> },
 ]);
 
