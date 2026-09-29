@@ -1,18 +1,18 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 09.5.1
-current_phase_name: Legal pages + auth reconciliation
-status: halted
-stopped_at: Phase 11 context gathered (Phase 09.5.1 still halted at the D-15/D-16 copy gate)
-last_updated: "2026-09-29T10:57:40.169Z"
+current_phase: 11
+current_phase_name: Unlimited nested comment replies
+status: ready
+stopped_at: Phase 11 planned (Phase 09.5.1 remains halted at the D-15/D-16 copy gate)
+last_updated: "2026-09-29T12:19:05.301Z"
 last_activity: 2026-09-29
-last_activity_desc: Phase 11 context gathered — 12 decisions across 3 areas (depth rule, tombstone/closed branches, rendering); Phase 09.5.1 remains halted at the copy gate
-state_head: ee30215778313e790be4a3cf5422b0a97efe0627
+last_activity_desc: Phase 11 planned — 11-01-PLAN.md (6 tasks, one wave) passed all gates; Phase 09.5.1 still halted at the copy gate
+state_head: dd6f5216c6d2f51793f270f81d61517e69d0e54e
 progress:
   total_phases: 31
   completed_phases: 6
-  total_plans: 19
+  total_plans: 20
   completed_plans: 19
 milestone_name: milestone
 ---
@@ -30,35 +30,26 @@ See: .planning/PROJECT.md (updated 2026-09-19)
 
 ## Current Position
 
-Phase: 09.5.1 (Legal pages + auth reconciliation) — **HALTED at the D-15/D-16 copy gate**
-Plan: 1 of 1 — `09.5.1-01-PLAN.md` (6 tasks; 5 shipped, the copy half of Task 5 outstanding)
-Status: **Task 1** (shared `passwordRules.ts` + the backend parity test that reads it — kills the
-"8 characters" bug both password forms shipped against the server's min-10 + four classes),
-**Task 2** (the resend `window.prompt` replaced by an in-card labelled email prefilled through
-router state), **Task 3** (Reset on the real rules, the real **60-minute** single-use window,
-wrapping-safe token display, toggles verified not rebuilt), **Task 4** (the auth-aware §5.4
-visitor shell — `VisitorHeader`/`VisitorFooter`/`VisitorShell` — with Landing composed onto it)
-and **Task 5's structure** (`LegalLayout` + the three content modules + real `/about`,
-`/privacy`, `/terms` pages replacing the last three `StubPage` stubs) are committed —
-`36214e0`, `201bebf`, `0c47016`, `64a3246`, `7643bc8`. **Task 6**'s gate sweep ran green
-(frontend 264 tests / 49 files, lint 0 errors, typecheck + `tsc -b --force` clean, build clean;
-backend **855 passed**; contrast audit all 10 real pairs PASS, 9.5's two deliberate demo rows
-unchanged) but its `VERIFICATION.md` is deliberately withheld until the copy lands.
-**Why halted:** D-16 — the legal pages ship the user's own words or nothing. The modules
-currently render the honest awaiting-copy state (title + the shared honesty line +
-"This page has no published sections yet."); no placeholder prose and no invented policy text
-is on disk. Copy goes into `frontend/src/pages/legal/{about,privacy,terms}.ts` as data; the
-paste maps live in each module's doc comment and the banned-fiction ledger in `copy.test.ts`.
-Resume list: `09.5.1-01-SUMMARY.md`; halt handoff: the phase dir's `.continue-here.md`.
-The design half — five missing screens — stays catalogued in `09.5.1-CONTEXT.md` (§1–§5);
-the screens are layout references, cleaned of annotation artifacts (§3.3).
+Phase: 11 (Unlimited nested comment replies) — READY TO EXECUTE
+Plan: 1 of 1 — `11-01-PLAN.md` (6 tasks, single wave — Task 1 deletes the depth rule and
+rewrites both rule-pinning tests with a fail-on-revert drill; Task 2 ships branch closure
+(`branch_closed_by`, migration 0003 + backfill, comparison-based restore); Task 3 replaces
+`comment_page` with bounded assembly (render depth 5, true per-node counts, the `?parent=`
+subtree fetch, the re-derived COMM-08 budget); Task 4 reshapes `CommentThread` (capped-indent
+rails, `replying to @author`, breadth collapse, continue-this-thread, closed-branch composer);
+Task 5 runs the full gates; Task 6 rewrites the five sources asserting the old rule — including
+the two extra "1-level" sites the checker caught (REQUIREMENTS' status row, PROJECT.md's
+unchecked COMM-03 line) — and writes VERIFICATION.md)
+Status: all planning gates green — plan-structure valid, verify-command paths 19/19,
+failing-directions 19/19, decision coverage 12/12, references/artifacts/key-links clean;
+the UI-SPEC pins the render constants (depth 5, breadth 3) and the copy contract
 Previous phase: 9.5 EXECUTED + VERIFIED (2026-09-29) — gates re-derived in
 `.planning/phases/TCS-JL-09.5-ui-ux-design-pass-ui-ux-pro-max-stitch-screens/VERIFICATION.md`
 (backend 849 / frontend 231 / lint 0 errors / build clean / contrast 10-of-10; the Stitch
 re-theme of all 40 instances is VERIFICATION §4).
-Last activity: 2026-09-29 — Phase 09.5.1 executed through Task 5's structure, then halted at the copy gate
+Last activity: 2026-09-29 — Phase 11 planned (all gates green); Phase 09.5.1 remains halted at the copy gate
 
-**Next up: plan Phase 11** (`/gsd-plan-phase 11` — its context is gathered; the UI safety gate requires a UI-SPEC, which is written during planning).
+**Next up: execute Phase 11** (`/clear` then `/gsd-execute-phase 11`).
 **Also open: the 09.5.1 copy gate.** The three legal content modules are data files —
 `frontend/src/pages/legal/about.ts` (mission + the non-affiliation boundary, no contribution-guidelines
 section), `privacy.ts` (the seven slots in its doc comment: what we collect, email handling **masked**
@@ -68,6 +59,7 @@ threshold-suppressed community data) and `terms.ts` (acceptable use mirroring th
 the report flow, non-affiliation). With the copy in place: re-run Task 5's verify block and Task 6's full
 sweep, write `VERIFICATION.md`, flip `09.5.1-01-SUMMARY.md`'s `status:` to `complete`, delete
 `.continue-here.md`, then `/gsd-verify-work 09.5.1`.
+Resume list: `09.5.1-01-SUMMARY.md`; halt handoff: the phase dir's `.continue-here.md`.
 **Delivery order worth knowing:** 9.5.1's second half is what unblocks the design pass's own gap —
 the info/legal routes were the last three stubs (9.1 D9), and `landing`'s header/footer links exist
 because 9.5.1 Task 4 built the §5.4 shell they needed.
