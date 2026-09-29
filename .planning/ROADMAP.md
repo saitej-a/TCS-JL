@@ -410,3 +410,16 @@ Plans:
 - **Read path**: the thread is assembled top-level + one `replies` level. Depth-N assembly is a new query shape (recursive CTE vs `prefetch_related` walk) with N+1 and pagination consequences — `MAX_DEPTH` is **not** in the current model.
 - **UI**: indentation stops being a level marker; 05's mobile rationale for the cap (runaway indentation) has to be answered by the actual design (depth rails, "replying to @author" context, collapse, or a focus-in thread) — `CommentThread.tsx` today renders exactly one `border-l-2 pl-4` unit and a Reply button only on top-level rows.
 - **Tests that pin the old rule by name**: `apps/community/tests/test_reply_depth.py` and `test_comment_api.py`'s `nested_reply` case — these must be rewritten deliberately with the supersession documented, never silently greened.
+
+### Phase 12: Replace current screens with the Stitch designs
+
+**Goal:** Rebuild the everyday screens' *structure* to match the 47 Stitch compositions in `frontend/stitch designs/` — layout, hierarchy, and component arrangement, not the token skin Phase 9.5 already applied. The library covers every major surface (candidate dashboard ×2, recruitment timeline ×2, community feed/post detail/create-post, the settings suite, admin moderation + announcements, auth/onboarding, notification center, PWA install/push/offline states, error/empty route states, plus a desktop dark-mode shell and dedicated mobile shells for app shell, dashboard, and feed). Every screen is reconciled section-by-section against its composition; compositions showing states the current build lacks (empty/filtered feed, the create-post modal, the milestone add/edit modal) are implemented, not skipped.
+
+Two constraints carried into the work: (1) where a composition encodes mock fiction the backend never shipped (9.5's divergence ledger — e.g. profile categories, identity fields), the screen adopts the composition's **layout** but keeps the honest data contract, and the divergence stays recorded; (2) everything this phase moves stays under the v2 token system and passes the same contrast/accessibility gates (05 §4.1.1, the contrast-audit script). Also decided at planning: whether the 47 compositions are committed as the reference library or consumed untracked, and how the desktop/mobile variants map onto the responsive build.
+**Requirements**: TBD
+**Depends on:** Phase 11
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run /gsd-plan-phase 12 to break down)
