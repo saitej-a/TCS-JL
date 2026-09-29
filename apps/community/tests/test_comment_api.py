@@ -87,17 +87,24 @@ def test_comment_on_deleted_post_404(api, auth_api, make_post):
     assert response.json()["error"]["code"] == "content_deleted"
 
 
-def test_reply_to_reply_rejected_nested_reply(api, auth_api, make_post, make_comment):
-    """04 §42's model rule #1 — nested replies are impossible."""
+def test_reply_to_reply_accepted_unlimited_depth(api, auth_api, make_post, make_comment):
+    """Phase 11 (D-01): the former rule #1 — `nested_reply`, a 400 on any
+    reply-to-a-reply — is superseded. A reply may attach to a reply at any depth;
+    this case is deliberately flipped from the old 400 to a 201 so the wire
+    contract itself pins the unlimited-depth rule. Superseded by Phase 11,
+    2026-09-29; the removal of the `nested_reply` code is recorded in the
+    phase's divergence ledger (VERIFICATION.md)."""
     client, author = auth_api()
     post = make_post(author=author)
     top = make_comment(post, author=author)
     reply = make_comment(post, author=author, parent=top)
     response = client.post(
-        comments_url(post), {"body": "too deep", "parent_id": str(reply.id)}, format="json"
+        comments_url(post), {"body": "now allowed at depth", "parent_id": str(reply.id)}, format="json"
     )
-    assert response.status_code == 400
-    assert response.json()["error"]["code"] == "nested_reply"
+    assert response.status_code == 201
+    body = response.json()
+    assert str(body["parent"]) == str(reply.id)
+    assert body["is_deleted"] is False
 
 
 def test_reply_across_posts_rejected(api, auth_api, make_post, make_comment):

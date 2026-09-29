@@ -4,9 +4,11 @@ These raise Django's `ValidationError` so they work from both `Model.clean()`
 (admin/forms) and the service functions; the services translate their codes into
 the community error vocabulary (see `services.py`).
 
-The reply-depth rule is the interesting one: 04 §42 lists three model-level rules
-for creating a comment, and all three are checked here from **ids** — never by
-walking ancestors — so the check is O(1) and safe on unsaved instances.
+The reply rules are the interesting ones: 04 §42 (as rewritten by Phase 11) checks
+the parent from **ids** — never by walking ancestors — so each check is O(1) and
+safe on unsaved instances. There is **no depth rule**: any comment in a post may
+be replied to at any depth (Phase 11 / D-01 — formerly the `nested_reply`
+rejection; removed by Phase 11 and recorded in its divergence ledger).
 """
 
 from django.conf import settings
@@ -18,7 +20,6 @@ TITLE_MAX_LENGTH = 200
 CATEGORY_CODE = "invalid_category"
 BLANK_CODE = "blank_content"
 TITLE_LENGTH_CODE = "title_too_long"
-NESTED_REPLY_CODE = "nested_reply"
 PARENT_MISMATCH_CODE = "parent_post_mismatch"
 PARENT_DELETED_CODE = "parent_deleted"
 
@@ -64,25 +65,25 @@ def validate_title_length(value) -> None:
 
 
 def validate_reply_depth(comment) -> None:
-    """Enforce T5.2 + 04 §42's three reply rules, in a fixed order.
+    """Enforce the surviving parent rules from 04 §42 (rewritten by Phase 11).
 
-    1. ``nested_reply`` — the parent is already a reply (strict 1-level nesting).
-    2. ``parent_post_mismatch`` — the parent belongs to a different post.
-    3. ``parent_deleted`` — the parent is soft-deleted; a removed comment accepts
+    The name stays accurate: this still validates the *reply's parent*. There is
+    deliberately **no depth check** — "unlimited" is literal (Phase 11 D-01), and
+    re-introducing a cap would contradict rows already stored beyond it. What
+    remains:
+
+    1. ``parent_post_mismatch`` — the parent belongs to a different post.
+    2. ``parent_deleted`` — the parent is soft-deleted; a removed comment accepts
        no new replies (its tombstone stays visible in the thread, but the
        conversation under it is closed).
 
-    A `None` parent (a top-level comment) is always valid.
+    A `None` parent (a top-level comment) is always valid. The former
+    ``nested_reply`` depth check is gone — a reply-to-a-reply is now a normal
+    create, and the vocabulary no longer reserves a code for rejecting it.
     """
     parent = comment.parent
     if parent is None:
         return
-
-    if parent.parent_id is not None:
-        raise ValidationError(
-            "A reply cannot itself be a reply to another reply.",
-            code=NESTED_REPLY_CODE,
-        )
 
     post_id = comment.post_id if comment.post_id is not None else getattr(comment.post, "pk", None)
     if post_id is None or parent.post_id != post_id:

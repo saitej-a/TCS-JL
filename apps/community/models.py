@@ -4,9 +4,10 @@ Domain shape (03 §9-§11):
 
 * `Post` — a categorized discussion thread. Counters are **not** stored: votes and
   comments are aggregated at read time (03 §9, §29, §30) so they can never drift.
-* `Comment` — a thread comment with a nullable self-FK giving strict 1-level
-  replies. `parent` is `SET_NULL` rather than `CASCADE` so a hard delete can never
-  destroy a sub-thread's content; soft delete is the only removal path this
+* `Comment` — a thread comment with a nullable self-FK. Replies nest to any
+  depth (Phase 11 / D-01: unlimited; the former strict 1-level cap is
+  superseded). `parent` is `SET_NULL` rather than `CASCADE` so a hard delete can
+  never destroy a sub-thread's content; soft delete is the only removal path this
   project uses anyway.
 * `PostVote` — one row per `(user, post)`, enforced by the database.
 
@@ -20,11 +21,13 @@ Integrity guarantees are deliberately unequal, and the difference is honest:
 
 * **Duplicate votes are impossible at the database level** (`unique_user_post_vote`)
   — the invariant never depends on application code.
-* **Reply depth is application-level.** "A reply may not be a reply's parent" is a
-  cross-row rule (`parent.parent IS NOT NULL`), which PostgreSQL cannot express as
-  a `CHECK`, and Django has no equivalent constraint. It is enforced by
+* **Reply integrity is application-level.** The parent rules (same post, parent
+  not removed — and, from Phase 11's Task 2, the parent's branch not closed by a
+  removed ancestor) are cross-row rules PostgreSQL cannot express as `CHECK`s,
+  and Django has no equivalent constraint. They are enforced by
   `validators.validate_reply_depth` on the write path (services) and mirrored in
-  `clean()` for admin/forms — see that module for the codes.
+  `clean()` for admin/forms — see that module for the codes. Reply **depth** is
+  unlimited (Phase 11 D-01) — there is deliberately no depth rule to enforce.
 """
 
 import uuid
@@ -99,7 +102,8 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-    """A post comment, optionally a reply to a top-level comment (03 §10, T5.2)."""
+    """A post comment, optionally a reply to another comment at any depth
+    (03 §10, T5.2; depth unlimited per Phase 11 D-01)."""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
@@ -109,7 +113,9 @@ class Comment(models.Model):
         related_name="community_comments",
     )
     # SET_NULL, not CASCADE (5.1 P1): if a parent ever disappears, its replies are
-    # promoted to top-level rather than deleted with it.
+    # promoted to top-level rather than deleted with it. (Phase 11 Task 2 adds
+    # `branch_closed_by` here — removal closes a branch; this attribute's
+    # hard-delete promotion rule is unchanged.)
     parent = models.ForeignKey(
         "self",
         null=True,

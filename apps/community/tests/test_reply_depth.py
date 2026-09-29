@@ -1,15 +1,21 @@
-"""Strict 1-level replies — T5.2 + 04 §42's three model-level rules (COMM-03).
+"""Reply rules — T5.2 + 04 §42's parent rules (rewritten by Phase 11).
 
-04 §42 lists five rules for creating a comment; three of them are about the parent
-and belong to the model layer, which is what this file covers:
+**Supersession note.** This file formerly asserted *strict 1-level nesting*:
+``nested_reply`` — "a reply may not have a reply parent" — was one of the three
+rules pinned here, by name, since Phase 5. Phase 11 (D-01) removed the depth rule
+entirely: "unlimited" is literal, any comment in a post may be replied to at any
+depth. The suite was rewritten in place (D-12) to pin the rules that survive:
 
-1. ``nested_reply`` — the parent must be top-level.
-2. ``parent_post_mismatch`` — the parent must be on the same post.
-3. ``parent_deleted`` — a removed comment accepts no new replies.
+1. ``parent_post_mismatch`` — the parent must belong to the same post.
+2. ``parent_deleted`` — a removed comment accepts no new replies.
+3. **Unlimited depth** — a reply-to-a-reply creates normally; the suite now
+   asserts that positively (the former rejection is dead).
 
-The other two (post not locked, user has permission) are request-context rules and
-land with 5.2's endpoints. Every rejection is asserted to persist *nothing*, since
-a validator that raises after a partial write protects nothing.
+The other two 04 §42 rules (post not locked, user has permission) are
+request-context rules and land with 5.2's endpoints. Every rejection is asserted
+to persist *nothing*, since a validator that raises after a partial write
+protects nothing. The P1/P4 SET_NULL pins (promotion on hard delete, post
+deletion never blocked) are retained verbatim — they are independent of depth.
 """
 
 import uuid
@@ -20,7 +26,6 @@ from django.core.exceptions import ValidationError
 from apps.community.models import Comment, PostVote
 from apps.community.services import InvalidCommentError, create_comment, soft_delete_comment
 from apps.community.validators import (
-    NESTED_REPLY_CODE,
     PARENT_DELETED_CODE,
     PARENT_MISMATCH_CODE,
     validate_reply_depth,
@@ -48,17 +53,29 @@ def test_reply_to_a_top_level_comment_is_accepted(make_post, make_comment):
     assert list(parent.replies.all()) == [reply]
 
 
-def test_reply_to_a_reply_is_rejected_and_persists_nothing(make_post, make_comment, make_user):
-    """T5.2's exact rule: `parent.parent` must be None."""
+def test_reply_to_a_reply_is_accepted_unlimited_depth(make_post, make_comment):
+    """Phase 11 D-01: the depth rule is gone. The former `nested_reply`
+    rejection (this suite's old rule #1) is now a normal create — asserted
+    positively, at depth 3, so a re-introduced cap fails here first."""
     post = make_post()
-    parent = make_comment(post)
-    reply = make_comment(post, parent=parent)
+    top = make_comment(post)
+    reply = make_comment(post, parent=top)
 
-    with pytest.raises(InvalidCommentError) as exc:
-        create_comment(post, make_user(), body="Nested attempt", parent=reply)
+    nested = make_comment(post, parent=reply, body="Nested attempt")
 
-    assert exc.value.code == NESTED_REPLY_CODE
-    assert Comment.objects.filter(body="Nested attempt").count() == 0
+    assert nested.parent_id == reply.id
+    assert Comment.objects.filter(body="Nested attempt").count() == 1
+
+
+def test_reply_to_a_reply_persists_the_row(make_post, make_comment):
+    """The old suite asserted the nested attempt persisted nothing; the inverse
+    is now the contract — depth never blocks persistence."""
+    post = make_post()
+    top = make_comment(post)
+    reply = make_comment(post, parent=top)
+    make_comment(post, parent=reply, body="Depth 3")
+
+    assert post.comments.count() == 3
 
 
 def test_parent_from_another_post_is_rejected(make_post, make_comment, make_user):
@@ -100,15 +117,29 @@ def test_live_parent_on_a_soft_deleted_post_still_accepts_replies(make_post, mak
 
 def test_model_clean_raises_the_same_machine_readable_codes(make_post, make_comment):
     """The admin/form path must not degrade to generic 'invalid' codes — a caller
-    checking `code` has to get the same answer on both paths."""
+    checking `code` has to get the same answer on both paths. Rewritten by
+    Phase 11: the model.clean path now accepts a reply-to-a-reply and raises the
+    surviving code for a foreign parent instead."""
     post = make_post()
-    reply = make_comment(post, parent=make_comment(post))
-    nested = Comment(post=post, author=post.author, body="Nested", parent=reply)
+    foreign_post = make_post()
+    foreign_parent = make_comment(foreign_post)
+    candidate = Comment(post=post, author=post.author, body="cross-post", parent=foreign_parent)
 
     with pytest.raises(ValidationError) as exc:
-        nested.full_clean()
+        candidate.full_clean()
 
-    assert exc.value.error_dict["parent"][0].code == NESTED_REPLY_CODE
+    assert exc.value.error_dict["parent"][0].code == PARENT_MISMATCH_CODE
+
+
+def test_clean_accepts_a_nested_reply(make_post, make_comment):
+    """Phase 11: the clean() mirror accepts depth too — a reply-to-a-reply passes
+    full_clean with no error."""
+    post = make_post()
+    top = make_comment(post)
+    reply = make_comment(post, parent=top)
+    nested = Comment(post=post, author=post.author, body="Nested", parent=reply)
+
+    nested.full_clean()  # must not raise
 
 
 def test_clean_reports_a_deleted_parent_with_its_code(make_post, make_comment):
@@ -123,21 +154,23 @@ def test_clean_reports_a_deleted_parent_with_its_code(make_post, make_comment):
     assert exc.value.error_dict["parent"][0].code == PARENT_DELETED_CODE
 
 
-def test_depth_resolution_is_attribute_based_not_ancestor_walking(make_post, make_user):
-    """O(1) by construction: only `parent.parent_id` is read, so the check works on
-    objects that were never saved and never issues an ancestor query."""
+def test_validator_is_attribute_based_not_ancestor_walking(make_post, make_user):
+    """O(1) by construction: only `parent_id`/`post_id`/`is_deleted` are read, so
+    the check works on unsaved objects and never issues an ancestor query. The
+    old test turned `parent.parent_id` into the depth signal; today depth simply
+    isn't read — the same transient-parent probe now proves foreign-post
+    detection still works on an unsaved instance."""
     post = make_post()
-    transient_parent = Comment(post=post, author=make_user(), body="not saved yet")
+    foreign_post = make_post()
+    transient_parent = Comment(post=foreign_post, author=make_user(), body="not saved yet")
 
     legal = Comment(post=post, author=make_user(), body="reply", parent=transient_parent)
-    validate_reply_depth(legal)  # no error
-
-    transient_parent.parent_id = uuid.uuid4()  # now it *is* a reply
-    illegal = Comment(post=post, author=make_user(), body="reply", parent=transient_parent)
     with pytest.raises(ValidationError) as exc:
-        validate_reply_depth(illegal)
+        validate_reply_depth(legal)
 
-    assert exc.value.code == NESTED_REPLY_CODE
+    assert exc.value.code == PARENT_MISMATCH_CODE
+    # UUID pks are assigned at instantiation, so "unsaved" means "not in the DB".
+    assert not Comment.objects.filter(pk=transient_parent.pk).exists()
 
 
 def test_hard_deleting_a_parent_promotes_its_reply(make_post, make_comment):
@@ -157,9 +190,11 @@ def test_hard_deleting_a_parent_promotes_its_reply(make_post, make_comment):
 
 def test_post_deletion_is_never_blocked_by_depth(make_post, make_comment):
     """P1 rejected PROTECT because, combined with Post → Comment CASCADE, it would
-    raise ProtectedError and make removing a two-level thread impossible."""
+    raise ProtectedError and make removing a multi-level thread impossible."""
     post = make_post()
-    make_comment(post, parent=make_comment(post))
+    top = make_comment(post)
+    make_comment(post, parent=top)
+    make_comment(post, parent=make_comment(post, parent=top))
     PostVote.objects.create(user=post.author, post=post)
 
     post.delete()  # must not raise

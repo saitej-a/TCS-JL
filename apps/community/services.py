@@ -45,8 +45,9 @@ class InvalidPostError(CommunityContentError):
 
 
 class InvalidCommentError(CommunityContentError):
-    """A comment could not be created (codes: blank_body, nested_reply,
-    parent_post_mismatch, parent_deleted)."""
+    """A comment could not be created (codes: blank_body, parent_post_mismatch,
+    parent_deleted). The former ``nested_reply`` code is gone — Phase 11 removed
+    the depth rule (D-01/D-03) and its wire vocabulary with it."""
 
 
 # Validator codes → service codes, per field. Kept explicit so a code change is a
@@ -64,8 +65,9 @@ def _reject_post(field: str, error: DjangoValidationError) -> InvalidPostError:
 
 
 def _reject_comment(error: DjangoValidationError) -> InvalidCommentError:
-    # The depth codes (nested_reply, parent_post_mismatch, parent_deleted) pass
-    # through verbatim — they are already the contract 5.2 renders.
+    # The parent-rule codes (parent_post_mismatch, parent_deleted) pass through
+    # verbatim — they are already the contract 5.2 renders. (Phase 11 removed
+    # ``nested_reply`` from the vocabulary; nothing maps to it any more.)
     code = "blank_body" if error.code == BLANK_CODE else error.code
     return InvalidCommentError(code, error.messages[0])
 
@@ -93,10 +95,12 @@ def create_post(author, *, title: str, body: str, category: str) -> Post:
 
 
 def create_comment(post: Post, author, *, body: str, parent: Comment | None = None) -> Comment:
-    """Validate and persist a comment or reply (T5.2, T5.10's model half).
+    """Validate and persist a comment or reply at any depth (T5.2; Phase 11
+    D-01 removed the 1-level cap).
 
-    The three depth rules come from 04 §42; the other two rules in that list (post
-    not locked, user has permission) belong to the request layer and are 5.2's.
+    The surviving parent rules come from 04 §42 (as rewritten); the other rules
+    in that list (post not locked, user has permission) belong to the request
+    layer and are 5.2's.
     """
     candidate = Comment(post=post, author=author, body=body, parent=parent)
     try:
