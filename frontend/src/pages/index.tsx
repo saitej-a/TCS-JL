@@ -31,6 +31,7 @@ import { SettingsPrivacyPage } from "@/pages/SettingsPrivacyPage";
 import { SettingsDevicesPage } from "@/pages/SettingsDevicesPage";
 import { SettingsSecurityPage } from "@/pages/SettingsSecurityPage";
 import { SettingsDangerPage } from "@/pages/SettingsDangerPage";
+import { AdminReportsPage } from "@/pages/AdminReportsPage";
 
 export { LandingPage };
 export { LoginPage };
@@ -53,6 +54,7 @@ export { SettingsPrivacyPage };
 export { SettingsDevicesPage };
 export { SettingsSecurityPage };
 export { SettingsDangerPage };
+export { AdminReportsPage };
 
 function StubPage({
   title,
@@ -101,10 +103,8 @@ export function TermsPage(): ReactElement {
 // Settings — the hub shipped in 9.5 Task 2, profile in Task 3, privacy in
 // Task 4; the rest remain stubs until their 9.5 tasks land.
 
-// Staff-only enforcement stays server-side (04 §113)
-export function AdminReportsPage(): ReactElement {
-  return <StubPage title="Moderation reports" list />;
-}
+// Staff-only surfaces: RequireStaff gates on the caller's own is_staff
+// (04 §113); server-side enforcement remains authoritative.
 export function AdminAnnouncementsPage(): ReactElement {
   return <StubPage title="Announcements" list />;
 }

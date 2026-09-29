@@ -45,17 +45,16 @@ export const CANDIDATE_STATUSES = [
 
 /**
  * The self payload exactly as `UserPrivateSerializer` ships it (04 §18):
- * `{id, email, is_verified, created_at, profile_completed}`.
+ * `{id, email, is_verified, is_staff, created_at, profile_completed}`.
  *
- * Known backend defect (recorded in STATE.md Pending Todos): the API still
- * hardcodes `profile_completed` to `false` — the 3.1 stub never changed. The
- * type stays honest to the wire; 9.2's onboarding gate must not trust it
- * until the backend fix lands.
+ * 9.5: `is_staff` joined the payload so the client can gate the /admin
+ * surfaces on the caller's own role (04 §113) — see RequireStaff.
  */
 export interface UserPrivate {
   id: string;
   email: string;
   is_verified: boolean;
+  is_staff: boolean;
   created_at: string;
   profile_completed: boolean;
 }

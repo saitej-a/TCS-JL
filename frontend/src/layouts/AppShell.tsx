@@ -7,12 +7,13 @@
  *
  * The §5.5 banner renders above the shell at every breakpoint; the §5.6
  * footer disclaimer renders at every breakpoint (the roadmap done-when).
- * Staff navigation is deliberately absent (9.2 D2).
+ * 9.5 Task 8 adds the is_staff-only Administration group below the primary nav.
  */
 import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Link, NavLink, Outlet } from "react-router-dom";
 
+import { apiGet } from "@/api/client";
 import { listAnnouncements } from "@/api/announcements";
 import { listNotifications } from "@/api/notifications";
 import { setUnreadCount, useUnreadCount } from "@/api/unreadStore";
@@ -25,6 +26,7 @@ import { useAuth } from "@/context/AuthContext";
 import { MobileTabBar } from "@/layouts/MobileTabBar";
 import { PwaLayer } from "@/pwa/PwaLayer";
 import { NAV_ITEMS } from "@/layouts/navItems";
+import type { Paginated } from "@/types/api";
 
 const BRAND = (
   <Link
@@ -156,6 +158,65 @@ function NotificationBell(): React.ReactElement {
 }
 
 /**
+ * 9.5 Task 8: the Administration nav group — rendered only for `is_staff`
+ * callers (the RequireStaff route guard is the second half of the gate).
+ * Reports carries the live PENDING open-count from the queue's `count` field;
+ * a failed read leaves the link without its badge (chrome, not content).
+ * Members is omitted: the API ships no members list (recorded 9.5 divergence).
+ */
+function AdminNavGroup(): React.ReactElement | null {
+  const { user } = useAuth();
+  const [openReports, setOpenReports] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (user === null || !user.is_staff) return;
+    let cancelled = false;
+    apiGet<Paginated<unknown>>("/moderation/reports/", { status: "PENDING" })
+      .then((envelope) => {
+        if (!cancelled) setOpenReports(envelope.count);
+      })
+      .catch(() => {
+        // Silent: the count is decoration around the link.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  if (user === null || !user.is_staff) return null;
+
+  return (
+    <div className="mt-4 border-t border-slate-200 pt-3 dark:border-slate-800">
+      <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+        Administration
+      </p>
+      <nav aria-label="Administration" className="space-y-1">
+        <NavLink
+          to="/admin/moderation/reports"
+          className={navLinkClasses}
+          data-testid="admin-reports-link"
+        >
+          <span className="flex w-full items-center justify-between gap-2">
+            Reports
+            {openReports !== null && openReports > 0 && (
+              <span
+                data-testid="admin-reports-count"
+                className="min-w-[20px] rounded-full bg-brand-100 px-1.5 text-center text-[11px] font-semibold leading-[18px] text-brand-800 dark:bg-brand-900 dark:text-brand-200"
+              >
+                {openReports > 99 ? "99+" : openReports}
+              </span>
+            )}
+          </span>
+        </NavLink>
+        <NavLink to="/admin/announcements" className={navLinkClasses} data-testid="admin-announcements-link">
+          Announcements
+        </NavLink>
+      </nav>
+    </div>
+  );
+}
+
+/**
  * Right-rail slot (9.3 Task 6): AppShell owns the rail's chrome and placement
  * (§5.2's 320px rail at ≥1280px only). Pages fill it through `RailPortal`,
  * which portals their content into the shell's slot node — a page never
@@ -194,6 +255,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
                   </NavLink>
                 ))}
               </nav>
+              <AdminNavGroup />
             </div>
             <div className="space-y-1 px-3 pb-4 text-xs text-slate-500 dark:text-slate-400">
               <Link to="/about" className="block py-1 hover:text-slate-800 dark:hover:text-slate-200">
@@ -237,6 +299,14 @@ export function AppShell({ children }: { children?: ReactNode }) {
                   + Post
                 </Link>
                 <NotificationBell />
+                {user !== null && user.is_staff && (
+                  <span
+                    data-testid="moderator-chip"
+                    className="rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-semibold text-brand-700 dark:bg-brand-950/60 dark:text-brand-300"
+                  >
+                    Moderator
+                  </span>
+                )}
                 {user !== null && (
                   <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
                     {user.email}

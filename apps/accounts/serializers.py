@@ -21,13 +21,19 @@ from apps.accounts.models import User
 
 
 class UserPrivateSerializer(serializers.ModelSerializer):
-    """Self-only representation (06 §5.2). Never exposes credentials."""
+    """Self-only representation (06 §5.2). Never exposes credentials.
+
+    9.5 addition: ``is_staff`` rides the self payload so the client can gate
+    the /admin surfaces on the real role (04 §113) instead of hiding links and
+    letting the server 403s be the only signal. It is the caller's OWN role,
+    not an account secret — ``is_superuser`` and friends stay excluded.
+    """
 
     profile_completed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ("id", "email", "is_verified", "created_at", "profile_completed")
+        fields = ("id", "email", "is_verified", "is_staff", "created_at", "profile_completed")
         read_only_fields = fields
 
     def get_profile_completed(self, obj) -> bool:

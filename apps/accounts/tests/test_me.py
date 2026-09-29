@@ -37,9 +37,19 @@ class TestMeEndpoint:
         response = api.get(ME_URL)
         assert response.status_code == 200
         body = response.json()
-        assert set(body) == {"id", "email", "is_verified", "created_at", "profile_completed"}
+        # 9.5: is_staff joined the self payload so the client can gate /admin
+        # on the caller's OWN role (04 §113) — see UserPrivateSerializer.
+        assert set(body) == {
+            "id",
+            "email",
+            "is_verified",
+            "is_staff",
+            "created_at",
+            "profile_completed",
+        }
         assert body["email"] == "me@example.com"
         assert body["is_verified"] is True
+        assert body["is_staff"] is False  # regular candidate
         assert body["profile_completed"] is False  # no profile yet → not complete
 
     def test_profile_completed_true_with_complete_profile(self, api, user):
@@ -64,9 +74,10 @@ class TestMeEndpoint:
     def test_no_sensitive_fields_leak(self, api, user):
         api.force_authenticate(user)
         body = api.get(ME_URL).json()
+        # is_staff IS exposed (9.5: self-role for the client's /admin gate);
+        # escalation-relevant fields stay forbidden.
         for forbidden in (
             "password",
-            "is_staff",
             "is_superuser",
             "last_login",
             "groups",

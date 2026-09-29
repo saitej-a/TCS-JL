@@ -41,6 +41,7 @@ import {
 import { PublicOnly } from "@/routes/PublicOnly";
 import { PublicShell } from "@/routes/PublicShell";
 import { RequireAuth } from "@/routes/RequireAuth";
+import { RequireStaff } from "@/routes/RequireStaff";
 
 export const router = createBrowserRouter([
   { path: "/", element: <LandingPage /> },
@@ -90,10 +91,15 @@ export const router = createBrowserRouter([
       { path: "/settings/security", element: <SettingsSecurityPage /> },
       { path: "/settings/danger", element: <SettingsDangerPage /> },
       { path: "/settings/devices", element: <SettingsDevicesPage /> },
-      { path: "/settings/danger", element: <SettingsDangerPage /> },
-      // Staff routes: UI guard only; is_staff enforcement is server-side.
-      { path: "/admin/moderation/reports", element: <AdminReportsPage /> },
-      { path: "/admin/announcements", element: <AdminAnnouncementsPage /> },
+      // Staff routes: RequireStaff gates on the caller's own is_staff (04
+      // §113) — the UI guard, with server-side enforcement still authoritative.
+      {
+        element: <RequireStaff />,
+        children: [
+          { path: "/admin/moderation/reports", element: <AdminReportsPage /> },
+          { path: "/admin/announcements", element: <AdminAnnouncementsPage /> },
+        ],
+      },
     ],
   },
   // Catch-all 404
