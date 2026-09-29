@@ -386,14 +386,14 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 8. Moderation, Anti-Spam & Administration | 3/3 | Verified — 8.1 (UAT), 8.2 (round-2 PASS, 58/58 live drill) | - |
 | 9. Frontend Single Page Application (React + Tailwind) | 0/4 | Not started | - |
 | 10. Security Audits, E2E Testing, Seed Data & Launch Readiness | 0/2 | Not started | - |
-| 11. Unlimited nested comment replies | 0/0 | Not planned | - |
+| 11. Unlimited nested comment replies | 1/1 | Complete    | 2026-09-29 |
 
 ### Phase 11: Unlimited nested comment replies
 
 **Goal**: A comment can be replied to at any depth — a reply may itself receive replies, with no application-level depth cap. **This supersedes a shipped, spec'd rule and is the phase's first decision, not a silent edit:** 05 §1183 mandates *"Strict 1-Level Nesting … (`parent.parent == NULL` enforced by backend and UI)"*, 05 §75 justifies it ("no complex nested comment trees"), and PROJECT.md carries it as both requirement **COMM-03** and a key decision (*"Strict 1-Level Reply Depth … ✓ Good"*). The shipped code implements that rule three ways: `validate_reply_depth` (`apps/community/validators.py`, code `nested_reply`), the `Comment.parent = SET_NULL` promotion rule (a deleted parent **promotes** its reply to top level — 5.1 P4), and the UI's single indent unit with no Reply affordance past depth 1 (`CommentThread.tsx`). Recording the supersession deliberately (COMM-03 in REQUIREMENTS.md, the two 05 sections, the PROJECT.md decision row) is part of the work.
 **Requirements**: supersedes COMM-03; 04's comment contracts and 05 §7.7's thread UI to be re-derived
 **Depends on**: Phase 10
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
 

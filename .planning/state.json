@@ -56,13 +56,13 @@
     {
       "number": "11",
       "name": "Unlimited nested comment replies",
-      "status": "pending"
+      "status": "complete"
     }
   ],
   "next": {
-    "command": "/gsd:progress",
-    "label": "Show progress",
-    "reason": "Unsure of state — showing progress"
+    "command": "/gsd:progress --next",
+    "label": "Advance to the next step (plan phase 1)",
+    "reason": "Phase 1 of 31 — needs a plan"
   },
-  "updated_at": "2026-09-29T12:19:05.368Z"
+  "updated_at": "2026-09-29T15:10:23.296Z"
 }

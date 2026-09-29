@@ -1,3 +1,9 @@
+---
+phase: 11-unlimited-nested-comment-replies
+verified: 2026-09-29
+status: passed
+---
+
 # VERIFICATION 11 — Unlimited Nested Comment Replies
 
 **Phase:** 11 · **Verified:** 2026-09-29 · **Requirements:** COMM-03 (revised), COMM-08 (budget re-derived)

@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: 11
 current_phase_name: Unlimited nested comment replies
 status: ready
-stopped_at: Phase 11 planned (Phase 09.5.1 remains halted at the D-15/D-16 copy gate)
-last_updated: "2026-09-29T12:19:05.301Z"
+stopped_at: Phase 11 executed + verified — 1/1 plan complete (Phase 09.5.1 remains halted at the D-15/D-16 copy gate)
+last_updated: "2026-09-29T15:10:23.224Z"
 last_activity: 2026-09-29
-last_activity_desc: Phase 11 planned — 11-01-PLAN.md (6 tasks, one wave) passed all gates; Phase 09.5.1 still halted at the copy gate
-state_head: dd6f5216c6d2f51793f270f81d61517e69d0e54e
+last_activity_desc: Phase 11 executed + verified (VERIFICATION.md status: passed)
+state_head: a91430258cf8e9ef39a3c60c23a76f19ec1b32b1
 progress:
   total_phases: 31
   completed_phases: 6
-  total_plans: 20
-  completed_plans: 19
+  total_plans: 21
+  completed_plans: 20
 milestone_name: milestone
 ---
 
@@ -30,27 +30,19 @@ See: .planning/PROJECT.md (updated 2026-09-19)
 
 ## Current Position
 
-Phase: 11 (Unlimited nested comment replies) — READY TO EXECUTE
-Plan: 1 of 1 — `11-01-PLAN.md` (6 tasks, single wave — Task 1 deletes the depth rule and
-rewrites both rule-pinning tests with a fail-on-revert drill; Task 2 ships branch closure
-(`branch_closed_by`, migration 0003 + backfill, comparison-based restore); Task 3 replaces
-`comment_page` with bounded assembly (render depth 5, true per-node counts, the `?parent=`
-subtree fetch, the re-derived COMM-08 budget); Task 4 reshapes `CommentThread` (capped-indent
-rails, `replying to @author`, breadth collapse, continue-this-thread, closed-branch composer);
-Task 5 runs the full gates; Task 6 rewrites the five sources asserting the old rule — including
-the two extra "1-level" sites the checker caught (REQUIREMENTS' status row, PROJECT.md's
-unchecked COMM-03 line) — and writes VERIFICATION.md)
-Status: all planning gates green — plan-structure valid, verify-command paths 19/19,
-failing-directions 19/19, decision coverage 12/12, references/artifacts/key-links clean;
-the UI-SPEC pins the render constants (depth 5, breadth 3) and the copy contract
+Phase: 11 (Unlimited nested comment replies) — EXECUTED + VERIFIED (2026-09-29)
+Plan: 1 of 1 — `11-01-PLAN.md`, all six tasks committed (T1 depth-rule deletion, T2 branch closure,
+T3 bounded assembly `8d2062f`, T4 deep thread UI `cb09409`, T5 gates, T6 supersession record `a914302`)
+Status: VERIFICATION.md `status: passed` — backend 878 passed / frontend 274 of 274 / lint 0 errors /
+build clean / makemigrations --check clean / contrast clean apart from the 2 documented demo rows;
+both fail-on-revert drills proven (depth-rule revert → 5 FAIL, flag bypass → 11 FAIL)
 Previous phase: 9.5 EXECUTED + VERIFIED (2026-09-29) — gates re-derived in
 `.planning/phases/TCS-JL-09.5-ui-ux-design-pass-ui-ux-pro-max-stitch-screens/VERIFICATION.md`
 (backend 849 / frontend 231 / lint 0 errors / build clean / contrast 10-of-10; the Stitch
 re-theme of all 40 instances is VERIFICATION §4).
-Last activity: 2026-09-29 — Phase 11 planned (all gates green); Phase 09.5.1 remains halted at the copy gate
+Last activity: 2026-09-29 — Phase 11 executed + verified (VERIFICATION.md status: passed)
 
-**Next up: execute Phase 11** (`/clear` then `/gsd-execute-phase 11`).
-**Also open: the 09.5.1 copy gate.** The three legal content modules are data files —
+**Next up: the 09.5.1 copy gate.** The three legal content modules are data files —
 `frontend/src/pages/legal/about.ts` (mission + the non-affiliation boundary, no contribution-guidelines
 section), `privacy.ts` (the seven slots in its doc comment: what we collect, email handling **masked**
 (`a***@example.com`) not hashed, the scoped no-tracker claim with FCM's transport role, per-device
@@ -70,7 +62,7 @@ frontmatter keys. The `state.add-roadmap-evolution` handler did match and logged
 STATE.md does not carry — it returned `updated: []` for both `Current Phase`/`Next recommended run` and the
 frontmatter keys. The `state.add-roadmap-evolution` handler did match and logged the insertion.)*
 
-Progress: [█████████░] 90%
+Progress: [█████████▌] 95%
 
 ### 9.4 verification record (2026-09-28)
 
@@ -182,7 +174,7 @@ with `feed_queryset`'s `is_deleted=False` removed the test **FAILED** (Assertion
 
 **Velocity:**
 
-- Total plans completed: 13
+- Total plans completed: 20
 - Average duration: — (per-plan timing not yet instrumented)
 - Total execution time: —
 
@@ -200,6 +192,7 @@ with `feed_queryset`'s `is_deleted=False` removed the test **FAILED** (Assertion
 | 8. Moderation, Anti-Spam & Administration | 3/3 | - | - |
 | 9. Frontend Single Page Application (React + Tailwind) | 3/4 | - | - |
 | 10. Security Audits, E2E Testing, Seed Data & Launch Readiness | 0/2 | - | - |
+| 11. Unlimited nested comment replies | 1/1 | - | - |
 
 **Recent Trend:**
 
@@ -353,8 +346,8 @@ Items acknowledged and deferred at milestone close, most recent first:
 - **Phase 09.5.1 — halted at the copy gate:** `.planning/phases/TCS-JL-09.5.1-generate-the-missing-stitch-screens-with-ui-ux-pro-max-desig/.continue-here.md`
   (resume list in `09.5.1-01-SUMMARY.md`; the user's legal copy is the only outstanding input).
 
-Last session: 2026-09-29T10:57:40.089Z
-Stopped at: Phase 11 context gathered (Phase 09.5.1 still halted at the copy gate)
+Last session: 2026-09-29T15:10:23.224Z
+Stopped at: Phase 11 executed + verified (1/1 plans); Phase 09.5.1 still halted at the copy gate
 Resume files: .planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/VERIFICATION.md (verdict, drills, defect repros + repairs), .planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/09.4-PROOFS.md (execution's live proofs), apps/notifications/tests/test_push_device_routing.py (the F-94-1 pin), .planning/STATE.md
 
 **Owed from 9.3's execution — open items, none silent:**
