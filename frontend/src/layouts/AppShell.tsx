@@ -11,6 +11,7 @@
  */
 import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { Bell, Megaphone } from "lucide-react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 
 import { apiGet } from "@/api/client";
@@ -26,6 +27,7 @@ import { useAuth } from "@/context/AuthContext";
 import { MobileTabBar } from "@/layouts/MobileTabBar";
 import { PwaLayer } from "@/pwa/PwaLayer";
 import { NAV_ITEMS } from "@/layouts/navItems";
+import type { NavItem } from "@/layouts/navItems";
 import type { Paginated } from "@/types/api";
 
 const BRAND = (
@@ -50,6 +52,18 @@ function navLinkClasses({ isActive }: { isActive: boolean }): string {
       ? "bg-brand-50 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300"
       : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800",
   ].join(" ");
+}
+
+/** The composition's nav-item anatomy: glyph + label, tinted by active state. */
+function NavGlyph({ item, active }: { item: NavItem; active: boolean }): React.ReactElement {
+  const Glyph = item.icon;
+  return (
+    <Glyph
+      aria-hidden="true"
+      className={`h-5 w-5 shrink-0 ${active ? "" : "text-slate-500 dark:text-slate-500"}`}
+      strokeWidth={1.75}
+    />
+  );
 }
 
 /** The §5.5 announcement banner (D3): latest un-dismissed announcement, persisted dismissal. */
@@ -84,7 +98,7 @@ function AnnouncementBanner() {
       className="flex items-center justify-between gap-3 bg-brand-700 px-4 py-2 text-sm text-white"
     >
       <p className="flex min-w-0 items-center gap-2 truncate">
-        <span aria-hidden="true">📣</span>
+        <Megaphone aria-hidden="true" className="h-4 w-4 shrink-0" />
         <span className="font-semibold">{item.title}</span>
         {item.body !== "" && <span className="hidden truncate font-normal opacity-90 sm:inline">{item.body}</span>}
         <Link to="/notifications" className="whitespace-nowrap underline opacity-90 hover:opacity-100">
@@ -144,7 +158,7 @@ function NotificationBell(): React.ReactElement {
       data-testid="notification-bell"
       className="relative flex h-11 w-11 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
     >
-      <span aria-hidden="true">🔔</span>
+      <Bell aria-hidden="true" className="h-5 w-5" strokeWidth={1.75} />
       {isAuthenticated && unread > 0 && (
         <span
           data-testid="notification-badge"
@@ -251,7 +265,12 @@ export function AppShell({ children }: { children?: ReactNode }) {
               <nav aria-label="Primary" className="mt-3 space-y-1">
                 {NAV_ITEMS.map((item) => (
                   <NavLink key={item.to} to={item.to} className={navLinkClasses}>
-                    {item.label}
+                    {({ isActive }) => (
+                      <>
+                        <NavGlyph item={item} active={isActive} />
+                        {item.label}
+                      </>
+                    )}
                   </NavLink>
                 ))}
               </nav>

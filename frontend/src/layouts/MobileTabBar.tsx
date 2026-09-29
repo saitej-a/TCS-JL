@@ -1,6 +1,9 @@
 /**
  * The §5.4 mobile bottom tab bar: five tabs, ≥44px touch targets, active tab
- * in brand indigo. Rendered by AppShell below lg; hidden on desktop.
+ * in brand color. Rendered by AppShell below lg; hidden on desktop.
+ *
+ * Phase 12: each tab renders its `app_shell` glyph above the label, matching
+ * the composition's tab anatomy (icon over a 11px label).
  */
 import { NavLink } from "react-router-dom";
 
@@ -27,7 +30,12 @@ export function MobileTabBar() {
                 ].join(" ")
               }
             >
-              {tab.label}
+              {() => (
+                <>
+                  <tab.icon aria-hidden="true" className="h-5 w-5" strokeWidth={1.75} />
+                  <span>{tab.label}</span>
+                </>
+              )}
             </NavLink>
           </li>
         ))}

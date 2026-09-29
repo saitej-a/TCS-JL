@@ -28,3 +28,7 @@ same task (G-5).
 | done_all | CheckCircle2 |
 | tune | Settings2 |
 | privacy_tip | ShieldHalf |
+
+| AppShell.tsx | nav anatomy icon+label; bell/banner glyphs lucide; dark: treatment per dark composition | Composition drives glyph set; §5.2–5.4 breakpoints and Administration group untouched; labels verbatim (Alerts, Analytics) |
+| navItems.ts | `icon: LucideIcon` on every NavItem/MOBILE_TABS entry (LayoutDashboard, Route, MessagesSquare, ChartColumn, Bell, Settings) | Icons absent from app entirely before; composition's glyph vocabulary adopted, repainted v2 |
+| MobileTabBar.tsx | icon-over-label tab anatomy per mobile composition; §5.4 44px/56px targets kept | Composition shows icon+label tabs; density/structure otherwise unchanged |
