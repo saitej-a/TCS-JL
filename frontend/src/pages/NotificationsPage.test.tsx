@@ -1,12 +1,13 @@
 /**
- * NotificationsPage tests (§7.10, Task 7).
+ * NotificationsPage tests (§7.10 + Phase 12's composition rebuild).
  *
- * The plan's `fails_when` conditions are asserted directly: a row click must
- * mark read before navigating, a failed mark-read must roll the optimistic
- * flip back and refuse to navigate, and the shared unread count must not lie
- * after `Mark All as Read`.
+ * Behaviour contracts from §7.10 are re-pinned on the new DOM: a row click
+ * marks read before navigating, a failed mark-read rolls the optimistic flip
+ * back and refuses to navigate, and the shared unread count never lies after
+ * `Mark All as Read`. Structure assertions follow the `notification_center`
+ * composition: unread pill, underline tab bar, glyph chips, caught-up card.
  */
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { afterEach, describe, expect, it } from "vitest";
@@ -82,7 +83,9 @@ function renderPage(): ReturnType<typeof render> {
   );
 }
 
-/** Route order matters: exact paths before the bare list path. */
+/** Route order matters: exact paths before the bare list path. The rail's
+ *  dashboard fetch is scripted per-test where it matters (failure is
+ *  non-fatal, so tests that don't script it just render skeletons). */
 function routes(overrides: Parameters<typeof routeAdapter>[0] = []) {
   return [
     { url: "/notifications/read-all/", answers: [{ status: 200, data: { updated_count: 2, message: "ok" } }] },
@@ -100,25 +103,23 @@ afterEach(() => {
   setUnreadCount(0);
 });
 
-describe("§7.10 NotificationsPage", () => {
-  it("renders the header count, tabs and row anatomy from the real payload", async () => {
+describe("§7.10 NotificationsPage (notification_center composition)", () => {
+  it("renders the composition's header, tabs and row anatomy from the real payload", async () => {
     routeAdapter(routes());
     renderPage();
 
     expect(await screen.findByTestId("notification-row-n1")).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: "NOTIFICATIONS (2 UNREAD)" }),
-    ).toBeInTheDocument();
+    // The composition's header: title + live unread pill (not the old parenthesised form).
+    expect(screen.getByRole("heading", { name: /NOTIFICATIONS/ })).toBeInTheDocument();
+    expect(screen.getByTestId("unread-pill")).toHaveTextContent("2 UNREAD");
     expect(screen.getByText("All Notifications")).toBeInTheDocument();
-    expect(screen.getByText("Unread Only (2)")).toBeInTheDocument();
+    expect(screen.getByText(/Unread Only/)).toBeInTheDocument();
 
-    // Marker per row (●/○), the glyph per type, and the quoted body line.
-    expect(screen.getByTestId("marker-unread-n1")).toHaveTextContent("● UNREAD");
-    expect(screen.getByTestId("marker-read-n3")).toHaveTextContent("○ READ");
-    expect(within(screen.getByTestId("notification-row-n2")).getByText("▲")).toBeInTheDocument();
-    expect(within(screen.getByTestId("notification-row-n3")).getByText("📍")).toBeInTheDocument();
+    // Marker dots and lucide glyph chips per row, and the quoted snippet callout.
+    expect(screen.getByTestId("marker-unread-n1")).toBeInTheDocument();
+    expect(screen.getByTestId("marker-read-n3")).toBeInTheDocument();
+    expect(screen.getByTestId("notification-glyph-n2")).toBeInTheDocument();
     const snippet = screen.getByTestId("notification-snippet-n1");
-    expect(snippet.textContent?.startsWith("“")).toBe(true);
     expect(snippet).toHaveTextContent("Mine arrived last week.");
     // A row with no message renders no quoted line.
     expect(screen.queryByTestId("notification-snippet-n2")).not.toBeInTheDocument();
@@ -188,12 +189,9 @@ describe("§7.10 NotificationsPage", () => {
     await userEvent.click(button);
 
     await waitFor(() => {
-      expect(
-        screen.getByRole("heading", { name: "NOTIFICATIONS (0 UNREAD)" }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("unread-pill")).toHaveTextContent("0 UNREAD");
     });
     expect(getUnreadCount()).toBe(0);
-    expect(screen.getByText("Unread Only (0)")).toBeInTheDocument();
     // A real disabled state, not a fake one.
     expect(screen.getByTestId("mark-all-read")).toBeDisabled();
     // Every rendered row now shows the read marker.
@@ -258,7 +256,7 @@ describe("§7.10 NotificationsPage", () => {
     });
   });
 
-  it("shows the spec's empty state when there is nothing to read", async () => {
+  it("shows the spec's empty state and the composition's caught-up card", async () => {
     routeAdapter([
       { url: "/notifications/", answers: [{ status: 200, data: envelope([], 0) }] },
     ]);
@@ -267,6 +265,6 @@ describe("§7.10 NotificationsPage", () => {
     expect(await screen.findByTestId("empty-state")).toHaveTextContent("You're all caught up!");
     expect(screen.getByText("No new notifications at this time.")).toBeInTheDocument();
     expect(screen.getByTestId("mark-all-read")).toBeDisabled();
-    expect(screen.getByRole("heading", { name: "NOTIFICATIONS (0 UNREAD)" })).toBeInTheDocument();
+    expect(screen.getByTestId("unread-pill")).toHaveTextContent("0 UNREAD");
   });
 });
