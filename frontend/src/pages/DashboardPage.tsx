@@ -1,15 +1,24 @@
 /**
- * The §7.4 dashboard (9.3 Task 6): welcome header, milestone stepper,
- * community benchmark, community pulse, and the newest-discussions block.
+ * The §7.4 dashboard, rebuilt to the `candidate_dashboard_1` composition
+ * (Phase 12): welcome card with inline status chip and both header CTAs, the
+ * progression card with header rule + subheading, the two-column stat cards
+ * with uppercase labels and divider-separated value rows, and the discussions
+ * card with per-row vote/comment pills.
  *
- * Two honesty rules govern every block:
+ * Two honesty rules govern every block (unchanged):
  * - **Suppression** (4.2 D2): a suppressed analytics block renders the API's
  *   message and the COMMUNITY_REPORTED attribution — never zeros, never a
  *   blank card. The `DashboardAnalytics` union forces this at compile time.
  * - **D6's labelling**: the discussions block shows the community's newest
- *   posts and says exactly that. §7.4's "in your stream" narrowing is a
- *   recorded divergence (the feed endpoint has no stream filter), so the
+ *   posts and says exactly that. The composition's "LATEST DISCUSSIONS IN
+ *   YOUR STREAM (DIGITAL)" heading and its "Filtered peer discussions"
+ *   subline are mock fiction (the feed endpoint has no stream filter) — the
  *   heading never implies stream filtering.
+ *
+ * Other recorded divergences (RECONCILIATION.md): the composition's
+ * "Verified Stage 4" chip, "Above Avg" wait badge, "+18 this week" delta,
+ * dispatch progress bar, "Live Regional Activity" and "Connect with Peer
+ * Groups" rail cards have no API basis and are not copied.
  */
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -28,17 +37,35 @@ import { MilestoneStepper } from "@/components/MilestoneStepper";
 import { RailStatusSummary } from "@/components/RailStatusSummary";
 import { RailPortal } from "@/layouts/AppShell";
 import { STATUS_LABELS } from "@/theme/badges";
-import { TYPOGRAPHY } from "@/theme/tokens";
 import type { CandidateStatus } from "@/types/user";
 import { daysSince, formatDateShort, timeAgo } from "@/utils/date";
 
 const CARD =
-  "rounded-xl border border-slate-200 bg-white p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-800";
+  "rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800";
 
 const CTA_PRIMARY =
   "flex min-h-[40px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800";
 const CTA_SECONDARY =
   "flex min-h-[40px] items-center rounded-lg border border-slate-300 px-4 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800";
+
+/** The composition's stat-card section header: icon-ish label + optional chip. */
+function StatCardHeader({ label }: { label: string }) {
+  return (
+    <h3 className="text-xs font-bold uppercase tracking-tight text-slate-900 dark:text-slate-100">
+      {label}
+    </h3>
+  );
+}
+
+/** A divider-separated label/value row (the composition's stat rows). */
+function StatRow({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <li className="flex items-center justify-between gap-3 border-b border-slate-100 py-2 text-xs last:border-b-0 dark:border-slate-700">
+      <span className="text-slate-600 dark:text-slate-300">{label}</span>
+      <span className="font-semibold text-slate-900 dark:text-slate-100">{value}</span>
+    </li>
+  );
+}
 
 /**
  * The candidate's own wait (§7.4's "Your wait time"), taken from their record:
@@ -73,7 +100,7 @@ interface DashboardData {
 function BenchmarkCard({ data }: { data: DashboardData | null }) {
   if (data === null) {
     return (
-      <div className={CARD} aria-busy="true">
+      <div className={`${CARD} p-5`} aria-busy="true">
         <Skeleton className="h-4 w-40" />
         <Skeleton className="mt-3 h-8 w-24" />
       </div>
@@ -82,10 +109,10 @@ function BenchmarkCard({ data }: { data: DashboardData | null }) {
   const analytics = data.dashboard.analytics;
   if (analytics.suppressed) {
     return (
-      <div className={CARD}>
-        <p className={TYPOGRAPHY.subheadLabel}>How you compare</p>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{analytics.message}</p>
-        <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+      <div className={`${CARD} flex flex-col p-5`}>
+        <StatCardHeader label="How you compare" />
+        <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{analytics.message}</p>
+        <p className="mt-4 border-t border-slate-100 pt-3 text-[10px] italic text-slate-400 dark:border-slate-700">
           Community-reported data.
         </p>
       </div>
@@ -94,36 +121,36 @@ function BenchmarkCard({ data }: { data: DashboardData | null }) {
   const distribution = analytics.status_distribution;
   const wait = ownWaitDays(data.events);
   return (
-    <div className={CARD}>
-      <p className={TYPOGRAPHY.subheadLabel}>How you compare</p>
-      {/* §7.4's row anatomy; every row is a real payload field. */}
-      <ul className="mt-2 space-y-1.5 text-sm text-slate-600 dark:text-slate-300">
-        <li className="flex items-baseline justify-between gap-3">
-          <span>Candidates currently waiting</span>
-          <span className="font-semibold text-slate-900 dark:text-slate-100">
-            {analytics.community_waiting_count}
-          </span>
-        </li>
-        <li className="flex items-baseline justify-between gap-3">
-          <span>Reported receiving their joining letter</span>
-          <span className="font-semibold text-slate-900 dark:text-slate-100">
-            {distribution.JOINING_LETTER_RECEIVED}
-          </span>
-        </li>
-        <li className="flex items-baseline justify-between gap-3">
-          <span>Reported joining</span>
-          <span className="font-semibold text-slate-900 dark:text-slate-100">
-            {distribution.JOINED}
-          </span>
-        </li>
+    <div className={`${CARD} flex flex-col justify-between p-5`}>
+      <div>
+        <StatCardHeader label="How you compare" />
+        {/* The composition's divider-separated stat rows; every value is a
+            real payload field (the mock's 1,248/75.3% figures are fiction). */}
+        <ul className="mt-3">
+          <StatRow
+            label="Candidates currently waiting"
+            value={analytics.community_waiting_count}
+          />
+          <StatRow
+            label="Reported receiving their joining letter"
+            value={distribution.JOINING_LETTER_RECEIVED}
+          />
+          <StatRow label="Reported joining" value={distribution.JOINED} />
+        </ul>
+        {/* The composition's highlighted wait block, honest number only —
+            no "Above Avg" badge (the API ships no cohort average). */}
         {wait !== null && (
-          <li className="flex items-baseline justify-between gap-3">
-            <span>Your wait so far</span>
-            <span className="font-semibold text-slate-900 dark:text-slate-100">{wait} days</span>
-          </li>
+          <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900/40">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Your Wait Time
+            </div>
+            <div className="mt-1 text-sm font-bold text-amber-700 dark:text-amber-400">
+              {wait} {wait === 1 ? "day" : "days"} so far
+            </div>
+          </div>
         )}
-      </ul>
-      <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+      </div>
+      <p className="mt-4 border-t border-slate-100 pt-3 text-[10px] italic text-slate-400 dark:border-slate-700">
         Community-reported data ({analytics.data_source.toLowerCase()}).
       </p>
     </div>
@@ -134,7 +161,7 @@ function BenchmarkCard({ data }: { data: DashboardData | null }) {
 function PulseCard({ data }: { data: DashboardData | null }) {
   if (data === null) {
     return (
-      <div className={CARD} aria-busy="true">
+      <div className={`${CARD} p-5`} aria-busy="true">
         <Skeleton className="h-4 w-36" />
         <Skeleton className="mt-3 h-4 w-48" />
       </div>
@@ -144,10 +171,10 @@ function PulseCard({ data }: { data: DashboardData | null }) {
   if (analytics.suppressed) {
     // Same discipline as the benchmark: the message, never fabricated numbers.
     return (
-      <div className={CARD}>
-        <p className={TYPOGRAPHY.subheadLabel}>Community pulse</p>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{analytics.message}</p>
-        <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+      <div className={`${CARD} flex flex-col p-5`}>
+        <StatCardHeader label="Community pulse" />
+        <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{analytics.message}</p>
+        <p className="mt-4 border-t border-slate-100 pt-3 text-[10px] italic text-slate-400 dark:border-slate-700">
           Community-reported data.
         </p>
       </div>
@@ -159,25 +186,23 @@ function PulseCard({ data }: { data: DashboardData | null }) {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 4);
   return (
-    <div className={CARD}>
-      <p className={TYPOGRAPHY.subheadLabel}>Community pulse</p>
-      {rows.length === 0 ? (
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-          No community activity has been reported yet.
-        </p>
-      ) : (
-        /* §7.4's fact list, as label/value rows over the real distribution.
-           The viewer's own unread count lives in the rail, not here. */
-        <ul className="mt-2 space-y-1.5 text-sm text-slate-600 dark:text-slate-300">
-          {rows.map(([status, count]) => (
-            <li key={status} className="flex items-baseline justify-between gap-3">
-              <span>{STATUS_LABELS[status] ?? status}</span>
-              <span className="font-semibold text-slate-900 dark:text-slate-100">{count}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-      <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+    <div className={`${CARD} flex flex-col justify-between p-5`}>
+      <div>
+        <StatCardHeader label="Community pulse" />
+        {rows.length === 0 ? (
+          <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
+            No community activity has been reported yet.
+          </p>
+        ) : (
+          /* The composition's fact-list rows over the real distribution. */
+          <ul className="mt-3">
+            {rows.map(([status, count]) => (
+              <StatRow key={status} label={STATUS_LABELS[status] ?? status} value={count} />
+            ))}
+          </ul>
+        )}
+      </div>
+      <p className="mt-4 border-t border-slate-100 pt-3 text-[10px] italic text-slate-400 dark:border-slate-700">
         Community-reported status counts.
       </p>
     </div>
@@ -233,54 +258,77 @@ export function DashboardPage(): React.ReactElement {
         />
       </RailPortal>
 
-      <main className="mx-auto max-w-5xl space-y-4 p-4 lg:p-8">
-        {/* Welcome header (§7.4) */}
-        <header className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className={TYPOGRAPHY.pageTitle}>Hello, Candidate!</h1>
-            <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-              <span>Status:</span>
+      <main className="mx-auto max-w-5xl space-y-4 p-4 lg:space-y-6 lg:p-8">
+        {/* SECTION 1: welcome header card with inline status chip + CTAs */}
+        <header
+          className={`${CARD} flex flex-col justify-between gap-4 p-4 sm:p-6 md:flex-row md:items-center`}
+        >
+          <div className="space-y-1">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+                Hello, Candidate!
+              </h1>
               {data !== null ? (
-                <>
-                  <Badge.status value={data.dashboard.profile.current_status} />
-                  {since !== null && <span>(Since {since})</span>}
-                </>
+                <Badge.status value={data.dashboard.profile.current_status} />
               ) : (
-                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-5 w-36 rounded-full" />
               )}
             </div>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              {data !== null && since !== null ? `Latest milestone since ${since}` : "Your recruitment at a glance"}
+            </p>
           </div>
-          {/* §7.4's header carries BOTH CTAs. */}
+          {/* §7.4's header carries BOTH CTAs (composition order kept). */}
           <div className="flex flex-wrap items-center gap-2">
-            <Link to="/community/create" className={CTA_SECONDARY}>
-              Ask Question
-            </Link>
             <Link to="/timeline" className={CTA_PRIMARY}>
               Update Timeline
+            </Link>
+            <Link to="/community/create" className={CTA_SECONDARY}>
+              Ask Question
             </Link>
           </div>
         </header>
 
-        {/* Recruitment progression (§7.4.1) */}
-        <section className={CARD} aria-label="Your recruitment progression">
-          <p className={TYPOGRAPHY.subheadLabel}>Your recruitment progression</p>
-          <div className="mt-3">
+        {/* SECTION 2: recruitment progression (§7.4.1) — header rule + subline */}
+        <section className={`${CARD} p-4 sm:p-6`} aria-label="Your recruitment progression">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-700">
+            <div>
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+                Your recruitment progression
+              </h2>
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                Real milestones from your own reported timeline — never estimated dates.
+              </p>
+            </div>
+          </div>
+          <div className="pt-4">
             {data === null ? <Skeleton className="h-16 w-full" /> : <MilestoneStepper events={data.events} />}
           </div>
         </section>
 
-        {/* Benchmark + pulse (§7.4.2) */}
-        <div className="grid gap-4 sm:grid-cols-2">
+        {/* SECTION 3: benchmark + pulse (§7.4.2) */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:gap-6">
           <BenchmarkCard data={data} />
           <PulseCard data={data} />
         </div>
 
-        {/* Latest discussions (§7.4.3, D6 labelling) */}
-        <section className={CARD}>
-          <div className="flex items-center justify-between">
-            <p className={TYPOGRAPHY.subheadLabel}>Latest community discussions</p>
-            <Link to="/community" className="text-sm font-medium text-brand-700 hover:text-brand-700 dark:text-brand-300">
-              View all community discussions →
+        {/* SECTION 4: latest discussions (§7.4.3, D6 labelling) */}
+        <section className={`${CARD} p-4 sm:p-6`}>
+          <div className="mb-2 flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+                Latest community discussions
+              </h2>
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                The community's newest posts — every candidate's discussions, not filtered to your stream.
+              </p>
+            </div>
+            <Link
+              to="/community"
+              className="flex shrink-0 items-center gap-1 text-xs font-semibold text-brand-700 hover:text-brand-800 dark:text-brand-300"
+            >
+              View All Discussions
+              <span aria-hidden="true">›</span>
             </Link>
           </div>
           {data === null ? (
@@ -295,45 +343,57 @@ export function DashboardPage(): React.ReactElement {
               actionLabel="Ask a question"
             />
           ) : (
-            <ul className="mt-3 divide-y divide-slate-200 dark:divide-slate-700">
+            <ul className="divide-y divide-slate-100 dark:divide-slate-700">
               {data.posts.map((post) => {
-                // §7.4's row caption: cohort • when • who. All three are real
-                // `PostCardSerializer` fields (author is redaction-safe).
+                // The composition's row caption: author • when. Cohort detail
+                // (hiring_type/region) is real `PostCardSerializer` data
+                // (author is redaction-safe).
                 const cohort = [post.author.hiring_type, post.author.region]
                   .filter((part) => part !== null && part !== "")
                   .join(" • ");
                 return (
-                  <li key={post.id} className="flex items-start justify-between gap-3 py-3 first:pt-0 last:pb-0">
-                    <div className="min-w-0">
+                  <li
+                    key={post.id}
+                    className="flex items-start justify-between gap-4 rounded-lg px-2 py-3.5 transition-colors first:pt-2 last:pb-2 hover:bg-slate-50/70 dark:hover:bg-slate-700/30"
+                  >
+                    <div className="min-w-0 flex-1 space-y-1.5">
                       <div className="flex flex-wrap items-center gap-2">
                         <Badge.category code={post.category} />
-                        <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                          Posted {timeAgo(post.created_at)}
-                        </span>
+                        <Link
+                          to={`/community/posts/${post.id}`}
+                          className="truncate text-sm font-semibold text-slate-900 hover:text-brand-700 dark:text-slate-100 dark:hover:text-brand-400"
+                        >
+                          {post.title}
+                        </Link>
                       </div>
-                      <Link
-                        to={`/community/posts/${post.id}`}
-                        className="mt-1 block text-sm font-medium text-slate-900 hover:text-brand-700 dark:text-slate-100 dark:hover:text-brand-400"
-                      >
-                        {post.title}
-                      </Link>
-                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                        {cohort !== "" ? `${cohort} • ` : ""}by {post.author.display_name}
+                      <p className="flex flex-wrap items-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+                        <span>{post.author.display_name}</span>
+                        <span aria-hidden="true">•</span>
+                        <span>{timeAgo(post.created_at)}</span>
+                        {cohort !== "" && (
+                          <>
+                            <span aria-hidden="true">•</span>
+                            <span>{cohort}</span>
+                          </>
+                        )}
                       </p>
                     </div>
-                    <div className="flex shrink-0 items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                      <span>{post.vote_count} ▲</span>
-                      <span aria-hidden="true">💬</span>
-                      <span>{post.comment_count}</span>
+                    {/* The composition's vote & comment pills. */}
+                    <div className="flex shrink-0 items-center gap-2">
+                      <span className="flex items-center gap-1 rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-200">
+                        <span className="font-bold">{post.vote_count}</span>
+                        <span aria-hidden="true">▲</span>
+                      </span>
+                      <span className="flex items-center gap-1 rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                        <span className="font-semibold">{post.comment_count}</span>
+                        <span aria-hidden="true">💬</span>
+                      </span>
                     </div>
                   </li>
                 );
               })}
             </ul>
           )}
-          <p className="mt-3 text-[11px] text-slate-500 dark:text-slate-400">
-            The community's newest posts — every candidate's discussions, not filtered to your stream.
-          </p>
         </section>
       </main>
     </>
