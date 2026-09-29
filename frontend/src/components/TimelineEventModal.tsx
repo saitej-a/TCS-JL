@@ -1,9 +1,15 @@
 /**
- * The §7.5 add/edit timeline modal. The write body stays exactly
- * {event_type, event_date, description} — `auto_update_status` is
- * server-hardcoded (4.2 R4) and is never sent. A mapped event advances
- * `current_status` server-side (4.1's walk-the-chain), which the auto-status
- * note states in the UI.
+ * The §7.5 add/edit timeline modal, restyled to the
+ * `add_edit_milestone_modal` composition (Phase 12): uppercase field labels
+ * with rose asterisks, the helper line under the type select, the live char
+ * counter on the notes field, and the composition's footer (Esc hint left,
+ * Cancel/Save right). Built on Modal.tsx (G-8).
+ *
+ * The write body stays exactly {event_type, event_date, description} —
+ * `auto_update_status` is server-hardcoded (4.2 R4) and is never sent (the
+ * composition's checkbox card is fiction and is not copied). A mapped event
+ * advances `current_status` server-side (4.1's walk-the-chain), which the
+ * auto-status note states in the UI.
  *
  * Validation is surfaced, not pre-empted: a date the server rejects
  * (e.g. the 730-day horizon, or a future JOINING_LETTER) renders the
@@ -17,7 +23,6 @@ import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { Modal } from "@/components/Modal";
 import { Textarea } from "@/components/Textarea";
-import { TYPOGRAPHY } from "@/theme/tokens";
 
 export const EVENT_TYPE_OPTIONS: readonly { value: TimelineEventType; label: string }[] = [
   { value: "INTERVIEW", label: "Technical & HR Interview" },
@@ -94,14 +99,20 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
 
   return (
     <Modal open={open} onClose={onClose} title={event === null ? "Add Timeline Milestone Event" : "Edit Timeline Milestone Event"}>
-      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
-        <label className="block">
-          <span className={TYPOGRAPHY.subheadLabel}>Event Milestone Type *</span>
+      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-5">
+        <div>
+          <label
+            htmlFor="timeline-event-type"
+            className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+          >
+            Event Milestone Type <span className="text-rose-500">*</span>
+          </label>
           <select
+            id="timeline-event-type"
             value={eventType}
             onChange={(e) => setEventType(e.target.value as TimelineEventType)}
             required
-            className="mt-1 h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm dark:border-slate-600 dark:bg-slate-900"
+            className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm dark:border-slate-600 dark:bg-slate-900"
           >
             {EVENT_TYPE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -109,10 +120,14 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
               </option>
             ))}
           </select>
-        </label>
+          <p className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+            <span aria-hidden="true">ⓘ</span>
+            <span>Milestones advance your status server-side; they never move it backwards.</span>
+          </p>
+        </div>
 
         <Input
-          label="Date Occurred *"
+          label="DATE OCCURRED *"
           type="date"
           value={eventDate}
           onChange={(e) => setEventDate(e.target.value)}
@@ -120,12 +135,25 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
           errorText={fieldError ?? undefined}
         />
 
-        <Textarea
-          label="Description / Notes (Optional)"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          maxLength={500}
-        />
+        <div>
+          <div className="mb-1.5 flex items-center justify-between">
+            <label
+              htmlFor="timeline-event-notes"
+              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+            >
+              Description / Notes (Optional)
+            </label>
+            <span className="text-xs font-medium text-slate-400 dark:text-slate-500" aria-live="polite">
+              {description.length} / 500 characters
+            </span>
+          </div>
+          <Textarea
+            id="timeline-event-notes"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            maxLength={500}
+          />
+        </div>
 
         <p className="text-[11px] text-slate-500 dark:text-slate-400">
           Saving a milestone event automatically advances your current status to match (server-side). Your status never moves backwards.
@@ -137,13 +165,22 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
           </p>
         )}
 
-        <div className="flex justify-end gap-2">
-          <Button type="button" variant="secondary" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button type="submit" loading={saving}>
-            {event === null ? "Add Event" : "Save Changes"}
-          </Button>
+        {/* The composition's footer: Esc hint left, Cancel/Save right. */}
+        <div className="flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-700">
+          <span className="flex items-center gap-1.5 text-xs font-medium text-slate-400 dark:text-slate-500">
+            <kbd className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 shadow-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400">
+              Esc
+            </kbd>
+            <span>to close</span>
+          </span>
+          <span className="flex items-center gap-2.5">
+            <Button type="button" variant="secondary" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button type="submit" loading={saving}>
+              {event === null ? "Add Event" : "Save Changes"}
+            </Button>
+          </span>
         </div>
       </form>
     </Modal>
