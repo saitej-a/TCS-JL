@@ -16,6 +16,7 @@ import {
   AuthField,
   ErrorStrip,
 } from "@/pages/authCard";
+import { RULE_LABELS, validatePassword } from "@/utils/passwordRules";
 
 export function RegisterPage() {
   const navigate = useNavigate();
@@ -28,15 +29,21 @@ export function RegisterPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const mismatch = confirm !== "" && confirm !== password;
-  const tooShort = password !== "" && password.length < 8;
+  const failures = validatePassword(password);
+  const passwordInvalid = password !== "" && failures.length > 0;
+  const firstFailure = failures[0]?.label ?? "";
   const canSubmit =
-    email !== "" && password.length >= 8 && confirm === password && agreed && !submitting;
+    email !== "" &&
+    failures.length === 0 &&
+    confirm === password &&
+    agreed &&
+    !submitting;
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    if (mismatch || tooShort) {
+    if (mismatch || passwordInvalid) {
       setErrorMessage(
-        mismatch ? "Passwords do not match." : "Password must be at least 8 characters.",
+        mismatch ? "Passwords do not match." : `Password needs ${firstFailure}.`,
       );
       return;
     }
@@ -78,7 +85,7 @@ export function RegisterPage() {
           <AuthField
             label="Password"
             htmlFor="register-password"
-            hint="Must be at least 8 characters."
+            hint="Must be at least 10 characters with upper, lower, digit and special."
           >
             <Input
               id="register-password"
@@ -87,8 +94,25 @@ export function RegisterPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              aria-invalid={passwordInvalid || undefined}
             />
           </AuthField>
+          {password !== "" && failures.length > 0 && (
+            <ul className="space-y-1 text-xs" data-testid="password-rules">
+              {RULE_LABELS.map((rule) => {
+                const failed = failures.some((f) => f.id === rule.id);
+                return (
+                  <li
+                    key={rule.id}
+                    className={failed ? "text-amber-700 dark:text-amber-400" : "text-emerald-700 dark:text-emerald-400"}
+                    data-testid={`rule-${rule.id}`}
+                  >
+                    {rule.label} — {failed ? "missing" : "ok"}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
           <AuthField label="Confirm password" htmlFor="register-confirm">
             <Input
               id="register-confirm"
@@ -100,13 +124,13 @@ export function RegisterPage() {
               aria-invalid={mismatch || undefined}
             />
           </AuthField>
-          {(mismatch || tooShort || errorMessage !== null) && (
+          {(mismatch || passwordInvalid || errorMessage !== null) && (
             <ErrorStrip
               message={
                 mismatch
                   ? "Passwords do not match."
-                  : tooShort
-                    ? "Password must be at least 8 characters."
+                  : passwordInvalid
+                    ? `Password needs ${firstFailure}.`
                     : (errorMessage ?? "")
               }
             />

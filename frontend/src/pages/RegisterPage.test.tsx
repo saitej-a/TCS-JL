@@ -28,9 +28,9 @@ async function fill(
   overrides: { password?: string; confirm?: string; agree?: boolean } = {},
 ) {
   await user.type(screen.getByLabelText("Email address"), "new@example.com");
-  await user.type(screen.getByLabelText("Password", { selector: "#register-password" }), overrides.password ?? "longenough1");
+  await user.type(screen.getByLabelText("Password", { selector: "#register-password" }), overrides.password ?? "Str0ng!Pass");
   if (overrides.confirm !== "") {
-    await user.type(screen.getByLabelText("Confirm password"), overrides.confirm ?? overrides.password ?? "longenough1");
+    await user.type(screen.getByLabelText("Confirm password"), overrides.confirm ?? overrides.password ?? "Str0ng!Pass");
   }
   if (overrides.agree !== false) {
     await user.click(screen.getByTestId("terms-checkbox"));
@@ -43,7 +43,7 @@ describe("RegisterPage", () => {
     const user = userEvent.setup();
     const { calls } = scriptAdapter([]); // any request = failure
     renderRegister();
-    await fill(user, { password: "longenough1", confirm: "different2" });
+    await fill(user, { password: "Str0ng!Pass", confirm: "different2" });
     await waitFor(() => {
       expect(screen.getByRole("alert")).toHaveTextContent("Passwords do not match.");
     });
@@ -60,6 +60,21 @@ describe("RegisterPage", () => {
       expect(calls).toHaveLength(0);
       expect(screen.queryByText("verify-pending-here")).not.toBeInTheDocument();
     });
+  });
+
+  it("blocks submission and names the missing rule when the password is too short", async () => {
+    const user = userEvent.setup();
+    const { calls } = scriptAdapter([]); // any request = failure
+    renderRegister();
+    await fill(user, { password: "Str0ng!", confirm: "Str0ng!" });
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toHaveTextContent("Password needs at least 10 characters.");
+    });
+    // The per-rule checklist renders while editing and names length as missing.
+    expect(screen.getByTestId("password-rules")).toBeInTheDocument();
+    expect(screen.getByTestId("rule-length")).toHaveTextContent("missing");
+    expect(screen.getByTestId("rule-upper")).toHaveTextContent("ok");
+    expect(calls).toHaveLength(0);
   });
 
   it("routes to /verify-email-pending on success", async () => {
