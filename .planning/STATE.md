@@ -3,11 +3,11 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "9.5"
 current_phase_name: "UI/UX design pass: ui-ux-pro-max + Stitch screens (INSERTED)"
-status: executing
-stopped_at: "Phase 9.4 VERIFIED — PASS (2026-09-28): the verification pass found 4 defects (1 HIGH) and all 4 are fixed and re-derived green — device-type routing so VAPID can never deactivate native FCM devices, the primer's already-denied path no longer wedges and persists the denial, the push suite is hermetic (849 passed with AND without VAPID), and the worker now caches the viewer-independent public reads so the offline copy is true (proven: /analytics renders from cache with the origin killed); gates: backend 849 / frontend 182 / lint 0 errors / build clean; remaining residuals (per-type backend fan-out, offline write queue, timeline-cache privacy question, install triggers not driven live, OS-blocked push display) are recorded, not silent"
-last_updated: "2026-09-28T14:27:01.750Z"
-last_activity: 2026-09-28
-last_activity_desc: Phase 9.5 execution started
+status: verified
+stopped_at: "Phase 9.5 EXECUTED + VERIFIED — PASS (2026-09-29): token v2 landed with measured role shifts (buttons rest brand-700, light focus ring 600, dark accents 400-family), all 05 §3 surfaces are real screens built to the real API (8 mock-vs-API divergences shipped honestly, ledger in VERIFICATION §3), admin has a real staff guard via self-only is_staff + RequireStaff with a PII-hard reports queue, announcements is draft-first with confirm-gated publish, 404 keeps the shell + boundary shows a copyable reference id equal to the logged one; gates: backend 849 / frontend 231 / lint 0 errors / tsc -b + build clean / contrast audit 10-of-10 real pairs; Stitch apply_design_system (destructive, user-approved) re-themed all 40 screen instances to v2 — session 2569706817692007299 — so repo and design library tell one story; residuals: no pixel-level review of the 40 re-themed screens (re-apply is idempotent), no live browser walkthrough of the new screens"
+last_updated: "2026-09-29T00:00:00.000Z"
+last_activity: 2026-09-29
+last_activity_desc: Phase 9.5 executed and verified — all 12 tasks complete
 state_head: 7527fd5eeef0421b47f30ad00ca8ed9b2078c1ea
 progress:
   total_phases: 29
@@ -30,12 +30,14 @@ See: .planning/PROJECT.md (updated 2026-09-19)
 
 ## Current Position
 
-Phase: 9.5 (UI/UX design pass: ui-ux-pro-max + Stitch screens (INSERTED)) — EXECUTING
-Plan: 1 of 1
-Status: Executing Phase 9.5
-the four defects the pass found repaired with tests + live re-proofs — see
-`.planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/VERIFICATION.md`.
-Last activity: 2026-09-28 — Phase 9.5 execution started
+Phase: 9.5 (UI/UX design pass: ui-ux-pro-max + Stitch screens (INSERTED)) — EXECUTED + VERIFIED (2026-09-29)
+Plan: 1 of 1 — complete
+Status: Phase 9.5 verified — PASS. All twelve tasks executed; gates re-derived in
+`.planning/phases/TCS-JL-09.5-ui-ux-design-pass-ui-ux-pro-max-stitch-screens/VERIFICATION.md`
+(backend 849 / frontend 231 / lint 0 errors / build clean / contrast 10-of-10; the 8-screen
+divergence ledger from building to the real API instead of the mock is VERIFICATION §3; the
+user-approved destructive Stitch re-theme of all 40 instances is VERIFICATION §4).
+Last activity: 2026-09-29 — Phase 9.5 executed and verified
 
 **Next up: Phase 09.5 — *UI/UX design pass: ui-ux-pro-max + Stitch screens* (INSERTED after Phase 9, 2026-09-28, URGENT).**
 **PLANNED 2026-09-28** → `09.5-01-PLAN.md`; the design half is **done and on disk** (`09.5-CONTEXT.md`):
@@ -47,8 +49,8 @@ retry states (catalogue + ids in `09.5-CONTEXT.md` §5). One of them (`…b10ebf
 `list_screens` after its generation call timed out rather than re-generated. Only the `/settings/security`
 panel still has no screen.
 Directory: `.planning/phases/TCS-JL-09.5-ui-ux-design-pass-ui-ux-pro-max-stitch-screens/`.
-**Next action:** plan 09.5-01 Task 1 — land token v2 and reconcile 05 §4. **No application source has been
-changed by this pass yet**; nothing is committed.
+**Phase complete** — see `09.5-01-SUMMARY.md` (commits `18db11c`…`97b4f6d` + planning records)
+and `VERIFICATION.md`. **Next up: Phase 10.1 — seed data and E2E journeys.**
 *(Pointer set by hand: the workflow's `state.patch` handler matches field names this project's customized
 STATE.md does not carry — it returned `updated: []` for both `Current Phase`/`Next recommended run` and the
 frontmatter keys. The `state.add-roadmap-evolution` handler did match and logged the insertion.)*
