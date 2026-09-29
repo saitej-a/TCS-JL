@@ -49,6 +49,19 @@ export function VerifyEmailActionPage() {
         {outcome === "failure" && (
           <>
             <ErrorStrip message="This verification link is invalid or has expired." />
+            {/* Wrapping-safe token echo (9.5.1 D-7): the identifier the reader
+                clicked, never allowed to break layout. */}
+            {token !== "" && (
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Link token:{" "}
+                <span
+                  className="inline-block max-w-full min-w-0 rounded bg-slate-100 px-2 py-0.5 font-mono text-[11px] text-slate-700 [overflow-wrap:anywhere] dark:bg-slate-700 dark:text-slate-200"
+                  data-testid="attempted-token"
+                >
+                  {token}
+                </span>
+              </p>
+            )}
             <Button
               type="button"
               variant="outline"
