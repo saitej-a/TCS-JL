@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TCS Joining Tracker — Security Settings</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Fira Sans and Fira Code -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Fira Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"Fira Code"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#F0F9FF',
+              100: '#E0F2FE',
+              200: '#BAE6FD',
+              600: '#0284C7',
+              700: '#0369A1',
+              800: '#075985',
+              900: '#0C4A6E',
+            },
+          },
+          borderRadius: {
+            'custom': '8px',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Fira Sans', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-mono-code {
+      font-family: 'Fira Code', monospace;
+    }
+    /* Accessible focus ring token */
+    .focus-brand:focus-visible {
+      outline: 2px solid #0284C7;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+  <div class="flex flex-1">
+    <!-- LEFT SIDEBAR (240px) -->
+    <aside class="w-60 bg-white border-r border-slate-200 shrink-0 flex flex-col justify-between h-screen sticky top-0 z-30">
+      <div class="flex flex-col">
+        <!-- Brand Header -->
+        <div class="h-16 px-5 border-b border-slate-200 flex items-center gap-3">
+          <div class="w-8 h-8 rounded-custom bg-brand-700 text-white flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
+            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="font-bold text-slate-900 leading-tight text-sm tracking-tight">Joining Tracker</div>
+            <div class="text-[10px] uppercase font-semibold text-brand-700 tracking-wider">Candidate Portal</div>
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="p-3 space-y-1">
+          <div class="px-3 pt-3 pb-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Portal</div>
+
+          <a href="/dashboard" class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-custom transition-colors min-h-[44px]">
+            <svg class="w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            Dashboard
+          </a>
+
+          <a href="/timeline" class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-custom transition-colors min-h-[44px]">
+            <svg class="w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Timeline
+          </a>
+
+          <a href="/analytics" class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-custom transition-colors min-h-[44px]">
+            <svg class="w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            Analytics
+          </a>
+
+          <a href="/community" class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-custom transition-colors min-h-[44px]">
+            <svg class="w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            Community
+          </a>
+
+          <a href="/notifications" class="flex items-center justify-between px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-custom transition-colors min-h-[44px]">
+            <div class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              Notifications
+            </div>
+            <span class="px-1.5 py-0.5 text-xs font-semibold text-slate-600 bg-slate-100 rounded">3</span>
+          </a>
+
+          <!-- Active Settings Link -->
+          <a href="/settings" class="flex items-center gap-3 px-3 py-2 text-sm font-semibold text-brand-700 bg-brand-50 border-l-4 border-brand-700 rounded-r-custom min-h-[44px] focus-brand">
+            <svg class="w-5 h-5 text-brand-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            Settings
+          </a>
+        </div>
+      </div>
+
+      <!-- User Moniker at bottom of sidebar -->
+      <div class="p-4 border-t border-slate-200">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-xs shrink-0">
+            AS
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-semibold text-slate-900 truncate">Ananya S.</span>
+              <span class="inline-flex items-center px-1.5 py-0.2 text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 rounded">Verified</span>
+            </div>
+            <div class="text-[11px] font-mono-code text-slate-500 truncate">a***@example.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN COLUMN -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <!-- TOP BAR -->
+      <header class="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-20">
+        <!-- Breadcrumb / Back Row -->
+        <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm">
+          <a href="/settings" class="text-slate-500 hover:text-brand-700 transition-colors font-medium flex items-center gap-1 focus-brand rounded">
+            <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Settings
+          </a>
+          <span class="text-slate-300">/</span>
+          <span class="text-slate-900 font-semibold" aria-current="page">Security</span>
+        </nav>
+
+        <!-- Right actions -->
+        <div class="flex items-center gap-3">
+          <button type="button" aria-label="View notifications (3 unread)" class="w-10 h-10 rounded-custom text-slate-500 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center relative transition-colors focus-brand">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-brand-700 rounded-full"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- PAGE CONTENT AREA -->
+      <main class="flex-1 p-8 max-w-4xl w-full">
+        <!-- Page Header -->
+        <div class="mb-8">
+          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Security</h1>
+          <p class="text-sm text-slate-500 mt-1">Change your password and review how your account is protected.</p>
+        </div>
+
+        <div class="space-y-6">
+
+          <!-- CARD 1: Password Form -->
+          <section aria-labelledby="card-password-title" class="bg-white rounded-custom border border-slate-200 shadow-sm p-6">
+            <div class="border-b border-slate-100 pb-4 mb-5">
+              <h2 id="card-password-title" class="text-base font-semibold text-slate-900">Password</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Ensure your account uses a strong passphrase to prevent unauthorized modifications to your timeline.</p>
+            </div>
+
+            <form class="space-y-4 max-w-lg" onsubmit="event.preventDefault();">
+              <!-- Field 1: Current Password -->
+              <div>
+                <label for="current-password" class="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">
+                  Current password <span class="text-rose-500">*</span>
+                </label>
+                <div class="relative">
+                  <input 
+                    type="password" 
+                    id="current-password" 
+                    value="mySecretPass123"
+                    class="w-full h-11 px-3.5 pr-10 text-sm bg-white border border-slate-300 rounded-custom text-slate-900 placeholder-slate-400 focus-brand transition-colors" 
+                    aria-describedby="current-password-hint"
+                  />
+                  <button type="button" aria-label="Toggle current password visibility" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus-brand">
+                    <!-- Eye Icon -->
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Field 2: New Password -->
+              <div>
+                <label for="new-password" class="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">
+                  New password <span class="text-rose-500">*</span>
+                </label>
+                <div class="relative">
+                  <input 
+                    type="password" 
+                    id="new-password" 
+                    placeholder="Enter new password"
+                    class="w-full h-11 px-3.5 pr-10 text-sm bg-white border border-slate-300 rounded-custom text-slate-900 placeholder-slate-400 focus-brand transition-colors" 
+                    aria-describedby="new-password-helper"
+                  />
+                  <button type="button" aria-label="Toggle new password visibility" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus-brand">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+                <!-- Helper line -->
+                <p id="new-password-helper" class="text-xs text-slate-500 mt-1.5">At least 8 characters. Avoid passwords you use elsewhere.</p>
+              </div>
+
+              <!-- Field 3: Confirm New Password -->
+              <div>
+                <label for="confirm-password" class="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">
+                  Confirm new password <span class="text-rose-500">*</span>
+                </label>
+                <div class="relative">
+                  <input 
+                    type="password" 
+                    id="confirm-password" 
+                    placeholder="Repeat new password"
+                    class="w-full h-11 px-3.5 pr-10 text-sm bg-white border border-slate-300 rounded-custom text-slate-900 placeholder-slate-400 focus-brand transition-colors"
+                  />
+                  <button type="button" aria-label="Toggle confirm password visibility" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus-brand">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Primary Button & State Demonstration Section -->
+              <div class="pt-2 flex flex-col gap-3">
+                <div class="flex flex-wrap items-center gap-3">
+                  <!-- Default Primary Action -->
+                  <button type="button" class="min-h-[44px] px-5 py-2.5 bg-brand-700 hover:bg-brand-800 active:bg-brand-900 text-white text-sm font-semibold rounded-custom transition-colors shadow-sm focus-brand inline-flex items-center justify-center">
+                    Change password
+                  </button>
+
+                  <!-- Loading state button -->
+                  <button type="button" disabled class="min-h-[44px] px-5 py-2.5 bg-brand-700/70 text-white text-sm font-medium rounded-custom shadow-sm inline-flex items-center justify-center gap-2 cursor-not-allowed">
+                    <svg class="animate-spin -ml-0.5 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Updating…</span>
+                  </button>
+                </div>
+
+                <!-- Submit Feedback States Display -->
+                <div class="pt-2 border-t border-slate-100 flex flex-col gap-2">
+                  <!-- Success inline state -->
+                  <div class="flex items-center gap-2 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-3 py-2 rounded-custom">
+                    <svg class="w-4 h-4 text-emerald-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>Password updated.</span>
+                  </div>
+
+                  <!-- Error inline state -->
+                  <div class="flex items-center gap-2 text-xs font-medium text-rose-700 bg-rose-50 border border-rose-200/80 px-3 py-2 rounded-custom">
+                    <svg class="w-4 h-4 text-rose-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    <span>Your current password is incorrect.</span>
+                  </div>
+                </div>
+
+              </div>
+            </form>
+          </section>
+
+          <!-- CARD 2: Password Recovery -->
+          <section aria-labelledby="card-recovery-title" class="bg-white rounded-custom border border-slate-200 shadow-sm p-6">
+            <div class="border-b border-slate-100 pb-4 mb-4">
+              <h2 id="card-recovery-title" class="text-base font-semibold text-slate-900">Password recovery</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Need to access your candidate account without your current password? We can send a secure recovery token to your registered inbox.</p>
+            </div>
+
+            <div class="space-y-3.5">
+              <div class="flex flex-wrap items-center gap-4">
+                <button type="button" class="min-h-[44px] px-4 py-2 bg-white border border-slate-300 hover:border-slate-400 hover:bg-slate-50 text-slate-700 active:bg-slate-100 text-sm font-semibold rounded-custom transition-colors focus-brand inline-flex items-center gap-2">
+                  <svg class="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                  </svg>
+                  Send password reset email
+                </button>
+              </div>
+
+              <!-- Status line with exact masked email requirement -->
+              <div class="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 border border-slate-200 px-3 py-2 rounded-custom max-w-lg">
+                <svg class="w-4 h-4 text-brand-700 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+                <span>Reset link sent to <span class="font-mono-code font-medium text-slate-900">a***@example.com</span></span>
+              </div>
+            </div>
+          </section>
+
+          <!-- CARD 3: Account Protection -->
+          <section aria-labelledby="card-protection-title" class="bg-white rounded-custom border border-slate-200 shadow-sm p-6">
+            <div class="border-b border-slate-100 pb-4 mb-4">
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <h2 id="card-protection-title" class="text-base font-semibold text-slate-900">Account protection</h2>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Platform features currently active or in development for candidate account security.</p>
+            </div>
+
+            <!-- Informational calm slate notes -->
+            <div class="divide-y divide-slate-100">
+              <!-- Row 1: Active sessions -->
+              <div class="py-3.5 flex items-start justify-between gap-4">
+                <div class="space-y-1">
+                  <div class="text-sm font-semibold text-slate-800 flex items-center gap-2">
+                    <span>Active sessions</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                      Not tracked yet
+                    </span>
+                  </div>
+                  <p class="text-xs text-slate-500 leading-relaxed">This app does not list your signed-in devices yet. It will when the API supports it.</p>
+                </div>
+                <div class="shrink-0 text-slate-400 pt-0.5">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Row 2: Two-factor authentication -->
+              <div class="pt-3.5 flex items-start justify-between gap-4">
+                <div class="space-y-1">
+                  <div class="text-sm font-semibold text-slate-800 flex items-center gap-2">
+                    <span>Two-factor authentication</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                      Not available yet
+                    </span>
+                  </div>
+                  <p class="text-xs text-slate-500 leading-relaxed">Hardware keys (WebAuthn) and TOTP authenticator app support are scheduled for rollout in upcoming releases.</p>
+                </div>
+                <div class="shrink-0 text-slate-400 pt-0.5">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="h-12 bg-white border-t border-slate-200 px-8 flex items-center justify-between text-[11px] text-slate-500">
+        <div>Independent community tracker. Not affiliated with TCS.</div>
+        <div class="flex items-center gap-4 text-slate-400">
+          <a href="/privacy" class="hover:text-slate-600 transition-colors">Privacy Policy</a>
+          <span>•</span>
+          <a href="/terms" class="hover:text-slate-600 transition-colors">Terms of Use</a>
+          <span>•</span>
+          <span class="font-mono-code text-[10px]">TJT-Core v2.4</span>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+</body>
+</html>

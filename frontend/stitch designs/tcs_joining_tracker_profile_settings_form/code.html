@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TCS Joining Tracker — Profile Settings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['"Fira Code"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#F0F9FF',
+              100: '#E0F2FE',
+              200: '#BAE6FD',
+              500: '#0EA5E9',
+              600: '#0284C7',
+              700: '#0369A1',
+              800: '#075985',
+              900: '#0C4A6E',
+            },
+            surface: {
+              subtle: '#F8FAFC',
+              border: '#E2E8F0',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom radio styling & clean focus ring matching specification */
+    .focus-ring:focus-within, .focus-ring:focus {
+      outline: 2px solid #0369A1;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body class="bg-surface-subtle font-sans text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <div class="flex flex-1 min-h-screen">
+    <!-- Left Sidebar: 240px wide, faithful to {{DATA:SCREEN:SCREEN_5}} shell -->
+    <aside class="w-60 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 fixed top-0 bottom-0 left-0 z-30">
+      <div>
+        <!-- Brand Header with Shield/Tracker Logo -->
+        <div class="p-6 pb-5 flex items-center gap-3 border-b border-slate-100">
+          <div class="w-9 h-9 rounded-lg bg-brand-700 flex items-center justify-center text-white shadow-sm shadow-brand-700/20">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+          </div>
+          <div>
+            <div class="font-bold text-slate-900 leading-tight text-sm tracking-tight">Joining Tracker</div>
+            <div class="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">Candidate Portal</div>
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="p-3 space-y-1">
+          <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 text-sm font-medium transition-colors">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+            </svg>
+            Dashboard
+          </a>
+
+          <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 text-sm font-medium transition-colors">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2" />
+            </svg>
+            Timeline
+          </a>
+
+          <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 text-sm font-medium transition-colors">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+            </svg>
+            Analytics
+          </a>
+
+          <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 text-sm font-medium transition-colors">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+            </svg>
+            Community
+          </a>
+
+          <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 text-sm font-medium transition-colors">
+            <span class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+              </svg>
+              Notifications
+            </span>
+            <span class="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-full font-medium">3</span>
+          </a>
+
+          <!-- Active Settings Nav -->
+          <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-brand-50 text-brand-700 text-sm font-semibold border-l-4 border-brand-700">
+            <svg class="w-5 h-5 text-brand-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Settings
+          </a>
+        </nav>
+      </div>
+
+      <!-- User Chip Bottom Sidebar matching {{DATA:SCREEN:SCREEN_5}} -->
+      <div class="p-3 border-t border-slate-100 bg-slate-50/50 m-3 rounded-xl border">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-brand-700 text-white font-semibold flex items-center justify-center text-xs shrink-0 shadow-sm">
+            AS
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-semibold text-slate-900 truncate">Ananya S.</span>
+              <span class="inline-flex items-center px-1.5 py-0.2 text-[9px] font-semibold text-emerald-700 bg-emerald-50 rounded border border-emerald-200">Verified</span>
+            </div>
+            <div class="text-[11px] text-slate-500 font-mono truncate">a***@example.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area: Offset by 240px sidebar, 1280px overall container frame -->
+    <main class="ml-60 flex-1 flex flex-col min-h-screen">
+      <div class="max-w-[1040px] w-full mx-auto px-8 py-8 flex-1">
+
+        <!-- Top Breadcrumb & Page Header -->
+        <nav class="flex items-center gap-2 text-xs text-slate-500 mb-3" aria-label="Breadcrumb">
+          <a href="#" class="hover:text-slate-800 transition-colors">Home</a>
+          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+          <a href="#" class="hover:text-slate-800 transition-colors">Settings</a>
+          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+          <span class="text-brand-700 font-medium">Profile</span>
+        </nav>
+
+        <div class="mb-8">
+          <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Profile</h1>
+          <p class="text-sm text-slate-600 mt-1 max-w-2xl">
+            Keep this accurate — your joining date and category drive your timeline and survey eligibility
+          </p>
+        </div>
+
+        <!-- 2-Column Responsive Layout: Max 720px Form Stack + 320px Help Column -->
+        <div class="flex items-start gap-8">
+
+          <!-- Left Column (Max content width: 720px) -->
+          <div class="w-full max-w-[720px] space-y-6 pb-28">
+
+            <!-- CARD 1: Identity -->
+            <section class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-6" style="border-radius: 12px;">
+              <div class="border-b border-slate-100 pb-4 mb-5">
+                <h2 class="text-[22px] font-semibold text-slate-900 leading-tight">Identity</h2>
+                <p class="text-sm text-slate-500 mt-1">Manage your public candidate moniker, avatar, and linked credentials.</p>
+              </div>
+
+              <!-- Avatar + Upload -->
+              <div class="flex items-center gap-5 mb-6">
+                <div class="w-16 h-16 rounded-full bg-brand-700 text-white font-bold text-xl flex items-center justify-center shadow-md shadow-brand-700/20 shrink-0">
+                  AS
+                </div>
+                <div>
+                  <div class="flex items-center gap-3">
+                    <button type="button" class="px-3.5 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 hover:border-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-brand-700 focus:ring-offset-2">
+                      Upload photo
+                    </button>
+                    <span class="text-xs text-slate-500">PNG or JPG, up to 2 MB. Optional.</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <!-- Full Name Input -->
+                <div>
+                  <label for="fullName" class="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
+                    Full name
+                  </label>
+                  <input
+                    type="text"
+                    id="fullName"
+                    value="Ananya Sharma"
+                    class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 font-medium placeholder-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-700 focus:ring-offset-2 focus:border-transparent"
+                  />
+                </div>
+
+                <!-- Email Input (Masked + Lock Icon + Helper) -->
+                <div>
+                  <div class="flex items-center justify-between mb-1.5">
+                    <label for="email" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                      Email address
+                    </label>
+                    <span class="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500">
+                      <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                      </svg>
+                      Sign-in identity
+                    </span>
+                  </div>
+                  <div class="relative rounded-lg shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="text"
+                      id="email"
+                      disabled
+                      value="a***@example.com"
+                      class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-600 font-mono cursor-not-allowed select-none"
+                    />
+                  </div>
+                  <p class="text-xs text-slate-500 mt-1.5 flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                    </svg>
+                    Contact support to change your email — it is your sign-in identity.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <!-- CARD 2: Recruitment details -->
+            <section class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-6" style="border-radius: 12px;">
+              <div class="border-b border-slate-100 pb-4 mb-5">
+                <h2 class="text-[22px] font-semibold text-slate-900 leading-tight">Recruitment details</h2>
+                <p class="text-sm text-slate-500 mt-1">These fields match your official letter metadata to benchmark your wait duration.</p>
+              </div>
+
+              <div class="space-y-4">
+                <!-- Category Select (showing open control state with listed options) -->
+                <div>
+                  <label for="category" class="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
+                    Category
+                  </label>
+                  <div class="relative">
+                    <button
+                      type="button"
+                      class="w-full flex items-center justify-between px-3.5 py-2.5 bg-white border border-brand-700 rounded-t-lg text-sm text-slate-900 font-medium focus:outline-none ring-2 ring-brand-700 ring-offset-1"
+                    >
+                      <span class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-brand-700"></span>
+                        <span class="font-semibold text-slate-900">Assistant Professor</span>
+                      </span>
+                      <svg class="w-4 h-4 text-brand-700 transform rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    <!-- Open Control Dropdown List showing the specified options -->
+                    <div class="w-full bg-white border-x border-b border-slate-200 rounded-b-lg shadow-lg overflow-hidden py-1 z-20">
+                      <div class="px-3.5 py-2 text-xs font-semibold bg-brand-50 text-brand-800 flex items-center justify-between">
+                        <span>Assistant Professor</span>
+                        <svg class="w-4 h-4 text-brand-700" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                      </div>
+                      <div class="px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 cursor-pointer">Associate Professor</div>
+                      <div class="px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 cursor-pointer">System Engineer</div>
+                      <div class="px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 cursor-pointer">Digital</div>
+                      <div class="px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 cursor-pointer">Prime</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Grid for Date & Preferred Location -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                  <!-- Date input: Offer / joining date showing 12 Sep 2026 in Fira Code -->
+                  <div>
+                    <label for="joiningDate" class="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
+                      Offer / joining date
+                    </label>
+                    <div class="relative">
+                      <input
+                        type="text"
+                        id="joiningDate"
+                        value="12 Sep 2026"
+                        class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 font-mono font-medium focus:outline-none focus:ring-2 focus:ring-brand-700 focus:ring-offset-2 focus:border-transparent"
+                      />
+                      <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Text input: Preferred location -->
+                  <div>
+                    <label for="location" class="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
+                      Preferred location
+                    </label>
+                    <div class="relative">
+                      <input
+                        type="text"
+                        id="location"
+                        value="Hyderabad"
+                        class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-brand-700 focus:ring-offset-2 focus:border-transparent"
+                      />
+                      <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Amber helper line -->
+                <div class="p-3 bg-amber-50/80 border border-amber-200/80 rounded-lg flex items-start gap-2.5 text-xs text-amber-900 mt-2">
+                  <svg class="w-4 h-4 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                  </svg>
+                  <span>Changing your joining date after a survey response may re-open the survey.</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- CARD 3: Timeline visibility -->
+            <section class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-6" style="border-radius: 12px;">
+              <div class="border-b border-slate-100 pb-4 mb-5">
+                <h2 class="text-[22px] font-semibold text-slate-900 leading-tight">Timeline visibility</h2>
+                <p class="text-sm text-slate-500 mt-1">Control who can inspect your milestone pacing and peer verification status.</p>
+              </div>
+
+              <!-- Radio Options Stack -->
+              <div class="space-y-3">
+                <!-- Option 1: Selected -->
+                <label class="flex items-start gap-3.5 p-3.5 rounded-lg border-2 border-brand-700 bg-brand-50/40 cursor-pointer transition-all">
+                  <input
+                    type="radio"
+                    name="timeline_visibility"
+                    value="members"
+                    checked
+                    class="mt-1 h-4 w-4 text-brand-700 border-slate-300 focus:ring-brand-700"
+                  />
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-semibold text-slate-900">Visible to members</span>
+                      <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 rounded">Recommended</span>
+                    </div>
+                    <p class="text-xs text-slate-600 mt-0.5">Authenticated candidates can view your milestone progression to calibrate wait time averages.</p>
+                  </div>
+                </label>
+
+                <!-- Option 2 -->
+                <label class="flex items-start gap-3.5 p-3.5 rounded-lg border border-slate-200 hover:border-slate-300 bg-white cursor-pointer transition-all">
+                  <input
+                    type="radio"
+                    name="timeline_visibility"
+                    value="cohort"
+                    class="mt-1 h-4 w-4 text-brand-700 border-slate-300 focus:ring-brand-700"
+                  />
+                  <div class="flex-1">
+                    <span class="text-sm font-semibold text-slate-900">Visible to my cohort only</span>
+                    <p class="text-xs text-slate-500 mt-0.5">Only verified peers allocated to your exact category and region can view milestones.</p>
+                  </div>
+                </label>
+
+                <!-- Option 3 -->
+                <label class="flex items-start gap-3.5 p-3.5 rounded-lg border border-slate-200 hover:border-slate-300 bg-white cursor-pointer transition-all">
+                  <input
+                    type="radio"
+                    name="timeline_visibility"
+                    value="private"
+                    class="mt-1 h-4 w-4 text-brand-700 border-slate-300 focus:ring-brand-700"
+                  />
+                  <div class="flex-1">
+                    <span class="text-sm font-semibold text-slate-900">Private</span>
+                    <p class="text-xs text-slate-500 mt-0.5">Only you can view your milestone details; aggregate metrics remain anonymized.</p>
+                  </div>
+                </label>
+              </div>
+
+              <!-- Checkbox -->
+              <div class="pt-5 mt-5 border-t border-slate-100">
+                <label class="flex items-center gap-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked
+                    class="h-4 w-4 text-brand-700 rounded border-slate-300 focus:ring-brand-700 focus:ring-offset-2"
+                  />
+                  <span class="text-xs font-medium text-slate-700">
+                    Show my category badge on my posts
+                  </span>
+                </label>
+              </div>
+            </section>
+
+          </div>
+
+          <!-- Right Column: 320px Help Card & Account Actions -->
+          <div class="w-80 shrink-0 space-y-6">
+
+            <!-- 'About this screen' card -->
+            <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5" style="border-radius: 12px;">
+              <div class="flex items-center gap-2 mb-3 text-slate-900 font-semibold text-sm">
+                <svg class="w-4 h-4 text-brand-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                </svg>
+                About this screen
+              </div>
+
+              <ul class="space-y-3 text-xs text-slate-600 leading-relaxed">
+                <li class="flex items-start gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-700 shrink-0 mt-1.5"></span>
+                  <span>Changes made here take effect across all your active community discussions and peer benchmark curves immediately.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-700 shrink-0 mt-1.5"></span>
+                  <span>Your email address is cryptographically hashed for zero-knowledge privacy verification across survey entries.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-700 shrink-0 mt-1.5"></span>
+                  <span>Category updates re-calculate your expected joining window against historical regional dispatch batches.</span>
+                </li>
+              </ul>
+
+              <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                <span>Profile v2.4</span>
+                <span class="text-emerald-600 font-medium flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  Synced with server
+                </span>
+              </div>
+            </div>
+
+            <!-- Danger zone link in rose -->
+            <div class="px-1 text-center sm:text-left">
+              <a href="#" class="inline-flex items-center gap-1.5 text-xs font-medium text-rose-600 hover:text-rose-700 hover:underline transition-colors">
+                <svg class="w-3.5 h-3.5 text-rose-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                </svg>
+                Delete my account instead
+              </a>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Sticky Bottom Action Bar inside the card area / sticky to viewport bottom on scroll -->
+      <div class="sticky bottom-0 bg-white/95 backdrop-blur border-t border-slate-200 z-20 py-3.5 px-8 shadow-md">
+        <div class="max-w-[1040px] mx-auto flex items-center justify-between">
+          <!-- Unsaved changes note in amber on the left -->
+          <div class="flex items-center gap-2 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200/70 px-3 py-1.5 rounded-md">
+            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+            <span>Unsaved changes</span>
+          </div>
+
+          <!-- Action buttons: Cancel and Save changes -->
+          <div class="flex items-center gap-3">
+            <button
+              type="button"
+              class="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-700 focus:ring-offset-2"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="px-5 py-2 text-xs font-semibold text-white bg-[#0369A1] hover:bg-[#0284C7] rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-brand-700 focus:ring-offset-2 flex items-center gap-2"
+            >
+              <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              Save changes
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Disclaimer matching 11px muted specification -->
+      <footer class="py-4 border-t border-slate-200/80 bg-white text-center text-[11px] text-slate-400">
+        <div class="max-w-[1040px] mx-auto px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>Independent community tracker. Not affiliated with TCS.</span>
+          <div class="flex items-center gap-4 text-slate-400 text-[11px]">
+            <a href="#" class="hover:underline">Privacy Policy</a>
+            <span>•</span>
+            <a href="#" class="hover:underline">Terms of Use</a>
+            <span>•</span>
+            <span>Design System: TJT v2 Professional Blue</span>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+</body>
+</html>

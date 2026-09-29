@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-slate-50" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Step 1 of 3: Offer Details - TCS Joining Tracker</title>
+<!-- Inter Google Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#EEF2FF',
+              100: '#E0E7FF',
+              500: '#6366F1',
+              600: '#4F46E5',
+              700: '#4338CA',
+              800: '#3730A3',
+            }
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            "headline": ["Inter", "sans-serif"],
+            "display": ["Inter", "sans-serif"],
+            "body": ["Inter", "sans-serif"],
+            "label": ["Inter", "sans-serif"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .material-symbols-outlined {
+      font-size: 20px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    /* Subtle dot grid pattern */
+    .bg-dot-grid {
+      background-image: radial-gradient(#cbd5e1 0.75px, transparent 0.75px);
+      background-size: 20px 20px;
+    }
+  </style>
+</head>
+<body class="min-h-full flex flex-col justify-between antialiased text-slate-800 bg-slate-50 bg-dot-grid">
+<!-- Main Viewport Canvas -->
+<main class="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
+<div class="w-full max-w-2xl">
+<!-- White Surface Card -->
+<div class="bg-white rounded-2xl border border-slate-100 shadow-xl p-6 sm:p-8 md:p-10 transition-all">
+<!-- Top Brand Header Row -->
+<header class="flex items-center justify-between pb-6 border-b border-slate-100">
+<div class="flex items-center gap-3">
+<span class="bg-indigo-600 text-white font-bold text-xs px-2.5 py-1 rounded-md tracking-wide shadow-sm">
+              [TJT]
+            </span>
+<div class="flex flex-col">
+<span class="font-headline font-semibold text-slate-900 text-base leading-tight">
+                TCS Joining Tracker
+              </span>
+<span class="text-xs text-slate-400 font-normal">Candidate Onboarding Portal</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200/60 text-slate-600 text-xs font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span>Candidate Onboarding</span>
+</div>
+</header>
+<!-- Progress Tracker Section -->
+<div class="pt-6">
+<div class="flex items-center justify-between mb-2.5">
+<span class="text-xs font-semibold uppercase tracking-wider text-indigo-600">
+              Step 1 of 3 — Your details
+            </span>
+<span class="text-xs font-medium text-slate-400">33% Completed</span>
+</div>
+<!-- Connected 3-Segment Progress Bar -->
+<div class="grid grid-cols-3 gap-2.5 mb-6">
+<!-- Segment 1: Active -->
+<div class="flex flex-col gap-1.5">
+<div class="h-2 w-full bg-indigo-600 rounded-full shadow-sm"></div>
+<span class="text-[11px] font-semibold text-indigo-600 truncate">1. Offer Details</span>
+</div>
+<!-- Segment 2: Pending -->
+<div class="flex flex-col gap-1.5">
+<div class="h-2 w-full bg-slate-200 rounded-full"></div>
+<span class="text-[11px] font-medium text-slate-400 truncate">2. Timeline Status</span>
+</div>
+<!-- Segment 3: Pending -->
+<div class="flex flex-col gap-1.5">
+<div class="h-2 w-full bg-slate-200 rounded-full"></div>
+<span class="text-[11px] font-medium text-slate-400 truncate">3. Preferences</span>
+</div>
+</div>
+<!-- Headline & Context Subtext -->
+<h1 class="text-slate-900 text-[22px] font-semibold tracking-tight">
+            Tell us about your offer
+          </h1>
+<p class="text-slate-500 text-sm mt-1 mb-6 leading-relaxed">
+            This powers your personal timeline. You can change it later in Settings.
+          </p>
+</div>
+<!-- Form Elements -->
+<form class="space-y-5" onsubmit="event.preventDefault();">
+<!-- 1. Hiring Type Radio-Card Grid -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="block text-sm font-medium text-slate-700">
+                Hiring type
+              </label>
+<span class="text-xs text-slate-400">Determines onboarding track</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+<!-- Option A: Prime (SELECTED) -->
+<label class="group relative flex flex-col justify-between p-3.5 rounded-xl border-2 border-indigo-600 bg-indigo-50/70 text-indigo-900 cursor-pointer shadow-sm transition-all">
+<input checked="" class="sr-only" name="hiring_type" type="radio" value="Prime"/>
+<div class="flex items-start justify-between">
+<div class="w-8 h-8 rounded-lg bg-indigo-600/10 text-indigo-600 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<span class="material-symbols-outlined text-indigo-600 text-[20px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<div class="text-sm font-semibold text-slate-900">Prime</div>
+<div class="text-xs text-indigo-700/80 font-normal">Engineering R&amp;D</div>
+</div>
+</label>
+<!-- Option B: Digital (Unselected) -->
+<label class="group relative flex flex-col justify-between p-3.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50 cursor-pointer transition-all">
+<input class="sr-only" name="hiring_type" type="radio" value="Digital"/>
+<div class="flex items-start justify-between">
+<div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center mb-3 group-hover:text-indigo-600 group-hover:bg-indigo-50 transition-colors">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+</div>
+<div class="w-4 h-4 rounded-full border border-slate-300 group-hover:border-slate-400 mt-0.5"></div>
+</div>
+<div>
+<div class="text-sm font-medium text-slate-900">Digital</div>
+<div class="text-xs text-slate-500 font-normal">Core Systems</div>
+</div>
+</label>
+<!-- Option C: BPS (Unselected) -->
+<label class="group relative flex flex-col justify-between p-3.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50 cursor-pointer transition-all">
+<input class="sr-only" name="hiring_type" type="radio" value="BPS"/>
+<div class="flex items-start justify-between">
+<div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center mb-3 group-hover:text-indigo-600 group-hover:bg-indigo-50 transition-colors">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+</div>
+<div class="w-4 h-4 rounded-full border border-slate-300 group-hover:border-slate-400 mt-0.5"></div>
+</div>
+<div>
+<div class="text-sm font-medium text-slate-900">BPS</div>
+<div class="text-xs text-slate-500 font-normal">Operations</div>
+</div>
+</label>
+</div>
+</div>
+<!-- 2. Role / Designation Input -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="block text-sm font-medium text-slate-700" for="role">
+                Role / Designation
+              </label>
+<span class="text-xs text-slate-400">As stated on offer letter</span>
+</div>
+<div class="relative">
+<input class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 bg-white transition-shadow" id="role" name="role" placeholder="e.g. Systems Engineer, Associate Software Engineer" type="text" value="Systems Engineer"/>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-[18px]" data-icon="badge">badge</span>
+</div>
+</div>
+</div>
+<!-- 3. Two-Column Region & Batch Row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Region of Joining Select -->
+<div>
+<label class="block text-sm font-medium text-slate-700 mb-1.5" for="region">
+                Region of joining
+              </label>
+<div class="relative">
+<select class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 pr-10 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-shadow" id="region" name="region">
+<option selected="" value="Hyderabad">Hyderabad</option>
+<option value="Bengaluru">Bengaluru</option>
+<option value="Chennai">Chennai</option>
+<option value="Pune">Pune</option>
+<option value="Kolkata">Kolkata</option>
+<option value="Delhi NCR">Delhi NCR</option>
+<option value="Mumbai">Mumbai</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+<span class="material-symbols-outlined text-[20px]" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<p class="text-[12px] text-slate-500 mt-1">Based on allocated ILP / base office</p>
+</div>
+<!-- Batch Select -->
+<div>
+<label class="block text-sm font-medium text-slate-700 mb-1.5" for="batch">
+                Batch
+              </label>
+<div class="relative">
+<select class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 pr-10 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-shadow" id="batch" name="batch">
+<option selected="" value="2025">2025 (Active cohort)</option>
+<option value="2024">2024</option>
+<option value="2026">2026</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+<span class="material-symbols-outlined text-[20px]" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<p class="text-[12px] text-slate-500 mt-1">Graduation or recruitment cycle</p>
+</div>
+</div>
+<!-- 4. Offer Letter Date Input -->
+<div>
+<label class="block text-sm font-medium text-slate-700 mb-1.5" for="offer_date">
+              Offer letter date
+            </label>
+<div class="relative">
+<input class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 pr-10 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 bg-white transition-shadow" id="offer_date" name="offer_date" placeholder="DD Month YYYY" type="text" value="15 March 2025"/>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-[20px]" data-icon="calendar_today">calendar_today</span>
+</div>
+</div>
+<p class="text-[12px] text-slate-500 mt-1">Found on page 1 of your official offer letter</p>
+</div>
+<!-- Card Bottom Action Row -->
+<div class="border-t border-slate-100 pt-6 mt-8 flex items-center justify-between">
+<button class="text-slate-500 hover:text-slate-700 active:scale-[0.98] text-sm font-medium px-4 py-2.5 rounded-lg hover:bg-slate-50 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-slate-300" type="button">
+              Skip for now
+            </button>
+<button class="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 active:scale-[0.98] text-white font-medium text-sm h-11 px-6 rounded-lg shadow-sm flex items-center gap-2 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2" type="submit">
+<span>Continue</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+<!-- Trust & Privacy Footnote Under Card -->
+<footer class="mt-6 mb-8 text-center">
+<p class="text-[11px] leading-relaxed text-slate-400 max-w-lg mx-auto">
+          TCS Joining Tracker is an independent community project and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Tata Consultancy Services (TCS) or any of its subsidiaries.
+        </p>
+<div class="flex items-center justify-center gap-3 mt-2.5 text-[11px] text-slate-400">
+<a class="hover:text-slate-600 transition-colors" href="#">Privacy Policy</a>
+<span>·</span>
+<a class="hover:text-slate-600 transition-colors" href="#">Terms</a>
+<span>·</span>
+<a class="hover:text-slate-600 transition-colors" href="#">Data Security</a>
+</div>
+</footer>
+</div>
+</main>
+<script>
+    // Micro-interaction for hiring type radio cards
+    const radioLabels = document.querySelectorAll('input[name="hiring_type"]');
+    radioLabels.forEach(radio => {
+      radio.addEventListener('change', () => {
+        document.querySelectorAll('label:has(input[name="hiring_type"])').forEach(label => {
+          label.className = 'group relative flex flex-col justify-between p-3.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50 cursor-pointer transition-all';
+          const iconWrapper = label.querySelector('.rounded-lg');
+          if (iconWrapper) {
+            iconWrapper.className = 'w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center mb-3 group-hover:text-indigo-600 group-hover:bg-indigo-50 transition-colors';
+          }
+          const rightIndicator = label.querySelector('.material-symbols-outlined[data-icon="check_circle"]') || label.querySelector('.rounded-full.border');
+          if (rightIndicator) {
+            rightIndicator.outerHTML = '<div class="w-4 h-4 rounded-full border border-slate-300 group-hover:border-slate-400 mt-0.5"></div>';
+          }
+          const subText = label.querySelector('.text-xs');
+          if (subText) subText.className = 'text-xs text-slate-500 font-normal';
+        });
+
+        const activeLabel = radio.closest('label');
+        if (activeLabel) {
+          activeLabel.className = 'group relative flex flex-col justify-between p-3.5 rounded-xl border-2 border-indigo-600 bg-indigo-50/70 text-indigo-900 cursor-pointer shadow-sm transition-all';
+          const iconWrapper = activeLabel.querySelector('.rounded-lg');
+          if (iconWrapper) {
+            iconWrapper.className = 'w-8 h-8 rounded-lg bg-indigo-600/10 text-indigo-600 flex items-center justify-center mb-3';
+          }
+          const circle = activeLabel.querySelector('.rounded-full.border');
+          if (circle) {
+            circle.outerHTML = '<span class="material-symbols-outlined text-indigo-600 text-[20px]" data-icon="check_circle" style="font-variation-settings: \'FILL\' 1;">check_circle</span>';
+          }
+          const subText = activeLabel.querySelector('.text-xs');
+          if (subText) subText.className = 'text-xs text-indigo-700/80 font-normal';
+        }
+      });
+    });
+  </script>
+</body></html>

@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TCS Joining Tracker — PWA States (Install, Push Primer, Offline)</title>
+<!-- Inter Google Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#EEF2FF',
+              100: '#E0E7FF',
+              500: '#6366F1',
+              600: '#4F46E5',
+              700: '#4338CA',
+              800: '#3730A3'
+            }
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            headline: ["Inter", "sans-serif"],
+            display: ["Inter", "sans-serif"],
+            body: ["Inter", "sans-serif"],
+            label: ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased p-4 md:p-8 space-y-12">
+<!-- ========================================== -->
+<!-- TOP SYSTEM SPECIFICATION BADGE BAR        -->
+<!-- ========================================== -->
+<header class="max-w-7xl mx-auto bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+<div class="space-y-1.5">
+<div class="flex items-center gap-2.5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/60">
+          v2.4 PWA Ready
+        </span>
+<span class="text-xs font-semibold text-slate-400">•</span>
+<span class="text-xs font-medium text-slate-500">05_UI_UX_SPECIFICATION.md §4</span>
+</div>
+<h1 class="font-headline text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
+        PWA &amp; Offline Experiences — Design Specification
+      </h1>
+<p class="text-sm text-slate-600">
+        Living interface artboards documenting client-side Service Worker install prompting, soft push notification priming, and resilient cached offline states.
+      </p>
+</div>
+<div class="flex flex-wrap items-center gap-2 self-start md:self-auto">
+<span class="px-3 py-1 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-medium rounded-lg">PWA Lifecycle States</span>
+<span class="px-3 py-1 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-medium rounded-lg">Desktop Shell Standard</span>
+<span class="px-3 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-medium rounded-lg flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
+        Light Mode
+      </span>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- STATE 1: SMART INSTALL PROMOTION (Dismissible In-Feed Banner)              -->
+<!-- ========================================================================= -->
+<section class="max-w-7xl mx-auto space-y-3">
+<!-- Artboard Title & Trigger Pill -->
+<div class="flex flex-wrap items-center justify-between gap-2 px-1">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center w-7 h-7 rounded-lg bg-indigo-600 text-white font-bold text-xs">1</div>
+<h2 class="font-headline text-lg font-bold tracking-tight text-slate-900">
+          1. SMART INSTALL PROMOTION (Dismissible In-Feed Banner)
+        </h2>
+</div>
+<span class="px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium rounded-full flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+        Triggers after user adds a milestone or visits on 2 distinct days
+      </span>
+</div>
+<!-- Browser Frame Window Mockup -->
+<div class="border border-slate-300 rounded-2xl bg-white shadow-xl overflow-hidden relative">
+<!-- Window Title Bar -->
+<div class="bg-slate-100/90 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-rose-400 inline-block border border-rose-500/20"></span>
+<span class="w-3 h-3 rounded-full bg-amber-400 inline-block border border-amber-500/20"></span>
+<span class="w-3 h-3 rounded-full bg-emerald-400 inline-block border border-emerald-500/20"></span>
+<span class="ml-3 text-xs font-medium text-slate-500">https://tjt-tracker.internal/dashboard</span>
+</div>
+<div class="text-[11px] font-mono text-slate-400">Desktop View (1280px)</div>
+</div>
+<!-- App Shell Container -->
+<div class="relative min-h-[580px] bg-slate-50">
+<!-- SideNavBar (Shared Component) -->
+<aside class="fixed top-0 left-0 h-screen w-60 z-30 bg-white border-r border-slate-200 shadow-sm flex flex-col justify-between p-4" style="position: absolute; height: 100%;">
+<div class="space-y-6">
+<!-- Brand Logo -->
+<div class="font-headline text-lg font-bold tracking-tight text-slate-900 flex items-center gap-2 px-1">
+<div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-black shadow-sm">
+<span class="material-symbols-outlined text-lg" data-icon="rocket_launch">rocket_launch</span>
+</div>
+<div class="leading-tight">
+<span class="block text-sm font-bold text-slate-900">TJT Tracker</span>
+<span class="block text-[11px] text-slate-500 font-normal">Recruitment Status</span>
+</div>
+</div>
+<!-- Primary Nav Items -->
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-indigo-50 text-indigo-600 font-semibold text-sm" href="#">
+<span class="material-symbols-outlined text-indigo-600" data-icon="dashboard">dashboard</span>
+                Dashboard
+              </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-slate-500" data-icon="mark_email_read">mark_email_read</span>
+                Joining Letters
+              </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-slate-500" data-icon="poll">poll</span>
+                Surveys
+              </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-slate-500" data-icon="forum">forum</span>
+                Community Forum
+              </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-slate-500" data-icon="settings">settings</span>
+                Settings
+              </a>
+</nav>
+<button class="w-full py-2.5 px-3 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white text-xs font-semibold rounded-lg shadow-sm flex items-center justify-center gap-1.5 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+              + Share Update
+            </button>
+</div>
+<!-- Footer Tabs in Sidebar -->
+<div class="border-t border-slate-100 pt-3 space-y-1">
+<a class="flex items-center gap-2 px-2 py-1.5 text-xs text-slate-500 hover:text-slate-900" href="#">
+<span class="material-symbols-outlined text-xs" data-icon="privacy_tip">privacy_tip</span>
+              Privacy Policy
+            </a>
+<a class="flex items-center gap-2 px-2 py-1.5 text-xs text-slate-500 hover:text-slate-900" href="#">
+<span class="material-symbols-outlined text-xs" data-icon="help">help</span>
+              Help &amp; FAQ
+            </a>
+</div>
+</aside>
+<!-- TopNavBar (Shared Component) -->
+<header class="sticky top-0 z-20 w-full pl-60 bg-white border-b border-slate-200 shadow-sm flex items-center justify-between h-16 px-6 gap-4">
+<div class="flex items-center gap-3 w-80">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-sm" data-icon="search">search</span>
+<input class="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none" placeholder="Search batch, branch, or letter updates..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg relative transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-600"></span>
+</button>
+<button class="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="campaign">campaign</span>
+</button>
+<div class="h-4 w-px bg-slate-200"></div>
+<button class="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg text-xs font-semibold flex items-center gap-1 active:scale-[0.98] transition-all">
+              + Post
+            </button>
+<div class="flex items-center gap-2 pl-1">
+<div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center font-bold text-xs text-slate-600">
+                AP
+              </div>
+<div class="hidden xl:block text-left text-xs leading-none">
+<span class="font-semibold text-slate-800">Ananya P.</span>
+<span class="block text-[10px] text-slate-400 mt-0.5">Batch 2025</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Dashboard Viewport -->
+<main class="pl-60 p-6 space-y-5">
+<!-- STATE 1 HERO: DISMISSIBLE IN-FEED BANNER -->
+<div class="border border-indigo-100 bg-indigo-50/70 p-4 rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm relative transition-all">
+<div class="flex items-start md:items-center gap-3.5">
+<div class="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20 shrink-0">
+<span class="material-symbols-outlined text-2xl" data-icon="install_desktop">install_desktop</span>
+</div>
+<div class="space-y-0.5">
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="font-headline text-base font-bold text-slate-900">Install TJT Tracker</h3>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                    Offline &amp; Fast
+                  </span>
+</div>
+<p class="text-xs text-slate-600 font-normal">
+                  Add the tracker to your home screen for instant updates on your joining letter status.
+                </p>
+<div class="text-[11px] text-indigo-900/60 pt-0.5">
+                  Shown after you add a timeline milestone or visit the community on 2 days • Can be dismissed or re-enabled in Settings
+                </div>
+</div>
+</div>
+<div class="flex items-center gap-2 self-end md:self-center shrink-0">
+<button class="px-3.5 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-white/80 rounded-lg transition-colors">
+                Not now
+              </button>
+<button class="px-4 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] rounded-lg shadow-sm flex items-center gap-1.5 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="download">download</span>
+                Install App
+              </button>
+<button class="p-1 text-slate-400 hover:text-slate-600 rounded-md ml-1" title="Dismiss banner">
+<span class="material-symbols-outlined text-sm" data-icon="close">close</span>
+</button>
+</div>
+</div>
+<!-- Candidate Progress & Community Pulse Cards -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+<!-- Progress Card -->
+<div class="lg:col-span-2 bg-white rounded-xl p-5 border border-slate-200 shadow-sm space-y-4">
+<div class="flex items-center justify-between pb-3 border-b border-slate-100">
+<div class="flex items-center gap-2.5">
+<span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+<span class="font-semibold text-sm text-slate-900">Waiting for Joining Letter</span>
+</div>
+<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                  Batch 2025 Digital • Hyderabad
+                </span>
+</div>
+<!-- Metric Bento -->
+<div class="grid grid-cols-3 gap-3">
+<div class="p-3 bg-slate-50 rounded-lg border border-slate-100 text-center">
+<span class="text-xs text-slate-500 block">Offer Accepted</span>
+<span class="text-lg font-bold text-slate-800">Apr 12, 2024</span>
+</div>
+<div class="p-3 bg-indigo-50/50 rounded-lg border border-indigo-100 text-center">
+<span class="text-xs text-indigo-600 font-medium block">Waiting Duration</span>
+<span class="text-2xl font-black text-indigo-700">74 Days</span>
+</div>
+<div class="p-3 bg-slate-50 rounded-lg border border-slate-100 text-center">
+<span class="text-xs text-slate-500 block">Peers in Region</span>
+<span class="text-lg font-bold text-slate-800">412 Candidates</span>
+</div>
+</div>
+<!-- Stepper Timeline Preview -->
+<div class="pt-2">
+<div class="flex items-center justify-between text-xs text-slate-500 mb-2">
+<span>Milestone Progression</span>
+<span class="font-semibold text-indigo-600">Step 3 of 5 Completed</span>
+</div>
+<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden flex">
+<div class="bg-indigo-600 h-full w-3/5 rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Community Pulse Card -->
+<div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-3">
+<h4 class="font-semibold text-sm text-slate-900">Regional Wave Pulse</h4>
+<span class="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Live
+                  </span>
+</div>
+<p class="text-xs text-slate-500 mb-3">18 JLs confirmed today across Hyderabad and Pune hubs.</p>
+<div class="space-y-2">
+<div class="p-2.5 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-between text-xs">
+<span class="font-medium text-slate-700">Digital / SE</span>
+<span class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-semibold text-[11px]">8 Letters sent</span>
+</div>
+<div class="p-2.5 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-between text-xs">
+<span class="font-medium text-slate-700">Ninja / ASE</span>
+<span class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-semibold text-[11px]">10 Letters sent</span>
+</div>
+</div>
+</div>
+<div class="text-[11px] text-slate-400 pt-3 border-t border-slate-100 flex items-center justify-between">
+<span>Updated 6 minutes ago</span>
+<a class="text-indigo-600 font-medium hover:underline" href="#">View forum</a>
+</div>
+</div>
+</div>
+</main>
+<!-- Mandatory Non-Affiliation Footer (Shared Component) -->
+<footer class="sticky bottom-0 z-20 w-full pl-60 bg-slate-50 border-t border-slate-200 shadow-none flex flex-col md:flex-row items-center justify-between py-2 px-6 gap-2">
+<p class="font-body text-[11px] leading-relaxed text-slate-500 tracking-wide text-left">
+            TCS Joining Tracker is an independent community project and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Tata Consultancy Services (TCS) or any of its subsidiaries.
+          </p>
+<div class="flex items-center gap-3 shrink-0">
+<a class="text-[11px] text-slate-500 hover:text-slate-900 hover:underline" href="#">Disclaimer</a>
+<span class="text-slate-300">•</span>
+<a class="text-[11px] text-slate-500 hover:text-slate-900 hover:underline" href="#">Privacy</a>
+<span class="text-slate-300">•</span>
+<a class="text-[11px] text-slate-500 hover:text-slate-900 hover:underline" href="#">Report Data</a>
+</div>
+</footer>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- STATE 2: PUSH PERMISSION PRIMER (In-App Soft Modal Pre-Prompt)            -->
+<!-- ========================================================================= -->
+<section class="max-w-7xl mx-auto space-y-3">
+<!-- Artboard Title & Pill -->
+<div class="flex flex-wrap items-center justify-between gap-2 px-1">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center w-7 h-7 rounded-lg bg-indigo-600 text-white font-bold text-xs">2</div>
+<h2 class="font-headline text-lg font-bold tracking-tight text-slate-900">
+          2. PUSH PERMISSION PRIMER (In-App Soft Modal Pre-Prompt)
+        </h2>
+</div>
+<span class="px-3 py-1 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-medium rounded-full flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+        Value-first education modal before invoking navigator.pushManager
+      </span>
+</div>
+<!-- Browser Frame Window Mockup with Frosted Backdrop -->
+<div class="border border-slate-300 rounded-2xl bg-white shadow-xl overflow-hidden relative">
+<!-- Window Title Bar -->
+<div class="bg-slate-100/90 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-rose-400 inline-block border border-rose-500/20"></span>
+<span class="w-3 h-3 rounded-full bg-amber-400 inline-block border border-amber-500/20"></span>
+<span class="w-3 h-3 rounded-full bg-emerald-400 inline-block border border-emerald-500/20"></span>
+<span class="ml-3 text-xs font-medium text-slate-500">https://tjt-tracker.internal/milestones</span>
+</div>
+<div class="text-[11px] font-mono text-slate-400">Desktop View (Overlay Mode)</div>
+</div>
+<!-- App Shell Background Layer (Downtoned) -->
+<div class="relative min-h-[640px] bg-slate-50 overflow-hidden">
+<!-- Sidebar Underlay -->
+<aside class="fixed top-0 left-0 h-screen w-60 z-10 bg-white border-r border-slate-200 p-4" style="position: absolute; height: 100%;">
+<div class="font-headline text-lg font-bold text-slate-900 flex items-center gap-2 px-1 mb-6 opacity-60">
+<div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-black">
+<span class="material-symbols-outlined text-lg" data-icon="rocket_launch">rocket_launch</span>
+</div>
+<div>
+<span class="block text-sm font-bold">TJT Tracker</span>
+<span class="block text-[11px] text-slate-400">Recruitment Status</span>
+</div>
+</div>
+<div class="space-y-1 opacity-60">
+<div class="px-3 py-2 rounded-lg bg-indigo-50 text-indigo-600 font-semibold text-sm">Dashboard</div>
+<div class="px-3 py-2 rounded-lg text-slate-500 text-sm">Joining Letters</div>
+<div class="px-3 py-2 rounded-lg text-slate-500 text-sm">Surveys</div>
+<div class="px-3 py-2 rounded-lg text-slate-500 text-sm">Community Forum</div>
+</div>
+</aside>
+<!-- Main Content Underlay -->
+<div class="pl-60 p-6 space-y-4 filter blur-[1px] opacity-40 select-none pointer-events-none">
+<div class="h-14 bg-white rounded-xl border border-slate-200"></div>
+<div class="grid grid-cols-3 gap-4">
+<div class="h-32 bg-white rounded-xl border border-slate-200"></div>
+<div class="h-32 bg-white rounded-xl border border-slate-200"></div>
+<div class="h-32 bg-white rounded-xl border border-slate-200"></div>
+</div>
+<div class="h-64 bg-white rounded-xl border border-slate-200"></div>
+</div>
+<!-- FROSTED BACKDROP & SOFT MODAL PRE-PROMPT -->
+<div class="absolute inset-0 z-30 backdrop-blur-sm bg-slate-900/40 flex items-center justify-center p-4">
+<div class="rounded-2xl bg-white shadow-2xl border border-slate-200 p-8 max-w-lg w-full relative animate-in fade-in zoom-in duration-200">
+<!-- Close X Button -->
+<button class="absolute top-5 right-5 p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors" title="Close dialog">
+<span class="material-symbols-outlined text-xl" data-icon="close">close</span>
+</button>
+<!-- Icon Header -->
+<div class="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center mb-5 shadow-sm shadow-indigo-100">
+<span class="material-symbols-outlined text-3xl" data-icon="notifications_active" data-weight="fill" style="font-variation-settings: 'FILL' 1;">notifications_active</span>
+</div>
+<!-- Title & Body -->
+<div class="space-y-2 mb-6">
+<h3 class="font-headline text-xl font-bold tracking-tight text-slate-900">
+                Enable push notifications?
+              </h3>
+<p class="text-sm text-slate-600 leading-relaxed">
+                Enable push notifications so you never miss when a candidate reports joining letter updates for your batch.
+              </p>
+</div>
+<!-- Value Bullet List Cards -->
+<div class="space-y-3 mb-6">
+<!-- Item 1 -->
+<div class="p-3 bg-slate-50 border border-slate-100 rounded-xl flex items-start gap-3">
+<div class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-sm font-bold" data-icon="bolt">bolt</span>
+</div>
+<div>
+<h4 class="text-xs font-semibold text-slate-900">Instant wave alerts for 2025 Digital &amp; Ninja batches</h4>
+<p class="text-[11px] text-slate-500 leading-normal mt-0.5">Real-time alerts whenever onboarding emails roll out.</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="p-3 bg-slate-50 border border-slate-100 rounded-xl flex items-start gap-3">
+<div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-sm font-bold" data-icon="verified_user">verified_user</span>
+</div>
+<div>
+<h4 class="text-xs font-semibold text-slate-900">Private &amp; discreet — no spam, zero advertising</h4>
+<p class="text-[11px] text-slate-500 leading-normal mt-0.5">Only verified onboarding milestone announcements reach you.</p>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="p-3 bg-slate-50 border border-slate-100 rounded-xl flex items-start gap-3">
+<div class="w-7 h-7 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-sm font-bold" data-icon="location_on">location_on</span>
+</div>
+<div>
+<h4 class="text-xs font-semibold text-slate-900">Direct milestone notifications for your preferred regions</h4>
+<p class="text-[11px] text-slate-500 leading-normal mt-0.5">Filtered specifically for Hyderabad and Bengaluru hubs.</p>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
+<button class="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+                Maybe later
+              </button>
+<button class="px-5 py-2.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] rounded-lg shadow-sm flex items-center gap-2 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="notifications">notifications</span>
+                Enable Alerts
+              </button>
+</div>
+<!-- Explanatory Trust Caption -->
+<div class="mt-4 pt-3 border-t border-slate-100/70 text-[11px] text-slate-500 leading-relaxed flex items-start gap-1.5">
+<span class="text-xs">🔒</span>
+<span>We will ask your browser for permission only after you choose Enable Alerts. You can revoke permission anytime in browser settings.</span>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="sticky bottom-0 z-20 w-full pl-60 bg-slate-50 border-t border-slate-200 shadow-none flex flex-col md:flex-row items-center justify-between py-2 px-6 gap-2">
+<p class="font-body text-[11px] leading-relaxed text-slate-500 tracking-wide text-left">
+            TCS Joining Tracker is an independent community project and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Tata Consultancy Services (TCS) or any of its subsidiaries.
+          </p>
+<div class="flex items-center gap-3 shrink-0">
+<a class="text-[11px] text-slate-500 hover:text-slate-900 hover:underline" href="#">Disclaimer</a>
+<span class="text-slate-300">•</span>
+<a class="text-[11px] text-slate-500 hover:text-slate-900 hover:underline" href="#">Privacy</a>
+<span class="text-slate-300">•</span>
+<a class="text-[11px] text-slate-500 hover:text-slate-900 hover:underline" href="#">Report Data</a>
+</div>
+</footer>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- STATE 3: OFFLINE MODE BANNER (Cached Network State)                       -->
+<!-- ========================================================================= -->
+<section class="max-w-7xl mx-auto space-y-3">
+<!-- Artboard Title & Pill -->
+<div class="flex flex-wrap items-center justify-between gap-2 px-1">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center w-7 h-7 rounded-lg bg-indigo-600 text-white font-bold text-xs">3</div>
+<h2 class="font-headline text-lg font-bold tracking-tight text-slate-900">
+          3. OFFLINE MODE BANNER (Cached Network State)
+        </h2>
+</div>
+<span class="px-3 py-1 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-medium rounded-full flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+        Service Worker cache fallback with background sync queue
+      </span>
+</div>
+<!-- Browser Frame Window Mockup -->
+<div class="border border-slate-300 rounded-2xl bg-white shadow-xl overflow-hidden relative">
+<!-- Window Title Bar -->
+<div class="bg-slate-100/90 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-rose-400 inline-block border border-rose-500/20"></span>
+<span class="w-3 h-3 rounded-full bg-amber-400 inline-block border border-amber-500/20"></span>
+<span class="w-3 h-3 rounded-full bg-emerald-400 inline-block border border-emerald-500/20"></span>
+<span class="ml-3 text-xs font-medium text-slate-500">https://tjt-tracker.internal/offline</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-amber-500"></span>
+<span class="text-[11px] font-mono text-amber-700 font-medium">Network: Disconnected</span>
+</div>
+</div>
+<!-- PERSISTENT OFFLINE DOCKED BANNER (TOP OF SCREEN) -->
+<div class="bg-amber-500 text-slate-950 px-6 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-md z-40 relative">
+<div class="flex items-center gap-2.5 text-xs font-semibold">
+<span class="material-symbols-outlined text-lg" data-icon="cloud_off">cloud_off</span>
+<span>Offline Mode. Showing cached data. Actions will sync when online.</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-amber-600/30 text-slate-950 border border-amber-600/40">
+            Cached 14m ago
+          </span>
+<button class="px-3 py-1 bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white text-xs font-semibold rounded-lg shadow-sm flex items-center gap-1.5 transition-all">
+<span class="material-symbols-outlined text-xs" data-icon="refresh">refresh</span>
+            Retry Connection
+          </button>
+</div>
+</div>
+<!-- App Shell Container -->
+<div class="relative min-h-[580px] bg-slate-50">
+<!-- SideNavBar -->
+<aside class="fixed top-0 left-0 h-screen w-60 z-30 bg-white border-r border-slate-200 shadow-sm flex flex-col justify-between p-4" style="position: absolute; height: 100%;">
+<div class="space-y-6">
+<div class="font-headline text-lg font-bold tracking-tight text-slate-900 flex items-center gap-2 px-1">
+<div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-black">
+<span class="material-symbols-outlined text-lg" data-icon="rocket_launch">rocket_launch</span>
+</div>
+<div class="leading-tight">
+<span class="block text-sm font-bold text-slate-900">TJT Tracker</span>
+<span class="block text-[11px] text-slate-500 font-normal">Recruitment Status</span>
+</div>
+</div>
+<!-- Primary Nav -->
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-indigo-50 text-indigo-600 font-semibold text-sm" href="#">
+<span class="material-symbols-outlined text-indigo-600" data-icon="dashboard">dashboard</span>
+                Dashboard
+              </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-slate-500" data-icon="mark_email_read">mark_email_read</span>
+                Joining Letters
+              </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-slate-500" data-icon="poll">poll</span>
+                Surveys
+              </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-slate-500" data-icon="forum">forum</span>
+                Community Forum
+              </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-slate-500" data-icon="settings">settings</span>
+                Settings
+              </a>
+</nav>
+<button class="w-full py-2.5 px-3 bg-slate-200 text-slate-500 text-xs font-semibold rounded-lg shadow-sm flex items-center justify-center gap-1.5 cursor-not-allowed">
+<span class="material-symbols-outlined text-sm" data-icon="sync_disabled">sync_disabled</span>
+              + Share Update (Offline)
+            </button>
+</div>
+<div class="border-t border-slate-100 pt-3 space-y-1">
+<a class="flex items-center gap-2 px-2 py-1.5 text-xs text-slate-500" href="#">
+<span class="material-symbols-outlined text-xs" data-icon="privacy_tip">privacy_tip</span>
+              Privacy Policy
+            </a>
+<a class="flex items-center gap-2 px-2 py-1.5 text-xs text-slate-500" href="#">
+<span class="material-symbols-outlined text-xs" data-icon="help">help</span>
+              Help &amp; FAQ
+            </a>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="sticky top-0 z-20 w-full pl-60 bg-white border-b border-slate-200 shadow-sm flex items-center justify-between h-16 px-6 gap-4">
+<div class="flex items-center gap-3 w-80">
+<div class="relative w-full opacity-70">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-sm" data-icon="search">search</span>
+<input class="w-full pl-9 pr-3 py-1.5 bg-slate-100 border border-slate-200 rounded-lg text-xs cursor-not-allowed text-slate-400" disabled="" type="text" value="Search disabled while offline"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="px-2.5 py-1 bg-amber-50 border border-amber-200 rounded-lg text-[11px] font-medium text-amber-800 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-xs" data-icon="offline_pin">offline_pin</span>
+              Data cached locally
+            </div>
+<div class="h-4 w-px bg-slate-200"></div>
+<div class="flex items-center gap-2 pl-1">
+<div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center font-bold text-xs text-slate-600">
+                AP
+              </div>
+<div class="hidden xl:block text-left text-xs leading-none">
+<span class="font-semibold text-slate-800">Ananya P.</span>
+<span class="block text-[10px] text-amber-600 font-medium mt-0.5">Local Snapshot</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Dashboard Viewport in Offline Cached Presentation -->
+<main class="pl-60 p-6 space-y-5">
+<!-- Background Sync Queue Sub-Banner -->
+<div class="border border-sky-200 bg-sky-50 p-3.5 rounded-xl flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-sky-600 text-white flex items-center justify-center font-bold text-xs">
+<span class="material-symbols-outlined text-base" data-icon="schedule_send">schedule_send</span>
+</div>
+<div>
+<h4 class="text-xs font-bold text-sky-950">Background Sync Queue: 1 Change Ready</h4>
+<p class="text-[11px] text-sky-800">"Verification Date: June 15" was logged locally and will automatically broadcast when you regain connectivity.</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-sky-100 border border-sky-300 rounded text-[10px] font-semibold text-sky-900 uppercase tracking-wider">
+              Pending Sync
+            </span>
+</div>
+<!-- Cached Candidate Dashboard Bento -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+<!-- Progress Card with subtle cached badge -->
+<div class="lg:col-span-2 bg-white rounded-xl p-5 border border-slate-200 shadow-sm space-y-4 relative">
+<div class="flex items-center justify-between pb-3 border-b border-slate-100">
+<div class="flex items-center gap-2.5">
+<span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+<span class="font-semibold text-sm text-slate-900">Waiting for Joining Letter (Snapshot)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                    Offline Cache
+                  </span>
+<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                    Batch 2025 Digital
+                  </span>
+</div>
+</div>
+<!-- Metric Bento Cards -->
+<div class="grid grid-cols-3 gap-3">
+<div class="p-3 bg-slate-50/70 rounded-lg border border-slate-200 text-center">
+<span class="text-xs text-slate-500 block">Offer Accepted</span>
+<span class="text-lg font-bold text-slate-700">Apr 12, 2024</span>
+</div>
+<div class="p-3 bg-slate-50/70 rounded-lg border border-slate-200 text-center">
+<span class="text-xs text-slate-500 font-medium block">Waiting Duration</span>
+<span class="text-2xl font-black text-slate-700">74 Days</span>
+</div>
+<div class="p-3 bg-slate-50/70 rounded-lg border border-slate-200 text-center">
+<span class="text-xs text-slate-500 block">Peers in Region</span>
+<span class="text-lg font-bold text-slate-700">412 Candidates</span>
+</div>
+</div>
+<!-- Cached Timeline Status -->
+<div class="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between">
+<div class="flex items-center gap-2 text-xs text-slate-600">
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="inventory">inventory</span>
+<span>Cache IndexedDB: 28 milestones and 10 regional alerts available for offline inspection</span>
+</div>
+<span class="text-[11px] font-semibold text-indigo-600">Sync pending: 1</span>
+</div>
+</div>
+<!-- Cached Pulse Card -->
+<div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-3">
+<h4 class="font-semibold text-sm text-slate-900">Regional Wave Pulse</h4>
+<span class="text-[10px] text-amber-700 bg-amber-100 px-2 py-0.5 rounded font-semibold">Offline Cache</span>
+</div>
+<p class="text-xs text-slate-500 mb-3">Last captured today at 11:20 AM. No live polling active.</p>
+<div class="space-y-2 opacity-80">
+<div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between text-xs">
+<span class="font-medium text-slate-700">Digital / SE</span>
+<span class="text-slate-700 bg-slate-200 px-2 py-0.5 rounded font-semibold text-[11px]">8 Letters sent</span>
+</div>
+<div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between text-xs">
+<span class="font-medium text-slate-700">Ninja / ASE</span>
+<span class="text-slate-700 bg-slate-200 px-2 py-0.5 rounded font-semibold text-[11px]">10 Letters sent</span>
+</div>
+</div>
+</div>
+<div class="text-[11px] text-slate-400 pt-3 border-t border-slate-100 flex items-center justify-between">
+<span>Cached at 11:20 AM</span>
+<span class="text-slate-400 text-[10px]">Auto-resumes online</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Mandatory Non-Affiliation Footer (Shared Component) -->
+<footer class="sticky bottom-0 z-20 w-full pl-60 bg-slate-50 border-t border-slate-200 shadow-none flex flex-col md:flex-row items-center justify-between py-2 px-6 gap-2">
+<p class="font-body text-[11px] leading-relaxed text-slate-500 tracking-wide text-left">
+            TCS Joining Tracker is an independent community project and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Tata Consultancy Services (TCS) or any of its subsidiaries.
+          </p>
+<div class="flex items-center gap-3 shrink-0">
+<a class="text-[11px] text-slate-500 hover:text-slate-900 hover:underline" href="#">Disclaimer</a>
+<span class="text-slate-300">•</span>
+<a class="text-[11px] text-slate-500 hover:text-slate-900 hover:underline" href="#">Privacy</a>
+<span class="text-slate-300">•</span>
+<a class="text-[11px] text-slate-500 hover:text-slate-900 hover:underline" href="#">Report Data</a>
+</div>
+</footer>
+</div>
+</div>
+</section>
+</body></html>

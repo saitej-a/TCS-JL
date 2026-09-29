@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-slate-50" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Add / Edit Timeline Milestone Event — TCS Joining Tracker</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {},
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            headline: ["Inter"],
+            display: ["Inter"],
+            body: ["Inter"],
+            label: ["Inter"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="h-full text-slate-900 antialiased overflow-hidden bg-slate-50">
+<!-- ==================== BACKGROUND RECRUITMENT TIMELINE APP SHELL ==================== -->
+<div aria-hidden="true" class="min-h-screen flex flex-col pointer-events-none select-none filter blur-[1.5px] opacity-80">
+<!-- Top Nav Bar (Shared Component Layout) -->
+<header class="sticky top-0 z-20 w-full pl-60 border-b border-slate-200 bg-white">
+<div class="flex items-center justify-between h-16 px-6 gap-4 w-full">
+<div class="flex items-center gap-3 flex-1 max-w-md">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-lg">search</span>
+<input class="w-full pl-9 pr-4 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-600" disabled="" placeholder="Search milestones, batch codes..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="text-slate-500 p-2 rounded-lg hover:bg-slate-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">notifications</span>
+</button>
+<button class="text-slate-500 p-2 rounded-lg hover:bg-slate-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">campaign</span>
+</button>
+<button class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold tracking-tight shadow-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm font-bold">add</span>
+<span>+ Post</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-semibold text-xs flex items-center justify-center border border-indigo-200">
+            TS
+          </div>
+</div>
+</div>
+</header>
+<!-- Side Nav Bar (Shared Component Layout) -->
+<aside class="fixed top-0 left-0 h-screen w-60 z-30 border-r border-slate-200 bg-white shadow-sm flex flex-col justify-between p-4">
+<div class="space-y-6">
+<!-- Logo / Brand -->
+<div class="font-headline text-lg font-bold tracking-tight text-slate-900 flex items-center gap-2 px-2 py-1">
+<div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+            TJ
+          </div>
+<div>
+<div class="text-sm font-bold text-slate-900 leading-none">TJT Tracker</div>
+<div class="text-[11px] font-normal text-slate-500 mt-0.5">Recruitment Status</div>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="space-y-1 font-body text-sm leading-6 tracking-normal">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-indigo-50 text-indigo-600 font-semibold" href="#">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium" href="#">
+<span class="material-symbols-outlined text-xl">mark_email_read</span>
+<span>Joining Letters</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium" href="#">
+<span class="material-symbols-outlined text-xl">poll</span>
+<span>Surveys</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium" href="#">
+<span class="material-symbols-outlined text-xl">forum</span>
+<span>Community Forum</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium" href="#">
+<span class="material-symbols-outlined text-xl">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="pt-2">
+<button class="w-full flex items-center justify-center gap-2 py-2 px-3 text-xs font-semibold text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-lg">
+<span>+ Share Update</span>
+</button>
+</div>
+</div>
+<!-- Footer links in SideNav -->
+<div class="space-y-1 border-t border-slate-100 pt-3">
+<a class="flex items-center gap-2.5 px-2 py-1.5 text-xs text-slate-500 rounded-lg" href="#">
+<span class="material-symbols-outlined text-sm">privacy_tip</span>
+<span>Privacy Policy</span>
+</a>
+<a class="flex items-center gap-2.5 px-2 py-1.5 text-xs text-slate-500 rounded-lg" href="#">
+<span class="material-symbols-outlined text-sm">help</span>
+<span>Help &amp; FAQ</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas Content (Behind Modal) -->
+<main class="pl-60 flex-1 p-8 bg-slate-50 overflow-y-auto">
+<div class="max-w-5xl mx-auto space-y-6">
+<!-- Top Breadcrumb & Page Header -->
+<div class="flex items-center justify-between pb-2 border-b border-slate-200">
+<div>
+<div class="text-xs font-medium text-slate-400 mb-1">Onboarding Cohort 2026-B • Smart Hiring</div>
+<h1 class="text-2xl font-bold tracking-tight text-slate-900 font-headline">Recruitment Timeline &amp; Verification</h1>
+</div>
+<button class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium text-sm flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+<span>Add Milestone</span>
+</button>
+</div>
+<!-- Metric Pulse Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+<div class="text-xs font-medium text-slate-500">Current Phase</div>
+<div class="text-lg font-bold text-slate-900 mt-1 flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-sky-500 animate-pulse"></span>
+              JL Received
+            </div>
+<div class="text-[11px] text-slate-400 mt-1">Updated 2 days ago</div>
+</div>
+<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+<div class="text-xs font-medium text-slate-500">Time Since Offer</div>
+<div class="text-lg font-bold text-slate-900 mt-1">114 Days</div>
+<div class="text-[11px] text-emerald-600 font-medium mt-1">On par with region average</div>
+</div>
+<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+<div class="text-xs font-medium text-slate-500">Regional Batch Status</div>
+<div class="text-lg font-bold text-indigo-600 mt-1">68% Dispatched</div>
+<div class="text-[11px] text-slate-400 mt-1">Pune &amp; Bangalore regions</div>
+</div>
+<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+<div class="text-xs font-medium text-slate-500">Verification Trust</div>
+<div class="text-lg font-bold text-emerald-600 mt-1 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base">verified_user</span>
+<span>Level 3 (High)</span>
+</div>
+<div class="text-[11px] text-slate-400 mt-1">Cryptographically hashed</div>
+</div>
+</div>
+<!-- Sample Timeline Steps Backdrop -->
+<div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+<h2 class="text-base font-semibold text-slate-900 mb-6 font-headline flex items-center justify-between">
+<span>Milestone History</span>
+<span class="text-xs font-normal text-slate-400">4 completed • 1 in verification</span>
+</h2>
+<div class="space-y-6 relative before:absolute before:inset-0 before:left-3.5 before:w-0.5 before:bg-slate-200">
+<!-- Step 1 -->
+<div class="relative flex items-start gap-4">
+<div class="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm z-10 text-sm">✓</div>
+<div class="flex-1 bg-slate-50 rounded-lg p-3 border border-slate-200">
+<div class="flex items-center justify-between text-xs text-slate-500">
+<span class="font-semibold text-slate-800">Offer Letter (OL) Accepted</span>
+<span>May 28, 2026</span>
+</div>
+<div class="text-xs text-slate-600 mt-1">Digital signature executed on Ultimatix portal.</div>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="relative flex items-start gap-4">
+<div class="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm z-10 text-sm">✓</div>
+<div class="flex-1 bg-slate-50 rounded-lg p-3 border border-slate-200">
+<div class="flex items-center justify-between text-xs text-slate-500">
+<span class="font-semibold text-slate-800">BGC Documents Submitted</span>
+<span>June 14, 2026</span>
+</div>
+<div class="text-xs text-slate-600 mt-1">All semester marksheets and identity proofs verified.</div>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="relative flex items-start gap-4">
+<div class="w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center ring-4 ring-indigo-50 z-10 text-sm">★</div>
+<div class="flex-1 bg-indigo-50/50 rounded-lg p-3 border border-indigo-200">
+<div class="flex items-center justify-between text-xs">
+<span class="font-semibold text-indigo-900">Joining Letter (JOINING_LETTER)</span>
+<span class="text-indigo-600 font-medium">Sep 19, 2026 (Pending Save)</span>
+</div>
+<div class="text-xs text-indigo-700 mt-1">Reporting Date: October 15, 2026. Batch: ILP Trivandrum.</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Bar (Mandatory Shared Component) -->
+<footer class="sticky bottom-0 z-20 w-full pl-60 border-t border-slate-200 bg-slate-50">
+<div class="flex flex-col md:flex-row items-center justify-between py-2 px-6 gap-2 font-body text-[11px] leading-relaxed text-slate-500 tracking-wide">
+<p class="text-center md:text-left">
+          TCS Joining Tracker is an independent community project and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Tata Consultancy Services (TCS) or any of its subsidiaries.
+        </p>
+<div class="flex items-center gap-4 text-xs font-semibold text-slate-700 shrink-0">
+<a class="hover:text-slate-900 hover:underline" href="#">Disclaimer</a>
+<a class="hover:text-slate-900 hover:underline" href="#">Privacy</a>
+<a class="hover:text-slate-900 hover:underline" href="#">Report Data</a>
+</div>
+</div>
+</footer>
+</div>
+<!-- ==================== MODAL DIALOG OVERLAY & CONTAINER ==================== -->
+<div aria-labelledby="modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto" id="modal-container" role="dialog">
+<!-- Dimmed Backdrop with Blur -->
+<div class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity" onclick="dismissModal()"></div>
+<!-- Centered Pristine Modal Card -->
+<div class="relative bg-white rounded-2xl shadow-xl border border-slate-100 w-full max-w-md overflow-hidden transform transition-all z-50 my-8">
+<!-- 1. Modal Header -->
+<div class="px-6 py-5 flex items-center justify-between border-b border-slate-100 bg-white">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100/80 shrink-0">
+<span class="material-symbols-outlined text-xl">event_upcoming</span>
+</div>
+<div>
+<h2 class="font-semibold text-lg text-slate-900 tracking-tight font-headline" id="modal-title">
+Add Timeline Milestone Event
+</h2>
+<p class="text-xs text-slate-500 font-normal mt-0.5 flex items-center gap-1.5">
+<span>Recruitment Journey</span>
+<span class="text-slate-300">•</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">
+Step 5 of Journey
+</span>
+</p>
+</div>
+</div>
+<!-- Close Button -->
+<button aria-label="Close modal" class="text-slate-400 hover:text-slate-700 hover:bg-slate-100 p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500" onclick="dismissModal()" type="button">
+<span class="material-symbols-outlined text-xl">close</span>
+</button>
+</div>
+<!-- 2. Form Body -->
+<form class="p-6 space-y-5 bg-white" id="milestone-form" onsubmit="handleFormSubmit(event)">
+<!-- Field 1: Milestone Type -->
+<div>
+<label class="text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5 block" for="milestone-type">
+Event Milestone Type <span class="text-rose-500">*</span>
+</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-indigo-600">
+<span class="material-symbols-outlined text-lg">mark_email_read</span>
+</div>
+<select class="w-full pl-10 pr-10 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 text-sm font-medium appearance-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-colors shadow-sm cursor-pointer" id="milestone-type" name="milestone-type">
+<option selected="" value="JOINING_LETTER">Joining Letter (JOINING_LETTER)</option>
+<option value="OFFER_LETTER">Offer Letter (OFFER_LETTER)</option>
+<option value="DOCUMENT_VERIFICATION">Background Verification Complete (BGC)</option>
+<option value="PRE_EXPLORE_SURVEY">Pre-Explore Readiness Survey (SURVEY)</option>
+<option value="BATCH_ALLOCATION">Batch &amp; City Allocation Confirmed</option>
+<option value="ONBOARDING_DAY_1">Day 1 Onboarding Complete (JOINED)</option>
+</select>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Field 2: Date Occurred -->
+<div>
+<label class="text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5 block" for="event-date">
+Date Occurred <span class="text-rose-500">*</span>
+</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-lg">calendar_today</span>
+</div>
+<input class="w-full pl-10 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-colors shadow-sm" id="event-date" name="event-date" required="" type="date" value="2026-09-19"/>
+</div>
+</div>
+<!-- Field 3: Description / Notes -->
+<div>
+<label class="text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5 block" for="milestone-notes">
+Description / Notes (Optional)
+</label>
+<textarea class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-colors placeholder-slate-400 shadow-sm resize-none" id="milestone-notes" maxlength="500" name="milestone-notes" oninput="updateCharCount(this)" rows="3">Received joining letter email with onboarding date for October 15th.</textarea>
+<div class="text-right mt-1.5">
+<span class="text-xs text-slate-400 font-medium" id="char-counter">120 / 500 characters</span>
+</div>
+</div>
+<!-- Field 4: Note row with info icon -->
+<div class="bg-indigo-50/50 border border-indigo-100/80 rounded-xl p-3 flex items-start gap-2.5 text-xs text-slate-600">
+<span class="material-symbols-outlined text-base text-indigo-600 shrink-0 mt-0.5">info</span>
+<span class="leading-relaxed">
+Saving a milestone automatically advances your current status to the matching stage (for example, Joining Letter Received).
+</span>
+</div>
+</form>
+<!-- 3. Modal Footer -->
+<div class="border-t border-slate-100 px-6 py-4 bg-slate-50/70 flex items-center justify-end gap-3 rounded-b-2xl">
+<button class="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg shadow-sm transition-colors" onclick="dismissModal()" type="button">
+Cancel
+</button>
+<button class="px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm flex items-center gap-2 transition-colors" form="milestone-form" type="submit">
+<span class="material-symbols-outlined text-base">check</span>
+<span>Save Milestone</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Micro-Interactions Script -->
+<script>
+    function updateCharCount(textarea) {
+      const counter = document.getElementById('char-counter');
+      const length = textarea.value.length;
+      counter.textContent = `${length} / 500 characters`;
+    }
+
+    function dismissModal() {
+      const modal = document.getElementById('modal-container');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        alert('Modal closed. Click any element or refresh to reset view.');
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+      }, 350);
+    }
+
+    function handleFormSubmit(event) {
+      event.preventDefault();
+      const type = document.getElementById('milestone-type').value;
+      const date = document.getElementById('event-date').value;
+      alert(`Milestone [${type}] on ${date} saved successfully to your recruitment timeline!`);
+    }
+
+    // Keyboard ESC shortcut
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        dismissModal();
+      }
+    });
+
+    // Initialize character count on load
+    window.addEventListener('DOMContentLoaded', () => {
+      const textarea = document.getElementById('milestone-notes');
+      if (textarea) updateCharCount(textarea);
+    });
+  </script>
+</body></html>

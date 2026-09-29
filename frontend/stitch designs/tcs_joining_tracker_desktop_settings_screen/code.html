@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TCS Joining Tracker — Settings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Fira Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"Fira Code"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#0369A1',
+              hover: '#075985',
+              tint: '#E0F2FE',
+              light: '#F0F9FF',
+            },
+            slate: {
+              page: '#F8FAFC',
+              border: '#E2E8F0',
+              primary: '#0F172A',
+              secondary: '#475569',
+              muted: '#64748B',
+            }
+          },
+          borderRadius: {
+            control: '8px',
+            card: '12px',
+          },
+          boxShadow: {
+            subtle: '0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05)',
+            hover: '0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Fira Sans', system-ui, -apple-system, sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-mono-numbers {
+      font-family: 'Fira Code', monospace;
+      font-feature-settings: "tnum" 1;
+    }
+  </style>
+</head>
+<body class="bg-slate-page min-h-screen text-slate-primary flex flex-col justify-between">
+
+  <!-- Desktop App Shell (1280px optimized) -->
+  <div class="flex w-full min-h-screen">
+    
+    <!-- LEFT VERTICAL SIDEBAR: 240px -->
+    <aside class="w-[240px] shrink-0 bg-white border-r border-slate-border flex flex-col justify-between h-screen sticky top-0 z-30 select-none">
+      
+      <!-- Top Branding & Navigation -->
+      <div>
+        <!-- Wordmark with Shield-Check SVG Logo -->
+        <div class="h-16 px-5 border-b border-slate-border flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-control bg-brand flex items-center justify-center text-white shrink-0 shadow-sm">
+            <!-- Shield-check SVG -->
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-bold text-[15px] leading-tight tracking-tight text-slate-primary">Joining Tracker</span>
+            <span class="text-[10px] font-mono-numbers text-slate-muted uppercase tracking-wider">Candidate Portal</span>
+          </div>
+        </div>
+
+        <!-- Navigation items list -->
+        <nav class="py-4 px-2 space-y-1">
+          <!-- 1. Dashboard -->
+          <a href="#" class="flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-slate-secondary hover:text-slate-primary hover:bg-slate-50 rounded-control transition-colors duration-150">
+            <svg class="w-4 h-4 shrink-0 text-slate-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="7" height="9" x="3" y="3" rx="1"/>
+              <rect width="7" height="5" x="14" y="3" rx="1"/>
+              <rect width="7" height="9" x="14" y="12" rx="1"/>
+              <rect width="7" height="5" x="3" y="16" rx="1"/>
+            </svg>
+            <span>Dashboard</span>
+          </a>
+
+          <!-- 2. Timeline -->
+          <a href="#" class="flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-slate-secondary hover:text-slate-primary hover:bg-slate-50 rounded-control transition-colors duration-150">
+            <svg class="w-4 h-4 shrink-0 text-slate-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>Timeline</span>
+          </a>
+
+          <!-- 3. Analytics -->
+          <a href="#" class="flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-slate-secondary hover:text-slate-primary hover:bg-slate-50 rounded-control transition-colors duration-150">
+            <svg class="w-4 h-4 shrink-0 text-slate-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 3v18h18"/>
+              <path d="m19 9-5 5-4-4-3 3"/>
+            </svg>
+            <span>Analytics</span>
+          </a>
+
+          <!-- 4. Community -->
+          <a href="#" class="flex items-center gap-3 px-3 py-2 text-[13px] font-medium text-slate-secondary hover:text-slate-primary hover:bg-slate-50 rounded-control transition-colors duration-150">
+            <svg class="w-4 h-4 shrink-0 text-slate-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <span>Community</span>
+          </a>
+
+          <!-- 5. Notifications -->
+          <a href="#" class="flex items-center justify-between px-3 py-2 text-[13px] font-medium text-slate-secondary hover:text-slate-primary hover:bg-slate-50 rounded-control transition-colors duration-150">
+            <div class="flex items-center gap-3">
+              <svg class="w-4 h-4 shrink-0 text-slate-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+              </svg>
+              <span>Notifications</span>
+            </div>
+            <span class="text-[11px] font-mono-numbers px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold">3</span>
+          </a>
+
+          <!-- 6. Settings (Active Item) -->
+          <div class="relative">
+            <!-- 3px blue left indicator bar -->
+            <div class="absolute left-0 top-1 bottom-1 w-[3px] bg-brand rounded-r"></div>
+            <a href="#" class="flex items-center gap-3 pl-3.5 pr-3 py-2 text-[13px] font-semibold text-brand bg-brand-tint rounded-control">
+              <svg class="w-4 h-4 shrink-0 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+              <span>Settings</span>
+            </a>
+          </div>
+        </nav>
+      </div>
+
+      <!-- Sidebar Footer: Signed-in User Chip -->
+      <div class="p-3 border-t border-slate-border">
+        <div class="flex items-center gap-2.5 p-2 rounded-control bg-slate-50 border border-slate-border">
+          <div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shrink-0">
+            AS
+          </div>
+          <div class="flex flex-col min-w-0 flex-1">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-primary truncate">Ananya S.</span>
+              <span class="text-[9px] font-medium px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-700 leading-tight">Verified</span>
+            </div>
+            <span class="text-[11px] font-mono-numbers text-slate-muted truncate">a***@example.com</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 flex flex-col justify-between max-w-[1040px] px-8 py-7 overflow-y-auto">
+      <div>
+        
+        <!-- Header & Breadcrumbs & Action Button -->
+        <div class="flex items-center justify-between pb-6 border-b border-slate-border">
+          <div>
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-1.5 text-xs text-slate-muted mb-1.5" aria-label="Breadcrumb">
+              <a href="#" class="hover:text-slate-primary transition-colors">Home</a>
+              <span class="text-slate-300">/</span>
+              <span class="text-brand font-medium">Settings</span>
+            </nav>
+            <!-- Title & Subtitle -->
+            <h1 class="text-2xl font-bold tracking-tight text-slate-primary">Settings</h1>
+            <p class="text-sm text-slate-secondary mt-0.5">Manage your account, privacy and notifications</p>
+          </div>
+
+          <!-- 40px primary button 'Save changes' -->
+          <button type="button" class="h-10 px-5 rounded-control bg-brand hover:bg-brand-hover text-white text-sm font-semibold flex items-center gap-2 shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Save changes
+          </button>
+        </div>
+
+        <!-- TOP CARD: Account Summary Strip -->
+        <div class="mt-6 bg-white border border-slate-border rounded-card p-5 shadow-subtle flex items-center justify-between flex-wrap gap-4">
+          <div class="flex items-center gap-4">
+            <!-- Avatar Initials AS in blue circle -->
+            <div class="w-14 h-14 rounded-full bg-brand text-white flex items-center justify-center font-bold text-lg shadow-sm shrink-0">
+              AS
+            </div>
+            <div>
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <h2 class="text-lg font-bold text-slate-primary leading-snug">Ananya Sharma</h2>
+                <!-- Green 'Email verified' chip with check icon -->
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <svg class="w-3.5 h-3.5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  Email verified
+                </span>
+                <!-- 'JL received' blue chip -->
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-tint text-brand border border-sky-200">
+                  <svg class="w-3.5 h-3.5 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="20" height="16" x="2" y="4" rx="2"/>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                  </svg>
+                  JL received
+                </span>
+              </div>
+              <div class="flex items-center gap-3 mt-1.5 text-xs text-slate-secondary">
+                <span class="font-mono-numbers text-slate-muted">a***@example.com</span>
+                <span class="text-slate-300">•</span>
+                <span class="font-mono-numbers text-slate-muted">Member since 12 Sep 2026</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 text-right">
+            <span class="text-xs text-slate-secondary bg-slate-50 border border-slate-border px-3 py-1.5 rounded-control font-mono-numbers">
+              ID: <span class="font-semibold text-slate-primary">TCS-2026-AP-4921</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Section Intro & Design Token Annotation Bar -->
+        <div class="mt-8 mb-4 flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-muted">Configuration Sections</h3>
+          <span class="text-[11px] font-mono-numbers text-slate-muted bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded">
+            Design note: Dark mode token mappings annotated alongside each section
+          </span>
+        </div>
+
+        <!-- TWO-COLUMN GRID OF SETTINGS SECTION CARDS WITH SPECIFIED TOKENS & DARK THEME VALUE NOTES -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+          <!-- 1) Profile Card -->
+          <div class="relative group">
+            <div class="bg-white border border-slate-border rounded-card p-5 shadow-subtle hover:shadow-hover hover:border-slate-300 transition-all duration-150 flex items-start justify-between cursor-pointer">
+              <div class="flex items-start gap-4">
+                <!-- SVG Icon in a rounded blue-tinted square -->
+                <div class="w-10 h-10 rounded-control bg-brand-tint text-brand flex items-center justify-center shrink-0">
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </div>
+                <div class="pr-2">
+                  <h4 class="text-base font-bold text-slate-primary leading-snug group-hover:text-brand transition-colors">Profile</h4>
+                  <p class="text-xs text-slate-secondary mt-1 leading-relaxed">Update your name, avatar, joining date and category</p>
+                  <div class="mt-3.5 inline-flex items-center gap-1.5 text-xs text-slate-muted font-medium bg-slate-50 border border-slate-border px-2.5 py-1 rounded-control font-mono-numbers">
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+                    <span>Category: Assistant Professor</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Right Chevron -->
+              <div class="text-slate-300 group-hover:text-slate-500 transition-colors pt-1">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </div>
+            </div>
+            <!-- Dark theme annotation note in small caption beside the card -->
+            <div class="mt-1.5 px-2 text-[10px] font-mono-numbers text-slate-400">
+              Dark-theme note: <code class="text-slate-600 bg-slate-100 px-1 rounded">card: #0F172A</code> • <code class="text-slate-600 bg-slate-100 px-1 rounded">border: #1E293B</code> • <code class="text-slate-600 bg-slate-100 px-1 rounded">tint: rgba(3,105,161,0.18)</code>
+            </div>
+          </div>
+
+          <!-- 2) Privacy Card -->
+          <div class="relative group">
+            <div class="bg-white border border-slate-border rounded-card p-5 shadow-subtle hover:shadow-hover hover:border-slate-300 transition-all duration-150 flex items-start justify-between cursor-pointer">
+              <div class="flex items-start gap-4">
+                <!-- SVG Icon in a rounded blue-tinted square -->
+                <div class="w-10 h-10 rounded-control bg-brand-tint text-brand flex items-center justify-center shrink-0">
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </div>
+                <div class="pr-2">
+                  <h4 class="text-base font-bold text-slate-primary leading-snug group-hover:text-brand transition-colors">Privacy</h4>
+                  <p class="text-xs text-slate-secondary mt-1 leading-relaxed">Control what other candidates can see</p>
+                  <div class="mt-3.5 inline-flex items-center gap-1.5 text-xs text-emerald-700 font-medium bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-control font-mono-numbers">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>Profile: Visible to members</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Right Chevron -->
+              <div class="text-slate-300 group-hover:text-slate-500 transition-colors pt-1">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </div>
+            </div>
+            <!-- Dark theme annotation note in small caption beside the card -->
+            <div class="mt-1.5 px-2 text-[10px] font-mono-numbers text-slate-400">
+              Dark-theme note: <code class="text-slate-600 bg-slate-100 px-1 rounded">card: #0F172A</code> • <code class="text-slate-600 bg-slate-100 px-1 rounded">text-primary: #F8FAFC</code> • <code class="text-slate-600 bg-slate-100 px-1 rounded">badge: #064E3B</code>
+            </div>
+          </div>
+
+          <!-- 3) Security Card -->
+          <div class="relative group">
+            <div class="bg-white border border-slate-border rounded-card p-5 shadow-subtle hover:shadow-hover hover:border-slate-300 transition-all duration-150 flex items-start justify-between cursor-pointer">
+              <div class="flex items-start gap-4">
+                <!-- SVG Icon in a rounded blue-tinted square -->
+                <div class="w-10 h-10 rounded-control bg-brand-tint text-brand flex items-center justify-center shrink-0">
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
+                <div class="pr-2">
+                  <h4 class="text-base font-bold text-slate-primary leading-snug group-hover:text-brand transition-colors">Security</h4>
+                  <p class="text-xs text-slate-secondary mt-1 leading-relaxed">Password, two-factor and active sessions</p>
+                  <div class="mt-3.5 inline-flex items-center gap-1.5 text-xs text-amber-700 font-medium bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-control font-mono-numbers">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                    <span>2FA: Not enabled</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Right Chevron -->
+              <div class="text-slate-300 group-hover:text-slate-500 transition-colors pt-1">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </div>
+            </div>
+            <!-- Dark theme annotation note in small caption beside the card -->
+            <div class="mt-1.5 px-2 text-[10px] font-mono-numbers text-slate-400">
+              Dark-theme note: <code class="text-slate-600 bg-slate-100 px-1 rounded">2FA alert: #78350F/20</code> • <code class="text-slate-600 bg-slate-100 px-1 rounded">warning-text: #FBBF24</code> • <code class="text-slate-600 bg-slate-100 px-1 rounded">border: #1E293B</code>
+            </div>
+          </div>
+
+          <!-- 4) Devices & notifications Card -->
+          <div class="relative group">
+            <div class="bg-white border border-slate-border rounded-card p-5 shadow-subtle hover:shadow-hover hover:border-slate-300 transition-all duration-150 flex items-start justify-between cursor-pointer">
+              <div class="flex items-start gap-4">
+                <!-- SVG Icon in a rounded blue-tinted square -->
+                <div class="w-10 h-10 rounded-control bg-brand-tint text-brand flex items-center justify-center shrink-0">
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/>
+                    <path d="M12 18h.01"/>
+                  </svg>
+                </div>
+                <div class="pr-2">
+                  <h4 class="text-base font-bold text-slate-primary leading-snug group-hover:text-brand transition-colors">Devices &amp; notifications</h4>
+                  <p class="text-xs text-slate-secondary mt-1 leading-relaxed">Push alerts and registered devices</p>
+                  <div class="mt-3.5 inline-flex items-center gap-1.5 text-xs text-slate-600 font-medium bg-slate-50 border border-slate-border px-2.5 py-1 rounded-control font-mono-numbers">
+                    <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+                    <span>3 devices · push on</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Right Chevron -->
+              <div class="text-slate-300 group-hover:text-slate-500 transition-colors pt-1">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </div>
+            </div>
+            <!-- Dark theme annotation note in small caption beside the card -->
+            <div class="mt-1.5 px-2 text-[10px] font-mono-numbers text-slate-400">
+              Dark-theme note: <code class="text-slate-600 bg-slate-100 px-1 rounded">card: #0F172A</code> • <code class="text-slate-600 bg-slate-100 px-1 rounded">badge-bg: #1E293B</code> • <code class="text-slate-600 bg-slate-100 px-1 rounded">secondary-text: #94A3B8</code>
+            </div>
+          </div>
+
+          <!-- 5) Danger zone Card (Full width or Col 1 with subtle border highlight) -->
+          <div class="relative group md:col-span-2">
+            <div class="bg-rose-50/40 border border-rose-200 border-l-4 border-l-[#E11D48] rounded-card p-5 shadow-subtle hover:shadow-hover hover:border-rose-300 transition-all duration-150 flex items-start justify-between cursor-pointer">
+              <div class="flex items-start gap-4">
+                <!-- SVG Icon in a rounded rose-tinted square -->
+                <div class="w-10 h-10 rounded-control bg-rose-100 text-[#E11D48] flex items-center justify-center shrink-0">
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/>
+                    <line x1="12" y1="2" x2="12" y2="12"/>
+                  </svg>
+                </div>
+                <div class="pr-2">
+                  <div class="flex items-center gap-2">
+                    <h4 class="text-base font-bold text-[#E11D48] leading-snug">Danger zone</h4>
+                    <span class="text-[10px] font-bold uppercase tracking-wider bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-mono-numbers">Irreversible</span>
+                  </div>
+                  <p class="text-xs text-rose-800 mt-1 leading-relaxed">Export your data or delete your account</p>
+                  <div class="mt-3.5 inline-flex items-center gap-1.5 text-xs text-rose-700 font-medium font-mono-numbers">
+                    <span>Export format: JSON / Anonymized CSV • Account purge permanent</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Right Chevron in Rose tone -->
+              <div class="text-rose-400 group-hover:text-rose-600 transition-colors pt-1">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </div>
+            </div>
+            <!-- Dark theme annotation note in small caption beside the card -->
+            <div class="mt-1.5 px-2 text-[10px] font-mono-numbers text-slate-400">
+              Dark-theme note: <code class="text-slate-600 bg-slate-100 px-1 rounded">card: #1E1218</code> • <code class="text-slate-600 bg-slate-100 px-1 rounded">left-border: #E11D48</code> • <code class="text-slate-600 bg-slate-100 px-1 rounded">tint: rgba(225,29,72,0.12)</code> • <code class="text-slate-600 bg-slate-100 px-1 rounded">text: #FDA4AF</code>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- FOOTER DISCLAIMER: 11px muted text -->
+      <footer class="mt-12 pt-6 border-t border-slate-border flex items-center justify-between text-[11px] text-slate-muted">
+        <p class="tracking-normal">Independent community tracker. Not affiliated with TCS.</p>
+        <div class="flex items-center gap-4 font-mono-numbers">
+          <span>Design System: TJT v2 Professional Blue</span>
+          <span>•</span>
+          <span>Build: 2026.09.12</span>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+</body>
+</html>

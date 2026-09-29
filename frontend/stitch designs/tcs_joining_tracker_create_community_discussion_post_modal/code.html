@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TCS Joining Tracker — Create Community Discussion Post Modal</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {},
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            full: "9999px"
+          },
+          fontFamily: {
+            headline: ["Inter"],
+            display: ["Inter"],
+            body: ["Inter"],
+            label: ["Inter"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-body antialiased overflow-hidden min-h-screen">
+<!-- ========================================== -->
+<!-- BACKGROUND UNDERLAY: Complete Community App -->
+<!-- ========================================== -->
+<div class="fixed inset-0 flex flex-col pointer-events-none select-none filter blur-[1px]">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-20 w-full pl-60 bg-white border-b border-slate-200 shadow-sm flex items-center justify-between h-16 px-6 gap-4">
+<div class="flex items-center gap-4 flex-1 max-w-lg">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+<input class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-600 focus:outline-none placeholder:text-slate-400" placeholder="Search discussions, batches, JL updates..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors duration-150 relative">
+<span class="material-symbols-outlined text-xl">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-indigo-600 rounded-full"></span>
+</button>
+<button class="p-2 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors duration-150">
+<span class="material-symbols-outlined text-xl">campaign</span>
+</button>
+<div class="h-6 w-px bg-slate-200 mx-1"></div>
+<button class="flex items-center gap-2 bg-indigo-600 text-white font-headline text-sm font-medium px-3.5 py-1.5 rounded-lg shadow-sm">
+<span>+ Post</span>
+</button>
+<div class="flex items-center gap-2 pl-2">
+<div class="w-8 h-8 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-700 font-semibold text-xs flex items-center justify-center">
+            AC
+          </div>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed top-0 left-0 h-screen w-60 z-30 bg-white border-r border-slate-200 shadow-sm flex flex-col justify-between p-4">
+<div class="flex flex-col gap-6">
+<!-- Logo / Header -->
+<div class="flex items-center gap-3 px-2">
+<div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-base shadow-sm">
+            T
+          </div>
+<div>
+<div class="font-headline text-base font-bold tracking-tight text-slate-900 leading-none">TJT Tracker</div>
+<div class="text-[11px] font-medium text-slate-400 mt-1 leading-none">Recruitment Status</div>
+</div>
+</div>
+<!-- Navigation items -->
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 transition-colors" href="#">
+<span class="material-symbols-outlined text-slate-500 text-xl">dashboard</span>
+<span class="font-body text-sm leading-6 tracking-normal">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 transition-colors" href="#">
+<span class="material-symbols-outlined text-slate-500 text-xl">mark_email_read</span>
+<span class="font-body text-sm leading-6 tracking-normal">Joining Letters</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 transition-colors" href="#">
+<span class="material-symbols-outlined text-slate-500 text-xl">poll</span>
+<span class="font-body text-sm leading-6 tracking-normal">Surveys</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-indigo-50 text-indigo-600 font-semibold transition-colors" href="#">
+<span class="material-symbols-outlined text-indigo-600 text-xl" style="font-variation-settings: 'FILL' 1;">forum</span>
+<span class="font-body text-sm leading-6 tracking-normal">Community Forum</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 transition-colors" href="#">
+<span class="material-symbols-outlined text-slate-500 text-xl">settings</span>
+<span class="font-body text-sm leading-6 tracking-normal">Settings</span>
+</a>
+</nav>
+<!-- CTA button -->
+<div class="pt-2">
+<button class="w-full flex items-center justify-center gap-2 py-2 px-3 text-xs font-semibold text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors">
+            + Share Update
+          </button>
+</div>
+</div>
+<!-- Footer Tabs -->
+<div class="border-t border-slate-100 pt-3 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-900 text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-base">privacy_tip</span>
+<span>Privacy Policy</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-900 text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-base">help</span>
+<span>Help &amp; FAQ</span>
+</a>
+</div>
+</aside>
+<!-- Main Background Feed Layout -->
+<main class="pl-60 flex-1 overflow-hidden p-8 bg-slate-50">
+<div class="max-w-5xl mx-auto space-y-6">
+<!-- Pinned Scam Advisory Alert Banner -->
+<div class="p-4 rounded-xl bg-amber-50 border border-amber-200/80 flex items-start gap-3 shadow-sm">
+<span class="material-symbols-outlined text-amber-600 text-xl mt-0.5">warning</span>
+<div class="text-xs leading-relaxed text-amber-900">
+<strong class="font-semibold text-amber-950">Official Advisory:</strong> TCS never requests money for training materials, onboarding documents, or background verification. Report unauthorized recruiters immediately.
+          </div>
+</div>
+<!-- Feed Controls & Filters Header -->
+<div class="flex items-center justify-between">
+<div>
+<h1 class="font-headline text-2xl font-bold tracking-tight text-slate-900">Community Forum</h1>
+<p class="text-sm text-slate-500 mt-0.5">Connect with batch mates, track wave releases, and share anonymous updates.</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-medium text-slate-500 bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm">All Batches (2024, 2025)</span>
+<span class="text-xs font-medium text-slate-500 bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm">Most Recent</span>
+</div>
+</div>
+<!-- Simulated Blurred Discussion Feed Cards -->
+<div class="space-y-4">
+<!-- Card 1 -->
+<div class="bg-white border border-slate-200/90 rounded-xl p-5 shadow-sm space-y-3">
+<div class="flex items-center justify-between text-xs">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-semibold text-[11px]">Joining Letter Updates</span>
+<span class="text-slate-400">•</span>
+<span class="text-slate-500 font-medium">Candidate #3821 (Prime)</span>
+<span class="text-slate-400">•</span>
+<span class="text-slate-400">22 mins ago</span>
+</div>
+<span class="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded">Verified JL</span>
+</div>
+<h2 class="font-headline font-semibold text-base text-slate-900">Digital Cadre Bangalore Wave 2 Onboarding Date Announced</h2>
+<p class="text-sm text-slate-600 line-clamp-2">Just received the official email from TCS ILP team regarding onboarding scheduled for July 14th at Bengaluru campus. Check your spam folders...</p>
+<div class="flex items-center gap-4 text-xs text-slate-400 pt-2 border-t border-slate-100">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">thumb_up</span> 28</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">chat_bubble</span> 14 comments</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white border border-slate-200/90 rounded-xl p-5 shadow-sm space-y-3">
+<div class="flex items-center justify-between text-xs">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 font-semibold text-[11px]">Readiness Survey</span>
+<span class="text-slate-400">•</span>
+<span class="text-slate-500 font-medium">Ninja Batch 2025</span>
+<span class="text-slate-400">•</span>
+<span class="text-slate-400">1 hour ago</span>
+</div>
+</div>
+<h2 class="font-headline font-semibold text-base text-slate-900">Survey response deadline extended for Kolkata and Bhubaneswar regions?</h2>
+<p class="text-sm text-slate-600 line-clamp-2">Multiple candidates noticed the portal status changed from Survey Pending to Response Submitted automatically...</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="sticky bottom-0 z-20 w-full pl-60 bg-slate-50 border-t border-slate-200 shadow-none flex flex-col md:flex-row items-center justify-between py-2 px-6 gap-2">
+<div class="font-body text-[11px] leading-relaxed text-slate-500 tracking-wide">
+        TCS Joining Tracker is an independent community project and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Tata Consultancy Services (TCS) or any of its subsidiaries.
+      </div>
+<div class="flex items-center gap-4 text-xs text-slate-500 shrink-0">
+<a class="hover:text-slate-900 transition-colors" href="#">Disclaimer</a>
+<a class="hover:text-slate-900 transition-colors" href="#">Privacy</a>
+<a class="hover:text-slate-900 transition-colors" href="#">Report Data</a>
+</div>
+</footer>
+</div>
+<!-- ========================================== -->
+<!-- MODAL DIALOG OVERLAY & CONTAINER -->
+<!-- ========================================== -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/50 backdrop-blur-sm transition-all duration-200">
+<!-- Modal Card (max-w-xl ~ 576px) -->
+<div class="bg-white rounded-2xl shadow-2xl border border-slate-100 w-full max-w-xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+<!-- Modal Header -->
+<div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+<div class="flex items-center gap-3">
+<div class="rounded-lg bg-indigo-50 text-indigo-600 p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">edit_note</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-headline font-semibold text-lg text-slate-900 leading-tight">Create Community Discussion Post</h2>
+<span class="bg-indigo-100 text-indigo-800 text-[11px] font-semibold px-2 py-0.5 rounded-full border border-indigo-200">Batch 2025</span>
+</div>
+<p class="text-xs text-slate-500 mt-0.5">Share queries, updates, or advice with peer candidates</p>
+</div>
+</div>
+<button aria-label="Close dialog" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors" type="button">
+<span class="material-symbols-outlined text-xl">close</span>
+</button>
+</div>
+<!-- Modal Form Body -->
+<form class="px-6 py-5 flex flex-col gap-5 text-left" onsubmit="event.preventDefault();">
+<!-- 1. Title Field -->
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-semibold uppercase tracking-wider text-slate-700" for="post-title">
+            Title *
+          </label>
+<input class="rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 placeholder:text-slate-400 transition shadow-sm w-full" id="post-title" placeholder="e.g. Has anyone from 2025 Digital Hyderabad received their JL yet?" type="text" value="Has anyone from 2025 Digital Hyderabad received their JL yet?"/>
+<div class="flex justify-end">
+<span class="text-xs text-slate-400">54 / 200 characters</span>
+</div>
+</div>
+<!-- 2. Category Dropdown Field -->
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-semibold uppercase tracking-wider text-slate-700" for="post-category">
+            Category *
+          </label>
+<div class="relative">
+<div class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 bg-white flex justify-between items-center shadow-sm cursor-pointer hover:border-slate-400 transition">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-indigo-600 text-lg">mark_email_read</span>
+<span class="font-medium text-slate-800">Joining Letter Updates (JOINING_LETTER)</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-lg">expand_more</span>
+</div>
+</div>
+</div>
+<!-- 3. Discussion Body Field -->
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-semibold uppercase tracking-wider text-slate-700" for="post-body">
+            Discussion Body *
+          </label>
+<textarea class="rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 min-h-[120px] resize-none leading-relaxed transition shadow-sm w-full" id="post-body" placeholder="Provide context, batch details, and relevant dates without sharing personal identifiers..." rows="4">Completed the readiness survey on May 15th with Hyderabad preference. NextStep portal still shows Offer Accepted, but peers in Pune seem to have received wave 1 dispatch. Anyone with similar dates seeing status updates?</textarea>
+<div class="flex justify-between items-center text-xs text-slate-400 px-0.5">
+<span class="flex items-center gap-1 text-[11px] text-slate-500">
+<span class="material-symbols-outlined text-xs">markdown</span>
+              Markdown supported: <strong>**bold**</strong>, <em>_italic_</em>
+</span>
+<span class="font-mono text-xs">242 / 5,000 characters</span>
+</div>
+</div>
+<!-- 4. Posting Identity Preview Box -->
+<div class="rounded-xl p-3.5 bg-slate-50 border border-slate-200/80 flex flex-col gap-1.5">
+<div class="flex items-center justify-between text-xs">
+<div class="flex items-center gap-1.5 font-medium text-slate-800">
+<span class="text-sm">🎭</span>
+<span>Posting as:</span>
+<span class="font-semibold text-slate-900">Anonymous Candidate • 2025 • Digital • Hyderabad</span>
+</div>
+<span class="bg-emerald-50 text-emerald-700 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-emerald-200/60 flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-emerald-500 rounded-full inline-block"></span>
+              Encrypted Hash Verified
+            </span>
+</div>
+<p class="text-[11px] text-slate-500">
+            To post with your display name instead, update your <a class="text-indigo-600 hover:underline" href="#">Privacy Settings</a>.
+          </p>
+</div>
+</form>
+<!-- Modal Footer -->
+<div class="px-6 py-4 bg-slate-50/90 border-t border-slate-100 flex items-center justify-between">
+<!-- Keyboard hint -->
+<div class="text-xs text-slate-400 flex items-center gap-1.5">
+<kbd class="px-1.5 py-0.5 text-[10px] font-mono bg-white border border-slate-300 rounded shadow-xs text-slate-600 font-semibold">Esc</kbd>
+<span>to close</span>
+</div>
+<!-- Buttons -->
+<div class="flex items-center gap-3">
+<button class="text-sm font-medium text-slate-600 hover:text-slate-900 px-4 py-2 rounded-lg hover:bg-slate-200/60 transition-colors" type="button">
+            Cancel
+          </button>
+<button class="bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white text-sm font-semibold px-5 py-2 rounded-lg shadow-sm flex items-center gap-2 transition-all duration-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" type="button">
+<span class="material-symbols-outlined text-base">send</span>
+<span>Publish Post</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</body></html>
