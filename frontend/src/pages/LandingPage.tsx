@@ -9,8 +9,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { getPublicStats, type PublicStats } from "@/api/stats";
-import { Disclaimer } from "@/components/Disclaimer";
 import { Skeleton } from "@/components/Skeleton";
+import { VisitorFooter } from "@/layouts/VisitorFooter";
+import { VisitorHeader } from "@/layouts/VisitorHeader";
 
 const FEATURES = [
   {
@@ -59,33 +60,9 @@ export function LandingPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-900" data-testid="landing-page">
-      {/* Nav bar (§7.1) */}
-      <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <Link to="/" className="flex items-center gap-2" aria-label="TCS Joining Tracker home">
-            <span className="inline-flex items-center justify-center rounded-lg bg-brand-700 px-2 py-1 text-xs font-bold text-white">
-              TJT
-            </span>
-            <span className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">
-              TCS Joining Tracker
-            </span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Link
-              to="/login"
-              className="flex min-h-[44px] items-center rounded-lg border border-slate-200 px-4 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-            >
-              Sign in
-            </Link>
-            <Link
-              to="/register"
-              className="flex min-h-[44px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white hover:bg-brand-800"
-            >
-              Create account
-            </Link>
-          </div>
-        </div>
-      </header>
+      {/* Shared visitor chrome (§5.4, 9.5.1 D-06): landing keeps its own page
+          shell and composes the shared header/footer. */}
+      <VisitorHeader />
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4">
         {/* Hero (§7.1, Stitch landing mockup) */}
@@ -177,11 +154,7 @@ export function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-slate-200 px-4 py-4 dark:border-slate-800">
-        <div className="mx-auto max-w-3xl text-center">
-          <Disclaimer variant="footer" />
-        </div>
-      </footer>
+      <VisitorFooter />
     </div>
   );
 }

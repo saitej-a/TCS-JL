@@ -6,13 +6,18 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
+import { AuthProvider } from "@/context/AuthContext";
 import { LandingPage } from "@/pages/LandingPage";
 import { scriptAdapter } from "@/test/axiosTestHelper";
 
 function renderLanding() {
   return render(
     <MemoryRouter initialEntries={["/"]}>
-      <LandingPage />
+      {/* The shared visitor chrome reads useAuth; a visitor boot resolves
+          synchronously (no stored token → no network). */}
+      <AuthProvider>
+        <LandingPage />
+      </AuthProvider>
     </MemoryRouter>,
   );
 }
