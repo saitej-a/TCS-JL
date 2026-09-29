@@ -488,12 +488,39 @@ class CommentListCreateView(CommunityErrorMixin, APIView):
 
     def get(self, request, *args, **kwargs):
         post = _get_live_post(kwargs["pk"], for_read=True)
-        page_size = _page_size(request)
-        page = svc.comment_page(post, page_size=page_size, offset=_offset(request, page_size))
+
+        # Phase 11 R3: `?parent=<id>` returns that node's bounded subtree —
+        # the "continue this thread" fetch. Same post required; a removed or
+        # branch-closed parent 404s/400s like the write path (the branch's
+        # *present* was already delivered in the page response; this only ever
+        # extends what is already visible).
+        parent_param = request.query_params.get("parent")
+        if parent_param:
+            parent = (
+                Comment.objects.filter(id=parent_param, post=post)
+                .select_related("author__candidate_profile")
+                .first()
+            )
+            if parent is None:
+                raise _ContentNotFound("comment")
+            if parent.is_deleted or parent.branch_closed_by_id is not None:
+                return Response(
+                    {"error": {"code": "branch_closed", "message": "Replies are closed above a removed comment."}},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            page = svc.subtree(post, parent)
+        else:
+            page_size = _page_size(request)
+            page = svc.comment_page(post, page_size=page_size, offset=_offset(request, page_size))
+
         serializer = CommentSerializer(
             page["comments"],
             many=True,
-            context={"request": request, "replies_by_parent": page["replies_by_parent"]},
+            context={
+                "request": request,
+                "replies_by_parent": page["replies_by_parent"],
+                "descendant_counts": page["descendant_counts"],
+            },
         )
         return Response(
             {

@@ -19,6 +19,12 @@ from django.utils import timezone
 
 from apps.community.models import Comment, Post
 
+# Phase 11 D-02/R2: how deep the thread response assembles before truncating.
+# Storage has no depth cap (D-01); this bounds only the read. Deeper nodes are
+# summarised with their true descendant count; `?parent=` fetches them on
+# demand. Pinned by test_query_budgets.py and the pathological-fixture tests.
+RENDER_DEPTH = 5
+
 
 def websearch_query(term: str):
     """D2's query parser: websearch_to_query supports quoted phrases and the
@@ -101,12 +107,81 @@ def trending_queryset(user) -> QuerySet[Post]:
     ).order_by("-is_pinned", "-activity", "-created_at")
 
 
-def comment_page(post: Post, page_size: int, offset: int) -> dict:
-    """One page of top-level comments with replies nested in memory (04 §39).
+def _assemble_levels(seed_ids, max_levels: int) -> tuple[dict, list]:
+    """Batched per-level assembly: `max_levels` levels of children under
+    `seed_ids`, one query per level (`parent__in`, served by
+    `idx_comment_parent_created`, authors in the same query). Returns the
+    replies-by-parent map and every fetched node (seeded nodes excluded)."""
+    by_parent: dict = {}
+    all_nodes: list = []
+    level_ids = list(seed_ids)
+    for _ in range(max(0, max_levels)):
+        if not level_ids:
+            break
+        batch = list(
+            Comment.objects.filter(parent_id__in=level_ids)
+            .select_related("author__candidate_profile")
+            .order_by("created_at")
+        )
+        for child in batch:
+            by_parent.setdefault(child.parent_id, []).append(child)
+        all_nodes.extend(batch)
+        level_ids = [child.id for child in batch]
+    return by_parent, all_nodes
 
-    5.1 R3 pinned `Comment.Meta.ordering = ["created_at"]` so this pagination
-    is stable. Reply authors come from a single secondary query for the page's
-    replies — never one per comment.
+
+def _descendant_totals(post_id, node_ids) -> dict:
+    """True descendant totals per node, from one aggregate query.
+
+    `direct_by_parent` maps parent_id → direct-children count; the closure
+    runs in Python over the (bounded) parent map. For the thread's own nodes
+    the map is complete (their children are all fetched), so totals are exact;
+    for deeper nodes the map still covers the whole post, so totals are exact
+    everywhere. Recursion-free: each pass sums children per frontier level, and
+    the map cannot cycle (parents precede children in storage).
+    """
+    totals = (
+        Comment.objects.filter(post_id=post_id, parent__isnull=False)
+        .values("parent_id")
+        .annotate(n=Count("id"))
+    )
+    direct = {row["parent_id"]: row["n"] for row in totals}
+    child_ids: dict = {}
+    for row in Comment.objects.filter(post_id=post_id, parent__isnull=False).values(
+        "id", "parent_id"
+    ):
+        child_ids.setdefault(row["parent_id"], []).append(row["id"])
+    memo: dict = {}
+
+    def total(node_id) -> int:
+        if node_id in memo:
+            return memo[node_id]
+        memo[node_id] = 0  # cycle guard (cannot occur; keeps the walk total)
+        acc = 0
+        for child in child_ids.get(node_id, []):
+            acc += 1 + total(child)
+        memo[node_id] = acc
+        return acc
+
+    out = {}
+    for node_id in node_ids:
+        out[node_id] = total(node_id)
+    return out
+
+
+def comment_page(post: Post, page_size: int, offset: int) -> dict:
+    """One page of the thread, bounded (Phase 11 D-02; 04 §39 rewritten).
+
+    The shape replaces 5.2's two-level assembly: top-level comments paginate
+    exactly as before (`count`/`total_comments` semantics unchanged — C-02),
+    but each subtree is assembled **to the render depth** only. A node truncated
+    by the bound carries its true descendant count — "continue this thread"
+    fetches the rest on demand (`subtree` below) and the response never returns
+    an unbounded structure (04 §40's surviving read-shape rule).
+
+    Queries (R1): 1 page fetch + 1 count + one fetch per assembled level
+    (batched `parent__in`, served by `idx_comment_parent_created`, authors in
+    the same query) + 2 aggregate queries for the true counts.
     """
     top_level = (
         Comment.objects.filter(post=post, parent=None)
@@ -115,17 +190,34 @@ def comment_page(post: Post, page_size: int, offset: int) -> dict:
     )
     total = top_level.count()
     page = list(top_level[offset : offset + page_size])
-    replies = (
-        Comment.objects.filter(parent__in=[c.id for c in page])
-        .select_related("author__candidate_profile")
-        .order_by("created_at")
-        if page
-        else Comment.objects.none()
-    )
-    by_parent: dict = {}
-    for reply in replies:
-        by_parent.setdefault(reply.parent_id, []).append(reply)
-    return {"comments": page, "replies_by_parent": by_parent, "total_top_level": total}
+
+    by_parent, all_nodes = _assemble_levels([c.id for c in page], RENDER_DEPTH - 1)
+    counts = _descendant_totals(post.id, [n.id for n in page] + [n.id for n in all_nodes])
+
+    return {
+        "comments": page,
+        "replies_by_parent": by_parent,
+        "total_top_level": total,
+        "descendant_counts": counts,
+    }
+
+
+def subtree(post: Post, parent: Comment) -> dict:
+    """The `?parent=` continuation fetch (R3): one node's bounded subtree, same
+    shape rules as `comment_page` (same depth bound, same true counts).
+
+    `parent` is resolved by the view (same post; removed/closed handled at the
+    write rules' own severity — see `CommentListCreateView.get`), so the fetch
+    returns the branch's present, never an unbounded structure.
+    """
+    by_parent, all_nodes = _assemble_levels([parent.id], RENDER_DEPTH)
+    counts = _descendant_totals(post.id, [parent.id] + [n.id for n in all_nodes])
+    return {
+        "comments": [parent],
+        "replies_by_parent": by_parent,
+        "total_top_level": 1,
+        "descendant_counts": counts,
+    }
 
 
 class DuplicateVoteError(Exception):

@@ -129,6 +129,12 @@ class CommentSerializer(serializers.ModelSerializer):
     parent = serializers.UUIDField(source="parent_id", read_only=True)
     body = serializers.SerializerMethodField()
     replies = serializers.SerializerMethodField()
+    # Phase 11 D-02/R5: the controls' true numbers. `descendant_count` is the
+    # node's total descendant count (whether or not the bound truncated it);
+    # `is_branch_closed` carries the closure signal (D-06) — the UI never
+    # derives it from `is_deleted` ancestry, the server owns that rule.
+    descendant_count = serializers.SerializerMethodField()
+    is_branch_closed = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
@@ -140,6 +146,8 @@ class CommentSerializer(serializers.ModelSerializer):
             "body",
             "is_deleted",
             "replies",
+            "descendant_count",
+            "is_branch_closed",
             "created_at",
             "updated_at",
         ]
@@ -157,27 +165,33 @@ class CommentSerializer(serializers.ModelSerializer):
         return display_body(obj)
 
     def get_replies(self, obj):
-        # Preloaded by the view's `comment_page` (one query per page, COMM-08);
-        # anything not preloaded (detail route) falls back to one query.
+        # Preloaded by the view's bounded assembly (one query per level, plus
+        # true counts); anything not preloaded (create responses, detail route)
+        # falls back to one query — those responses hold one comment, so the
+        # fallback is bounded there too.
         if "replies" in getattr(obj, "_prefetched_objects_cache", {}):
             children = obj.replies.all()
         elif self.context.get("replies_by_parent"):
             children = self.context["replies_by_parent"].get(obj.id, [])
         else:
             children = obj.replies.select_related("author__candidate_profile").all()
-        return CommentReplySerializer(children, many=True, context=self.context).data
+        # Phase 11: recursive — a reply renders its own children from the same
+        # assembled map, so depth is limited only by the assembly's bound (the
+        # old CommentReplySerializer hardcoded one level and always-empty
+        # children; deleted — 04 §40's wire shape is now genuinely nested).
+        return CommentSerializer(children, many=True, context=self.context).data
 
+    def get_descendant_count(self, obj) -> int:
+        counts = self.context.get("descendant_counts") or {}
+        return int(counts.get(obj.id, 0))
 
-class CommentReplySerializer(CommentSerializer):
-    """One nesting level only — a reply never carries children (04 §40)."""
-
-    def get_replies(self, obj):
-        return []
+    def get_is_branch_closed(self, obj) -> bool:
+        return obj.branch_closed_by_id is not None
 
 
 class CommentWriteSerializer(serializers.Serializer):
-    """Create body (04 §41). Rules beyond shape (locked post, deleted post,
-    parent's post) are enforced in the view/service, not here."""
+    """Create body (04 §41, rewritten). Rules beyond shape (locked post, deleted
+    post/closed branch, parent's post) are enforced in the view/service."""
 
     body = serializers.CharField()
     parent_id = serializers.UUIDField(required=False, allow_null=True)
