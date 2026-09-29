@@ -1,16 +1,16 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "9.5"
-current_phase_name: "UI/UX design pass: ui-ux-pro-max + Stitch screens (INSERTED)"
-status: verified
+current_phase: "09.5.1"
+current_phase_name: "Generate the missing Stitch screens with ui-ux-pro-max design intelligence (INSERTED)"
+status: planning
 stopped_at: "Phase 9.5 EXECUTED + VERIFIED — PASS (2026-09-29): token v2 landed with measured role shifts (buttons rest brand-700, light focus ring 600, dark accents 400-family), all 05 §3 surfaces are real screens built to the real API (8 mock-vs-API divergences shipped honestly, ledger in VERIFICATION §3), admin has a real staff guard via self-only is_staff + RequireStaff with a PII-hard reports queue, announcements is draft-first with confirm-gated publish, 404 keeps the shell + boundary shows a copyable reference id equal to the logged one; gates: backend 849 / frontend 231 / lint 0 errors / tsc -b + build clean / contrast audit 10-of-10 real pairs; Stitch apply_design_system (destructive, user-approved) re-themed all 40 screen instances to v2 — session 2569706817692007299 — so repo and design library tell one story; residuals: no pixel-level review of the 40 re-themed screens (re-apply is idempotent), no live browser walkthrough of the new screens"
-last_updated: "2026-09-29T00:00:00.000Z"
+last_updated: "2026-09-29T04:45:45.526Z"
 last_activity: 2026-09-29
-last_activity_desc: Phase 9.5 executed and verified — all 12 tasks complete
-state_head: 7527fd5eeef0421b47f30ad00ca8ed9b2078c1ea
+last_activity_desc: Phase 09.5.1 inserted — 5 missing Stitch screens generated, awaiting plan
+state_head: 537d7e3e825911a3504180197e49f473c605f8fb
 progress:
-  total_phases: 29
+  total_phases: 30
   completed_phases: 6
   total_plans: 18
   completed_plans: 19
@@ -26,18 +26,20 @@ Total Phases: 22
 See: .planning/PROJECT.md (updated 2026-09-19)
 
 **Core value:** Provide anxious candidates with complete clarity on their recruitment progress and community benchmarks without requiring them to expose their real identity or personal credentials.
-**Current focus:** Phase 9.5 — UI/UX design pass: ui-ux-pro-max + Stitch screens (INSERTED)
+**Current focus:** Phase 09.5.1 — Generate the missing Stitch screens (INSERTED after 9.5)
 
 ## Current Position
 
-Phase: 9.5 (UI/UX design pass: ui-ux-pro-max + Stitch screens (INSERTED)) — EXECUTED + VERIFIED (2026-09-29)
-Plan: 1 of 1 — complete
-Status: Phase 9.5 verified — PASS. All twelve tasks executed; gates re-derived in
+Phase: 09.5.1 (Generate the missing Stitch screens with ui-ux-pro-max design intelligence) — INSERTED, AWAITING PLAN
+Plan: 0 of 0 — run `/gsd-plan-phase 09.5.1` to break it down
+Status: the phase was inserted after 9.5 (roadmap + evolution entry logged); the design
+half — five missing screens (security settings, verification pending, verification action,
+reset password, informational/legal) — is generated and catalogued in `09.5.1-CONTEXT.md`.
+Previous phase: 9.5 EXECUTED + VERIFIED (2026-09-29) — gates re-derived in
 `.planning/phases/TCS-JL-09.5-ui-ux-design-pass-ui-ux-pro-max-stitch-screens/VERIFICATION.md`
-(backend 849 / frontend 231 / lint 0 errors / build clean / contrast 10-of-10; the 8-screen
-divergence ledger from building to the real API instead of the mock is VERIFICATION §3; the
-user-approved destructive Stitch re-theme of all 40 instances is VERIFICATION §4).
-Last activity: 2026-09-29 — Phase 9.5 executed and verified
+(backend 849 / frontend 231 / lint 0 errors / build clean / contrast 10-of-10; the Stitch
+re-theme of all 40 instances is VERIFICATION §4).
+Last activity: 2026-09-29 — Phase 09.5.1 inserted; 5 missing screens generated
 
 **Next up: Phase 09.5 — *UI/UX design pass: ui-ux-pro-max + Stitch screens* (INSERTED after Phase 9, 2026-09-28, URGENT).**
 **PLANNED 2026-09-28** → `09.5-01-PLAN.md`; the design half is **done and on disk** (`09.5-CONTEXT.md`):
@@ -198,6 +200,7 @@ with `feed_queryset`'s `is_deleted=False` removed the test **FAILED** (Assertion
 - Phases 1–10 decomposed into 22 decimal sub-phases (X.1/X.2 pattern; Phase 9 has four) as focused planning/execution units — directories scaffolded under `.planning/phases/`, mappings logged in ROADMAP.md Phase Details and REQUIREMENTS.md Sub-Phase Traceability.
 - **Stitch (MCP server) is the designated UI-design tool** (user directive, 2026-09-23): generate and iterate screen mockups through the `stitch` connector (`generate_screen_from_text`, `generate_variants`, `create_design_system`/`upload_design_md`) instead of hand-describing layouts. **Applied for 9.2 (discuss stage):** Stitch project `3852118218307261541` holds design system `assets/9887579562818178405` (seeded from 05 §4 tokens) and **10 screen mockups** (desktop shell light+dark, mobile shell, landing, login, register, forgot-password, onboarding steps 1–3) — screen IDs catalogued in `09.2-CONTEXT.md`. **Planned for 9.3:** 7 more mockups (dashboard desktop+mobile, timeline roadmap, timeline modal, feed desktop+mobile, create post) from the same project/design system, generated as plan 09.3-01's Task 1 with IDs recorded in `09.3-CONTEXT.md`'s design table. Boundary: Stitch output is design reference, not code; implementation stays in `frontend/` against the 9.1 token layer.
 - Phase 09.5 inserted after Phase 9: UI/UX design pass driven by the ui-ux-pro-max skill: generate the screens on Stitch MCP and implement them one by one (URGENT). **Design half executed 2026-09-28:** the skill selected a professional-blue + Fira Sans/Fira Code direction for the Job Board/Recruitment category; its palette was adopted as the Tailwind `sky` scale with the neutrals/radii/elevation deliberately kept from 05 §4 (the skill's flat, shadowless, tinted-canvas branch was overridden — approval item O-9.5-1 in `09.5-CONTEXT.md` §3.1). Stitch design system `assets/9909951007419684952` created and used for **8 new screens** covering the undesigned surfaces; the project default was **not** changed (the `update_design_system` call was rejected as an invalid argument twice), and the 32 existing screens were **not** re-themed (`apply_design_system` deliberately deferred to plan Task 11). A real trap found by inspecting a generated screenshot: the mocks carry visible "DESIGN NOTE" annotation captions and an appended dark-mode mapping strip — reference-only, never UI.
+- Phase 09.5.1 inserted after Phase 9.5: Generate the missing Stitch screens with ui-ux-pro-max design intelligence (URGENT)
 
 ### Decisions
 

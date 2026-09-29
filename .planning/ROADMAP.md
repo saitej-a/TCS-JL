@@ -325,6 +325,17 @@ Plans:
 
 - [x] 09.5-01 — Design token v2 + 05 §4 reconciliation, settings suite (hub/profile/privacy/security/devices/danger), admin console (reports + announcements), 404/error states, v2 re-check of the shipped screens. Design work done: Stitch design system `assets/9909951007419684952` + 8 screens (catalogue in `09.5-CONTEXT.md` §5). *Nothing implemented yet — the code work is the plan's remaining tasks.*
 
+### Phase 09.5.1: Generate the missing Stitch screens with ui-ux-pro-max design intelligence (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 9.5
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run /gsd-plan-phase 09.5.1 to break down)
+
 ### Phase 10: Security Audits, E2E Testing, Seed Data & Launch Readiness
 
 **Goal**: Perform comprehensive security audits, load testing, seed data provisioning, Nginx hardening, and final production sign-off.  
