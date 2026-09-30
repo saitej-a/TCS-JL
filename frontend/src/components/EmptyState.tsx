@@ -28,6 +28,11 @@ const DEFAULT_ILLUSTRATION = (
 /**
  * 11's "every list needs an empty state": illustration slot, headline,
  * supporting line, and an optional primary action.
+ *
+ * Phase 12 reconciled the presentation to the error-and-empty-states
+ * composition: the illustration sits in a tinted disc, and the whole block is a
+ * dashed card so an empty list reads as a deliberate state rather than a
+ * half-rendered section. The API (slots, labels, action) is unchanged.
  */
 export function EmptyState({
   illustration,
@@ -37,11 +42,18 @@ export function EmptyState({
   onAction,
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 p-8 text-center" data-testid="empty-state">
-      {illustration ?? DEFAULT_ILLUSTRATION}
-      <h3 className="text-lg font-semibold">{headline}</h3>
+    <div
+      className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-slate-200 bg-white p-8 text-center dark:border-slate-700 dark:bg-slate-800"
+      data-testid="empty-state"
+    >
+      <span className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-900/40">
+        {illustration ?? DEFAULT_ILLUSTRATION}
+      </span>
+      <h3 className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+        {headline}
+      </h3>
       {support !== undefined && (
-        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm">{support}</p>
+        <p className="max-w-sm text-sm text-slate-500 dark:text-slate-400">{support}</p>
       )}
       {actionLabel !== undefined && onAction !== undefined && (
         <Button onClick={onAction}>{actionLabel}</Button>

@@ -77,4 +77,39 @@ describe("LandingPage", () => {
     renderLanding();
     expect(screen.getByTestId("disclaimer-footer")).toBeInTheDocument();
   });
+
+  it("answers the non-affiliation FAQ without claiming verification", () => {
+    scriptAdapter([
+      { url: "/public/stats/", respond: () => ({ status: 500, data: {} }) },
+    ]);
+    renderLanding();
+    expect(screen.getByText("Is this officially linked to TCS?")).toBeInTheDocument();
+    expect(screen.getByText("Does the tracker verify my joining letter?")).toBeInTheDocument();
+    // The composition's hashing story is not shipped: the answer says so.
+    expect(screen.getByText(/no document upload/i)).toBeInTheDocument();
+    expect(screen.queryByText(/SHA-256|hash verified/i)).not.toBeInTheDocument();
+  });
+
+  it("links the community band to the real feed", () => {
+    scriptAdapter([
+      {
+        url: "/public/stats/",
+        respond: () => ({
+          status: 200,
+          data: {
+            data_source: "COMMUNITY_REPORTED",
+            disclaimer: "Community-reported",
+            registered_candidates: 1248,
+            community_posts: 42,
+            timeline_events: 220,
+          },
+        }),
+      },
+    ]);
+    renderLanding();
+    expect(screen.getByRole("link", { name: "Open the community feed" })).toHaveAttribute(
+      "href",
+      "/community",
+    );
+  });
 });

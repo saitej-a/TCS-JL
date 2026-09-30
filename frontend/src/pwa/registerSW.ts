@@ -22,7 +22,18 @@ export const SW_URL =
     : "/sw.js";
 
 /** §10.1's offline banner is driven by the browser, not by the worker. */
-export const OFFLINE_COPY = "⚠️ Offline Mode. Showing cached data. Actions will sync when online.";
+/**
+ * §10.1's offline line, in two parts so the banner can style the state name
+ * (Phase 12 Task 12: the composition's offline artboard).
+ *
+ * The v1 string promised "Actions will sync when online" — this app has no
+ * Background Sync queue and no optimistic write persistence, so that promise is
+ * not shippable. What is true: the worker serves cached reads, and a write made
+ * offline is simply not saved.
+ */
+export const OFFLINE_TITLE = "Offline mode.";
+export const OFFLINE_COPY =
+  "Showing cached data. Changes you make now are not saved until you reconnect.";
 
 export function swSupported(): boolean {
   return typeof navigator !== "undefined" && "serviceWorker" in navigator;

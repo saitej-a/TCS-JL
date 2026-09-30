@@ -1,13 +1,25 @@
 /**
- * The shared legal layout (9.5.1 D-13): one component owns the 65–75ch prose
- * measure, the section TOC (D-14) and the honesty line (D-03). Pages are
- * content modules rendered as data — text nodes only, never HTML injection.
+ * The shared legal layout (9.5.1 D-13), reconciled to the
+ * `informational_legal_privacy_policy_privacy` composition in Phase 12: the
+ * numbering on the section TOC and the in-body independence notice are the
+ * composition's, while its fiction is not (09.5.1 D-14/D-16):
+ * - the "Last updated" line and the version chip stay out — there is no
+ *   publication history to state (D-14);
+ * - the "Zero-knowledge hashing" / "Self-serve data export" chips are dropped:
+ *   the platform neither hashes nor exports anything (export is a disabled
+ *   control in settings);
+ * - the data-protection mailbox contact block is dropped — no such mailbox
+ *   exists and this project has no data-protection officer;
+ * - the composition's About/Privacy/Terms row is already shipped twice over
+ *   (VisitorHeader nav + VisitorFooter links), so it is not duplicated here.
  *
- * No publication-history/version line anywhere (D-14): with nothing yet
- * published it would be the same fiction as a version string.
+ * One component still owns the 65–75ch prose measure, the section TOC (D-14)
+ * and the honesty line (D-03). Pages are content modules rendered as data —
+ * text nodes only, never HTML injection.
  */
 import type { ReactElement } from "react";
 
+import { FOOTER_DISCLAIMER } from "@/content/disclaimer";
 import { TYPOGRAPHY } from "@/theme/tokens";
 
 export interface LegalSection {
@@ -32,12 +44,16 @@ export function LegalLayout({ page }: { page: LegalPageData }): ReactElement {
     <nav aria-label="On this page">
       <p className={`${TYPOGRAPHY.subheadLabel} text-slate-500 dark:text-slate-400`}>On this page</p>
       <ul className="mt-2 space-y-1">
-        {page.sections.map((section) => (
+        {page.sections.map((section, index) => (
           <li key={section.id}>
             <a
               href={`#${section.id}`}
-              className={`${TYPOGRAPHY.bodySecondary} text-slate-600 hover:text-slate-900 hover:underline dark:text-slate-300 dark:hover:text-white`}
+              className={`${TYPOGRAPHY.bodySecondary} flex items-baseline gap-2 text-slate-600 hover:text-slate-900 hover:underline dark:text-slate-300 dark:hover:text-white`}
             >
+              {/* The composition numbers its contents list. */}
+              <span aria-hidden="true" className="font-mono text-[11px] text-slate-400 dark:text-slate-500">
+                {String(index + 1).padStart(2, "0")}
+              </span>
               {section.heading}
             </a>
           </li>
@@ -55,6 +71,21 @@ export function LegalLayout({ page }: { page: LegalPageData }): ReactElement {
       >
         {LEGAL_HONESTY_LINE}
       </p>
+
+      {/* The composition's independence notice, rendered from the ONE shipped
+          non-affiliation string (imported, never re-typed — UI-04) without
+          borrowing the footer's test id. */}
+      <div
+        data-testid="legal-independence-notice"
+        className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900/40"
+      >
+        <p className={`${TYPOGRAPHY.subheadLabel} text-slate-700 dark:text-slate-200`}>
+          Independent initiative notice
+        </p>
+        <p className={`${TYPOGRAPHY.legal} mt-1 text-slate-500 dark:text-slate-400`}>
+          {FOOTER_DISCLAIMER}
+        </p>
+      </div>
 
       {page.sections.length === 0 ? (
         <p className={`mt-8 ${TYPOGRAPHY.bodySecondary} text-slate-500 dark:text-slate-400`}>

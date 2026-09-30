@@ -139,9 +139,14 @@ describe("§10.1 service worker and connectivity", () => {
     setOnline(false);
     window.dispatchEvent(new Event("offline"));
     const banner = await screen.findByTestId("offline-banner");
+    // Phase 12 (PWA-states composition) split the line and dropped the v1
+    // "Actions will sync when online" promise — this app has no Background
+    // Sync queue, so the copy now states what is actually true.
+    expect(banner).toHaveTextContent("Offline mode.");
     expect(banner).toHaveTextContent(
-      "⚠️ Offline Mode. Showing cached data. Actions will sync when online.",
+      "Showing cached data. Changes you make now are not saved until you reconnect.",
     );
+    expect(banner).not.toHaveTextContent("sync when online");
 
     setOnline(true);
     window.dispatchEvent(new Event("online"));
