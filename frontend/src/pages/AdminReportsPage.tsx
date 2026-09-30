@@ -15,6 +15,12 @@
  *   supports (review is per-report; no bulk endpoint exists).
  * - Row actions open the review dialog (five actions, notes, ban duration).
  *   BAN_USER answers 202 "enforcement scheduled" — the dialog says so.
+ *
+ * Phase 12 reconciliation: the queue renders as the composition's table card
+ * — uppercase column header strip, per-row severity accent bar, mono Post/Comment
+ * content chips, split mono Filed timestamp, tinted Review button. The
+ * composition's "Reported by" column is deliberately absent: the serializer
+ * ships no reporter identity (04 §63), so there is nothing to render.
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ReactElement } from "react";
@@ -90,6 +96,22 @@ const ACTION_DETAILS: Record<ReviewAction, string> = {
 
 const CARD =
   "rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800";
+
+/** Row accent bar (the composition's severity strip): rose for SCAM, amber for
+ *  the mid tier, sky/slate for the rest. */
+const SEVERITY_BAR: Record<ReportReason, string> = {
+  SCAM: "bg-rose-600",
+  HARASSMENT: "bg-amber-400",
+  MISINFORMATION: "bg-amber-400",
+  ABUSIVE_CONTENT: "bg-amber-400",
+  PERSONAL_INFORMATION: "bg-sky-500",
+  SPAM: "bg-slate-300 dark:bg-slate-600",
+  OTHER: "bg-slate-300 dark:bg-slate-600",
+};
+
+/** The queue's grid: checkbox | content | reason | filed | action. */
+const QUEUE_GRID =
+  "grid grid-cols-[2rem_minmax(0,1fr)_10rem_7.5rem_5rem] items-start gap-3";
 
 /** CSV for the bulk export — pure so tests can assert content without Blobs. */
 export function buildReportsCsv(rows: ModerationReport[]): string {
@@ -194,16 +216,22 @@ export function AdminReportsPage(): ReactElement {
 
   return (
     <main className="mx-auto w-full max-w-5xl space-y-4 p-4 sm:p-6" data-testid="admin-reports">
-      <nav aria-label="Back">
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
         <a
           href="/dashboard"
-          className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:underline dark:text-brand-400"
+          className="hover:text-slate-800 hover:underline dark:hover:text-slate-200"
         >
-          <span aria-hidden="true">←</span> Back to dashboard
+          Home
         </a>
+        <span aria-hidden="true" className="text-slate-300 dark:text-slate-600">/</span>
+        <span>Administration</span>
+        <span aria-hidden="true" className="text-slate-300 dark:text-slate-600">/</span>
+        <span aria-current="page" className="font-medium text-brand-700 dark:text-brand-400">
+          Moderation queue
+        </span>
       </nav>
       <header className="space-y-1">
-        <h1 className={TYPOGRAPHY.pageTitle}>Moderation reports</h1>
+        <h1 className={TYPOGRAPHY.pageTitle}>Moderation queue</h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
           Reporter and subject identities are never shown — the API does not expose them (04 §63).
         </p>
@@ -303,58 +331,85 @@ export function AdminReportsPage(): ReactElement {
         />
       )}
       {visible !== null && visible.length > 0 && (
-        <ul className="space-y-3" data-testid="reports-list">
-          {visible.map((report) => (
-            <li key={report.id} className={`${CARD} p-4`} data-testid="report-row">
-              <div className="flex items-start gap-3">
-                <input
-                  type="checkbox"
-                  aria-label={`Select report ${report.id}`}
-                  data-testid={`select-${report.id}`}
-                  checked={selected.has(report.id)}
-                  onChange={() => toggleSelected(report.id)}
-                  className="mt-1 h-4 w-4"
+        <div className={`${CARD} overflow-x-auto`} data-testid="reports-list">
+          {/* Column strip. "Reported by" is deliberately omitted — the API ships
+              no reporter identity (04 §63); there is nothing honest to render. */}
+          <div
+            aria-hidden="true"
+            className={`${QUEUE_GRID} min-w-[760px] border-b border-slate-200 bg-slate-50/80 px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:bg-slate-900/60`}
+          >
+            <span className="text-center" />
+            <span>Reported content</span>
+            <span>Reason</span>
+            <span>Filed</span>
+            <span className="text-right">Actions</span>
+          </div>
+          <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+            {visible.map((report) => (
+              <li key={report.id} className="relative" data-testid="report-row">
+                <div
+                  aria-hidden="true"
+                  className={`absolute bottom-0 left-0 top-0 w-1 ${SEVERITY_BAR[report.reason]}`}
                 />
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
+                <div className={`${QUEUE_GRID} min-w-[760px] py-3.5 pl-4 pr-3`}>
+                  <div className="flex justify-center pt-0.5">
+                    <input
+                      type="checkbox"
+                      aria-label={`Select report ${report.id}`}
+                      data-testid={`select-${report.id}`}
+                      checked={selected.has(report.id)}
+                      onChange={() => toggleSelected(report.id)}
+                      className="h-4 w-4"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded border border-slate-200 bg-slate-100 px-1.5 py-0.5 font-mono text-[11px] font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                        {report.post_id !== null
+                          ? `Post #${report.post_id.slice(0, 8)}`
+                          : `Comment #${report.comment_id?.slice(0, 8)}`}
+                      </span>
+                      {report.status !== "PENDING" && (
+                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                          {STATUS_LABELS[report.status]}
+                        </span>
+                      )}
+                    </div>
+                    {report.description !== "" && (
+                      <p className="mt-1.5 line-clamp-2 text-sm font-medium leading-relaxed text-slate-800 dark:text-slate-200">
+                        “{report.description}”
+                      </p>
+                    )}
+                  </div>
+                  <div className="min-w-0 pt-0.5">
                     <span
-                      className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold ${REASON_ACCENT[report.reason]}`}
+                      className={`inline-flex rounded border px-2 py-0.5 text-[11px] font-medium ${REASON_ACCENT[report.reason]}`}
                       data-testid={`reason-${report.id}`}
                     >
                       {REASON_LABELS[report.reason]}
                     </span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
-                      {report.post_id !== null
-                        ? `Post · ${report.post_id.slice(0, 8)}…`
-                        : `Comment · ${report.comment_id?.slice(0, 8)}…`}
-                    </span>
-                    <span className="text-xs text-slate-400 dark:text-slate-500">
-                      {new Date(report.created_at).toLocaleString()}
-                    </span>
-                    {report.status !== "PENDING" && (
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-300">
-                        {STATUS_LABELS[report.status]}
-                      </span>
-                    )}
                   </div>
-                  {report.description !== "" && (
-                    <p className="mt-1.5 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">
-                      {report.description}
-                    </p>
-                  )}
+                  <div className="pt-0.5 font-mono text-xs text-slate-600 dark:text-slate-400">
+                    <div>{new Date(report.created_at).toLocaleDateString()}</div>
+                    <div className="text-[10px] text-slate-400 dark:text-slate-500">
+                      {new Date(report.created_at).toLocaleTimeString()}
+                    </div>
+                  </div>
+                  <div className="flex justify-end pt-0.5">
+                    <button
+                      type="button"
+                      data-testid={`review-${report.id}`}
+                      onClick={() => setReviewing(report)}
+                      className="rounded border border-brand-200 bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-800 hover:bg-brand-100 dark:border-brand-900 dark:bg-brand-950/60 dark:text-brand-300 dark:hover:bg-brand-950"
+                    >
+                      Review
+                    </button>
+                  </div>
                 </div>
-                <button
-                  type="button"
-                  data-testid={`review-${report.id}`}
-                  onClick={() => setReviewing(report)}
-                  className="shrink-0 rounded-lg bg-brand-700 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-800"
-                >
-                  Review
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {reviewing !== null && (

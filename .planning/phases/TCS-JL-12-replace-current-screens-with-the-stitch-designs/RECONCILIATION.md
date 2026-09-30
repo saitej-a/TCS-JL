@@ -29,6 +29,10 @@ same task (G-5).
 | tune | Settings2 |
 | privacy_tip | ShieldHalf |
 
+## Execution rows (one per task, appended as each screen lands)
+
+| File(s) | Composition anatomy adopted | Divergence ledger checked |
+|---|---|---|
 | AppShell.tsx | nav anatomy icon+label; bell/banner glyphs lucide; dark: treatment per dark composition | Composition drives glyph set; §5.2–5.4 breakpoints and Administration group untouched; labels verbatim (Alerts, Analytics) |
 | navItems.ts | `icon: LucideIcon` on every NavItem/MOBILE_TABS entry (LayoutDashboard, Route, MessagesSquare, ChartColumn, Bell, Settings) | Icons absent from app entirely before; composition's glyph vocabulary adopted, repainted v2 |
 | MobileTabBar.tsx | icon-over-label tab anatomy per mobile composition; §5.4 44px/56px targets kept | Composition shows icon+label tabs; density/structure otherwise unchanged |
@@ -55,3 +59,5 @@ same task (G-5).
 | SettingsDevicesPage.tsx | Bordered card headers + subtitles on both cards | Real permission banner, 6 alert switches, device rows with "this device" marker unchanged; composition's quiet-hours absent (no API, as before) |
 | SettingsSecurityPage.tsx | Bordered card headers + subtitles on both cards | Reset-link flow, 2FA "not available" and sessions-omission rows verbatim (composition shows an in-form password change the API does not have — omitted) |
 | SettingsDangerPage.tsx | Rose top-strip on the delete card; rose-tinted mono DELETE chip | Immediate-anonymization copy, 3-step confirm chain and anti-enumeration failure copy verbatim |
+| AdminReportsPage.tsx | Queue composition: breadcrumb header; table card with uppercase column-header strip, per-row severity accent bar, mono Post/Comment content chips, split mono Filed stamp, tinted Review button | Composition's "Reported by" column and all reporter/subject identity omitted — `ModerationReportSerializer` ships no such fields (04 §63); members/users nav not adopted (no endpoint); status tabs + counts, client reason filter, CSV bulk export, review dialog untouched |
+| AdminAnnouncementsPage.tsx | Hub composition: breadcrumb header; two-column split (composer + session drafts left, published feed right); card heads with tinted icon chips; uppercase required-field labels; emerald "Draft until published" pill | Audience selector (3 radio chips with member counts) omitted — no audience field exists server-side; schedule picker → the one real scheduling field (`expires_at` auto-hide, not send-later); per-announcement reach figures not shown (not tracked); "Preview as member" header button not adopted (the preview dialog covers it); `created_by` never rendered; push-delivery note verbatim |

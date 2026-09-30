@@ -22,6 +22,7 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import type { ReactElement } from "react";
+import { Megaphone, Pencil } from "lucide-react";
 
 import { EmptyState } from "@/components/EmptyState";
 import { Skeleton, SkeletonCard } from "@/components/Skeleton";
@@ -43,8 +44,13 @@ const PUSH_NOTE =
 const CARD =
   "rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800";
 
+/** Composition labels are uppercase micro-caps (same treatment as Input.tsx). */
 const LABEL =
-  "block text-sm font-medium text-slate-900 dark:text-slate-100";
+  "block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300";
+
+/** Tinted icon chip that heads each card (composition's card-header anatomy). */
+const CHIP =
+  "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-brand-700 dark:bg-sky-950/60 dark:text-brand-300";
 
 const INPUT =
   "mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100";
@@ -164,28 +170,56 @@ export function AdminAnnouncementsPage(): ReactElement {
   }
 
   return (
-    <main className="mx-auto w-full max-w-5xl space-y-4 p-4 sm:p-6" data-testid="admin-announcements">
-      <nav aria-label="Back">
-        <a
-          href="/dashboard"
-          className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:underline dark:text-brand-400"
-        >
-          <span aria-hidden="true">←</span> Back to dashboard
+    <main className="mx-auto w-full max-w-6xl space-y-4 p-4 sm:p-6" data-testid="admin-announcements">
+      <nav
+        aria-label="Breadcrumb"
+        className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400"
+      >
+        <a href="/dashboard" className="hover:text-slate-800 hover:underline dark:hover:text-slate-200">
+          Home
         </a>
+        <span aria-hidden="true" className="text-slate-300 dark:text-slate-600">
+          /
+        </span>
+        <span>Administration</span>
+        <span aria-hidden="true" className="text-slate-300 dark:text-slate-600">
+          /
+        </span>
+        <span aria-current="page" className="font-medium text-brand-700 dark:text-brand-400">
+          Announcements
+        </span>
       </nav>
       <header className="space-y-1">
         <h1 className={TYPOGRAPHY.pageTitle}>Announcements</h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Drafts, then a deliberate publish. Every publish dispatches one push broadcast.
+          Broadcast to candidates. Drafts, then a deliberate publish — every publish dispatches one
+          push broadcast.
         </p>
       </header>
 
+      {/* Composition anatomy: composer + session drafts on the left, the
+          published feed on the right (stacks below lg). */}
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_21rem] lg:items-start">
+        <div className="space-y-4">
+
       {/* Composer */}
-      <section className={`${CARD} p-4 sm:p-5 space-y-3`} aria-label="Compose announcement">
-        <h2 className={TYPOGRAPHY.cardTitle}>Compose</h2>
+      <section className={`${CARD} overflow-hidden`} aria-label="Compose announcement">
+        <div className="flex items-center gap-2.5 border-b border-slate-100 px-4 py-3.5 dark:border-slate-700">
+          <span className={CHIP}>
+            <Pencil className="h-4 w-4" aria-hidden="true" />
+          </span>
+          <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+            New announcement
+          </h2>
+          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-emerald-200/60 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/50 dark:text-emerald-300">
+            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            Draft until published
+          </span>
+        </div>
+        <div className="space-y-3 p-4 sm:p-5">
         <div>
           <label htmlFor="ann-title" className={LABEL}>
-            Title
+            Title <span className="text-rose-500">*</span>
           </label>
           <input
             id="ann-title"
@@ -202,7 +236,7 @@ export function AdminAnnouncementsPage(): ReactElement {
         </div>
         <div>
           <label htmlFor="ann-body" className={LABEL}>
-            Body
+            Body <span className="text-rose-500">*</span>
           </label>
           <textarea
             id="ann-body"
@@ -274,6 +308,7 @@ export function AdminAnnouncementsPage(): ReactElement {
             Preview
           </button>
         </div>
+        </div>
       </section>
 
       {/* Session drafts */}
@@ -340,9 +375,16 @@ export function AdminAnnouncementsPage(): ReactElement {
         </section>
       )}
 
+      </div>
+
       {/* Published list (the public feed — no staff list exists) */}
       <section aria-label="Published announcements" className="space-y-3">
-        <h2 className={TYPOGRAPHY.cardTitle}>Published</h2>
+        <div className={`${CARD} flex items-center gap-2.5 px-4 py-3.5`}>
+          <span className={CHIP}>
+            <Megaphone className="h-4 w-4" aria-hidden="true" />
+          </span>
+          <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">Published</h2>
+        </div>
         {published === null && !loadError && (
           <div className="space-y-3" aria-busy="true">
             <Skeleton className="h-10 w-full" />
@@ -394,6 +436,7 @@ export function AdminAnnouncementsPage(): ReactElement {
           </ul>
         )}
       </section>
+      </div>
 
       {/* Preview modal (before any network write) */}
       {previewing !== null && (
