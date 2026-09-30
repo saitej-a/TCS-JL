@@ -148,8 +148,9 @@ describe("§7.9 AnalyticsPage", () => {
     ).toBeInTheDocument();
     // UI-04: the string is the constant, not a re-typed copy.
     expect(screen.getByText(ANALYTICS_DISCLAIMER)).toBeInTheDocument();
-    // The always-visible suppression notice.
-    expect(screen.getByText("🛡️ PRIVACY SUPPRESSION NOTICE:")).toBeInTheDocument();
+    // The always-visible suppression notice (the composition's dark card;
+    // its 🛡️ emoji became a lucide Shield icon in the Phase 12 rebuild).
+    expect(screen.getByText("PRIVACY SUPPRESSION NOTICE")).toBeInTheDocument();
     expect(
       screen.getByText(
         "To prevent identification of individual candidates, data breakdowns with fewer than 5 submissions are automatically suppressed.",
@@ -357,10 +358,11 @@ describe("§7.9 AnalyticsPage", () => {
     expect(grid.className).toContain("sm:grid-cols-2");
     expect(grid.className).toContain("lg:grid-cols-4");
 
-    // The legend wraps rather than overflowing; the stacked bar clips its
-    // segments rather than letting them push the card wider than its column.
+    // The legend breaks to two columns at sm and clips its stacked bar rather
+    // than letting the row cards push the card wider than its column.
     const legend = await screen.findByTestId("distribution-legend");
-    expect(legend.className).toContain("flex-wrap");
+    expect(legend.className).toContain("grid-cols-1");
+    expect(legend.className).toContain("sm:grid-cols-2");
     expect(screen.getByTestId("distribution-bar").className).toContain("overflow-hidden");
   });
 });
