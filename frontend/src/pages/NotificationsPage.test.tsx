@@ -115,7 +115,7 @@ describe("§7.10 NotificationsPage (notification_center composition)", () => {
     expect(screen.getByText("All Notifications")).toBeInTheDocument();
     expect(screen.getByText(/Unread Only/)).toBeInTheDocument();
 
-    // Marker dots and lucide glyph chips per row, and the quoted snippet callout.
+    // Marker dots and Material Symbols glyph chips per row, and the quoted snippet callout.
     expect(screen.getByTestId("marker-unread-n1")).toBeInTheDocument();
     expect(screen.getByTestId("marker-read-n3")).toBeInTheDocument();
     expect(screen.getByTestId("notification-glyph-n2")).toBeInTheDocument();
@@ -242,7 +242,10 @@ describe("§7.10 NotificationsPage (notification_center composition)", () => {
     renderPage();
 
     await screen.findByTestId("notification-row-n1");
-    await userEvent.click(screen.getByRole("radio", { name: /Unread Only/ }));
+    // The composition's tab bar is buttons with `role="tab"` (the pre-14 markup
+    // used radios); the behaviour under assertion — the unread-only request — is
+    // unchanged.
+    await userEvent.click(screen.getByRole("tab", { name: /Unread Only/ }));
 
     await waitFor(() => {
       const filtered = calls.filter(

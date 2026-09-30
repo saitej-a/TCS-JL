@@ -1,0 +1,68 @@
+/*
+ * The literal-markup presentation layer (Phase 14 D-03/D-04).
+ *
+ * Phase 12 repainted the compositions onto the v2 vocabulary; Phase 14 copies
+ * their markup verbatim instead, which means the library's own two skins have to
+ * exist side by side. They are scoped per screen rather than forked into two
+ * builds: Tailwind v4 routes every colour and font utility through CSS variables
+ * (`.bg-brand-700{background-color:var(--color-brand-700)}`), so a class on a
+ * screen's root re-points those variables for that subtree only.
+ *
+ *   .skin-v1 — the 32 compositions authored before the 9.5 design pass:
+ *              Inter, Tailwind's built-in indigo/violet/amber/emerald/slate
+ *              scales, the standard radii. Its palette needs nothing added:
+ *              those scales ship with Tailwind. Only the typefaces are named.
+ *   .skin-v2 — the 13 later compositions: Fira Sans / Fira Code, the brand
+ *              (sky) scale — byte-identical to `--color-brand-*` — and
+ *              `rounded-card` / `rounded-elem`, which `@theme` now defines.
+ *
+ * `font-family` is set directly as well as through the variables: the app's base
+ * layer puts `font-family` on `body`, and inheritance does not re-read a
+ * variable, so a scope that only redefined `--font-sans` would leave its text in
+ * the parent's face.
+ *
+ * The `.material-symbols-outlined` block is the compositions' own <style> body
+ * (their documents pair it with Google's stylesheet; we ship that stylesheet's
+ * class from the vendored `styles/fonts.css` and layer these axis defaults on
+ * top, exactly as they do).
+ */
+
+/* The compositions' own icon-class rules — verbatim from their <style> blocks. */
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.material-symbols-outlined.fill-icon {
+  font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+/*
+ * v1 (Inter + Tailwind's built-in accent scales). The four font roles the
+ * compositions' inline `tailwind.config` declares all point at Inter.
+ */
+.skin-v1 {
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-headline: "Inter", sans-serif;
+  --font-display: "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-label: "Inter", sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/*
+ * v2 (Fira Sans/Code + the brand scale). The compositions' inline config names
+ * only `sans` and `mono`; the four v1 role names are mapped here so a v2 screen
+ * that reaches for one still resolves to the family that document loads.
+ */
+.skin-v2 {
+  --font-sans: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Fira Code", ui-monospace, monospace;
+  --font-headline: "Fira Sans", sans-serif;
+  --font-display: "Fira Sans", sans-serif;
+  --font-body: "Fira Sans", sans-serif;
+  --font-label: "Fira Sans", sans-serif;
+  font-family: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
+}

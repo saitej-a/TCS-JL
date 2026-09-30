@@ -1,28 +1,47 @@
 /**
- * The §7.10 notification center (9.4 Task 7), rebuilt to the
- * `notification_center` composition (Phase 12) over 6.2's API — zero backend
- * work. Structure from the composition: page header with unread pill, filter
- * tab bar with live counts, a bordered list card, the "all caught up" card,
- * and the 320px rail (My Status Summary + preferences pointer) via RailPortal.
+ * The §7.10 notification center, rebuilt to the `notification_center`
+ * composition's markup **verbatim** (Phase 14 D-01/D-02) over 6.2's API.
  *
- * Behaviour contract (§7.10) — unchanged:
- * - Header carries the live unread count; `Mark All as Read` is disabled at 0
- *   unread (a real disabled state, not a fake one).
- * - Clicking a row marks it read **first**, then navigates — and a failed mark
- *   leaves nothing optimistically flipped: the row returns to unread and the
- *   user is not sent to a target the server never acknowledged.
- * - The unread number is shared with the AppShell bell through
- *   `api/unreadStore`, so the badge follows an optimistic action immediately.
+ * What is the document's: the breadcrumb row with its status pill, the page
+ * header with the unread pill, the tab bar with its type filter group, the list
+ * card and its five row treatments (see `NotificationRow`), the "all caught up"
+ * card, and the 320px rail's three cards — every class and every nesting level.
  *
- * Divergences held (09.5 VERIFICATION §3): the rail's summary uses the real
- * dashboard payload (no invented Role Track / Location / BGV rows); the
- * preferences card points at the real per-alert settings surface rather than
- * the composition's invented email-digest toggle.
+ * What is the product's — the four rules this file actually implements:
+ *
+ * 1. **Real values.** A slot with a source gets the source: the unread count, the
+ *    tab counts, each row's headline/message/time, the status and the pulse
+ *    counters (the analytics overview's `total_candidates`,
+ *    `joining_letters_reported`, `joined_reported`, with its suppression state
+ *    handled as the contract shapes it).
+ * 2. **Awaiting slots (D-02).** A slot whose concept does not exist in the
+ *    product keeps the document's frame and prints an em dash with
+ *    `data-awaiting="<name>"`: the status card's Role Track / Location Pref /
+ *    BGV Verification / Offer Date rows and its "since" line, the preferences
+ *    card's email-digest row, and the pulse card's "Confirmed" counter (the
+ *    overview publishes no such figure). Every one is listed in
+ *    RECONCILIATION-14.md; none is filled with the mockup's numbers.
+ * 3. **Controls without a backing behaviour are kept disabled**, not deleted and
+ *    not faked: the type filter group ("Replies / Upvotes / Announcements") — the
+ *    API filters by read state, not by type.
+ * 4. **Behaviour stays React (§7.10):** a row click marks read *first* and only
+ *    then navigates; a failed mark restores the row and refuses to navigate; the
+ *    unread number is shared with the shell's bell through `api/unreadStore`.
+ *
+ * Recorded deviations from the document (all in RECONCILIATION-14.md): the
+ * `pl-60` sidebar offset belongs to the shell, which owns the chrome; the
+ * "Live Sync Active" pill reports the real connectivity state instead of claiming
+ * a realtime sync the product does not have; the breadcrumb is a real link; a
+ * reply row's second action ("Reply") exists in the mockup but has no
+ * per-notification reply affordance, so it is dropped; pagination is the app's
+ * (the document ships five fixed rows); loading/error/empty states keep the app's
+ * treatments (`error_and_empty_route_states` is Task 8's).
  */
 import { useEffect, useState } from "react";
-import { CheckCircle2, Link2, Settings2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
+import { getAnalyticsOverview, type AnalyticsOverview } from "@/api/analytics";
+import { getDashboard } from "@/api/dashboard";
 import {
   listNotifications,
   markAllNotificationsRead,
@@ -31,12 +50,12 @@ import {
 import { getUnreadCount, setUnreadCount, useUnreadCount } from "@/api/unreadStore";
 import { EmptyState } from "@/components/EmptyState";
 import { NotificationRow } from "@/components/NotificationRow";
-import { RailStatusSummary } from "@/components/RailStatusSummary";
 import { Skeleton } from "@/components/Skeleton";
 import { useToast } from "@/components/Toast";
 import { RailPortal } from "@/layouts/AppShell";
-import { getDashboard } from "@/api/dashboard";
-import { TYPOGRAPHY } from "@/theme/tokens";
+import { isOnline, subscribeConnectivity } from "@/pwa/registerSW";
+import { STATUS_LABELS } from "@/theme/badges";
+import { IN_APP_ALERT_GROUPS } from "@/theme/notificationRows";
 import type { DashboardPayload } from "@/api/dashboard";
 import type { NotificationItem } from "@/types/notifications";
 
@@ -45,13 +64,13 @@ const PAGE_SIZE = 20;
 
 type NotificationTab = "all" | "unread";
 
-const CARD =
-  "rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-800";
-
 const TAB_COPY = {
   all: "All Notifications",
   unread: "Unread Only",
 } as const;
+
+/** The document's type filter group, kept visible and honestly inert (D-02). */
+const TYPE_FILTERS = ["All", "Replies", "Upvotes", "Announcements"] as const;
 
 /** §7.10: post-anchored notifications deep-link; everything else lands home. */
 export function notificationTarget(item: NotificationItem): string {
@@ -59,6 +78,19 @@ export function notificationTarget(item: NotificationItem): string {
   return item.comment_id === null
     ? `/community/posts/${item.post_id}`
     : `/community/posts/${item.post_id}#comment-${item.comment_id}`;
+}
+
+/**
+ * A slot the product cannot fill (D-02): the document's element keeps its place
+ * and prints an em dash, so the gap is visible and enumerated rather than papered
+ * over with the mockup's value.
+ */
+function Awaiting({ slot }: { slot: string }): React.ReactElement {
+  return (
+    <span data-awaiting={slot} title="Not tracked by this product">
+      —
+    </span>
+  );
 }
 
 export function NotificationsPage(): React.ReactElement {
@@ -73,6 +105,10 @@ export function NotificationsPage(): React.ReactElement {
   const [failed, setFailed] = useState(false);
   const [markingAll, setMarkingAll] = useState(false);
   const [dashboard, setDashboard] = useState<DashboardPayload | null>(null);
+  const [pulse, setPulse] = useState<AnalyticsOverview | null>(null);
+  const [online, setOnline] = useState<boolean>(() => isOnline());
+
+  useEffect(() => subscribeConnectivity(setOnline), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -98,9 +134,8 @@ export function NotificationsPage(): React.ReactElement {
     };
   }, [tab, page]);
 
-  // The rail's status summary reads the same payload /dashboard does (one
-  // extra request, same as the composition's right column demands). Failure
-  // is non-fatal: the card renders its skeletons.
+  // The rail's status card reads the same payload /dashboard does. Failure is
+  // non-fatal: the card falls back to its awaiting state.
   useEffect(() => {
     let cancelled = false;
     getDashboard()
@@ -115,6 +150,22 @@ export function NotificationsPage(): React.ReactElement {
     };
   }, []);
 
+  // The pulse card is the document's own community widget; its counters come
+  // from the public analytics overview (which may suppress them wholesale).
+  useEffect(() => {
+    let cancelled = false;
+    getAnalyticsOverview()
+      .then((payload) => {
+        if (!cancelled) setPulse(payload);
+      })
+      .catch(() => {
+        if (!cancelled) setPulse(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   function updateItem(id: string, isRead: boolean): void {
     setItems((current) =>
       current === null
@@ -123,9 +174,9 @@ export function NotificationsPage(): React.ReactElement {
     );
   }
 
-  async function handleSelect(item: NotificationItem): Promise<void> {
-    const wasUnread = !item.is_read;
-    if (wasUnread) {
+  /** §7.10's read-then-navigate, shared by the row click and its action button. */
+  async function markReadThenGo(item: NotificationItem, target: string): Promise<void> {
+    if (!item.is_read) {
       // Optimistic flip so the marker and the bell respond to the click.
       updateItem(item.id, true);
       setUnreadCount(getUnreadCount() - 1);
@@ -140,7 +191,21 @@ export function NotificationsPage(): React.ReactElement {
         return;
       }
     }
-    navigate(notificationTarget(item));
+    navigate(target);
+  }
+
+  async function handleSelect(item: NotificationItem): Promise<void> {
+    await markReadThenGo(item, notificationTarget(item));
+  }
+
+  /**
+   * The composition's per-kind action. Its label names the destination: a
+   * reminder's "Update My Status" belongs on the timeline (§7.10's row click
+   * still lands where `notificationTarget` says).
+   */
+  async function handleAction(item: NotificationItem): Promise<void> {
+    const target = item.type === "TIMELINE_REMINDER" ? "/timeline" : notificationTarget(item);
+    await markReadThenGo(item, target);
   }
 
   async function handleMarkAll(): Promise<void> {
@@ -173,202 +238,459 @@ export function NotificationsPage(): React.ReactElement {
   }
 
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const status = dashboard?.profile.current_status ?? null;
+  const suppressed = pulse !== null && pulse.suppressed;
 
   return (
-    <main className="mx-auto w-full max-w-4xl space-y-4 p-4 lg:p-8">
-      {/* Breadcrumb line (the composition's context row). */}
-      <p className={`${TYPOGRAPHY.caption} flex items-center gap-1.5`}>
-        <Link to="/dashboard" className="hover:underline">
-          Candidate Portal
-        </Link>
-        <span aria-hidden="true">/</span>
-        <span className="font-semibold text-slate-700 dark:text-slate-200">
-          Notifications &amp; Alerts
-        </span>
-      </p>
-
-      {/* Page header: title + unread pill + the secondary action. */}
-      <header className="flex flex-col gap-4 border-b border-slate-200 pb-6 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1
-            className={`${TYPOGRAPHY.pageTitle} flex flex-wrap items-center gap-2.5 text-slate-900 dark:text-white`}
-          >
-            <span>NOTIFICATIONS</span>
-            <span
-              data-testid="unread-pill"
-              className="rounded-md bg-brand-100 px-2 py-0.5 text-xs font-semibold tracking-normal text-brand-800 dark:bg-brand-900/60 dark:text-brand-200"
-            >
-              {unreadCount} UNREAD
-            </span>
-          </h1>
-          <p className={`${TYPOGRAPHY.caption} mt-1`}>
-            Stay updated with community replies, milestone reactions, and cohort announcements.
-          </p>
-        </div>
-        <button
-          type="button"
-          data-testid="mark-all-read"
-          onClick={handleMarkAll}
-          disabled={unreadCount === 0 || markingAll}
-          className="inline-flex min-h-[40px] items-center gap-1.5 self-start rounded-lg border border-slate-300 bg-white px-3.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-        >
-          <CheckCircle2 aria-hidden="true" className="h-4 w-4 text-slate-400" />
-          Mark All as Read
-        </button>
-      </header>
-
-      {/* Filter tab bar with live counts (the composition's tabs row). */}
-      <div className="flex flex-col justify-between gap-3 border-b border-slate-200 pb-2 dark:border-slate-800 sm:flex-row sm:items-center">
-        <div role="radiogroup" aria-label="Notification filter" className="flex items-center gap-6">
-          {(Object.keys(TAB_COPY) as NotificationTab[]).map((value) => (
-            <button
-              key={value}
-              type="button"
-              role="radio"
-              aria-checked={tab === value}
-              onClick={() => {
-                setTab(value);
-                setPage(1);
-              }}
-              className={
-                tab === value
-                  ? "-mb-px border-b-2 border-brand-600 pb-2.5 font-bold text-brand-700 dark:text-brand-400"
-                  : "-mb-px border-b-2 border-transparent pb-2.5 font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
-              }
-            >
-              {value === "unread" ? (
-                <>
-                  {TAB_COPY[value]}
-                  <span className="ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-brand-600 px-1 text-[10px] font-bold leading-4 text-white">
-                    {unreadCount}
-                  </span>
-                </>
-              ) : (
-                TAB_COPY[value]
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <section aria-label="Notifications" className={`${CARD} overflow-hidden`}>
-        {failed ? (
-          <div className="p-4">
-            <p
-              role="alert"
-              className="rounded-lg border border-rose-200/60 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
-            >
-              Your notifications could not be loaded.
-            </p>
-            <button
-              type="button"
-              onClick={() => setPage((current) => current)}
-              className="mt-3 text-sm font-medium text-brand-700 hover:text-brand-700 dark:text-brand-300"
-            >
-              Try again
-            </button>
-          </div>
-        ) : items === null ? (
-          <div className="space-y-3 p-4" aria-busy="true">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-          </div>
-        ) : items.length === 0 ? (
-          <EmptyState
-            headline="You're all caught up!"
-            support="No new notifications at this time."
-          />
-        ) : (
-          <ul data-testid="notification-list" className="divide-y divide-slate-100 dark:divide-slate-800">
-            {items.map((item) => (
-              <NotificationRow key={item.id} item={item} onSelect={handleSelect} />
-            ))}
-          </ul>
-        )}
-      </section>
-
-      {/* The composition's caught-up helper card (always rendered, mirroring it). */}
-      <div className={`${CARD} flex flex-col items-center justify-center gap-2 p-6 text-center shadow-sm`}>
-        <span
-          aria-hidden="true"
-          className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-400 dark:border-slate-700 dark:bg-slate-900"
-        >
-          <CheckCircle2 className="h-6 w-6" strokeWidth={1.5} />
-        </span>
-        <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-          You're all caught up!
-        </h3>
-        <p className={`${TYPOGRAPHY.caption} max-w-sm`}>
-          No older unread alerts. Enable push or in-app alerts in preferences to get real-time
-          batch pings.
-        </p>
-      </div>
-
-      {items !== null && total > 0 && (
-        <nav
-          aria-label="Notification pages"
-          className="flex items-center justify-between gap-3 text-sm text-slate-600 dark:text-slate-300"
-        >
-          <button
-            type="button"
-            onClick={() => setPage((current) => Math.max(1, current - 1))}
-            disabled={page <= 1}
-            className="rounded-lg border border-slate-300 px-3 py-1.5 disabled:opacity-40 dark:border-slate-600"
-          >
-            ← Previous
-          </button>
-          <span data-testid="page-label">
-            Page {page} of {pageCount}
-          </span>
-          <button
-            type="button"
-            onClick={() => setPage((current) => current + 1)}
-            disabled={!hasNext}
-            className="rounded-lg border border-slate-300 px-3 py-1.5 disabled:opacity-40 dark:border-slate-600"
-          >
-            Next →
-          </button>
-        </nav>
-      )}
-
-      <p className={`${TYPOGRAPHY.caption}`}>
-        Notifications are generated for your community activity.{" "}
-        <Link to="/settings" className="underline">
-          Manage what you receive
-        </Link>
-        .
-      </p>
-
-      {/* §5.2's 320px rail — the composition's right column, honest data only. */}
-      <RailPortal>
-        <div className="space-y-5">
-          <RailStatusSummary
-            status={dashboard?.profile.current_status ?? null}
-            completion={dashboard?.profile.completion_percentage ?? null}
-            unread={unreadCount}
-          />
-          <div className={`${CARD} space-y-3 p-4 shadow-sm`}>
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-700">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Notification Preferences
-              </h2>
-              <Settings2 aria-hidden="true" className="h-4 w-4 text-slate-400" />
-            </div>
-            <p className={`${TYPOGRAPHY.caption}`}>
-              Per-alert in-app and push preferences live in Settings — the composition's
-              email-digest toggle is not tracked by the API.
-            </p>
-            <Link
-              to="/settings"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-brand-700 hover:underline dark:text-brand-400"
-            >
-              Manage Alert Preferences
-              <Link2 aria-hidden="true" className="h-3 w-3" />
+    <main className="skin-v1 flex-1 w-full pb-12 bg-slate-50 font-body text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-800 dark:bg-slate-950 dark:text-slate-200">
+      <div className="max-w-7xl mx-auto px-8 pt-7">
+        {/* Top Breadcrumb & Support Status */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+            <Link to="/dashboard" className="hover:text-indigo-600 cursor-pointer">
+              Candidate Portal
             </Link>
+            <span className="text-slate-300">/</span>
+            <span className="text-slate-900 font-semibold dark:text-slate-100">
+              Notifications &amp; Alerts
+            </span>
+          </div>
+          {/* The document claims a realtime sync; the product's honest status is
+              its connectivity, which is what this pill reports (recorded). */}
+          <div
+            data-testid="sync-status"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium"
+          >
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>{online ? "Online" : "Offline"}</span>
           </div>
         </div>
-      </RailPortal>
+
+        {/* Page Header: Title + Secondary Action */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-200 gap-4 dark:border-slate-800">
+          <div>
+            <h1 className="font-headline text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5 dark:text-white">
+              <span>NOTIFICATIONS</span>
+              <span
+                data-testid="unread-pill"
+                className="text-xs font-semibold px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-md tracking-normal"
+              >
+                {unreadCount} UNREAD
+              </span>
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 dark:text-slate-400">
+              Stay updated with community replies, milestone reactions, and cohort announcements.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              data-testid="mark-all-read"
+              onClick={handleMarkAll}
+              disabled={unreadCount === 0 || markingAll}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-xs transition-colors active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200"
+            >
+              <span
+                className="material-symbols-outlined text-[16px] text-slate-500"
+                data-icon="done_all"
+                aria-hidden="true"
+              >
+                done_all
+              </span>
+              <span>Mark All as Read</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Layout Grid (Main 4xl Column + Right Rail 80w) */}
+        <div className="mt-6 flex flex-col lg:flex-row gap-8 items-start">
+          <section className="flex-1 w-full max-w-4xl space-y-4">
+            {/* Notification Filter Tabs Bar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-2 dark:border-slate-800">
+              <div role="tablist" aria-label="Notification filter" className="flex items-center gap-6 text-sm">
+                {(Object.keys(TAB_COPY) as NotificationTab[]).map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    role="tab"
+                    aria-selected={tab === value}
+                    onClick={() => {
+                      setTab(value);
+                      setPage(1);
+                    }}
+                    className={
+                      tab === value
+                        ? "pb-2.5 font-bold text-indigo-600 border-b-2 border-indigo-600 flex items-center gap-1.5 focus:outline-none"
+                        : "pb-2.5 font-medium text-slate-500 hover:text-slate-800 flex items-center gap-2 transition-colors focus:outline-none dark:text-slate-400"
+                    }
+                  >
+                    <span>{TAB_COPY[value]}</span>
+                    {value === "all" ? (
+                      <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">
+                        {total}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-indigo-600 text-white">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+              {/* The document's type filter group: the API filters by read
+                  state, so these stay visible and disabled rather than faked. */}
+              <div
+                data-awaiting="filters.by_type"
+                className="flex items-center gap-2 text-xs text-slate-500"
+              >
+                <span className="font-medium text-slate-400">Filter by:</span>
+                <div className="flex items-center bg-slate-100 p-0.5 rounded-lg">
+                  {TYPE_FILTERS.map((label, index) => (
+                    <button
+                      key={label}
+                      type="button"
+                      disabled
+                      aria-disabled="true"
+                      className={
+                        index === 0
+                          ? "px-2.5 py-1 rounded-md bg-white text-slate-900 font-medium shadow-2xs disabled:cursor-not-allowed"
+                          : "px-2.5 py-1 rounded-md text-slate-600 hover:text-slate-900 font-medium disabled:cursor-not-allowed"
+                      }
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Notifications List Card */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100 dark:bg-slate-900 dark:border-slate-800 dark:divide-slate-800">
+              {failed ? (
+                <div className="p-4">
+                  <p
+                    role="alert"
+                    className="text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200 px-3 py-2 rounded-lg dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900"
+                  >
+                    Your notifications could not be loaded.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setPage((current) => current)}
+                    className="mt-3 text-xs font-semibold text-indigo-600 hover:text-indigo-700"
+                  >
+                    Try again
+                  </button>
+                </div>
+              ) : items === null ? (
+                <div className="space-y-3 p-4" aria-busy="true">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                </div>
+              ) : items.length === 0 ? (
+                <div className="p-4">
+                  <EmptyState
+                    headline="You're all caught up!"
+                    support="No new notifications at this time."
+                  />
+                </div>
+              ) : (
+                items.map((item) => (
+                  <NotificationRow
+                    key={item.id}
+                    item={item}
+                    onSelect={handleSelect}
+                    onAction={handleAction}
+                  />
+                ))
+              )}
+            </div>
+
+            {/* Bottom Helper Note / Caught Up Preview Box */}
+            <div className="p-6 bg-white rounded-xl border border-slate-200 text-center shadow-xs flex flex-col items-center justify-center space-y-2 dark:bg-slate-900 dark:border-slate-800">
+              <div className="h-12 w-12 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 dark:bg-slate-800 dark:border-slate-700">
+                <span
+                  className="material-symbols-outlined text-[24px]"
+                  data-icon="task_alt"
+                  aria-hidden="true"
+                >
+                  task_alt
+                </span>
+              </div>
+              <h3 className="font-headline text-sm font-semibold text-slate-800 dark:text-slate-100">
+                You're all caught up!
+              </h3>
+              <p className="text-xs text-slate-500 max-w-sm dark:text-slate-400">
+                No older unread alerts. Enable push or instant email notifications in preferences
+                to get real-time batch pings.
+              </p>
+            </div>
+
+            {/* Pagination is the app's: the document draws five fixed rows. */}
+            {items !== null && total > 0 && (
+              <nav
+                aria-label="Notification pages"
+                className="flex items-center justify-between gap-3 text-xs text-slate-600 dark:text-slate-300"
+              >
+                <button
+                  type="button"
+                  onClick={() => setPage((current) => Math.max(1, current - 1))}
+                  disabled={page <= 1}
+                  className="rounded-lg border border-slate-300 px-3 py-1.5 font-semibold disabled:opacity-40 dark:border-slate-600"
+                >
+                  ← Previous
+                </button>
+                <span data-testid="page-label">
+                  Page {page} of {pageCount}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPage((current) => current + 1)}
+                  disabled={!hasNext}
+                  className="rounded-lg border border-slate-300 px-3 py-1.5 font-semibold disabled:opacity-40 dark:border-slate-600"
+                >
+                  Next →
+                </button>
+              </nav>
+            )}
+          </section>
+
+          {/* Right Rail Sidebar (w-80) — the shell's 320px slot (RailPortal). */}
+          <RailPortal>
+            <aside className="w-full lg:w-80 space-y-5 flex-shrink-0">
+              {/* Card 1: My Status Summary */}
+              <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4 dark:bg-slate-900 dark:border-slate-800">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+                  <h2 className="font-headline text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    My Status Summary
+                  </h2>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                    {status === null ? <Awaiting slot="profile.status" /> : STATUS_LABELS[status].toUpperCase()}
+                  </span>
+                </div>
+                {/* Current Milestone Pill */}
+                <div className="bg-slate-50 rounded-lg p-3 border border-slate-200 dark:bg-slate-800/60 dark:border-slate-700">
+                  <div className="text-[11px] font-medium text-slate-400 uppercase">
+                    Current Stage
+                  </div>
+                  <div className="text-sm font-bold text-slate-900 mt-0.5 dark:text-white">
+                    {status === null ? (
+                      <Awaiting slot="profile.status" />
+                    ) : (
+                      STATUS_LABELS[status].toUpperCase()
+                    )}
+                  </div>
+                  <div className="text-xs text-slate-500 mt-1 flex items-center gap-1 dark:text-slate-400">
+                    <span
+                      className="material-symbols-outlined text-[14px] text-slate-400"
+                      data-icon="calendar_today"
+                      aria-hidden="true"
+                    >
+                      calendar_today
+                    </span>
+                    {/* The dashboard payload publishes no status-since date
+                        (its `latest_event` is the last timeline event, not the
+                        stage's start), so the line is an awaiting slot. */}
+                    <span>
+                      Since <Awaiting slot="profile.status_since" /> •{" "}
+                      <strong>
+                        <Awaiting slot="profile.days_pending" />
+                      </strong>
+                    </span>
+                  </div>
+                </div>
+                {/* Meta details list — the document's own rows, none of which
+                    the candidate model carries (09.5 VERIFICATION §3). */}
+                <dl className="space-y-2.5 text-xs">
+                  <div className="flex justify-between items-center">
+                    <dt className="text-slate-500 dark:text-slate-400">Role Track:</dt>
+                    <dd className="font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">
+                      <Awaiting slot="profile.role_track" />
+                    </dd>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <dt className="text-slate-500 dark:text-slate-400">Location Pref:</dt>
+                    <dd className="font-medium text-slate-800 dark:text-slate-200">
+                      <Awaiting slot="profile.location_preference" />
+                    </dd>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <dt className="text-slate-500 dark:text-slate-400">BGV Verification:</dt>
+                    <dd className="font-semibold text-emerald-700 flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded">
+                      <span
+                        className="material-symbols-outlined text-[14px]"
+                        data-icon="check_circle"
+                        aria-hidden="true"
+                      >
+                        check_circle
+                      </span>
+                      <Awaiting slot="profile.bgv_status" />
+                    </dd>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <dt className="text-slate-500 dark:text-slate-400">Offer Date:</dt>
+                    <dd className="font-medium text-slate-800 dark:text-slate-200">
+                      <Awaiting slot="profile.offer_date" />
+                    </dd>
+                  </div>
+                </dl>
+                {/* Status Action CTA */}
+                <div className="pt-2">
+                  <Link
+                    to="/timeline"
+                    className="w-full flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition-colors"
+                  >
+                    <span>Update my status</span>
+                    <span
+                      className="material-symbols-outlined text-[14px]"
+                      data-icon="arrow_forward"
+                      aria-hidden="true"
+                    >
+                      arrow_forward
+                    </span>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Card 2: Notification Preferences */}
+              <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4 dark:bg-slate-900 dark:border-slate-800">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+                  <h2 className="font-headline text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    Notification Preferences
+                  </h2>
+                  <span
+                    className="material-symbols-outlined text-slate-400 text-[18px]"
+                    data-icon="tune"
+                    aria-hidden="true"
+                  >
+                    tune
+                  </span>
+                </div>
+                {/* Quick Toggles — the digest exists in the mockup only: the API
+                    tracks the six push flags, and in-app delivery is not
+                    user-controllable (6.2 D13/D14). */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold text-slate-800 dark:text-slate-100">
+                        Email Digest
+                      </p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                        <Awaiting slot="preferences.email_digest" />
+                      </p>
+                    </div>
+                    {/* Active Toggle Switch */}
+                    <div
+                      data-awaiting="preferences.email_digest"
+                      aria-disabled="true"
+                      className="relative inline-flex h-5 w-9 shrink-0 cursor-not-allowed rounded-full border-2 border-transparent bg-slate-300 transition-colors duration-200 ease-in-out focus:outline-none opacity-60"
+                    >
+                      <span className="translate-x-0 pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" />
+                    </div>
+                  </div>
+                  {/* In-app alerts checklist */}
+                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <p className="text-xs font-medium text-slate-700 mb-2 dark:text-slate-300">
+                      In-App Alerts Active:
+                    </p>
+                    <ul className="space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
+                      {IN_APP_ALERT_GROUPS.map((group) => (
+                        <li key={group} className="flex items-center gap-2">
+                          <span
+                            className="material-symbols-outlined text-[15px] text-emerald-600"
+                            data-icon="check"
+                            aria-hidden="true"
+                          >
+                            check
+                          </span>
+                          <span>{group}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div className="pt-1">
+                  <Link
+                    to="/settings"
+                    className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold inline-flex items-center gap-1 transition-colors"
+                  >
+                    <span>Manage Alert Preferences</span>
+                    <span
+                      className="material-symbols-outlined text-[13px]"
+                      data-icon="arrow_forward"
+                      aria-hidden="true"
+                    >
+                      arrow_forward
+                    </span>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Card 3: Community Pulse */}
+              <div className="bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-xl p-5 shadow-sm space-y-4">
+                <div className="flex items-center justify-between border-b border-indigo-800/70 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+                    <h2 className="font-headline text-xs font-bold uppercase tracking-wider text-indigo-200">
+                      Community Pulse
+                    </h2>
+                  </div>
+                  <span className="text-[10px] text-indigo-300 font-mono">LIVE SYNC</span>
+                </div>
+                {/* Pulse Metrics Grid — the analytics overview's real figures;
+                    a suppressed payload prints the server's own message instead
+                    of numbers, and "Confirmed" has no counterpart at all. */}
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <div className="bg-white/5 rounded-lg p-2.5 border border-white/10">
+                    <div className="text-[10px] font-medium text-indigo-300">
+                      Candidates Tracked
+                    </div>
+                    <div className="text-lg font-bold text-white mt-0.5">
+                      {pulse === null || suppressed ? (
+                        <Awaiting slot="pulse.total_candidates" />
+                      ) : (
+                        pulse.total_candidates
+                      )}
+                    </div>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-2.5 border border-white/10">
+                    <div className="text-[10px] font-medium text-sky-300">Received JL</div>
+                    <div className="text-lg font-bold text-sky-400 mt-0.5">
+                      {pulse === null || suppressed ? (
+                        <Awaiting slot="pulse.joining_letters_reported" />
+                      ) : (
+                        pulse.joining_letters_reported
+                      )}
+                    </div>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-2.5 border border-white/10">
+                    <div className="text-[10px] font-medium text-amber-300">Confirmed</div>
+                    <div className="text-lg font-bold text-amber-400 mt-0.5">
+                      <Awaiting slot="pulse.confirmed" />
+                    </div>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-2.5 border border-white/10">
+                    <div className="text-[10px] font-medium text-emerald-300">Joined TCS</div>
+                    <div className="text-lg font-bold text-emerald-400 mt-0.5">
+                      {pulse === null || suppressed ? (
+                        <Awaiting slot="pulse.joined_reported" />
+                      ) : (
+                        pulse.joined_reported
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <p className="text-[11px] text-indigo-200/80 leading-relaxed pt-1">
+                  {pulse !== null && suppressed
+                    ? pulse.message
+                    : "Data aggregates crowd-verified updates across 2025 Ninja, Digital, and Prime engineering batches."}
+                </p>
+              </div>
+            </aside>
+          </RailPortal>
+        </div>
+      </div>
     </main>
   );
 }

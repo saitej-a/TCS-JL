@@ -1,4 +1,8 @@
 @import "tailwindcss";
+/* Phase 14's literal-markup layer: the vendored faces the Stitch compositions
+   name (no CDN request) and the per-screen `.skin-v1` / `.skin-v2` scopes. */
+@import "./styles/fonts.css";
+@import "./styles/stitch-scopes.css";
 
 /* Class-strategy dark mode (D5/05 §4.2): the `dark` root class drives the
    variant, and ThemeContext toggles it on <html>. */
@@ -28,6 +32,18 @@
     Roboto, Helvetica, Arial, sans-serif;
   --font-mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco,
     Consolas, monospace;
+
+  /* Phase 14 D-03: the type roles the compositions' inline configs declare
+     (`font-headline`/`display`/`body`/`label` — Inter in the v1 family, Fira in
+     v2) and the two radii the v2 family uses. Defaults are the v2 family, so an
+     unported screen keeps the vocabulary it has today; `.skin-v1` re-points the
+     roles for a v1 screen. */
+  --font-headline: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
+  --radius-card: 0.75rem;
+  --radius-elem: 0.5rem;
 
   /* 05 §4.2 semantic aliases — light values. Utilities read these variables,
      so `bg-background` / `border-default` flip with the theme below while
