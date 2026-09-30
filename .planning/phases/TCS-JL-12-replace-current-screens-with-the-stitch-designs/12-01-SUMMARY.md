@@ -237,7 +237,7 @@ Each task was committed atomically:
   brought onto the composition vocabulary
 - `frontend/scripts/contrast-audit.mjs` - audits the tinted chip/pill pairs the rebuild added
 - `frontend/package.json` / `package-lock.json` - `lucide-react` ^1.48.0
-- `.planning/phases/…-12-…/RECONCILIATION.md` - the phase's evidence artifact
+- `.planning/phases/TCS-JL-12-replace-current-screens-with-the-stitch-designs/RECONCILIATION.md` - the phase's evidence artifact
 
 ## Decisions Made
 

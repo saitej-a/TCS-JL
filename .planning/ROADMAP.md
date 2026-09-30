@@ -387,7 +387,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 9. Frontend Single Page Application (React + Tailwind) | 0/4 | Not started | - |
 | 10. Security Audits, E2E Testing, Seed Data & Launch Readiness | 0/2 | Not started | - |
 | 11. Unlimited nested comment replies | 1/1 | Complete    | 2026-09-29 |
-| 12. Replace current screens with the Stitch designs | 0/1 | Planned | - |
+| 12. Replace current screens with the Stitch designs | 1/1 | Complete    | 2026-09-30 |
 
 ### Phase 11: Unlimited nested comment replies
 
@@ -419,7 +419,7 @@ Plans:
 Two constraints carried into the work: (1) where a composition encodes mock fiction the backend never shipped (9.5's divergence ledger — e.g. profile categories, identity fields), the screen adopts the composition's **layout** but keeps the honest data contract, and the divergence stays recorded; (2) everything this phase moves stays under the v2 token system and passes the same contrast/accessibility gates (05 §4.1.1, the contrast-audit script). Also decided at planning: whether the 47 compositions are committed as the reference library or consumed untracked, and how the desktop/mobile variants map onto the responsive build.
 **Requirements**: TBD
 **Depends on:** Phase 11
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
 

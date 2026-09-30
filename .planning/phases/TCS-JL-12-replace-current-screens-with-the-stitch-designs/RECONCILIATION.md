@@ -17,11 +17,19 @@ same task (G-5).
 ## Icon mapping table
 
 Every Material-Symbols glyph the 45 compositions reference (via `data-icon="…"` or the
-`material-symbols-outlined` span body) is listed below — 96 distinct names, each mapped to the
+`material-symbols-outlined` span body) is listed below — 127 distinct names, each mapped to the
 lucide component that replaces it (D-05) and flagged by whether the rebuilt source actually
 imports it. `composition-only` rows are glyphs that exist only in mockup affordances this app
 does not ship (search bars, share/export buttons, forecast widgets, hub/sensor telemetry); they
 are enumerated so no glyph goes unmapped, and deliberately not rendered.
+
+The main table holds the 96 glyphs reachable through the two forms T14 step 3 names
+(`data-icon="…"`, and spans whose class list is exactly `material-symbols-outlined`); the audit
+re-run in the verification pass found **31 more glyph names carried inside spans that add a
+size/colour modifier class** (`material-symbols-outlined text-[14px]`, `… text-amber-600
+text-xl`), which the plan's `data-icon` grep cannot see. Those are listed in the extension
+below — same contract, same mapping — so coverage is over the union of both mechanisms
+(93 `data-icon` names + 127 span-body names → 127 distinct, all mapped).
 
 | Glyph | lucide component | Status |
 |---|---|---|
@@ -121,6 +129,53 @@ are enumerated so no glyph goes unmapped, and deliberately not rendered.
 | verified | BadgeCheck | composition-only (not adopted) |
 | verified_user | ShieldCheck | adopted |
 | visibility | Eye | composition-only (not adopted) |
+
+### Extension — glyphs carried in modifier-class spans (found in the verification pass)
+
+These 31 names live in spans whose class list carries an extra utility
+(`material-symbols-outlined text-[14px]`, `… text-amber-600 text-xl mt-0.5`, some with a
+`font-variation-settings` style). They were invisible to the plan's `data-icon="…"` extraction
+and to the bare-class span scan; the coverage re-run below enumerates them so the table and the
+library agree name-for-name. The `span` column names a composition folder where the glyph
+appears (not exhaustive — several appear in more than one screen).
+
+| Glyph | lucide component | Status | Seen in |
+|---|---|---|---|
+| arrow_outward | ArrowUpRight | composition-only (not adopted) | community_discussions |
+| cell_tower | RadioTower | composition-only (not adopted) | community_analytics_trends |
+| chat | MessagesSquare | adopted | mobile_dashboard |
+| checklist | ListChecks | composition-only (not adopted) | personal_recruitment_timeline_1 |
+| cloud_queue | Cloud | composition-only (not adopted) | pwa_states…offline_1 |
+| database | Database | composition-only (not adopted) | pwa_states…offline_2 |
+| delete | Trash2 | composition-only (not adopted) | personal_recruitment_timeline_2 |
+| devices | MonitorSmartphone | composition-only (not adopted) | pwa_states…offline_1 |
+| edit_note | Pencil | adopted | create_community_discussion_post_modal, personal_recruitment_timeline_2 |
+| encrypted | LockKeyhole | composition-only (not adopted) | community_analytics_trends |
+| event_upcoming | Hourglass | adopted | add_edit_milestone_modal_1 / _2 |
+| file_download | Download | adopted | community_analytics_trends |
+| filter_alt_off | FilterX | composition-only (not adopted) | community_discussions_empty_filtered_state |
+| fingerprint | Fingerprint | composition-only (not adopted) | community_discussions_empty_filtered_state |
+| forward_to_inbox | Forward | composition-only (not adopted) | marketing_landing_page |
+| history | History | composition-only (not adopted) | pwa_states…offline_2 |
+| home | LayoutDashboard | adopted | mobile_dashboard, mobile_community_feed |
+| hourglass_empty | Hourglass | adopted | personal_recruitment_timeline_2 |
+| install_mobile | Smartphone | adopted | pwa_states…offline_2 (InstallPrompt) |
+| light_mode | Sun | composition-only (not adopted) | pwa_states…offline_2 |
+| markdown | FileCode | composition-only (not adopted) | create_community_discussion_post_modal |
+| mode_comment | MessageSquare | adopted | mobile_community_discussions_feed |
+| near_me | Navigation | composition-only (not adopted) | pwa_states…offline_2 |
+| notification_add | BellPlus | composition-only (not adopted) | pwa_states…offline_2 |
+| post_add | FilePlus2 | composition-only (not adopted) | personal_recruitment_timeline_1 |
+| route | Route | adopted | personal_recruitment_timeline_2 |
+| shield_lock | ShieldCheck | adopted | marketing_landing_page |
+| storage | HardDrive | composition-only (not adopted) | pwa_states…offline_1 |
+| unfold_more | ChevronsUpDown | composition-only (not adopted) | add_edit_milestone_modal_1 |
+| warning | TriangleAlert | adopted | community_analytics_trends, create_community_discussion_post_modal |
+| wifi_off | WifiOff | adopted | pwa_states…offline_1 / _2 (OfflineBanner) |
+
+`adopted` here means the mapped component is genuinely imported by the rebuilt source (the
+tree's 32 lucide components + the `LucideIcon` type — see the bundle note below); every other row
+is a mockup affordance this build does not render.
 
 ## Execution rows (one per task, appended as each screen lands)
 
