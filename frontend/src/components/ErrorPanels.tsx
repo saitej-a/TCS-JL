@@ -130,7 +130,9 @@ export function ServerErrorPanel({
       <span className="flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
         <TriangleAlert aria-hidden="true" className="h-6 w-6" />
       </span>
-      <p className="font-mono text-xs font-semibold tracking-wide text-rose-600 uppercase dark:text-rose-400">
+      {/* rose-700 (not -600): the code label is real text and rose-600 on
+          rose-50 measures 4.28:1 — below §4.1.1's 4.5 text threshold. */}
+      <p className="font-mono text-xs font-semibold tracking-wide text-rose-700 uppercase dark:text-rose-400">
         Error 500
       </p>
       <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">

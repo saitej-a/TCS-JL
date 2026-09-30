@@ -3,8 +3,8 @@
  * `informational_legal_privacy_policy_privacy` composition in Phase 12: the
  * numbering on the section TOC and the in-body independence notice are the
  * composition's, while its fiction is not (09.5.1 D-14/D-16):
- * - the "Last updated" line and the version chip stay out — there is no
- *   publication history to state (D-14);
+ * - the publication-date stamp and version chip the mockup carries stay out —
+ *   there is no publication history to state (D-14);
  * - the "Zero-knowledge hashing" / "Self-serve data export" chips are dropped:
  *   the platform neither hashes nor exports anything (export is a disabled
  *   control in settings);
