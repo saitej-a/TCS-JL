@@ -16,18 +16,111 @@ same task (G-5).
 
 ## Icon mapping table
 
-| data-icon | lucide component |
-|---|---|
-| notifications | Bell |
-| forum | MessageSquare |
-| thumb_up | ThumbsUp |
-| campaign | Megaphone |
-| pin_drop | MapPin |
-| check_circle | CheckCircle2 |
-| task_alt | CheckCircle2 |
-| done_all | CheckCircle2 |
-| tune | Settings2 |
-| privacy_tip | ShieldHalf |
+Every Material-Symbols glyph the 45 compositions reference (via `data-icon="…"` or the
+`material-symbols-outlined` span body) is listed below — 96 distinct names, each mapped to the
+lucide component that replaces it (D-05) and flagged by whether the rebuilt source actually
+imports it. `composition-only` rows are glyphs that exist only in mockup affordances this app
+does not ship (search bars, share/export buttons, forecast widgets, hub/sensor telemetry); they
+are enumerated so no glyph goes unmapped, and deliberately not rendered.
+
+| Glyph | lucide component | Status |
+|---|---|---|
+| account_circle | CircleUserRound | composition-only (not adopted) |
+| add | Plus | composition-only (not adopted) |
+| add_circle | CirclePlus | composition-only (not adopted) |
+| alt_route | Route | adopted |
+| analytics | ChartColumn | adopted |
+| arrow_back | ArrowLeft | composition-only (not adopted) |
+| arrow_drop_down | ChevronDown | composition-only (not adopted) |
+| arrow_forward | ArrowRight | composition-only (not adopted) |
+| arrow_upward | ArrowUp | composition-only (not adopted) |
+| assignment_turned_in | ClipboardCheck | composition-only (not adopted) |
+| auto_awesome | Sparkles | adopted |
+| badge | IdCard | composition-only (not adopted) |
+| bar_chart | BarChart3 | adopted |
+| bolt | Zap | composition-only (not adopted) |
+| calendar_month | CalendarDays | composition-only (not adopted) |
+| calendar_today | Calendar | composition-only (not adopted) |
+| campaign | Megaphone | adopted |
+| chat_bubble | MessageCircle | composition-only (not adopted) |
+| chat_bubble_outline | MessageCircle | composition-only (not adopted) |
+| check | Check | composition-only (not adopted) |
+| check_circle | CheckCircle2 | adopted |
+| chevron_right | ChevronRight | adopted |
+| close | X | composition-only (not adopted) |
+| cloud_off | CloudOff | composition-only (not adopted) |
+| code | Code | composition-only (not adopted) |
+| dashboard | LayoutDashboard | adopted |
+| delete_outline | Trash2 | composition-only (not adopted) |
+| done_all | CheckCheck | composition-only (not adopted) |
+| download | Download | adopted |
+| dynamic_feed | Newspaper | composition-only (not adopted) |
+| edit | Pencil | adopted |
+| edit_calendar | CalendarPlus | composition-only (not adopted) |
+| edit_square | SquarePen | composition-only (not adopted) |
+| error | CircleAlert | composition-only (not adopted) |
+| event_available | CalendarCheck | composition-only (not adopted) |
+| expand_more | ChevronDown | composition-only (not adopted) |
+| flag | Flag | composition-only (not adopted) |
+| forum | MessageSquare | adopted |
+| gpp_bad | ShieldAlert | adopted |
+| groups | Users | adopted |
+| handshake | Handshake | composition-only (not adopted) |
+| help | CircleHelp | composition-only (not adopted) |
+| help_outline | CircleHelp | composition-only (not adopted) |
+| hourglass_top | Hourglass | adopted |
+| hub | Network | composition-only (not adopted) |
+| info | Info | composition-only (not adopted) |
+| insights | ChartLine | composition-only (not adopted) |
+| install_desktop | MonitorDown | composition-only (not adopted) |
+| inventory | Package | composition-only (not adopted) |
+| local_fire_department | Flame | composition-only (not adopted) |
+| location_on | MapPin | adopted |
+| lock | Lock | adopted |
+| lock_open | LockOpen | composition-only (not adopted) |
+| lock_reset | KeyRound | composition-only (not adopted) |
+| mark_email_read | MailCheck | adopted |
+| mark_email_unread | MailWarning | composition-only (not adopted) |
+| monitoring | Activity | composition-only (not adopted) |
+| north_east | ArrowUpRight | composition-only (not adopted) |
+| notifications | Bell | adopted |
+| notifications_active | BellRing | composition-only (not adopted) |
+| offline_pin | PinOff | composition-only (not adopted) |
+| open_in_new | ExternalLink | composition-only (not adopted) |
+| pending | Clock | composition-only (not adopted) |
+| person | UserRound | adopted |
+| pin_drop | MapPin | adopted |
+| policy | FileText | composition-only (not adopted) |
+| poll | ChartColumn | adopted |
+| privacy_tip | ShieldHalf | adopted |
+| public | Globe | composition-only (not adopted) |
+| push_pin | Pin | composition-only (not adopted) |
+| query_stats | TrendingUp | composition-only (not adopted) |
+| refresh | RefreshCw | adopted |
+| reply | Reply | composition-only (not adopted) |
+| rocket_launch | Rocket | composition-only (not adopted) |
+| schedule | CalendarClock | composition-only (not adopted) |
+| schedule_send | CalendarClock | composition-only (not adopted) |
+| search | Search | composition-only (not adopted) |
+| security | ShieldCheck | adopted |
+| send | Send | composition-only (not adopted) |
+| sensors | Radar | composition-only (not adopted) |
+| settings | Settings | adopted |
+| share | Share2 | composition-only (not adopted) |
+| shield | Shield | adopted |
+| sync | RefreshCw | adopted |
+| sync_disabled | RefreshCwOff | composition-only (not adopted) |
+| tag | Tag | composition-only (not adopted) |
+| task_alt | CheckCircle2 | adopted |
+| terminal | Terminal | composition-only (not adopted) |
+| thumb_up | ThumbsUp | adopted |
+| timeline | Route | adopted |
+| track_changes | CircleDot | composition-only (not adopted) |
+| trending_up | TrendingUp | composition-only (not adopted) |
+| tune | Settings2 | adopted |
+| verified | BadgeCheck | composition-only (not adopted) |
+| verified_user | ShieldCheck | adopted |
+| visibility | Eye | composition-only (not adopted) |
 
 ## Execution rows (one per task, appended as each screen lands)
 
@@ -69,3 +162,88 @@ same task (G-5).
 | InstallPrompt.tsx | PWA install artboard: icon chip, title + "Offline & fast" pill, body, "Not now" / install actions, trigger caption | "Can be dismissed or re-enabled in Settings" is false (dismissal is permanent and no Settings control re-enables it) — the caption instead names the real trigger (milestone added or two visiting days) and the browser-menu fallback |
 | PushPrimer.tsx | PWA push artboard: icon disc header, three value rows with icons, trust line under the actions, "Maybe later" / "Enable Alerts" footer | Value rows re-pointed at the real NotificationType vocabulary (COMMENT/REPLY, ANNOUNCEMENT, VOTE_MILESTONE/TIMELINE_REMINDER); the mockup's batch targeting ("2025 Digital & Ninja"), region filtering ("Hyderabad and Bengaluru hubs") and ad-system claims omitted; "Enable Alerts only then browser prompt" trust line kept (it is true — the primer is the sole trigger) |
 | OfflineBanner.tsx + registerSW.ts | PWA offline artboard: amber bar, WifiOff icon, state title + line, "Retry connection" control | The v1 "Actions will sync when online" promise is not shippable — there is no Background Sync queue and no optimistic write persistence; copy now states cached reads and unsaved writes. Cached-timestamp chip and pending-action count omitted (neither is tracked) |
+
+## Composition coverage (45/45)
+
+Mechanical audit (T14 step 1): every folder under `frontend/stitch designs/` that carries a
+`code.html` appears below — 45 of the 47 folders; the two remaining are the token-system
+`DESIGN.md` folders (`tcs_joining_tracker_05_4_token_system`, `tjt_professional_blue_9.5`),
+which are not screens.
+
+| Composition folder | Consuming surface | Task |
+|---|---|---|
+| tcs_joining_tracker_notification_center | NotificationRow.tsx, NotificationsPage.tsx | T1 |
+| tcs_joining_tracker_app_shell | AppShell.tsx, navItems.ts | T2 |
+| tcs_joining_tracker_desktop_app_shell_dark_mode | AppShell.tsx (dark theme) | T2 |
+| tcs_joining_tracker_mobile_app_shell | MobileTabBar.tsx | T2 |
+| tcs_joining_tracker_login_screen_variant_a_split_trust_badge | LoginPage.tsx, authCard.tsx | T3 |
+| tcs_joining_tracker_registration_screen | RegisterPage.tsx | T3 |
+| tcs_joining_tracker_forgot_password_screen | ForgotPasswordPage.tsx (+ new suite) | T3 |
+| tcs_joining_tracker_reset_password_reset_password_token | ResetPasswordPage.tsx | T3 |
+| tcs_joining_tracker_verification_pending_verify_email_pending | VerifyEmailPendingPage.tsx | T3 |
+| tcs_joining_tracker_email_verification_actions_verify_email_token | VerifyEmailActionPage.tsx | T3 |
+| tcs_joining_tracker_onboarding_wizard_step_1 | OnboardingPage.tsx (step 1) | T4 |
+| tcs_joining_tracker_onboarding_wizard_step_2 | OnboardingPage.tsx (step 2) | T4 |
+| tcs_joining_tracker_onboarding_wizard_step_3 | OnboardingPage.tsx (step 3) | T4 |
+| tcs_joining_tracker_candidate_dashboard_1 | DashboardPage.tsx | T5 |
+| tcs_joining_tracker_candidate_dashboard_2 | DashboardPage.tsx (alternate arrangement) | T5 |
+| tcs_joining_tracker_candidate_dashboard_mobile | DashboardPage.tsx (mobile) | T5 |
+| tcs_joining_tracker_mobile_dashboard | DashboardPage.tsx (mobile) | T5 |
+| tcs_joining_tracker_personal_recruitment_timeline_1 | TimelinePage.tsx, TimelineRoadmap.tsx, MilestoneStepper.tsx | T6 |
+| tcs_joining_tracker_personal_recruitment_timeline_2 | TimelinePage.tsx (alternate arrangement) | T6 |
+| tcs_joining_tracker_add_edit_milestone_modal_1 | TimelineEventModal.tsx | T6 |
+| tcs_joining_tracker_add_edit_milestone_modal_2 | TimelineEventModal.tsx (alternate arrangement) | T6 |
+| tcs_joining_tracker_community_discussions | CommunityFeedPage.tsx | T7 |
+| tcs_joining_tracker_community_discussions_feed | CommunityFeedPage.tsx | T7 |
+| tcs_joining_tracker_community_discussions_empty_filtered_state | CommunityFeedPage.tsx (empty/filtered state) | T7 |
+| tcs_joining_tracker_mobile_community_discussions_feed | CommunityFeedPage.tsx (mobile) | T7 |
+| tcs_joining_tracker_mobile_community_feed | CommunityFeedPage.tsx (mobile) | T7 |
+| tcs_joining_tracker_create_community_discussion_post_modal | CreatePostModal.tsx (new) | T7 |
+| tcs_joining_tracker_create_community_post | CreatePostPage.tsx (redirect shim) | T7 |
+| tcs_joining_tracker_community_post_detail_and_discussion | PostDetailPage.tsx | T8 |
+| tcs_joining_tracker_community_post_detail_discussion | PostDetailPage.tsx (alternate arrangement) | T8 |
+| tcs_joining_tracker_desktop_settings_screen | SettingsPage.tsx, SettingsLayout.tsx | T9 |
+| tcs_joining_tracker_profile_settings_form | SettingsProfilePage.tsx, Input.tsx | T9 |
+| tcs_joining_tracker_privacy_settings | SettingsPrivacyPage.tsx | T9 |
+| tcs_joining_tracker_devices_notifications_settings | SettingsDevicesPage.tsx | T9 |
+| tcs_joining_tracker_security_settings_settings_security | SettingsSecurityPage.tsx | T9 |
+| tcs_joining_tracker_danger_zone_settings_settings_danger | SettingsDangerPage.tsx | T9 |
+| tcs_joining_tracker_admin_moderation_queue_admin_reports | AdminReportsPage.tsx | T10 |
+| tcs_joining_tracker_admin_announcements_admin_announcements | AdminAnnouncementsPage.tsx | T10 |
+| tcs_joining_tracker_community_analytics_trends | AnalyticsPage.tsx | T11 |
+| tcs_joining_tracker_marketing_landing_page | LandingPage.tsx | T12 |
+| tcs_joining_tracker_informational_legal_privacy_policy_privacy | LegalLayout.tsx, PrivacyPage.tsx | T12 |
+| tcs_joining_tracker_error_and_empty_route_states | ErrorPanels.tsx, EmptyState.tsx, ErrorBoundary.tsx | T12 |
+| tcs_joining_tracker_pwa_states_install_push_primer_offline_1 | PWA state spec sheet (install / push / offline tokens) | T12 |
+| tcs_joining_tracker_pwa_states_install_push_primer_offline_2 | InstallPrompt.tsx, PushPrimer.tsx, OfflineBanner.tsx | T12 |
+| tcs_joining_tracker_pwa_states_install_push_primer_offline_3 | InstallPrompt.tsx, PushPrimer.tsx, OfflineBanner.tsx (variant plates) | T12 |
+
+
+## Tree-wide sweep (T14 step 2)
+
+Measured over `frontend/src` (plus `index.html` and `src/index.css`):
+
+| Check | Result |
+|---|---|
+| `indigo-` Tailwind utilities in code | 0 |
+| `material-symbols` classes in code | 0 |
+| Inter font family / `family=Inter` font link | 0 (fonts are Fira Sans + Fira Code from `index.css` `@theme`; `index.html` loads no webfont) |
+| Documentation mentions of the swap | 4 (comment-only: `AnalyticsPage.tsx`, `theme/badges.ts`, `index.css`, `Badge.test.tsx` — they name the v1 utilities they replaced) |
+| `INTERVIEW` / `INTERVIEWED` domain vocabulary | 10 (the timeline event type and interview statuses — not the font) |
+
+## Bundle delta (T14 step 4)
+
+Both figures from the same pipeline (`npm run build`, Vite 6 + vite-plugin-pwa), baseline built
+from the pre-phase tree (`ce26e4f^`, exported with `git archive`) against the same `node_modules`:
+
+| Asset | Baseline (pre-Phase-12) | After Phase 12 | Delta |
+|---|---|---|---|
+| JS (raw) | 504,333 B | 579,873 B | +75,540 B (+15.0%) |
+| JS (gzip) | 148,937 B | 165,002 B | +16,065 B (+10.8%) |
+| CSS (raw) | 147,930 B | 157,014 B | +9,084 B (+6.1%) |
+| CSS (gzip) | 20,599 B | 21,538 B | +939 B (+4.6%) |
+
+One JS chunk, one CSS chunk, no route splitting before or after. The delta is the whole-tree
+rebuild: 32 adopted lucide components (tree-shaken; no icon font is fetched any more) plus the
+composition markup that replaced the plainer v1-era views. The removed Google Fonts stylesheet
+requests (Inter + Material Symbols) are a network saving the bundle figure does not show.
