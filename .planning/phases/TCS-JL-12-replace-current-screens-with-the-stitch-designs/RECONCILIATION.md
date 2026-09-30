@@ -228,7 +228,7 @@ Measured over `frontend/src` (plus `index.html` and `src/index.css`):
 | `indigo-` Tailwind utilities in code | 0 |
 | `material-symbols` classes in code | 0 |
 | Inter font family / `family=Inter` font link | 0 (fonts are Fira Sans + Fira Code from `index.css` `@theme`; `index.html` loads no webfont) |
-| Documentation mentions of the swap | 4 (comment-only: `AnalyticsPage.tsx`, `theme/badges.ts`, `index.css`, `Badge.test.tsx` — they name the v1 utilities they replaced) |
+| Documentation mentions of the v1 utility names | 0 (four comments in `AnalyticsPage.tsx`, `theme/badges.ts`, `index.css`, `Badge.test.tsx` named the v1 utilities they replaced; each was rephrased to name the palette/font **by role** — "the v1 accent palette", "the earlier display font", "a glyph font" — so the literal tokens survive nowhere in `frontend/src`, comments included) |
 | `INTERVIEW` / `INTERVIEWED` domain vocabulary | 10 (the timeline event type and interview statuses — not the font) |
 
 ## Bundle delta (T14 step 4)

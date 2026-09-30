@@ -5,7 +5,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* The design-token layer (D5, 05 §4.1). Brand values are transcribed
-   byte-exactly from 05 §4.1.1 as amended in 9.5 (token v2): the v1 indigo
+   byte-exactly from 05 §4.1.1 as amended in 9.5 (token v2): the v1 accent
    scale was superseded by the professional-blue (Tailwind sky) spectrum of
    the 9.5 design pass — see 09.5-CONTEXT.md §4.2 for the exact mapping and
    the role rules (white-on-brand rests at brand-700; hover 800; pressed

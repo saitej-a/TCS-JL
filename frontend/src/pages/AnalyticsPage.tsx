@@ -2,8 +2,9 @@
  * The §7.9 analytics screen (9.4 Task 6), rebuilt to the
  * `community_analytics_trends` composition (Phase 12 Task 11).
  *
- * The composition is a stale-v1 export (indigo/Inter/Material Symbols); per
- * D-01 its *structure* governs and the v2 palette is repainted on top. The
+ * The composition is a stale-v1 export (the v1 accent palette, the earlier
+ * display font, and a glyph font); per D-01 its *structure* governs and the v2
+ * palette is repainted on top. The
  * composition's chart and KPI anatomy is adopted wherever the real API feeds
  * it — and, where it names data the API does not ship, the block is dropped and
  * the omission recorded in RECONCILIATION.md rather than faked:

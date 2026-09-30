@@ -29,7 +29,7 @@ export const CATEGORY_BADGE_CLASSES: Record<PostCategory, BadgeClasses> = {
     border: "border-slate-200 dark:border-slate-700",
   },
   JOINING_LETTER: {
-    // v2 (9.5 Task 1): the brand triple replaces v1's indigo utilities so the
+    // v2 (9.5 Task 1): the brand triple replaces v1's accent utilities so the
     // badge rides the token swap instead of a hard-coded hue.
     bg: "bg-brand-50 dark:bg-brand-950/50",
     text: "text-brand-700 dark:text-brand-300",
