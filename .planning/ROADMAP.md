@@ -388,6 +388,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 10. Security Audits, E2E Testing, Seed Data & Launch Readiness | 0/2 | Not started | - |
 | 11. Unlimited nested comment replies | 1/1 | Complete    | 2026-09-29 |
 | 12. Replace current screens with the Stitch designs | 1/1 | Complete    | 2026-09-30 |
+| 15. Fix real-time chat and add a typing wave indicator | 2/2 | Complete | 2026-10-04 |
+| 16. replace the current screens with the frontend/stitch designs | 7/7 | Complete | 2026-10-05 |
 
 ### Phase 11: Unlimited nested comment replies
 
@@ -475,7 +477,7 @@ Plans:
 **Goal:** Replace the current screens in `frontend/src` with the exact markup, hierarchy, classes, and visual structure from the Stitch design compositions in `frontend/stitch designs/`, preserving all existing application functionality, API integrations, authentication state, real-time WebSockets, typing indicators, and test suites.
 **Requirements**: UI-AUTH-01, UI-AUTH-02, UI-AUTH-03, UI-SHELL-01, UI-SHELL-02, UI-DASH-01, UI-DASH-02, UI-COMM-01, UI-COMM-02, UI-SETT-01, UI-SETT-02, UI-MISC-01, UI-MISC-02, UI-FIDE-01
 **Depends on:** Phase 15
-**Plans:** 6/7 plans executed
+**Plans:** 7/7 plans executed
 
 Plans:
 
@@ -485,12 +487,12 @@ Plans:
 - [x] 16-04-PLAN.md
 - [x] 16-05-PLAN.md
 - [x] 16-06-PLAN.md
-- [ ] 16-07-PLAN.md
+- [x] 16-07-PLAN.md
 
-- [ ] `16-01-PLAN.md` — Wave 1: Auth & Onboarding verbatim port (Login, Register, Forgot Password, Reset Password, Email Verification, 3-Step Onboarding Wizard)
-- [ ] `16-02-PLAN.md` — Wave 2: Application Shell & Navigation verbatim port (Desktop light/dark shell, mobile shell & tab bar, notification center)
-- [ ] `16-03-PLAN.md` — Wave 3: Candidate Dashboard & Recruitment Timeline verbatim port (Dashboard progression variants, roadmap, milestone modals)
-- [ ] `16-04-PLAN.md` — Wave 4: Community & Discussions verbatim port (Discussions feed desktop/mobile, post detail, comment threads, post composer modal)
-- [ ] `16-05-PLAN.md` — Wave 5: Settings Suite & Admin Tools verbatim port (Profile, privacy, security, danger zone, devices, moderation queue, announcements)
-- [ ] `16-06-PLAN.md` — Wave 6: Analytics, Visitor, Legal & PWA verbatim port (Analytics benchmarks, landing page, legal viewer, PWA install/push/offline, error routes)
-- [ ] `16-07-PLAN.md` — Wave 7: Machine Fidelity Check, Test Suite Maintenance & Verification Gates (stitch-fidelity.mjs audit, RECONCILIATION-16.md, full regression suite)
+- [x] `16-01-PLAN.md` — Wave 1: Auth & Onboarding verbatim port (Login, Register, Forgot Password, Reset Password, Email Verification, 3-Step Onboarding Wizard)
+- [x] `16-02-PLAN.md` — Wave 2: Application Shell & Navigation verbatim port (Desktop light/dark shell, mobile shell & tab bar, notification center)
+- [x] `16-03-PLAN.md` — Wave 3: Candidate Dashboard & Recruitment Timeline verbatim port (Dashboard progression variants, roadmap, milestone modals)
+- [x] `16-04-PLAN.md` — Wave 4: Community & Discussions verbatim port (Discussions feed desktop/mobile, post detail, comment threads, post composer modal)
+- [x] `16-05-PLAN.md` — Wave 5: Settings Suite & Admin Tools verbatim port (Profile, privacy, security, danger zone, devices, moderation queue, announcements)
+- [x] `16-06-PLAN.md` — Wave 6: Analytics, Visitor, Legal & PWA verbatim port (Analytics benchmarks, landing page, legal viewer, PWA install/push/offline, error routes)
+- [x] `16-07-PLAN.md` — Wave 7: Machine Fidelity Check, Test Suite Maintenance & Verification Gates (stitch-fidelity.mjs audit, RECONCILIATION-16.md, full regression suite)
