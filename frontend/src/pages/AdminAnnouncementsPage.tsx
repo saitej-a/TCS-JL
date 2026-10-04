@@ -170,7 +170,7 @@ export function AdminAnnouncementsPage(): ReactElement {
   }
 
   return (
-    <main className="mx-auto w-full max-w-6xl space-y-4 p-4 sm:p-6" data-testid="admin-announcements">
+    <main className="skin-v1 mx-auto w-full max-w-6xl space-y-4 p-4 sm:p-6 font-body antialiased" data-testid="admin-announcements">
       <nav
         aria-label="Breadcrumb"
         className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400"

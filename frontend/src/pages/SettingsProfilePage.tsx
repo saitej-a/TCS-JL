@@ -206,7 +206,7 @@ export function SettingsProfilePage(): ReactElement {
         />
       )}
       {form !== null && profile !== null && (
-        <form onSubmit={handleSave} className="space-y-4" noValidate>
+        <form onSubmit={handleSave} className="skin-v1 space-y-4 font-body" noValidate data-testid="profile-form">
           {failedFields.length > 0 && (
             <div
               ref={summaryRef}

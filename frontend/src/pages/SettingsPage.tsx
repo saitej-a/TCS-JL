@@ -226,19 +226,19 @@ export function SettingsPage(): ReactElement {
         <Link to="/settings/profile" className={CARD} data-testid="card-profile">
           <span className="flex min-w-0 items-start gap-4">
             <span className={CARD_ICON} aria-hidden="true">
-              <UserRound className="h-5 w-5" />
+              <span className="material-symbols-outlined text-[20px]" data-icon="person">person</span>
             </span>
             <span className="min-w-0">
               <span className={CARD_TITLE}>Profile information</span>
               <span className={`${STATUS_LINE} mt-0.5 block truncate`}>{categoryLine}</span>
             </span>
           </span>
-          <ChevronRight className={`h-4 w-4 ${CHEVRON}`} aria-hidden="true" />
+          <span className={`material-symbols-outlined text-[18px] ${CHEVRON}`} aria-hidden="true">chevron_right</span>
         </Link>
         <Link to="/settings/privacy" className={CARD} data-testid="card-privacy">
           <span className="flex min-w-0 items-start gap-4">
             <span className={CARD_ICON} aria-hidden="true">
-              <ShieldCheck className="h-5 w-5" />
+              <span className="material-symbols-outlined text-[20px]" data-icon="lock">lock</span>
             </span>
             <span className="min-w-0">
               <span className={CARD_TITLE}>Privacy &amp; visibility</span>
@@ -251,12 +251,12 @@ export function SettingsPage(): ReactElement {
               </span>
             </span>
           </span>
-          <ChevronRight className={`h-4 w-4 ${CHEVRON}`} aria-hidden="true" />
+          <span className={`material-symbols-outlined text-[18px] ${CHEVRON}`} aria-hidden="true">chevron_right</span>
         </Link>
         <Link to="/settings/devices" className={CARD} data-testid="card-devices">
           <span className="flex min-w-0 items-start gap-4">
             <span className={CARD_ICON} aria-hidden="true">
-              <Bell className="h-5 w-5" />
+              <span className="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
             </span>
             <span className="min-w-0">
               <span className={CARD_TITLE}>Devices &amp; notifications</span>
@@ -268,44 +268,47 @@ export function SettingsPage(): ReactElement {
               <span className={`${STATUS_LINE} mt-0.5 block`}>{push.detail}</span>
             </span>
           </span>
-          <ChevronRight className={`h-4 w-4 ${CHEVRON}`} aria-hidden="true" />
+          <span className={`material-symbols-outlined text-[18px] ${CHEVRON}`} aria-hidden="true">chevron_right</span>
         </Link>
         <Link to="/settings/security" className={CARD} data-testid="card-security">
           <span className="flex min-w-0 items-start gap-4">
             <span className={CARD_ICON} aria-hidden="true">
-              <ShieldAlert className="h-5 w-5" />
+              <span className="material-symbols-outlined text-[20px]" data-icon="security">security</span>
             </span>
             <span className="min-w-0">
               <span className={CARD_TITLE}>Security</span>
               <span className={`${STATUS_LINE} mt-0.5 block`}>Password, sessions and sign-out controls</span>
             </span>
           </span>
-          <ChevronRight className={`h-4 w-4 ${CHEVRON}`} aria-hidden="true" />
-        </Link>
-        <Link
-          to="/settings/danger"
-          className="group flex items-center justify-between gap-4 rounded-xl border border-rose-200 bg-white p-4 shadow-sm transition-all hover:border-rose-300 hover:shadow dark:border-rose-900/60 dark:bg-slate-800 sm:p-5"
-          data-testid="card-danger"
-        >
-          <span className="flex min-w-0 items-start gap-4">
-            <span
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300"
-              aria-hidden="true"
-            >
-              <ShieldAlert className="h-5 w-5" />
-            </span>
-            <span className="min-w-0">
-              <span className="text-sm font-semibold text-rose-700 transition-colors group-hover:text-rose-800 dark:text-rose-300">
-                Danger zone
-              </span>
-              <span className={`${STATUS_LINE} mt-0.5 block`}>
-                Export, deactivate or permanently delete your account
-              </span>
-            </span>
-          </span>
-          <ChevronRight className={`h-4 w-4 ${CHEVRON}`} aria-hidden="true" />
+          <span className={`material-symbols-outlined text-[18px] ${CHEVRON}`} aria-hidden="true">chevron_right</span>
         </Link>
       </div>
+
+      <Link
+        to="/settings/danger"
+        className="group mt-3 flex items-center justify-between gap-4 rounded-xl border border-rose-200 bg-rose-50/40 p-4 shadow-sm transition-all hover:border-rose-300 hover:bg-rose-50/70 hover:shadow dark:border-rose-950 dark:bg-rose-950/20 dark:hover:border-rose-900 sm:p-5"
+        data-testid="card-danger"
+      >
+        <span className="flex min-w-0 items-start gap-4">
+          <span
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300"
+            aria-hidden="true"
+          >
+            <span className="material-symbols-outlined text-[20px]" data-icon="warning">warning</span>
+          </span>
+          <span className="min-w-0">
+            <span className="text-sm font-semibold text-rose-900 dark:text-rose-200">
+              Danger zone
+            </span>
+            <span className="mt-0.5 block text-xs text-rose-700/80 dark:text-rose-300/80">
+              Irreversible account deletion with 3-factor safety confirmation
+            </span>
+          </span>
+        </span>
+        <span className="material-symbols-outlined text-[18px] text-rose-400 group-hover:text-rose-600 transition-colors" aria-hidden="true">
+          chevron_right
+        </span>
+      </Link>
       <Disclaimer variant="footer" />
     </SettingsLayout>
   );

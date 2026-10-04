@@ -215,7 +215,7 @@ export function AdminReportsPage(): ReactElement {
   }
 
   return (
-    <main className="mx-auto w-full max-w-5xl space-y-4 p-4 sm:p-6" data-testid="admin-reports">
+    <main className="skin-v1 mx-auto w-full max-w-5xl space-y-4 p-4 sm:p-6 font-body antialiased" data-testid="admin-reports">
       <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
         <a
           href="/dashboard"

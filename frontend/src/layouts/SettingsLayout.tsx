@@ -34,7 +34,7 @@ export function SettingsLayout({
 
   const isHub = title === "Settings";
   return (
-    <main className="mx-auto w-full max-w-3xl space-y-4 p-4 sm:p-6">
+    <main className="skin-v2 mx-auto w-full max-w-4xl space-y-4 p-4 sm:p-6 font-body antialiased">
       {/* Composition breadcrumb: Home → Settings → section (hub shows two steps). */}
       <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
         <Link to="/dashboard" className="hover:text-slate-800 hover:underline dark:hover:text-slate-200">
