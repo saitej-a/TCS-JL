@@ -10,11 +10,11 @@ import { Disclaimer } from "@/components/Disclaimer";
 
 export function BrandRow() {
   return (
-    <Link to="/" className="flex items-center gap-2" aria-label="TCS Joining Tracker home">
-      <span className="inline-flex items-center justify-center rounded-lg bg-brand-700 px-2 py-1 text-xs font-bold text-white">
-        TJT
+    <Link to="/" className="flex items-center gap-2.5" aria-label="TCS Joining Tracker home">
+      <span className="bg-indigo-600 text-white font-bold text-sm px-2.5 py-1 rounded-lg tracking-tight select-none shadow-sm">
+        [TJT]
       </span>
-      <span className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">
+      <span className="font-headline text-slate-900 font-bold text-lg tracking-tight">
         TCS Joining Tracker
       </span>
     </Link>
@@ -26,9 +26,12 @@ export function ErrorStrip({ message }: { message: string }) {
   return (
     <p
       role="alert"
-      className="flex items-center gap-2 rounded-lg border border-rose-200/60 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
+      className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700 shadow-sm"
     >
-      {message}
+      <span className="material-symbols-outlined text-rose-600 text-[18px] shrink-0" data-icon="error">
+        error
+      </span>
+      <span>{message}</span>
     </p>
   );
 }
@@ -38,9 +41,12 @@ export function SuccessStrip({ message }: { message: string }) {
   return (
     <p
       role="status"
-      className="flex items-center gap-2 rounded-lg border border-emerald-200/80 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300"
+      className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 shadow-sm"
     >
-      {message}
+      <span className="material-symbols-outlined text-emerald-600 text-[18px] shrink-0" data-icon="check_circle">
+        check_circle
+      </span>
+      <span>{message}</span>
     </p>
   );
 }
@@ -51,22 +57,36 @@ interface AuthCardProps {
   children: ReactNode;
   /** Renders below the card instead of the registration disclaimer. */
   footerVariant?: "registration" | "footer";
+  skin?: "skin-v1" | "skin-v2";
 }
 
-export function AuthCard({ title, subtitle, children, footerVariant = "registration" }: AuthCardProps) {
+export function AuthCard({ title, subtitle, children, footerVariant = "registration", skin = "skin-v1" }: AuthCardProps) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4 py-10 dark:bg-slate-900">
-      <div className="w-full max-w-md rounded-2xl border border-slate-100 bg-white p-8 shadow-xl dark:border-slate-800 dark:bg-slate-800">
-        <BrandRow />
-        <h1 className="mt-6 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
-          {title}
-        </h1>
-        <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">{subtitle}</p>
-        <div className="mt-6 space-y-4">{children}</div>
-      </div>
-      <div className="mx-auto mt-6 max-w-xl text-center">
-        <Disclaimer variant={footerVariant} />
-      </div>
+    <div
+      className={`${skin} flex min-h-screen flex-col justify-between selection:bg-indigo-100 selection:text-indigo-900 font-body text-slate-800 antialiased`}
+      style={{
+        backgroundColor: "#F8FAFC",
+        backgroundImage: "radial-gradient(#CBD5E1 0.75px, transparent 0.75px)",
+        backgroundSize: "16px 16px",
+      }}
+    >
+      <main className="flex-grow flex items-center justify-center px-4 py-10 sm:px-6">
+        <div className="w-full max-w-[460px] bg-white rounded-2xl shadow-xl border border-slate-100 p-8 sm:p-9 relative transition-all">
+          <BrandRow />
+          <div className="mt-6 mb-6">
+            <h1 className="text-[28px] font-bold text-slate-900 tracking-tight leading-tight">
+              {title}
+            </h1>
+            <p className="text-slate-500 text-sm mt-1 leading-relaxed">{subtitle}</p>
+          </div>
+          <div className="space-y-4">{children}</div>
+        </div>
+      </main>
+      <footer className="w-full pb-6 px-4">
+        <div className="mx-auto max-w-xl text-center">
+          <Disclaimer variant={footerVariant} />
+        </div>
+      </footer>
     </div>
   );
 }

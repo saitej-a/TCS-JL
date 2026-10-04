@@ -55,9 +55,11 @@ export function Input({
             aria-label="Toggle password visibility"
             aria-pressed={revealed}
             onClick={() => setRevealed((current) => !current)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 focus:outline-none"
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 focus:outline-none flex items-center justify-center"
           >
-            {revealed ? "🙈" : "👁"}
+            <span className="material-symbols-outlined text-[18px]" data-icon="visibility">
+              {revealed ? "visibility_off" : "visibility"}
+            </span>
           </button>
         )}
       </div>

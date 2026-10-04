@@ -158,15 +158,21 @@ export function RegisterPage() {
           </FieldBlock>
 
           {(mismatch || passwordInvalid || errorMessage !== null) && (
-            <ErrorStrip
-              message={
-                mismatch
+            <div
+              role="alert"
+              className="mt-2 bg-rose-50 border border-rose-200 rounded-lg p-2.5 flex items-center gap-2 text-rose-700 text-xs font-medium"
+            >
+              <span className="material-symbols-outlined text-rose-600 text-[16px] shrink-0" data-icon="error">
+                error
+              </span>
+              <span>
+                {mismatch
                   ? "Passwords do not match."
                   : passwordInvalid
                     ? `Password needs ${firstFailure}.`
-                    : (errorMessage ?? "")
-              }
-            />
+                    : (errorMessage ?? "")}
+              </span>
+            </div>
           )}
 
           <div className="pt-1">
@@ -175,38 +181,42 @@ export function RegisterPage() {
                 type="checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
-                className="mt-0.5 h-4 w-4"
+                className="h-4 w-4 mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600/30 cursor-pointer"
                 data-testid="terms-checkbox"
               />
-              <span>
+              <span className="text-xs text-slate-600 leading-snug">
                 I agree to the{" "}
-                <Link to="/terms" className="font-medium text-brand-700 hover:text-brand-800 hover:underline dark:text-brand-400">
+                <Link to="/terms" className="text-indigo-600 hover:text-indigo-700 hover:underline font-medium">
                   Terms
                 </Link>{" "}
                 and{" "}
-                <Link to="/privacy" className="font-medium text-brand-700 hover:text-brand-800 hover:underline dark:text-brand-400">
+                <Link to="/privacy" className="text-indigo-600 hover:text-indigo-700 hover:underline font-medium">
                   Privacy Policy
                 </Link>
               </span>
             </label>
           </div>
 
-          <Button type="submit" variant="primary" fullWidth loading={submitting} disabled={!canSubmit} className="h-11">
-            Create account
-          </Button>
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            className="w-full h-11 mt-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-semibold text-sm rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {submitting ? "Creating account..." : "Create account"}
+          </button>
 
           <div className="relative py-2" aria-hidden="true">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200 dark:border-slate-700" />
+              <div className="w-full border-t border-slate-200" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-white px-3 font-medium text-slate-400 dark:bg-slate-800">or</span>
+              <span className="bg-white px-3 text-slate-400 font-medium">or</span>
             </div>
           </div>
 
           <Link
             to="/login"
-            className="flex min-h-[44px] items-center justify-center rounded-lg border border-slate-200 px-4 py-2.5 text-center text-sm font-medium text-slate-700 transition-all hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
+            className="w-full flex items-center justify-center py-2.5 border border-slate-200 hover:bg-slate-50 active:scale-[0.98] text-slate-700 font-medium rounded-lg text-sm transition-all focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1 text-center"
           >
             I already have an account
           </Link>
