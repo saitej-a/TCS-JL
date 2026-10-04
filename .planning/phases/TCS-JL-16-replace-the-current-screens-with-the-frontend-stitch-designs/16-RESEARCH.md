@@ -574,11 +574,11 @@ The existing script `frontend/scripts/stitch-fidelity.mjs` checks:
 | A1 | All 45 HTML compositions can be rendered inside React components while preserving 100% of their Tailwind class tokens. | Standard Stack & Patterns | Low; proved by the Phase 14 tracer (`NotificationsPage.tsx`) which carried 220/220 classes. |
 | A2 | Existing Vitest test suites can be maintained by keeping test hooks (`data-testid`) intact on ported elements. | Validation Architecture | Low; demonstrated across all 52 passing test suites. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **How should `stitch-fidelity.mjs` reference the reconciliation record for Phase 16?**
+1. **How should `stitch-fidelity.mjs` reference the reconciliation record for Phase 16?** — RESOLVED: In Wave 7 (Plan 16-07 Task 1), add CLI support for `--record <path>` in `stitch-fidelity.mjs` and author `RECONCILIATION-16.md`.
    - *What we know:* `stitch-fidelity.mjs` hardcodes `RECORD_PATH` to `.planning/phases/TCS-JL-14-literal-stitch-markup-in-the-app/RECONCILIATION-14.md`, which currently has 1 row.
-   - *Recommendation:* In Wave 7 (or as each wave executes), either add all 45 rows directly to `RECONCILIATION-14.md` or allow `stitch-fidelity.mjs` to accept a `--record <path>` parameter pointing to `RECONCILIATION-16.md`.
+   - *Resolution:* Add `--record <path>` parameter to `stitch-fidelity.mjs` allowing multi-phase reconciliation records and author `RECONCILIATION-16.md` for all 45 compositions.
 
 ## Environment Availability
 

@@ -2,20 +2,19 @@
 gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 16
-current_phase_name: replace the current screens with the frontend/stitch designs
+current_phase_name: replace-the-current-screens-with-the-frontend-stitch-designs
 status: in_progress
 stopped_at: Phase 16 planning complete (16-01 through 16-07 authored)
-last_updated: "2026-10-04T10:00:00.000Z"
-last_activity: 2026-10-04
-last_activity_desc: Phase 16 planning complete (7 plans in 7 waves authored)
-state_head: a5a46733898188749c37fbb879c11d76ab7b08cb
+last_updated: "2026-10-04T10:20:32.312Z"
+state_head: 8b8b3f63d0eebbbd438f24b49545b211bee8d520
 progress:
-  total_phases: 35
+  total_phases: 36
   completed_phases: 8
-  total_plans: 34
+  total_plans: 32
   completed_plans: 25
-  percent: 74
+last_activity: 2026-10-04
 milestone_name: milestone
+last_activity_desc: Phase 16 planning complete (7 plans in 7 waves authored)
 ---
 
 Total Phases: 22
@@ -31,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-09-19)
 
 ## Current Position
 
-Phase: 16 (replace the current screens with the frontend/stitch designs) — READY FOR EXECUTION (2026-10-04)
+Phase: 16 (replace-the-current-screens-with-the-frontend-stitch-designs) — READY TO EXECUTE
 Plan: 0 of 7 executed (16-01-PLAN.md through 16-07-PLAN.md authored)
 Previous phase: 15 EXECUTED + VERIFIED (2026-10-04) — Fix real-time chat and add a typing wave indicator (Daphne ASGI WebSocket transport + TypingIndicator wave animation row)
 
