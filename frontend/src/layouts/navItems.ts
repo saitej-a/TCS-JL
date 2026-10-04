@@ -6,39 +6,28 @@
  * Phase 12: each item carries its `app_shell` composition glyph as a lucide
  * component (icon-only consumers render nothing when it is absent).
  */
-import {
-  Bell,
-  ChartColumn,
-  LayoutDashboard,
-  MessageCircle,
-  MessagesSquare,
-  Route,
-  Settings,
-  type LucideIcon,
-} from "lucide-react";
-
 export interface NavItem {
   to: string;
   label: string;
-  icon: LucideIcon;
+  glyph: string;
 }
 
 export const NAV_ITEMS: readonly NavItem[] = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/timeline", label: "Timeline", icon: Route },
-  { to: "/community", label: "Community", icon: MessagesSquare },
-  { to: "/messages", label: "Messages", icon: MessageCircle },
-  { to: "/analytics", label: "Analytics", icon: ChartColumn },
-  { to: "/notifications", label: "Alerts", icon: Bell },
-  { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/dashboard", label: "Dashboard", glyph: "dashboard" },
+  { to: "/timeline", label: "Joining Letters", glyph: "mark_email_read" },
+  { to: "/community", label: "Community Forum", glyph: "forum" },
+  { to: "/messages", label: "Messages", glyph: "chat" },
+  { to: "/analytics", label: "Surveys", glyph: "poll" },
+  { to: "/notifications", label: "Alerts", glyph: "notifications" },
+  { to: "/settings", label: "Settings", glyph: "settings" },
 ] as const;
 
-/** The mobile tabs. */
+/** The mobile tabs matching Stitch mobile app shell. */
 export const MOBILE_TABS: readonly NavItem[] = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/timeline", label: "Timeline", icon: Route },
-  { to: "/community", label: "Community", icon: MessagesSquare },
-  { to: "/messages", label: "Messages", icon: MessageCircle },
-  { to: "/notifications", label: "Alerts", icon: Bell },
-  { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/dashboard", label: "Dashboard", glyph: "dashboard" },
+  { to: "/timeline", label: "Timeline", glyph: "timeline" },
+  { to: "/community", label: "Community", glyph: "groups" },
+  { to: "/messages", label: "Messages", glyph: "chat" },
+  { to: "/notifications", label: "Alerts", glyph: "notifications" },
+  { to: "/settings", label: "Settings", glyph: "settings" },
 ] as const;

@@ -1,17 +1,15 @@
 /**
  * The authenticated chrome (UI-01): responsive per §5.2/§5.3/§5.4.
+ * Ported to verbatim Stitch markup (tcs_joining_tracker_app_shell,
+ * tcs_joining_tracker_desktop_app_shell_dark_mode, tcs_joining_tracker_mobile_app_shell)
+ * under skin-v1 with vendored Material Symbols Outlined icons.
  *
  * - ≥1280px (§5.2's 3-col): sidebar 240px + center + right rail 320px.
  * - 640–1279px (§5.3 tablet): sidebar persists, rail collapses.
  * - <640px (§5.4 mobile): top app bar + fixed bottom tab bar, ≥44px targets.
- *
- * The §5.5 banner renders above the shell at every breakpoint; the §5.6
- * footer disclaimer renders at every breakpoint (the roadmap done-when).
- * 9.5 Task 8 adds the is_staff-only Administration group below the primary nav.
  */
 import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { Bell, Megaphone } from "lucide-react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 
 import { apiGet } from "@/api/client";
@@ -27,46 +25,38 @@ import { useAuth } from "@/context/AuthContext";
 import { MobileTabBar } from "@/layouts/MobileTabBar";
 import { PwaLayer } from "@/pwa/PwaLayer";
 import { NAV_ITEMS } from "@/layouts/navItems";
-import type { NavItem } from "@/layouts/navItems";
 import type { Paginated } from "@/types/api";
 
 const BRAND = (
   <Link
     to="/dashboard"
     aria-label="TCS Joining Tracker home"
-    className="flex items-center gap-2 px-3 py-2"
+    className="flex items-center gap-2.5 px-2 py-1"
   >
-    <span className="inline-flex items-center justify-center rounded-lg bg-brand-700 px-2 py-1 text-xs font-bold text-white">
+    <div className="h-9 w-9 rounded-lg bg-indigo-600 text-white font-headline font-bold text-sm flex items-center justify-center shadow-sm">
       TJT
-    </span>
-    <span className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">
-      Tracker
-    </span>
+    </div>
+    <div>
+      <h1 className="font-headline text-base font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-none">
+        TJT Tracker
+      </h1>
+      <p className="font-body text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-none font-medium">
+        Recruitment Status
+      </p>
+    </div>
   </Link>
 );
 
 function navLinkClasses({ isActive }: { isActive: boolean }): string {
   return [
-    "flex min-h-[44px] items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium",
+    "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-150 min-h-[44px]",
     isActive
-      ? "bg-brand-50 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300"
-      : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800",
+      ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 dark:border dark:border-indigo-800/40 font-semibold"
+      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200",
   ].join(" ");
 }
 
-/** The composition's nav-item anatomy: glyph + label, tinted by active state. */
-function NavGlyph({ item, active }: { item: NavItem; active: boolean }): React.ReactElement {
-  const Glyph = item.icon;
-  return (
-    <Glyph
-      aria-hidden="true"
-      className={`h-5 w-5 shrink-0 ${active ? "" : "text-slate-500 dark:text-slate-500"}`}
-      strokeWidth={1.75}
-    />
-  );
-}
-
-/** The §5.5 announcement banner (D3): latest un-dismissed announcement, persisted dismissal. */
+/** The §5.5 announcement banner: latest un-dismissed announcement, persisted dismissal. */
 function AnnouncementBanner() {
   const [item, setItem] = useState<{ id: string; title: string; body: string } | null>(null);
 
@@ -82,7 +72,6 @@ function AnnouncementBanner() {
         );
       })
       .catch(() => {
-        // Chrome, not content: silent degradation on API failure.
         if (!cancelled) setItem(null);
       });
     return () => {
@@ -93,44 +82,47 @@ function AnnouncementBanner() {
   if (item === null) return null;
 
   return (
-    <div
+    <aside
+      id="global-announcement"
       data-testid="announcement-banner"
-      className="flex items-center justify-between gap-3 bg-brand-700 px-4 py-2 text-sm text-white"
+      className="bg-indigo-600 text-white text-xs sm:text-sm font-medium px-4 sm:px-6 py-2 flex items-center justify-between shadow-sm sticky top-0 z-40 transition-all duration-200 dark:bg-indigo-950/90 dark:border-b dark:border-indigo-800/60 dark:text-indigo-100"
     >
-      <p className="flex min-w-0 items-center gap-2 truncate">
-        <Megaphone aria-hidden="true" className="h-4 w-4 shrink-0" />
-        <span className="font-semibold">{item.title}</span>
-        {item.body !== "" && <span className="hidden truncate font-normal opacity-90 sm:inline">{item.body}</span>}
-        <Link to="/notifications" className="whitespace-nowrap underline opacity-90 hover:opacity-100">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        <span className="p-1 rounded bg-indigo-700/60 flex items-center justify-center shrink-0">
+          <span className="material-symbols-outlined text-[18px] text-indigo-100 leading-none" data-icon="campaign" aria-hidden="true">
+            campaign
+          </span>
+        </span>
+        <p className="truncate">
+          <span className="font-bold tracking-wide">NOTICE:</span> {item.title}
+          {item.body !== "" && <span className="hidden truncate font-normal opacity-90 sm:inline"> — {item.body}</span>}
+        </p>
+      </div>
+      <div className="flex items-center gap-3 shrink-0 ml-4">
+        <Link to="/notifications" className="text-xs sm:text-sm underline underline-offset-2 text-indigo-100 hover:text-white font-semibold transition-colors duration-150">
           Read update
         </Link>
-      </p>
-      <button
-        type="button"
-        aria-label="Dismiss announcement"
-        data-testid="dismiss-announcement"
-        className="shrink-0 rounded-md px-2 py-1.5 hover:bg-white/10"
-        onClick={() => {
-          recordDismissedAnnouncement(item.id);
-          setItem(null);
-        }}
-      >
-        ×
-      </button>
-    </div>
+        <button
+          type="button"
+          aria-label="Dismiss announcement"
+          data-testid="dismiss-announcement"
+          className="p-1 rounded hover:bg-indigo-700/70 text-indigo-200 hover:text-white transition-colors duration-150 flex items-center"
+          onClick={() => {
+            recordDismissedAnnouncement(item.id);
+            setItem(null);
+          }}
+        >
+          <span className="material-symbols-outlined text-[18px]" data-icon="close" aria-hidden="true">
+            close
+          </span>
+        </button>
+      </div>
+    </aside>
   );
 }
 
 /**
- * §7.10's bell (9.4 Task 7): the topbar's unread badge, fed by the same shared
- * store the notification center publishes to.
- *
- * Signed in: links to /notifications and shows the count. Anonymous: the same
- * icon, no badge, linking through the deep-link login (`next=/notifications`) so
- * a visitor never lands on an authenticated route without a session.
- *
- * Chrome, not content: a failed count read leaves the badge at its last value
- * rather than surfacing an error on every page in the app.
+ * §7.10's bell: the topbar's unread badge, fed by the shared unreadStore.
  */
 function NotificationBell(): React.ReactElement {
   const { isAuthenticated } = useAuth();
@@ -143,9 +135,7 @@ function NotificationBell(): React.ReactElement {
       .then((envelope) => {
         if (!cancelled) setUnreadCount(envelope.unread_count);
       })
-      .catch(() => {
-        // Silent: the bell is decoration around whatever page is open.
-      });
+      .catch(() => {});
     return () => {
       cancelled = true;
     };
@@ -156,13 +146,15 @@ function NotificationBell(): React.ReactElement {
       to={isAuthenticated ? "/notifications" : "/login?next=%2Fnotifications"}
       aria-label={isAuthenticated ? "Notifications" : "Sign in to see notifications"}
       data-testid="notification-bell"
-      className="relative flex h-11 w-11 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+      className="relative flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-100 dark:hover:bg-slate-800 transition-colors duration-150"
     >
-      <Bell aria-hidden="true" className="h-5 w-5" strokeWidth={1.75} />
+      <span className="material-symbols-outlined text-[22px]" data-icon="notifications" aria-hidden="true">
+        notifications
+      </span>
       {isAuthenticated && unread > 0 && (
         <span
           data-testid="notification-badge"
-          className="absolute -right-0.5 -top-0.5 min-w-[18px] rounded-full bg-brand-700 px-1 text-center text-[11px] font-semibold leading-[18px] text-white"
+          className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white leading-none shadow-sm"
         >
           {unread > 99 ? "99+" : unread}
         </span>
@@ -172,11 +164,7 @@ function NotificationBell(): React.ReactElement {
 }
 
 /**
- * 9.5 Task 8: the Administration nav group — rendered only for `is_staff`
- * callers (the RequireStaff route guard is the second half of the gate).
- * Reports carries the live PENDING open-count from the queue's `count` field;
- * a failed read leaves the link without its badge (chrome, not content).
- * Members is omitted: the API ships no members list (recorded 9.5 divergence).
+ * The Administration nav group — rendered only for `is_staff` callers.
  */
 function AdminNavGroup(): React.ReactElement | null {
   const { user } = useAuth();
@@ -189,9 +177,7 @@ function AdminNavGroup(): React.ReactElement | null {
       .then((envelope) => {
         if (!cancelled) setOpenReports(envelope.count);
       })
-      .catch(() => {
-        // Silent: the count is decoration around the link.
-      });
+      .catch(() => {});
     return () => {
       cancelled = true;
     };
@@ -210,33 +196,44 @@ function AdminNavGroup(): React.ReactElement | null {
           className={navLinkClasses}
           data-testid="admin-reports-link"
         >
-          <span className="flex w-full items-center justify-between gap-2">
-            Reports
-            {openReports !== null && openReports > 0 && (
-              <span
-                data-testid="admin-reports-count"
-                className="min-w-[20px] rounded-full bg-brand-100 px-1.5 text-center text-[11px] font-semibold leading-[18px] text-brand-800 dark:bg-brand-900 dark:text-brand-200"
-              >
-                {openReports > 99 ? "99+" : openReports}
+          {() => (
+            <span className="flex w-full items-center justify-between gap-2">
+              <span className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-[20px]" data-icon="flag" aria-hidden="true">
+                  flag
+                </span>
+                <span>Reports</span>
               </span>
-            )}
-          </span>
+              {openReports !== null && openReports > 0 && (
+                <span
+                  data-testid="admin-reports-count"
+                  className="min-w-[20px] rounded-full bg-amber-100 text-amber-800 dark:bg-indigo-950 dark:text-indigo-300 dark:border dark:border-indigo-800/60 px-1.5 text-center text-[11px] font-semibold leading-[18px]"
+                >
+                  {openReports > 99 ? "99+" : openReports}
+                </span>
+              )}
+            </span>
+          )}
         </NavLink>
-        <NavLink to="/admin/announcements" className={navLinkClasses} data-testid="admin-announcements-link">
-          Announcements
+        <NavLink
+          to="/admin/announcements"
+          className={navLinkClasses}
+          data-testid="admin-announcements-link"
+        >
+          {() => (
+            <span className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-[20px]" data-icon="campaign" aria-hidden="true">
+                campaign
+              </span>
+              <span>Announcements</span>
+            </span>
+          )}
         </NavLink>
       </nav>
     </div>
   );
 }
 
-/**
- * Right-rail slot (9.3 Task 6): AppShell owns the rail's chrome and placement
- * (§5.2's 320px rail at ≥1280px only). Pages fill it through `RailPortal`,
- * which portals their content into the shell's slot node — a page never
- * renders rail markup in its own tree, and pages that fill nothing leave the
- * rail empty.
- */
 const RAIL_SLOT_ID = "appshell-rail-slot";
 
 export function RailPortal({ children }: { children: ReactNode }) {
@@ -252,103 +249,173 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900" data-testid="app-shell">
-      {/* §10.1's offline strip, install promotion and push primer (9.4 Task 8). */}
+    <div
+      className="skin-v1 min-h-screen bg-slate-50 text-slate-900 font-body antialiased selection:bg-indigo-100 selection:text-indigo-800 dark:bg-slate-900 dark:text-slate-100 dark:selection:bg-indigo-900 dark:selection:text-indigo-200"
+      data-testid="app-shell"
+    >
       <PwaLayer />
       <AnnouncementBanner />
-      <div className="lg:grid lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)_320px]">
-        {/* Sidebar: ≥640px (§5.3 persists it; §5.2 shows it beside the rail) */}
-        <aside className="hidden border-slate-200 dark:border-slate-800 lg:sticky lg:top-0 lg:block lg:h-screen lg:border-r">
-          <div className="flex h-full flex-col justify-between p-3">
-            <div>
-              {BRAND}
-              <nav aria-label="Primary" className="mt-3 space-y-1">
-                {NAV_ITEMS.map((item) => (
-                  <NavLink key={item.to} to={item.to} className={navLinkClasses}>
-                    {({ isActive }) => (
-                      <>
-                        <NavGlyph item={item} active={isActive} />
-                        {item.label}
-                      </>
-                    )}
-                  </NavLink>
-                ))}
-              </nav>
+
+      <div className="flex flex-1 w-full min-w-0">
+        {/* Sidebar: 240px wide, desktop ≥1024px */}
+        <aside className="w-60 bg-white border-r border-slate-200 dark:bg-slate-900 dark:border-slate-800 p-4 flex flex-col justify-between shrink-0 sticky top-0 h-screen z-30 overflow-y-auto hidden lg:flex">
+          <div className="flex flex-col gap-6">
+            {BRAND}
+            <nav
+              aria-label="Primary"
+              data-testid="desktop-nav"
+              className="space-y-1 font-body text-sm leading-6 tracking-normal"
+            >
+              {NAV_ITEMS.map((item) => (
+                <NavLink key={item.to} to={item.to} className={navLinkClasses}>
+                  {({ isActive }) => (
+                    <>
+                      <span
+                        className={`material-symbols-outlined text-[20px] ${
+                          isActive
+                            ? "text-indigo-600 dark:text-indigo-400"
+                            : "text-slate-500 dark:text-slate-400"
+                        }`}
+                        data-icon={item.glyph}
+                        aria-hidden="true"
+                      >
+                        {item.glyph}
+                      </span>
+                      <span>{item.label}</span>
+                    </>
+                  )}
+                </NavLink>
+              ))}
               <AdminNavGroup />
-            </div>
-            <div className="space-y-1 px-3 pb-4 text-xs text-slate-500 dark:text-slate-400">
-              <Link to="/about" className="block py-1 hover:text-slate-800 dark:hover:text-slate-200">
+            </nav>
+          </div>
+
+          <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+            <Link
+              to="/community/create"
+              className="w-full flex items-center justify-center gap-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 font-medium text-xs py-2 px-3 rounded-lg border border-indigo-200 dark:border-indigo-800 transition-colors duration-150"
+            >
+              <span className="material-symbols-outlined text-[16px]" data-icon="add" aria-hidden="true">
+                add
+              </span>
+              <span>+ Share Update</span>
+            </Link>
+            <div className="flex items-center gap-3 px-2 text-xs text-slate-500 dark:text-slate-400">
+              <Link to="/about" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
                 About
               </Link>
-              <Link to="/privacy" className="block py-1 hover:text-slate-800 dark:hover:text-slate-200">
+              <span>·</span>
+              <Link to="/privacy" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
                 Privacy
               </Link>
-              <Link to="/terms" className="block py-1 hover:text-slate-800 dark:hover:text-slate-200">
+              <span>·</span>
+              <Link to="/terms" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
                 Terms
               </Link>
             </div>
+            <p className="px-2 text-[10px] text-slate-400 dark:text-slate-500">v2.4.0 Community Edition</p>
           </div>
         </aside>
 
         {/* Center column */}
-        <div className="flex min-h-screen min-w-0 flex-col">
-          <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95">
-            {/* Mobile app bar (§5.4) */}
-            <div className="flex items-center justify-between px-4 py-2 lg:hidden">
-              {BRAND}
+        <div className="flex-1 min-w-0 bg-slate-50 dark:bg-slate-900 flex flex-col min-h-screen">
+          <header className="bg-white border-b border-slate-200 px-4 sm:px-8 py-2.5 flex items-center justify-between sticky top-0 z-20 shadow-sm dark:bg-slate-900 dark:border-slate-800">
+            {/* Mobile Top Bar */}
+            <div className="flex items-center justify-between w-full lg:hidden">
+              <div className="flex items-center gap-2 font-display text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
+                <span className="bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded-md tracking-wider shadow-sm select-none">
+                  TJT
+                </span>
+                <span className="text-slate-900 dark:text-slate-100 font-extrabold tracking-tight text-lg">
+                  Tracker
+                </span>
+              </div>
               <div className="flex items-center gap-2">
-                {/* §7.10's bell: same component on both breakpoints, so the
-                    badge and its store stay in one place. */}
                 <NotificationBell />
+                {user !== null && (
+                  <Link
+                    to="/settings"
+                    aria-label="User profile settings"
+                    className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-indigo-50 border border-indigo-200 dark:bg-indigo-950 dark:border-indigo-800 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-xs ring-2 ring-indigo-500/10">
+                      {user.email ? user.email.slice(0, 1).toUpperCase() : "C"}
+                    </div>
+                  </Link>
+                )}
               </div>
             </div>
-            {/* Desktop/tablet search row (§7.4) */}
-            <div className="hidden items-center justify-between gap-4 px-6 py-2.5 lg:flex">
-              <input
-                type="search"
-                aria-label="Search community"
-                placeholder="Search community…"
-                className="w-80 rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800/50"
-              />
-              <div className="flex items-center gap-3">
+
+            {/* Desktop Search and Actions */}
+            <div className="hidden lg:flex items-center justify-between w-full">
+              <div className="relative w-80">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <span className="material-symbols-outlined text-slate-400 text-[18px]" data-icon="search" aria-hidden="true">
+                    search
+                  </span>
+                </span>
+                <input
+                  type="search"
+                  aria-label="Search community"
+                  placeholder="Search community reports, region, batch…"
+                  className="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-slate-50/70 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition duration-150 dark:bg-slate-800/70 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-500"
+                />
+              </div>
+
+              <div className="flex items-center gap-4">
                 <Link
                   to="/community/create"
-                  className="flex min-h-[40px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800"
+                  className="bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-lg shadow-sm flex items-center gap-1.5 transition duration-150"
                 >
-                  + Post
+                  <span className="material-symbols-outlined text-[18px]" data-icon="add" aria-hidden="true">
+                    add
+                  </span>
+                  <span>+ Post</span>
                 </Link>
                 <NotificationBell />
                 {user !== null && user.is_staff && (
                   <span
                     data-testid="moderator-chip"
-                    className="rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-semibold text-brand-700 dark:bg-brand-950/60 dark:text-brand-300"
+                    className="rounded-full bg-indigo-50 border border-indigo-200 px-2 py-0.5 text-[11px] font-semibold text-indigo-700 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300"
                   >
                     Moderator
                   </span>
                 )}
                 {user !== null && (
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                    {user.email}
-                  </span>
+                  <Link
+                    to="/settings"
+                    className="flex items-center gap-2.5 cursor-pointer p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-150"
+                  >
+                    <div className="h-8 w-8 rounded-full bg-indigo-100 text-indigo-700 font-semibold text-xs flex items-center justify-center border border-indigo-200 dark:bg-indigo-950 dark:text-indigo-300 dark:border-indigo-800">
+                      {user.email ? user.email.slice(0, 2).toUpperCase() : "CA"}
+                    </div>
+                    <div className="hidden sm:block text-left">
+                      <div className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-tight">
+                        {user.email}
+                      </div>
+                    </div>
+                  </Link>
                 )}
               </div>
             </div>
           </header>
 
-          <main className="flex-1 px-4 pb-24 pt-4 lg:px-8 lg:pb-8">{children ?? <Outlet />}</main>
+          <main className="flex-1 px-4 pb-24 pt-4 lg:px-8 lg:pb-8">
+            {children ?? <Outlet />}
+          </main>
 
           <footer className="border-t border-slate-200 px-4 py-3 lg:px-8 dark:border-slate-800">
             <Disclaimer variant="footer" />
           </footer>
         </div>
 
-        {/* Right rail: §5.2's 320px rail at ≥1280px only; 9.3 fills it */}
-        <aside className="hidden border-slate-200 dark:border-slate-800 xl:sticky xl:top-0 xl:block xl:h-screen xl:border-l">
-          <div id={RAIL_SLOT_ID} className="space-y-4 p-4" />
+        {/* Right rail: 320px on xl screens */}
+        <aside className="hidden xl:block w-80 bg-white border-l border-slate-200 p-4 shrink-0 sticky top-0 h-screen z-20 overflow-y-auto dark:bg-slate-900 dark:border-slate-800">
+          <div id={RAIL_SLOT_ID} className="space-y-4" />
         </aside>
       </div>
 
-      {/* Mobile bottom tab bar (§5.4) */}
+      {/* Mobile bottom tab bar */}
       <MobileTabBar />
     </div>
   );
