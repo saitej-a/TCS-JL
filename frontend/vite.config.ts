@@ -16,6 +16,7 @@ const PROXY = {
   "/admin": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
   "/static": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
   "/media": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
+  "/ws": { target: NGINX_DEV_ORIGIN, ws: true },
 };
 
 export default defineConfig({
