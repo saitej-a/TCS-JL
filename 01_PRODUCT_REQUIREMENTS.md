@@ -876,8 +876,8 @@ The exact URL structure may change during implementation.
 Do not implement initially:
 
 ```text
-✗ Private messaging
-✗ Global real-time chat
+✗ Private messaging (remains deferred; Phase 13 shipped single shared common channel + per-category messaging only)
+✗ Global real-time chat (superseded by Phase 13: single shared channel #General + category rooms shipped; 1-on-1 private DMs remain deferred)
 ✗ Voice/video calls
 ✗ Native Android application
 ✗ Native iOS application
@@ -964,8 +964,8 @@ Incomplete community reports must not be presented as definitive claims about TC
 
 Possible post-MVP features:
 
-- Private messaging
-- Real-time community chat
+- Private messaging (DMs)
+- Real-time community chat (Phase 13 delivered single shared channel #General + category rooms; private 1:1 chat remains post-MVP)
 - Advanced timeline analytics
 - Regional communities
 - Batch-specific communities
@@ -993,14 +993,14 @@ The product should prioritize:
 ```text
 Personal Timeline
         ↓
-Community
+Community (including Phase 13 shared messaging)
         ↓
 Aggregated Data
         ↓
 Notifications
 ```
 
-over secondary features such as real-time chat or private messaging.
+over secondary features such as private 1-on-1 messaging or native mobile apps (Phase 13 delivered the single shared channel and category rooms for community messaging).
 
 The initial release should be a modular Django application with PostgreSQL as the primary database, Redis/Celery for background tasks, and browser/PWA support for notifications.
 

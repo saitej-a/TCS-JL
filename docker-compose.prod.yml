@@ -31,6 +31,28 @@ services:
       start_period: 45s
     restart: unless-stopped
 
+  asgi:
+    build: .
+    command:
+      ["/app/docker/entrypoint.sh", "daphne", "-b", "0.0.0.0", "-p", "8000", "config.asgi:application"]
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.production
+      DJANGO_ALLOWED_HOSTS: 127.0.0.1,localhost
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL:-redis://redis:6379/1}
+    env_file:
+      - .env.prod
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import http.client; c = http.client.HTTPConnection('127.0.0.1', 8000, timeout=5); c.request('GET', '/health/ready/', headers={'X-Forwarded-Proto': 'https'}); r = c.getresponse(); r.read(); assert r.status == 200, r.status"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 45s
+    restart: unless-stopped
+
   redis:
     image: redis:7.4.11-alpine
     volumes:
@@ -84,6 +106,8 @@ services:
       - ./staticfiles:/var/www/static:ro
     depends_on:
       web:
+        condition: service_healthy
+      asgi:
         condition: service_healthy
     restart: unless-stopped
 

@@ -1,9 +1,19 @@
-"""ASGI entrypoint (reserved for later phases; gunicorn serves WSGI for the MVP)."""
+"""ASGI entrypoint (Phase 13 D-04)."""
 
 import os
 
 from django.core.asgi import get_asgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
+django_asgi_app = get_asgi_application()
 
-application = get_asgi_application()
+from channels.routing import ProtocolTypeRouter, URLRouter  # noqa: E402
+from channels.security.websocket import AllowedHostsOriginValidator  # noqa: E402
+from apps.chat.routing import websocket_urlpatterns  # noqa: E402
+
+application = ProtocolTypeRouter(
+    {
+        "http": django_asgi_app,
+        "websocket": AllowedHostsOriginValidator(URLRouter(websocket_urlpatterns)),
+    }
+)

@@ -56,6 +56,19 @@
   --color-muted: #94a3b8; /* slate-400 */
   --color-default: #e2e8f0; /* slate-200 (border) */
   --color-input: #cbd5e1; /* slate-300 (input border idle) */
+
+  --animate-typing-wave: typing-wave 1.2s ease-in-out infinite;
+
+  @keyframes typing-wave {
+    0%, 100% {
+      opacity: 0.35;
+      transform: translateY(0);
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(-2px);
+    }
+  }
 }
 
 /* 05 §4.2 dark values override the same custom properties under `.dark`. */

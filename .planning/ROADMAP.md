@@ -430,3 +430,42 @@ Plans:
   structure-from-stale-HTML + v2 repaint (D-01), library committed (D-02), full parity (D-03),
   landing/privacy now with awaiting-copy intact (D-04), lucide-react (D-05), per-screen-first
   (D-06). UI contract: `12-UI-SPEC.md`.
+
+### Phase 13: Message in a single common channel
+
+**Goal:** Real-time messaging allowing candidates to communicate in a single common channel ("General") as well as category-specific channels ("Joining Letter", "Interview", etc.). Full-stack implementation: Django models, REST endpoints, Django Channels WebSocket consumers with single-use ticket authentication, and a responsive frontend view using the v2 design system and ui-ux-pro-max guidelines.
+**Requirements:** CHAT-01, CHAT-02
+**Depends on:** Phase 12
+**Plans:** 1 plan
+
+Plans:
+
+- [ ] `13-01-PLAN.md` — Common channel messaging (6 tasks, single wave: backend foundation & models → REST API & tickets → WebSockets & Daphne/Nginx → frontend API, types & hook → frontend UI with ui-ux-pro-max → verification & gates).
+
+### Phase 14: Literal Stitch markup in the app
+
+**Goal:** Make the app's screens **be** the Stitch compositions — the same classes, element tree, glyphs and both skins, copied verbatim into the existing React pages — while keeping auth, the real API, the PWA and the suite. Phase 12 took *structure* from the library and repainted it to token v2; this phase **supersedes that rule in the recorded scope of the ported screens** (12's G-1/G-2, 12-VERIFICATION, 05's token-role rules, PROJECT.md's v2 decision row are amended, the way Phase 11 amended the nesting rule). The library disagrees with itself — 32 documents are the v1 family (Inter, `indigo-*`, standard radii) and 13 are v2 (Fira Sans/Code, `brand-*` byte-identical to the app's sky scale, `rounded-card/elem`) — so both remain literal, scoped per screen through CSS variables (the build already routes utilities through them). Where a composition renders content the backend never produces, the block **keeps the mock's exact frame** and its unavailable value renders an enumerated awaiting state (`data-awaiting`), never fiction and never deletion. Behaviour is React (21 documents carry inline JS for tabs, radio cards, accordions, copy buttons and modals), the runtime Tailwind-CDN and Google-hosted assets are replaced by vendored subsets (Inter, Fira Sans/Code, Material Symbols subset to the 127 glyph names), lucide is retired at the end, and "verbatim" is machine-checked by a fidelity script that fails when a composition class, glyph or section is missing. Tracer first: one screen end to end before 35 more.
+**Requirements**: supersedes phase 12's G-1/G-2 repaint rule and the token-v2-only vocabulary for the ported surfaces; UI-01/UI-06 re-derived rather than rewritten
+**Depends on:** Phase 12
+**Plans:** 1 plan
+
+Plans:
+
+- [ ] `14-01-PLAN.md` — Literal Stitch markup (9 tasks, single wave: presentation layer + the notification center as tracer → shell (dark/mobile) → nine auth/onboarding screens → eight dashboard/timeline compositions → nine community compositions → the v2 settings suite → admin + analytics → visitor/legal/PWA/error states → 45/45 fidelity audit, gate supersession, lucide removal, record). Decisions locked in `14-CONTEXT.md`: literal markup supersedes repaint (D-01), keep-the-frame awaiting states instead of fiction or deletion (D-02), two skins scoped per screen (D-03), vendored fonts and icon subset (D-04), behaviour as React (D-05), the two inverted gates re-derived not deleted (D-06), tracer-first (D-07), verbatim machine-checked (D-08).
+
+### Phase 15: Fix real-time chat and add a typing wave indicator [x] *(completed 2026-10-04)*
+
+**Goal:** Make real-time delivery actually work in the chat channel view and add a typing indicator with a wave animation (the user's two asks: "The real time messages are not working and also introduce a feature like when any one typing in the channel it should show wave type animation"). Reported failure, concretely: the header can read "Live updates active" while messages never arrive live, and switching channels showed "Live updates paused" (then the same on returning to General). One cause is **already fixed but uncommitted and never verified against a live stack** — `frontend/src/hooks/useChatRoom.ts` shared one mounted-ref across WebSocket generations, so a stale socket's `close` flipped the UI to degraded and could schedule a reconnect bound to the old room; the lifecycle now lives in an effect keyed by `[roomSlug, loadInitialHistory]` with a per-run `cancelled` flag, detached handlers, per-run backoff and request-id-guarded history, plus a channel-switch regression test in `frontend/src/pages/MessagesPage.test.tsx`. So this phase's verification half must **prove delivery end to end against a running ASGI stack** — a Daphne/ASGI process, `config/asgi.py` routing, the `/ws/` upgrade actually proxied (`nginx/nginx.dev.conf`, `nginx.prod.conf`), host/origin checks, single-use `ws-ticket` auth (`WsTicketView`) and group broadcast in `apps/chat/consumers.py` — and must not treat a green unit suite as evidence. Feature half: while a participant is composing, the other members of that room see a typing indicator with a wave animation; presence is scoped to the room group, server-authoritative with a timeout so indicators cannot stick, and the animation ships under the v2 token system with tests.
+**Requirements:** CHAT-01, CHAT-03 — CHAT-01 is the shared channel this phase makes actually real-time; **CHAT-03 (server-authoritative typing presence) is introduced by this phase**
+**Depends on:** Phase 13
+**Plans:** 2/2 plans complete
+
+Plans:
+
+**Wave 1**
+
+- [x] `15-01-PLAN.md` — Make real-time delivery work on the live stack (3 tasks: an `asgi` daphne service + hardened `/ws/` proxy locations + an origin-validated router, proven by an unticketed upgrade returning 403-not-404 → a Wave 0 dev-requirements install that makes the backend suite runnable at last, plus ticket/join contract tests → `scripts/ws_live_probe.py`, a two-client proof through nginx of handshake, delivery, single-use auth and 75 s idle survival). Root cause and live evidence in `15-RESEARCH.md` (F-1…F-6). *(completed 2026-10-04)*
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [x] `15-02-PLAN.md` — The typing wave indicator on that proven transport (3 tasks: a consumer `typing` action with a 6 s Redis TTL, a 1.5 s per-connection throttle and sender exclusion + `test_ws_typing.py` → the `ChatWsFrame` union plus `typingUsers`/`notifyTyping()` with expiry sweeping → the `TypingIndicator` wave row above the composer under a new `--animate-typing-wave` token, the live `typing` probe check, and the visual/reduced-motion pass). Locks: wave dots **plus the typist's name** above the composer (D-15-01), server-authoritative TTL so indicators cannot stick, and a narrow supersession of 13-UI-SPEC's no-typing line for in-room presence only (D-15-04). UI contract: `15-UI-SPEC.md`. *(completed 2026-10-04)*

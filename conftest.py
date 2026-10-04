@@ -70,3 +70,14 @@ def _isolated_throttle_state(settings):
     yield
     rates.clear()  # in-place restore — see module docstring re: DRF's cache
     rates.update(saved)
+
+
+@pytest.fixture(autouse=True)
+def _in_memory_channel_layer(settings):
+    """Use InMemoryChannelLayer during tests so Redis is not required for channel layer testing."""
+    settings.CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        },
+    }
+

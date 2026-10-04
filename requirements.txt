@@ -15,4 +15,8 @@ firebase-admin==7.6.0
 # plan's "verify the latest 1.x" instruction pinned to 1.14.1 rather than the planned 1.6.1;
 # 2.x exists but is outside the researched/validated major line)
 pywebpush==1.14.1
+# Real-time WebSockets & ASGI (Phase 13 D-04)
+daphne==4.2.3
+channels==4.3.2
+channels-redis==4.3.0
 

@@ -20,6 +20,7 @@ import {
   ForgotPasswordPage,
   LandingPage,
   LoginPage,
+  MessagesPage,
   NotFoundPage,
   NotificationsPage,
   OnboardingPage,
@@ -90,6 +91,7 @@ export const router = createBrowserRouter([
       { path: "/onboarding", element: <OnboardingPage /> },
       { path: "/dashboard", element: <DashboardPage /> },
       { path: "/timeline", element: <TimelinePage /> },
+      { path: "/messages", element: <MessagesPage /> },
       { path: "/community/create", element: <CreatePostPage /> },
       { path: "/notifications", element: <NotificationsPage /> },
       // The five §3 sitemap settings children (flat until 9.2 builds the shell)

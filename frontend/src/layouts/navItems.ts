@@ -10,6 +10,7 @@ import {
   Bell,
   ChartColumn,
   LayoutDashboard,
+  MessageCircle,
   MessagesSquare,
   Route,
   Settings,
@@ -26,16 +27,18 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/timeline", label: "Timeline", icon: Route },
   { to: "/community", label: "Community", icon: MessagesSquare },
+  { to: "/messages", label: "Messages", icon: MessageCircle },
   { to: "/analytics", label: "Analytics", icon: ChartColumn },
   { to: "/notifications", label: "Alerts", icon: Bell },
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
-/** The five §5.4 mobile tabs (Analytics is not in the mobile bar). */
+/** The mobile tabs. */
 export const MOBILE_TABS: readonly NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/timeline", label: "Timeline", icon: Route },
   { to: "/community", label: "Community", icon: MessagesSquare },
+  { to: "/messages", label: "Messages", icon: MessageCircle },
   { to: "/notifications", label: "Alerts", icon: Bell },
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;

@@ -1,20 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 13
-current_phase_name: Message in a single common channel
-status: ready
-stopped_at: Phase 12 complete (2026-09-30); Phase 13 unplanned — Phase 09.5.1 remains halted at the D-15/D-16 copy gate
-last_updated: "2026-09-30T03:22:28.881Z"
-last_activity: 2026-09-30
-last_activity_desc: Phase 12 complete (executed + verified); Phase 13 unplanned
-state_head: 38e7be6e3485873fa081eb467b78d7307aafdfc4
+current_phase: 15
+current_phase_name: Fix real-time chat and add a typing wave indicator
+status: complete
+stopped_at: Phase 15 complete (15-01 + 15-02 executed and verified)
+last_updated: "2026-10-04T07:45:00.000Z"
+last_activity: 2026-10-04
+last_activity_desc: Phase 15 complete (real-time chat transport + typing wave indicator verified)
+state_head: a5a46733898188749c37fbb879c11d76ab7b08cb
 progress:
-  total_phases: 33
-  completed_phases: 6
-  total_plans: 22
-  completed_plans: 21
-  percent: 96
+  total_phases: 35
+  completed_phases: 7
+  total_plans: 27
+  completed_plans: 23
+  percent: 85
 milestone_name: milestone
 ---
 
@@ -27,12 +27,13 @@ Total Phases: 22
 See: .planning/PROJECT.md (updated 2026-09-19)
 
 **Core value:** Provide anxious candidates with complete clarity on their recruitment progress and community benchmarks without requiring them to expose their real identity or personal credentials.
-**Current focus:** Phase 13 — Message in a single common channel (not yet planned)
+**Current focus:** Phase 15 — Fix real-time chat and add a typing wave indicator (COMPLETED 2026-10-04)
 
 ## Current Position
 
-Phase: 13 (Message in a single common channel) — not yet planned
-Plan: 0 of 0
+Phase: 15 (Fix real-time chat and add a typing wave indicator) — COMPLETE (2026-10-04)
+Plan: 2 of 2 executed (15-01-PLAN.md, 15-02-PLAN.md)
+Evidence: `15-VERIFICATION.md` — Daphne ASGI /ws/ 403-not-404, nginx 3600s timeouts, AllowedHostsOriginValidator, backend chat suite 42 passed in container, frontend suite 301 passed across 52 test files, live network probe (handshake, delivery 0.012s, typing 0.014s, 75s idle survival, auth single-use rejection all PASS).
 Previous phase: 12 EXECUTED + VERIFIED (2026-09-30) — the 45 Stitch compositions are now the shape
 of the shipped screens, rebuilt in order (tracer: NotificationsPage) → shell → auth → onboarding →
 dashboard → timeline+modals → community+create-post modal → post detail → settings → admin →
@@ -44,7 +45,7 @@ The phase before it: 9.5 EXECUTED + VERIFIED (2026-09-29) — gates re-derived i
 `.planning/phases/TCS-JL-09.5-ui-ux-design-pass-ui-ux-pro-max-stitch-screens/VERIFICATION.md`
 (backend 849 / frontend 231 / lint 0 errors / build clean / contrast 10-of-10; the Stitch
 re-theme of all 40 instances is VERIFICATION §4).
-Last activity: 2026-09-30 — Phase 12 complete (executed + verified)
+Last activity: 2026-10-04 — Phase 15 complete, transitioned to Phase 1
 
 *(Pointer set by hand: `phase.complete 12` rewrote this customized STATE.md's hand-maintained
 values from its own stale phase index — `current_phase` became 1, "Total plans completed" 1, the
@@ -72,7 +73,7 @@ frontmatter keys. The `state.add-roadmap-evolution` handler did match and logged
 STATE.md does not carry — it returned `updated: []` for both `Current Phase`/`Next recommended run` and the
 frontmatter keys. The `state.add-roadmap-evolution` handler did match and logged the insertion.)*
 
-Progress: [█████████▌] 96%
+Progress: [████░░░░░░] 42%
 
 ### 9.4 verification record (2026-09-28)
 
@@ -184,7 +185,7 @@ with `feed_queryset`'s `is_deleted=False` removed the test **FAILED** (Assertion
 
 **Velocity:**
 
-- Total plans completed: 21
+- Total plans completed: 2
 - Average duration: — (per-plan timing not yet instrumented)
 - Total execution time: —
 
@@ -204,6 +205,7 @@ with `feed_queryset`'s `is_deleted=False` removed the test **FAILED** (Assertion
 | 10. Security Audits, E2E Testing, Seed Data & Launch Readiness | 0/2 | - | - |
 | 11. Unlimited nested comment replies | 1/1 | - | - |
 | 12. Replace current screens with the Stitch designs | 1/1 | - | - |
+| 15 | 2 | - | - |
 
 **Recent Trend:**
 
@@ -222,6 +224,8 @@ with `feed_queryset`'s `is_deleted=False` removed the test **FAILED** (Assertion
 - Phase 11 added: **Unlimited nested comment replies** (2026-09-29) — a comment can be replied to at any depth. Added at the end of the milestone (after Phase 10's launch readiness) because it was invoked as an *add*; landing it pre-launch needs an explicit move. It **supersedes a shipped, documented rule** — 05 §1183's Strict 1-Level Nesting (`parent.parent == NULL` on backend and UI), 05 §75's rationale, PROJECT.md requirement COMM-03 and its *Strict 1-Level Reply Depth* decision row — so recording that supersession deliberately (REQUIREMENTS.md + the two 05 sections + the PROJECT.md row) is part of its work, alongside `validate_reply_depth`'s `nested_reply` code, `Comment.parent`'s `SET_NULL` promotion behaviour at depth, thread assembly beyond one replies level, and the UI's single indent unit. Known surfaces listed in the ROADMAP entry.
 - Phase 12 added: **Replace current screens with the Stitch designs** (2026-09-29) — structural reconciliation of the everyday screens against the 47-composition Stitch library now on disk at `frontend/stitch designs/` (desktop + mobile + dark-mode variants: dashboard ×2, timeline ×2, community feed/detail/create, the settings suite, admin moderation + announcements, auth/onboarding, notification center, PWA install/push/offline states, error/empty route states). Distinct from 9.5's token re-theme and 9.5.1's five *missing* screens: this one restyles screens that already exist. Constraints recorded in the ROADMAP entry — compositions' mock fiction does not ship (the 9.5 divergence ledger governs), and everything stays under v2 tokens + the contrast/accessibility gates. Open planning decisions: commit the library as the reference or consume it untracked; how the desktop/mobile variants map onto the responsive build.
 - Phase 14 added: **Literal Stitch markup in the app** (2026-09-30) — the compositions' markup, classes, glyphs and skins become the app's screens verbatim, replacing phase 12's structure-plus-repaint rule (a recorded supersession in 12's G-1/G-2, 12-VERIFICATION, 05's token-role rules and PROJECT.md's v2 decision row). The user chose this over the three alternatives considered in the discussion: serving the 45 exports as static pages (they compile Tailwind from a CDN at runtime, carry no data layer, cannot authenticate — shipping them would discard auth, the API, the PWA and offline), rebuilding the frontend as Django templates (exact markup but a new frontend without the built PWA stack), and keeping the repaint. Where a composition shows content the backend never produces, the block keeps the mock's exact frame with an enumerated awaiting state (`data-awaiting`) — the user's explicit choice over both shipping the fiction and deleting the blocks. Both skins stay literal, scoped per screen through the CSS variables the build already emits; fonts and the icon set are vendored (no runtime CDN); behaviour becomes React; `lucide-react` is retired at the end; and a fidelity script makes "verbatim" machine-checked. Tracer-first: the notification center proves the pipeline before 35 more screens. Decisions in `14-CONTEXT.md`, plan in `14-01-PLAN.md`.
+- Phase 15 added: **Fix real-time chat and add a typing wave indicator** (2026-10-03) — the user's report that real-time channel messages still do not work, plus a request for a typing indicator with a wave animation. The channel-switch "Live updates paused" cause is **already fixed and sitting uncommitted** in `frontend/src/hooks/useChatRoom.ts` (effect-scoped socket lifecycle with a per-run `cancelled` flag and backoff, request-id-guarded history; regression test in `frontend/src/pages/MessagesPage.test.tsx`) — a planner must not re-fix that, and instead prove real delivery live against the ASGI/Nginx stack (Daphne process, `config/asgi.py`, the `/ws/` proxy in `nginx/nginx.dev.conf` and `nginx.prod.conf`, host/origin checks, `ws-ticket` auth, consumer group broadcast). Feature half: typing presence scoped to the room group with a server-side timeout (no stuck indicators) and a wave animation under the v2 tokens, with tests. Full goal detail recorded in the ROADMAP entry. The phase was appended at the end of the roadmap (after Phase 14, as an *add* does) and its auto-generated `Depends on: Phase 14` was corrected to **Phase 13** — the work touches only the chat stack 13 shipped and is independent of the literal-Stitch port.
+- Phase 15 planned (2026-10-03): **the reported failure is an infrastructure defect, reproduced live this session.** `/ws/` is served by `gunicorn config.wsgi:application` (WSGI), so a websocket upgrade cannot happen: a probe returned `HTTP/1.1 404 Not Found` with **no `Upgrade` header**, both through nginx and directly against `web:8000`, and the browser's socket therefore never opens — messages fall back to REST behind the amber banner, exactly as reported. Two further defects sit in the same path: both nginx confs declare **no `proxy_read_timeout`** for `/ws/` (nginx's default 60 s would cull a working socket), and `config/asgi.py` wraps `URLRouter` with **no origin validation**. All of it, with the commands, is recorded in `15-RESEARCH.md` (F-1…F-6). The plan is therefore two waves: **15-01** runs `/ws/` from a `daphne` `asgi` service, hardens the proxy, and proves handshake / delivery / single-use auth / 75 s idle survival with a two-client probe through nginx — and its Task 2 is a Wave 0 that makes the backend chat suite **runnable at all** (the `web` container has channels/daphne/redis but no pytest; the local `.venv` has pytest but no WS stack and no `pip` — so Phase 13's plan-level `docker compose exec -T web python -m pytest` could never have run as written). **15-02** adds server-authoritative typing presence (6 s Redis TTL, 1.5 s per-connection throttle, sender exclusion, clear on send/disconnect) and the wave row above the composer. Decisions taken at the planning gate — no CONTEXT.md exists, `/gsd-discuss-phase` was not run — are binding: the indicator is **wave dots plus the typist's name** above the composer (D-15-01); the phase authors `15-UI-SPEC.md` itself because the blocking `ui.plan-gate` fired and `/gsd-ui-phase` is **not installed** in this project (D-15-03); and 13-UI-SPEC's "no presence/typing dots" rejection is reopened **only** for in-room typing presence (D-15-04). The ROADMAP requirements line was set to CHAT-01 plus a new **CHAT-03** (typing presence, introduced by this phase). **Deviation recorded:** this runtime has no subagent dispatch (no `Agent` tool; no `claude`/`codex` CLI present), so plan-phase's researcher/planner/plan-checker roles ran in one context instead of three — the two deterministic probes (`verify-command-paths`, `verify-failure-directions`) were executed in the checker's place and both returned **0 blockers / 0 warnings**; an independent `gsd-plan-checker` pass has **not** been done.
 
 ### Decisions
 
@@ -360,7 +364,7 @@ Items acknowledged and deferred at milestone close, most recent first:
   (resume list in `09.5.1-01-SUMMARY.md`; the user's legal copy is the only outstanding input).
 
 Last session: 2026-09-29T16:18:42.252Z
-Stopped at: Phase 12 complete (executed + verified, `12-VERIFICATION.md` PASS); Phase 13 next
+Stopped at: Phase 15 complete, ready to plan Phase 1
 Resume files: .planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/VERIFICATION.md (verdict, drills, defect repros + repairs), .planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/09.4-PROOFS.md (execution's live proofs), apps/notifications/tests/test_push_device_routing.py (the F-94-1 pin), .planning/STATE.md
 
 **Owed from 9.3's execution — open items, none silent:**

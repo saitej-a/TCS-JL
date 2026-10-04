@@ -25,6 +25,27 @@ services:
       redis:
         condition: service_healthy
 
+  asgi:
+    build: .
+    command:
+      ["/app/docker/entrypoint.sh", "daphne", "-b", "0.0.0.0", "-p", "8000", "config.asgi:application"]
+    env_file: .env
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.local
+    volumes:
+      - .:/app
+    healthcheck:
+      test: ["CMD", "python", "-c", "import http.client; c = http.client.HTTPConnection('127.0.0.1', 8000, timeout=5); c.request('GET', '/health/ready/'); r = c.getresponse(); r.read(); assert r.status == 200, r.status"]
+      interval: 60s
+      timeout: 5s
+      retries: 12
+      start_period: 45s
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
   db:
     image: postgres:16.15-alpine
     env_file: .env
@@ -91,6 +112,8 @@ services:
       - ./staticfiles:/var/www/static:ro
     depends_on:
       web:
+        condition: service_healthy
+      asgi:
         condition: service_healthy
 
 volumes:

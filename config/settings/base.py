@@ -25,6 +25,7 @@ ALLOWED_HOSTS = [h for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(","
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost")
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -35,6 +36,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",  # refresh-token revocation (06 §3.4)
     "corsheaders",
+    "channels",
     # Project apps (09 §3.1 app boundaries)
     "apps.accounts.apps.AccountsConfig",
     "apps.candidates.apps.CandidatesConfig",
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     "apps.notifications.apps.NotificationsConfig",
     "apps.moderation.apps.ModerationConfig",
     "apps.analytics.apps.AnalyticsConfig",
+    "apps.chat.apps.ChatConfig",
 ]
 
 MIDDLEWARE = [
@@ -183,6 +186,11 @@ POST_CATEGORIES = [
     ("OTHER", "Other"),
 ]
 
+# Chat rooms (Phase 13 D-02): single common channel "general" + rooms derived from POST_CATEGORIES
+CHAT_ROOMS = [("general", "General")] + [
+    (cat.lower(), label) for cat, label in POST_CATEGORIES if cat != "GENERAL"
+]
+
 # --- Passwords (T2.3) -----------------------------------------------------------
 # First hasher = what set_password()/create_user() emit (the registration path).
 # Argon2idHasher pins T2.3's cost params: 64 MiB memory, 3 iterations, 2 threads.
@@ -211,6 +219,18 @@ CACHES = {
     }
 }
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+
+# --- Real-time WebSockets & ASGI (Phase 13 D-04) --------------------------------
+ASGI_APPLICATION = "config.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [REDIS_URL],
+        },
+    },
+}
 
 # --- Celery (T1.6) -------------------------------------------------------------
 # Serverless targets (Vercel) have no long-lived worker process: tasks execute
@@ -338,6 +358,9 @@ REST_FRAMEWORK = {
         # and force uncached computation of the app's costliest aggregate queries.
         # Real users make single-digit calls per session.
         "analytics_reads": "120/min",
+        # Chat scopes (Phase 13 D-03)
+        "chat_writes": "30/min",
+        "chat_reads": "120/min",
     },
 }
 

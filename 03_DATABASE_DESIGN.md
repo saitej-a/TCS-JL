@@ -1764,3 +1764,35 @@ This document should be implemented together with:
 The database design is the authoritative source for the MVP's persistent data model.
 
 When another document proposes a new persistent entity, the AI agent should verify that it is required before modifying this schema.
+
+---
+
+# 52. Chat & Messaging Models (Phase 13)
+
+Implemented in `apps/chat/` for the single common channel and category channels.
+
+### ChatRoom
+
+| Field | Type | Attributes | Description |
+|---|---|---|---|
+| `id` | UUID | PK, default uuid4 | Unique room identifier |
+| `slug` | CharField(40) | unique, indexed | Channel identifier (`general`, `joining_letter`, etc.) |
+| `label` | CharField(100) | | Human-readable title |
+| `is_default` | BooleanField | default False | True for the `#General` common channel |
+| `is_archived` | BooleanField | default False | Archival flag |
+| `created_at` | DateTimeField | auto_now_add | Creation timestamp |
+
+### ChatMessage
+
+| Field | Type | Attributes | Description |
+|---|---|---|---|
+| `id` | UUID | PK, default uuid4 | Unique message identifier |
+| `room` | ForeignKey(ChatRoom) | `on_delete=PROTECT`, related_name="messages" | Channel the message belongs to |
+| `author` | ForeignKey(User) | `on_delete=PROTECT`, related_name="chat_messages" | Message author (redacted via AuthorPublicSerializer) |
+| `body` | TextField | max 2000 chars, not blank | Message text |
+| `is_deleted` | BooleanField | default False | Soft-delete tombstone |
+| `created_at` | DateTimeField | auto_now_add | Message timestamp |
+
+Indexes:
+- `idx_chatmsg_room_created`: `(room, -created_at)`
+- `idx_chatmsg_author_created`: `(author, created_at)`

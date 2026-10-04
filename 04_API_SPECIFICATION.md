@@ -3519,6 +3519,43 @@ GET    /api/v1/public/stats/
 HEALTH
 GET    /health/
 GET    /health/ready/
+
+CHAT & MESSAGING (Phase 13)
+GET    /api/v1/chat/rooms/
+GET    /api/v1/chat/rooms/{slug}/messages/
+POST   /api/v1/chat/rooms/{slug}/messages/
+POST   /api/v1/chat/messages/{id}/delete/
+POST   /api/v1/chat/ws-ticket/
+WS     /ws/chat/{room_slug}/?ticket={ticket}
 ```
 
-This endpoint set is intentionally comprehensive enough for the MVP while avoiding premature features such as private messaging, global chat, payments, recommendation systems, Elasticsearch, native mobile APIs, and microservices.
+This endpoint set is intentionally comprehensive while keeping private 1:1 DMs deferred.
+
+---
+
+# 123. Chat & Real-Time Messaging API (Phase 13)
+
+### Endpoints
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/v1/chat/rooms/` | Authenticated | Lists all channels (General + categories) with metadata |
+| `GET` | `/api/v1/chat/rooms/{slug}/messages/` | Authenticated | Cursor-paginated message history (`PAGE_SIZE=30`, `?before=`) |
+| `POST` | `/api/v1/chat/rooms/{slug}/messages/` | Authenticated | Post message to room (fallback transport / offline catchup) |
+| `POST` | `/api/v1/chat/messages/{id}/delete/` | Authenticated | Soft-delete message (author or staff only) |
+| `POST` | `/api/v1/chat/ws-ticket/` | Authenticated | Issues single-use 60s ticket for WebSocket handshake |
+
+### WebSocket Protocol
+
+- **Connection URL**: `/ws/chat/{room_slug}/?ticket={ticket}`
+- **Authentication**: Single-use opaque ticket popped from Redis on connect; invalid/missing closes with 4401.
+- **Client Actions**:
+  - `send`: `{"action": "send", "body": "..."}`
+  - `delete`: `{"action": "delete", "message_id": "..."}`
+  - `sync`: `{"action": "sync", "after": "ISO_TIMESTAMP"}`
+- **Server Frames**:
+  - `chat.joined`: `{"type": "chat.joined", "room": "slug"}`
+  - `chat.message`: `{"type": "chat.message", "message": {...}}`
+  - `chat.message_deleted`: `{"type": "chat.message_deleted", "message_id": "..."}`
+  - `chat.replay`: `{"type": "chat.replay", "messages": [...]}`
+  - `chat.error`: `{"type": "chat.error", "error": {"code": "...", "message": "..."}}`
