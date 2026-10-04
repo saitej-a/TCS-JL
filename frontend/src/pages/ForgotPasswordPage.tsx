@@ -13,10 +13,8 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 
 import { requestPasswordReset } from "@/api/auth";
-import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
-import { AuthCard, SuccessStrip } from "@/pages/authCard";
-import { LockGlyph } from "@/pages/authGlyphs";
+import { AuthCard } from "@/pages/authCard";
 
 const SENT_TEXT = "If that email exists, a reset link is on its way.";
 const SENT_HINT = "Please check your inbox or spam folder within 2–3 minutes.";

@@ -18,7 +18,6 @@ import { resendVerification } from "@/api/auth";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { AuthCard, ErrorStrip, SuccessStrip } from "@/pages/authCard";
-import { MailGlyph, RefreshGlyph } from "@/pages/authGlyphs";
 
 const RESEND_SECONDS = 60;
 

@@ -46,21 +46,6 @@ const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const FRONTEND_DIR = path.resolve(SCRIPT_DIR, "..");
 const PROJECT_DIR = path.resolve(FRONTEND_DIR, "..");
 const DESIGNS_DIR = path.join(FRONTEND_DIR, "stitch designs");
-const RECORD_PATH = path.join(
-  PROJECT_DIR,
-  ".planning",
-  "phases",
-  "TCS-JL-14-literal-stitch-markup-in-the-app",
-  "RECONCILIATION-14.md",
-);
-
-/**
- * The register of tables in the phase record. Each table declares, per
- * composition, what it was ported from, which slots await a source, which tokens
- * were deliberately not carried and which fabrications must not appear. `headers`
- * names the exact cell headings so a renamed column fails loudly instead of
- * silently stopping the check.
- */
 const REGISTERS = {
   awaiting: "Awaiting slots",
   notCarried: "Not carried",
@@ -79,6 +64,26 @@ const values = (name) =>
   args.reduce((all, arg, index) => (arg === name ? [...all, args[index + 1]] : all), []);
 
 const VERBOSE = flag("--verbose");
+
+function getRecordPath() {
+  const custom = value("--record");
+  if (custom) return path.resolve(process.cwd(), custom);
+  const p16 = path.join(
+    PROJECT_DIR,
+    ".planning",
+    "phases",
+    "TCS-JL-16-replace-the-current-screens-with-the-frontend-stitch-designs",
+    "RECONCILIATION-16.md",
+  );
+  if (existsSync(p16)) return p16;
+  return path.join(
+    PROJECT_DIR,
+    ".planning",
+    "phases",
+    "TCS-JL-14-literal-stitch-markup-in-the-app",
+    "RECONCILIATION-14.md",
+  );
+}
 
 function fail(message) {
   console.error(message);
@@ -202,7 +207,8 @@ function stringTokens(spans) {
  * can recognise them wherever they are written — a literal `data-awaiting="…"`
  * or the prop of the element that renders it.
  */
-const SLOT_PATTERN = /^(?:profile|preferences|pulse|filters)\.[a-z_]+$/;
+const SLOT_PATTERN =
+  /^(?:profile|preferences|pulse|filters|dashboard|timeline|community|privacy|notifications|analytics|onboarding|auth|settings|admin)\.[a-z_]+$/;
 
 function classTokens(region) {
   const tokens = new Set();
@@ -276,13 +282,14 @@ function decode(text) {
 
 /** The phase record's rows, keyed by composition folder name. */
 async function readRecord() {
-  if (!existsSync(RECORD_PATH)) {
+  const recordPath = getRecordPath();
+  if (!existsSync(recordPath)) {
     fail(
-      `no phase record at ${RECORD_PATH}\n` +
+      `no phase record at ${recordPath}\n` +
         "  The fidelity check reads its declared slots, drops and fabrications from there.",
     );
   }
-  const markdown = await readFile(RECORD_PATH, "utf8");
+  const markdown = await readFile(recordPath, "utf8");
   const rows = new Map();
   let headers = null;
   for (const line of markdown.split(/\r?\n/)) {
@@ -330,7 +337,7 @@ function cellTokens(cell) {
 async function checkScreen(folder, rows, extraSources = []) {
   const row = rows.get(folder);
   if (row === undefined) {
-    fail(`MISSING ROW: ${folder} has no row in RECONCILIATION-14.md`);
+    fail(`MISSING ROW: ${folder} has no row in ${path.basename(getRecordPath())}`);
   }
   for (const [key, header] of Object.entries(REGISTERS)) {
     if (!(header in row)) {

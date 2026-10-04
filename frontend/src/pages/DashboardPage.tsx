@@ -43,11 +43,6 @@ import { daysSince, formatDateShort, timeAgo } from "@/utils/date";
 const CARD =
   "rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800";
 
-const CTA_PRIMARY =
-  "flex min-h-[40px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800";
-const CTA_SECONDARY =
-  "flex min-h-[40px] items-center rounded-lg border border-slate-300 px-4 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800";
-
 /** The composition's stat-card section header: icon-ish label + optional chip. */
 function StatCardHeader({ label }: { label: string }) {
   return (

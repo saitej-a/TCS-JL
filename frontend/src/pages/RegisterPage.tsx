@@ -20,10 +20,9 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { register } from "@/api/auth";
-import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { recordAccountCreated } from "@/pwa/installSignals";
-import { AuthCard, ErrorStrip } from "@/pages/authCard";
+import { AuthCard } from "@/pages/authCard";
 import { RULE_LABELS, validatePassword } from "@/utils/passwordRules";
 
 /** Thin wrapper keeping the field blocks uniform (the composition's spacing). */

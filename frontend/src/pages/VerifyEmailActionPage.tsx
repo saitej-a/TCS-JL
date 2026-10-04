@@ -18,7 +18,6 @@ import { Link, useParams } from "react-router-dom";
 import { verifyEmail } from "@/api/auth";
 import { Button } from "@/components/Button";
 import { AuthCard, ErrorStrip, SuccessStrip } from "@/pages/authCard";
-import { CheckCircleGlyph } from "@/pages/authGlyphs";
 
 type Outcome = "verifying" | "success" | "failure";
 

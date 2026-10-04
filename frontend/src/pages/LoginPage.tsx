@@ -24,10 +24,6 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import type { ApiError } from "@/api/errors";
 import { useAuth } from "@/context/AuthContext";
-import { Button } from "@/components/Button";
-import { Input } from "@/components/Input";
-import { ErrorStrip } from "@/pages/authCard";
-import { Disclaimer } from "@/components/Disclaimer";
 
 const INVALID_CREDENTIALS_TEXT = "Invalid email or password.";
 const SUSPENDED_TEXT =
@@ -35,87 +31,6 @@ const SUSPENDED_TEXT =
 
 function rateLimitText(retryAfter: number): string {
   return `Too many attempts. Try again in ${retryAfter} second${retryAfter === 1 ? "" : "s"}.`;
-}
-
-/** The composition's left trust column, repainted to v2 with honest copy. */
-function TrustPanel() {
-  return (
-    <div className="flex flex-col justify-between border-b border-slate-200/70 bg-gradient-to-br from-brand-50/70 via-slate-50 to-brand-50/40 p-8 sm:p-10 md:w-5/12 md:border-b-0 md:border-r">
-      <div className="relative z-10">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-700 text-white shadow-sm">
-            <ShieldGlyph className="h-5 w-5" />
-          </div>
-          <div>
-            <span className="inline-block rounded bg-brand-100/70 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-brand-700">
-              TJT Platform
-            </span>
-            <h2 className="mt-0.5 text-base font-bold leading-none tracking-tight text-slate-900 dark:text-slate-100">
-              TCS Joining Tracker
-            </h2>
-          </div>
-        </div>
-
-        <div className="mt-10 space-y-4">
-          <h3 className="text-xl font-bold leading-snug tracking-tight text-slate-900 dark:text-slate-100">
-            Keep your onboarding journey transparent &amp; on track.
-          </h3>
-          <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-            Monitor offer letters, batch onboarding schedules, and peer joining
-            milestones in real time with peer-verified community updates.
-          </p>
-        </div>
-
-        <div className="mt-8 flex items-center gap-3.5 rounded-xl border border-brand-100/80 bg-white/80 p-3.5 shadow-sm backdrop-blur-sm dark:border-brand-900 dark:bg-slate-800/80">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-brand-100 bg-brand-50 text-brand-700 dark:border-brand-800 dark:bg-brand-950/40 dark:text-brand-300">
-            <UsersGlyph className="h-5 w-5" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span aria-hidden="true" className="inline-block h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-              <span className="text-xs font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-                A community of candidates
-              </span>
-            </div>
-            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
-              Tracking joinings &amp; dispatches together
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="relative z-10 mt-8 flex items-center gap-2 border-t border-slate-200/60 pt-6 text-xs font-medium text-slate-500 dark:text-slate-400">
-        <ShieldGlyph className="h-4 w-4 shrink-0 text-emerald-600" />
-        <span>
-          Independent and community-run — see our{" "}
-          <Link to="/privacy" className="underline hover:text-slate-700 dark:hover:text-slate-300">
-            privacy policy
-          </Link>
-          .
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function ShieldGlyph({ className }: { className: string }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      <path d="M9 12l2 2 4-4" />
-    </svg>
-  );
-}
-
-function UsersGlyph({ className }: { className: string }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
-  );
 }
 
 export function LoginPage() {

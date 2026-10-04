@@ -17,7 +17,6 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Bell, ChevronRight, ShieldAlert, ShieldCheck, UserRound } from "lucide-react";
 
 import { getProfile } from "@/api/profile";
 import { listDevices } from "@/api/notifications";

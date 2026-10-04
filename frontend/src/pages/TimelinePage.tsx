@@ -28,7 +28,6 @@ import { TimelineEventModal } from "@/components/TimelineEventModal";
 import { TimelineRoadmap } from "@/components/TimelineRoadmap";
 import { useToast } from "@/components/Toast";
 import { Badge } from "@/components/Badge";
-import { TYPOGRAPHY } from "@/theme/tokens";
 import { recordMilestoneAdded } from "@/pwa/installSignals";
 
 interface ModalState {

@@ -27,7 +27,6 @@ import {
   type HiringType,
   type ProfileWritePayload,
 } from "@/api/profile";
-import { Button } from "@/components/Button";
 import { Disclaimer } from "@/components/Disclaimer";
 import { Input } from "@/components/Input";
 import { createTimelineEvent, type TimelineEventType } from "@/api/timeline";
