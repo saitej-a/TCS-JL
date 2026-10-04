@@ -109,7 +109,7 @@ export function LandingPage() {
         ];
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-900" data-testid="landing-page">
+    <div className="skin-v1 flex min-h-screen flex-col bg-slate-50 dark:bg-slate-900 font-body antialiased" data-testid="landing-page">
       {/* Shared visitor chrome (§5.4, 9.5.1 D-06). */}
       <VisitorHeader />
 
@@ -169,7 +169,7 @@ export function LandingPage() {
               Aggregated from anonymous candidate entries across recruitment batches and regions.
             </p>
           </div>
-          <div className="mt-5 grid gap-4 sm:grid-cols-3">
+          <div className="mt-5 grid gap-4 sm:grid-cols-3" data-testid="landing-stats">
             {statCells === null && !failed && (
               <>
                 <Skeleton className="h-24" />

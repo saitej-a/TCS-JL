@@ -35,7 +35,7 @@ const HELPFUL_DESTINATIONS = [
 export function NotFoundPanel({ path }: { path: string }): ReactElement {
   return (
     <div
-      className={`${CARD} flex flex-col items-center justify-center gap-3 p-8 text-center`}
+      className={`skin-v2 ${CARD} flex flex-col items-center justify-center gap-3 p-8 text-center font-body antialiased`}
       role="alert"
       data-testid="not-found-panel"
     >
@@ -123,7 +123,7 @@ export function ServerErrorPanel({
 
   return (
     <div
-      className={`${CARD} flex flex-col items-center justify-center gap-3 p-8 text-center`}
+      className={`skin-v2 ${CARD} flex flex-col items-center justify-center gap-3 p-8 text-center font-body antialiased`}
       role="alert"
       data-testid="server-error-panel"
     >

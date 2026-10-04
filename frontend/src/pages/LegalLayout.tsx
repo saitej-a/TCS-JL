@@ -63,7 +63,7 @@ export function LegalLayout({ page }: { page: LegalPageData }): ReactElement {
   );
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-10">
+    <div className="skin-v2 mx-auto w-full max-w-5xl px-4 py-10 font-body antialiased">
       <h1 className={`${TYPOGRAPHY.pageTitle} text-slate-900 dark:text-slate-50`}>{page.title}</h1>
       <p
         className="mt-2 rounded-xl border border-brand-200 bg-brand-50 px-3 py-2 text-xs text-brand-700 dark:border-brand-800 dark:bg-brand-950/60 dark:text-brand-300"

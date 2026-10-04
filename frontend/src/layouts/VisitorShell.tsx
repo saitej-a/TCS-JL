@@ -10,7 +10,7 @@ import { VisitorHeader } from "@/layouts/VisitorHeader";
 
 export function VisitorShell({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-900">
+    <div className="skin-v2 flex min-h-screen flex-col bg-slate-50 dark:bg-slate-900 font-body antialiased">
       <VisitorHeader />
       <main id="content" className="flex-1">
         {children ?? <Outlet />}

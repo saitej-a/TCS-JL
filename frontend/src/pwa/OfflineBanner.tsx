@@ -25,7 +25,7 @@ export function OfflineBanner(): React.ReactElement | null {
   return (
     <div
       data-testid="offline-banner"
-      className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 bg-amber-100 px-4 py-2 text-amber-900 dark:bg-amber-950/60 dark:text-amber-200"
+      className="skin-v1 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 bg-amber-100 px-4 py-2 text-amber-900 dark:bg-amber-950/60 dark:text-amber-200"
     >
       <span className="flex items-center gap-2">
         <WifiOff aria-hidden="true" className="h-4 w-4" />

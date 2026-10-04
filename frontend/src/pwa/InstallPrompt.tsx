@@ -70,7 +70,7 @@ export function InstallPrompt(): React.ReactElement | null {
   return (
     <div
       data-testid="install-prompt"
-      className="border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900"
+      className="skin-v1 border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900"
     >
       <div className="mx-auto flex max-w-5xl flex-wrap items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">

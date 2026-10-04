@@ -115,26 +115,4 @@ export function VerifyEmailActionPage() {
       </div>
     </AuthCard>
   );
-            )}
-            <Button
-              type="button"
-              variant="outline"
-              fullWidth
-              onClick={() => {
-                window.location.href = "/verify-email-pending";
-              }}
-            >
-              Request a new email
-            </Button>
-            <Link
-              to="/login"
-              className="block text-center text-sm font-medium text-brand-700 hover:underline dark:text-brand-400"
-            >
-              Back to sign in
-            </Link>
-          </>
-        )}
-      </div>
-    </AuthCard>
-  );
 }

@@ -466,7 +466,7 @@ function StatusDistributionSection({
   distribution: StatusDistribution | null;
 }): React.ReactElement {
   return (
-    <section aria-label="Candidate status distribution" className="lg:col-span-6">
+    <section aria-label="Candidate status distribution" className="lg:col-span-6" data-testid="analytics-distribution">
       <div className={`${CARD} h-full`}>
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
@@ -837,7 +837,7 @@ export function AnalyticsPage(): React.ReactElement {
         )}
       </RailPortal>
 
-      <main className="mx-auto max-w-5xl space-y-6 p-4 lg:p-8">
+      <main className="skin-v1 mx-auto max-w-5xl space-y-6 p-4 lg:p-8 font-body antialiased" data-testid="analytics-page">
         {/* The composition's context row. */}
         <nav
           aria-label="Breadcrumb"
