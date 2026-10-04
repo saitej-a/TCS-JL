@@ -137,7 +137,7 @@ export function CreatePostModal({ open, onClose, onPublished }: CreatePostModalP
 
   return (
     <Modal open={open} onClose={onClose} title="Create Community Discussion Post">
-      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-5" noValidate>
+      <form onSubmit={(e) => void handleSubmit(e)} className="skin-v1 space-y-5 font-body" noValidate data-testid="create-post-modal">
         <div>
           <Input
             label="TITLE *"
@@ -163,7 +163,7 @@ export function CreatePostModal({ open, onClose, onPublished }: CreatePostModalP
             id="create-post-category"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm dark:border-slate-600 dark:bg-slate-900"
+            className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 dark:border-slate-600 dark:bg-slate-900"
           >
             {POST_CATEGORIES.map((key) => (
               <option key={key} value={key}>
@@ -191,14 +191,16 @@ export function CreatePostModal({ open, onClose, onPublished }: CreatePostModalP
         {identity !== null && (
           <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-3.5 dark:border-slate-700 dark:bg-slate-800/60">
             <p className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-slate-800 dark:text-slate-200">
-              <span aria-hidden="true" className="text-sm">🎭</span>
+              <span className="material-symbols-outlined text-[16px] text-slate-500" data-icon="theater_comedy">
+                theater_comedy
+              </span>
               <span>Posting as:</span>
               <span className="font-semibold text-slate-900 dark:text-slate-100">{identity.handle}</span>
             </p>
             {identity.anonymous && (
               <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
                 To post with your display name instead, update your{" "}
-                <Link to="/settings/privacy" className="text-brand-700 hover:underline dark:text-brand-400">
+                <Link to="/settings/privacy" className="text-indigo-600 hover:underline dark:text-indigo-400 font-medium">
                   Privacy Settings
                 </Link>
                 .

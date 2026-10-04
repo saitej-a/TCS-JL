@@ -111,10 +111,13 @@ export function PostCard({
           onCommit={(commit) => onCommitVote(post.id, commit)}
         />
         <span
-          className="text-xs text-slate-500 dark:text-slate-400"
+          className="inline-flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400"
           title={tombstone ? "Comments are closed on removed posts." : undefined}
         >
-          💬 {post.comment_count} Comment{post.comment_count === 1 ? "" : "s"}
+          <span className="material-symbols-outlined text-[15px]" data-icon="chat_bubble" aria-hidden="true">
+            chat_bubble
+          </span>
+          <span>{post.comment_count} Comment{post.comment_count === 1 ? "" : "s"}</span>
         </span>
         <button
           type="button"
@@ -123,7 +126,10 @@ export function PostCard({
           title={tombstone ? "Removed posts cannot be shared." : "Copy this post's link."}
           className={`${ACTION_CLASSES}${tombstone ? " cursor-not-allowed opacity-50" : ""}`}
         >
-          <span aria-hidden="true">🔗</span> Share
+          <span className="material-symbols-outlined text-[15px]" data-icon="share" aria-hidden="true">
+            share
+          </span>
+          <span>Share</span>
         </button>
         <button
           type="button"
@@ -131,7 +137,10 @@ export function PostCard({
           title="Reporting arrives with the moderation surface (Phase 9.4)."
           className={`${ACTION_CLASSES} cursor-not-allowed opacity-60`}
         >
-          <span aria-hidden="true">⚑</span> Report
+          <span className="material-symbols-outlined text-[15px]" data-icon="flag" aria-hidden="true">
+            flag
+          </span>
+          <span>Report</span>
         </button>
       </div>
     </article>

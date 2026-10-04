@@ -185,10 +185,10 @@ export function PostDetailPage(): React.ReactElement {
   const locked = post.is_locked;
 
   return (
-    <main className="mx-auto max-w-3xl space-y-4">
+    <main className="skin-v1 mx-auto max-w-3xl space-y-4 font-body antialiased" data-testid="post-detail">
       <Link
         to="/community"
-        className="inline-flex min-h-[36px] items-center text-sm font-medium text-brand-700 hover:text-brand-700 dark:text-brand-300"
+        className="inline-flex min-h-[36px] items-center text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
       >
         {BACK_LINK_COPY}
       </Link>
@@ -202,7 +202,7 @@ export function PostDetailPage(): React.ReactElement {
             Posted {timeAgo(post.created_at)}
           </span>
         </div>
-        <h1 className="text-2xl font-bold leading-snug tracking-tight text-slate-900 dark:text-slate-50">
+        <h1 className="text-2xl font-bold leading-snug tracking-tight text-slate-900 dark:text-slate-50 font-headline">
           {post.title}
         </h1>
         <div className="mt-4 space-y-3 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">
@@ -227,8 +227,9 @@ export function PostDetailPage(): React.ReactElement {
               request={handleVote}
               onCommit={setVote}
             />
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-              💬 {totalComments} Comment{totalComments === 1 ? "" : "s"}
+            <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+              <span className="material-symbols-outlined text-[15px]" aria-hidden="true">chat_bubble</span>
+              <span>{totalComments} Comment{totalComments === 1 ? "" : "s"}</span>
             </span>
           </div>
           <div className="flex items-center gap-1">
@@ -238,7 +239,8 @@ export function PostDetailPage(): React.ReactElement {
               disabled={post.is_deleted}
               className="inline-flex min-h-[32px] items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
             >
-              <span aria-hidden="true">🔗</span> Share
+              <span className="material-symbols-outlined text-[15px]" aria-hidden="true">share</span>
+              <span>Share</span>
             </button>
             {!post.is_deleted && authenticated && (
               <button
@@ -246,7 +248,8 @@ export function PostDetailPage(): React.ReactElement {
                 onClick={handleReport}
                 className="inline-flex min-h-[32px] items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-rose-600 transition-colors hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40"
               >
-                <span aria-hidden="true">⚑</span> Report
+                <span className="material-symbols-outlined text-[15px]" aria-hidden="true">flag</span>
+                <span>Report</span>
               </button>
             )}
           </div>

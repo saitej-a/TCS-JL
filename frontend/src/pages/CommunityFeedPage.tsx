@@ -198,9 +198,12 @@ export function CommunityFeedPage(): React.ReactElement {
       <button
         type="button"
         onClick={() => setCreateOpen(true)}
-        className="flex min-h-[40px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800"
+        className="flex min-h-[40px] items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition active:scale-[0.98]"
       >
-        + Create New Post
+        <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+          add
+        </span>
+        <span>+ Create New Post</span>
       </button>
     ),
     [],
@@ -209,7 +212,7 @@ export function CommunityFeedPage(): React.ReactElement {
   return (
     // The shell owns the frame (padding, sidebar, rail) — the page only owns
     // its own vertical rhythm, so it must not add a second max-width/padding.
-    <main className="space-y-4">
+    <main className="skin-v1 space-y-4 font-body antialiased" data-testid="community-feed">
       {status === "authenticated" && (
         <RailPortal>
           <RailStatusSummary
@@ -232,7 +235,7 @@ export function CommunityFeedPage(): React.ReactElement {
         ) : (
           <Link
             to="/login?next=%2Fcommunity"
-            className="flex min-h-[40px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800"
+            className="flex min-h-[40px] items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition active:scale-[0.98]"
           >
             Sign in to post
           </Link>
@@ -243,8 +246,8 @@ export function CommunityFeedPage(): React.ReactElement {
         /* §7.6's pinned announcement card: eyebrow, title, body, and the pinned
            meta line. An announcement is not a post — it carries no votes,
            comments, or author — so none of those are rendered (D9). */
-        <aside className="rounded-xl border border-brand-200 bg-brand-50 p-4 sm:p-5 dark:border-brand-800 dark:bg-brand-950/40">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-brand-700 dark:text-brand-300">
+        <aside className="rounded-xl border border-indigo-200 bg-indigo-50/70 p-4 sm:p-5 dark:border-indigo-900 dark:bg-indigo-950/40">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-indigo-700 dark:text-indigo-300">
             📌 Pinned announcement
           </p>
           <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-100">{pinned.title}</p>
@@ -260,10 +263,10 @@ export function CommunityFeedPage(): React.ReactElement {
       <section className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-800">
         <div className="relative">
           <span
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 flex items-center"
             aria-hidden="true"
           >
-            🔍
+            <span className="material-symbols-outlined text-[18px]">search</span>
           </span>
           <input
             type="search"
@@ -271,7 +274,7 @@ export function CommunityFeedPage(): React.ReactElement {
             onChange={(event) => handleSearchDraftChange(event.target.value)}
             placeholder="Search posts by keyword, location, or batch..."
             aria-label="Search posts"
-            className="h-10 w-full rounded-lg border border-slate-300 bg-white pl-9 pr-3 text-sm dark:border-slate-600 dark:bg-slate-900"
+            className="h-10 w-full rounded-lg border border-slate-300 bg-white pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 dark:border-slate-600 dark:bg-slate-900"
           />
         </div>
 
