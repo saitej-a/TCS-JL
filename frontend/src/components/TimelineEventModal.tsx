@@ -99,7 +99,7 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
 
   return (
     <Modal open={open} onClose={onClose} title={event === null ? "Add Timeline Milestone Event" : "Edit Timeline Milestone Event"}>
-      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-5">
+      <form onSubmit={(e) => void handleSubmit(e)} className="skin-v1 space-y-5 font-body">
         <div>
           <label
             htmlFor="timeline-event-type"
@@ -112,7 +112,7 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
             value={eventType}
             onChange={(e) => setEventType(e.target.value as TimelineEventType)}
             required
-            className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm dark:border-slate-600 dark:bg-slate-900"
+            className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 dark:border-slate-600 dark:bg-slate-900"
           >
             {EVENT_TYPE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -121,7 +121,7 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
             ))}
           </select>
           <p className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-            <span aria-hidden="true">ⓘ</span>
+            <span className="material-symbols-outlined text-[14px]" aria-hidden="true">info</span>
             <span>Milestones advance your status server-side; they never move it backwards.</span>
           </p>
         </div>
@@ -177,9 +177,13 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
             <Button type="button" variant="secondary" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" loading={saving}>
-              {event === null ? "Add Event" : "Save Changes"}
-            </Button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              {saving ? "Saving..." : event === null ? "Add Event" : "Save Changes"}
+            </button>
           </span>
         </div>
       </form>

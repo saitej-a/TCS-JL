@@ -113,10 +113,12 @@ export function TimelinePage(): React.ReactElement {
   const unverifiedCount = (events ?? []).filter((event) => !event.is_verified).length;
 
   return (
-    <main className="mx-auto max-w-3xl space-y-4 p-4 lg:p-8">
-      <header className="flex flex-wrap items-center justify-between gap-3">
+    <main className="skin-v1 mx-auto max-w-4xl space-y-6 p-4 lg:p-8 font-body antialiased" data-testid="timeline-page">
+      <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className={TYPOGRAPHY.pageTitle}>My Recruitment Timeline</h1>
+          <h1 className="font-headline text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            MY RECRUITMENT TIMELINE
+          </h1>
           <div className="mt-2 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
             <span>Current Status:</span>
             {currentStatus !== null && (
@@ -124,14 +126,19 @@ export function TimelinePage(): React.ReactElement {
             )}
           </div>
         </div>
-        <Button
+        <button
+          type="button"
           onClick={() => {
             setModal({ event: null });
             setModalOpen(true);
           }}
+          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm px-4 py-2.5 rounded-lg shadow-sm transition-all active:scale-[0.98]"
         >
-          + Add Milestone Event
-        </Button>
+          <span className="material-symbols-outlined text-lg" aria-hidden="true">
+            add_circle
+          </span>
+          <span>+ Add Milestone Event</span>
+        </button>
       </header>
 
       {unverifiedCount > 0 && (

@@ -100,7 +100,7 @@ interface DashboardData {
 function BenchmarkCard({ data }: { data: DashboardData | null }) {
   if (data === null) {
     return (
-      <div className={`${CARD} p-5`} aria-busy="true">
+      <div className={`${CARD} p-5`} aria-busy="true" data-testid="benchmark-card">
         <Skeleton className="h-4 w-40" />
         <Skeleton className="mt-3 h-8 w-24" />
       </div>
@@ -109,7 +109,7 @@ function BenchmarkCard({ data }: { data: DashboardData | null }) {
   const analytics = data.dashboard.analytics;
   if (analytics.suppressed) {
     return (
-      <div className={`${CARD} flex flex-col p-5`}>
+      <div className={`${CARD} flex flex-col p-5`} data-testid="benchmark-card">
         <StatCardHeader label="How you compare" />
         <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{analytics.message}</p>
         <p className="mt-4 border-t border-slate-100 pt-3 text-[10px] italic text-slate-400 dark:border-slate-700">
@@ -121,7 +121,7 @@ function BenchmarkCard({ data }: { data: DashboardData | null }) {
   const distribution = analytics.status_distribution;
   const wait = ownWaitDays(data.events);
   return (
-    <div className={`${CARD} flex flex-col justify-between p-5`}>
+    <div className={`${CARD} flex flex-col justify-between p-5`} data-testid="benchmark-card">
       <div>
         <StatCardHeader label="How you compare" />
         {/* The composition's divider-separated stat rows; every value is a
@@ -136,6 +136,14 @@ function BenchmarkCard({ data }: { data: DashboardData | null }) {
             value={distribution.JOINING_LETTER_RECEIVED}
           />
           <StatRow label="Reported joining" value={distribution.JOINED} />
+          <StatRow
+            label="Salary structure breakdown"
+            value={<span data-awaiting="dashboard.salary_breakdown">—</span>}
+          />
+          <StatRow
+            label="Regional track cohort"
+            value={<span data-awaiting="dashboard.role_track">—</span>}
+          />
         </ul>
         {/* The composition's highlighted wait block, honest number only —
             no "Above Avg" badge (the API ships no cohort average). */}
@@ -258,14 +266,14 @@ export function DashboardPage(): React.ReactElement {
         />
       </RailPortal>
 
-      <main className="mx-auto max-w-5xl space-y-4 p-4 lg:space-y-6 lg:p-8">
+      <main className="skin-v1 mx-auto max-w-5xl space-y-4 p-4 lg:space-y-6 lg:p-8 font-body antialiased" data-testid="dashboard-page">
         {/* SECTION 1: welcome header card with inline status chip + CTAs */}
         <header
           className={`${CARD} flex flex-col justify-between gap-4 p-4 sm:p-6 md:flex-row md:items-center`}
         >
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50 font-headline">
                 Hello, Candidate!
               </h1>
               {data !== null ? (
@@ -280,11 +288,23 @@ export function DashboardPage(): React.ReactElement {
           </div>
           {/* §7.4's header carries BOTH CTAs (composition order kept). */}
           <div className="flex flex-wrap items-center gap-2">
-            <Link to="/timeline" className={CTA_PRIMARY}>
-              Update Timeline
+            <Link
+              to="/timeline"
+              className="flex min-h-[40px] items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-700 transition active:scale-[0.98]"
+            >
+              <span className="material-symbols-outlined text-sm" data-icon="edit_calendar" aria-hidden="true">
+                edit_calendar
+              </span>
+              <span>Update Timeline</span>
             </Link>
-            <Link to="/community/create" className={CTA_SECONDARY}>
-              Ask Question
+            <Link
+              to="/community/create"
+              className="flex min-h-[40px] items-center gap-1.5 rounded-lg border border-slate-300 px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800 transition active:scale-[0.98]"
+            >
+              <span className="material-symbols-outlined text-sm" data-icon="help_outline" aria-hidden="true">
+                help_outline
+              </span>
+              <span>Ask Question</span>
             </Link>
           </div>
         </header>
@@ -293,7 +313,7 @@ export function DashboardPage(): React.ReactElement {
         <section className={`${CARD} p-4 sm:p-6`} aria-label="Your recruitment progression">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-700">
             <div>
-              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100 font-headline">
                 Your recruitment progression
               </h2>
               <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
@@ -316,7 +336,7 @@ export function DashboardPage(): React.ReactElement {
         <section className={`${CARD} p-4 sm:p-6`}>
           <div className="mb-2 flex items-center justify-between">
             <div>
-              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100 font-headline">
                 Latest community discussions
               </h2>
               <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
@@ -325,10 +345,12 @@ export function DashboardPage(): React.ReactElement {
             </div>
             <Link
               to="/community"
-              className="flex shrink-0 items-center gap-1 text-xs font-semibold text-brand-700 hover:text-brand-800 dark:text-brand-300"
+              className="flex shrink-0 items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
             >
-              View All Discussions
-              <span aria-hidden="true">›</span>
+              <span>View All Discussions</span>
+              <span className="material-symbols-outlined text-sm" aria-hidden="true">
+                chevron_right
+              </span>
             </Link>
           </div>
           {data === null ? (

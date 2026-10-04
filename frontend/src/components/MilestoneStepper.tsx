@@ -43,9 +43,9 @@ function completionDates(events: TimelineEventPrivate[]): Map<TimelineEventType,
 }
 
 const DONE_NODE_CLASSES =
-  "flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300";
+  "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white shadow-sm";
 const PENDING_NODE_CLASSES =
-  "flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700 animate-pulse dark:bg-amber-950/60 dark:text-amber-300";
+  "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-500 text-white shadow-sm ring-4 ring-amber-100 animate-pulse";
 const CONNECTOR_CLASSES = "h-px flex-1 bg-slate-300 dark:bg-slate-600";
 
 export function MilestoneStepper({ events }: MilestoneStepperProps): React.ReactElement {
@@ -54,6 +54,7 @@ export function MilestoneStepper({ events }: MilestoneStepperProps): React.React
   return (
     <ol
       aria-label="Recruitment progression"
+      data-testid="status-stepper"
       className="flex items-center gap-2 overflow-x-auto pb-1 sm:gap-3"
     >
       {MILESTONES.map((milestone, index) => {
@@ -64,7 +65,15 @@ export function MilestoneStepper({ events }: MilestoneStepperProps): React.React
           <li key={milestone.type} className="flex items-center gap-2 sm:gap-3">
             <div className="flex flex-col items-center gap-1">
               <span className={done ? DONE_NODE_CLASSES : PENDING_NODE_CLASSES} aria-hidden="true">
-                {done ? "✓" : "⏳"}
+                {done ? (
+                  <span className="material-symbols-outlined text-base font-bold" data-icon="check">
+                    check
+                  </span>
+                ) : (
+                  <span className="material-symbols-outlined text-base" data-icon="hourglass_top">
+                    hourglass_top
+                  </span>
+                )}
               </span>
               <span
                 className={[
