@@ -43,6 +43,7 @@ export function VerifyEmailActionPage() {
           ? "Thanks — your account is active. Sign in to finish your profile so the timeline and community can be personalised for you."
           : "One moment while we confirm your verification link."
       }
+      skin="skin-v2"
     >
       <div className="space-y-4">
         {outcome === "verifying" && (
@@ -55,7 +56,9 @@ export function VerifyEmailActionPage() {
           <>
             {/* The composition's success anatomy: icon disc + CTA. */}
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-emerald-100 bg-emerald-50 text-emerald-600 shadow-sm dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-400">
-              <CheckCircleGlyph className="h-8 w-8" />
+              <span className="material-symbols-outlined text-[32px] text-emerald-600" data-icon="check_circle">
+                check_circle
+              </span>
             </div>
             <SuccessStrip message="Your email is verified. You can sign in now." />
             <Link
@@ -73,7 +76,9 @@ export function VerifyEmailActionPage() {
         {outcome === "failure" && (
           <>
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-rose-100 bg-rose-50 text-rose-600 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-400">
-              <span aria-hidden="true" className="text-2xl font-bold">✕</span>
+              <span className="material-symbols-outlined text-[32px] text-rose-600" data-icon="error">
+                error
+              </span>
             </div>
             <ErrorStrip message="This verification link is invalid or has expired." />
             {/* Wrapping-safe token echo (9.5.1 D-7): the identifier the reader
@@ -88,6 +93,28 @@ export function VerifyEmailActionPage() {
                   {token}
                 </span>
               </p>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              fullWidth
+              onClick={() => {
+                window.location.href = "/verify-email-pending";
+              }}
+            >
+              Request a new email
+            </Button>
+            <Link
+              to="/login"
+              className="block text-center text-sm font-medium text-brand-700 hover:underline dark:text-brand-400"
+            >
+              Back to sign in
+            </Link>
+          </>
+        )}
+      </div>
+    </AuthCard>
+  );
             )}
             <Button
               type="button"

@@ -45,6 +45,7 @@ export function ForgotPasswordPage() {
     <AuthCard
       title="Reset your password"
       subtitle="Enter the email you registered with and we will send you a reset link."
+      skin="skin-v1"
     >
       <form onSubmit={handleSubmit} noValidate>
         <div className="space-y-4">
@@ -66,31 +67,49 @@ export function ForgotPasswordPage() {
           </div>
 
           {sent && (
-            <div>
-              <SuccessStrip message={SENT_TEXT} />
-              <p className="mt-1 px-3 text-[12px] text-emerald-600/90 dark:text-emerald-400/80">
-                {SENT_HINT}
-              </p>
+            <div
+              role="status"
+              className="bg-emerald-50 rounded-lg border border-emerald-200/80 p-3.5 flex items-start gap-3 mt-4 transition-all duration-300"
+            >
+              <span
+                className="material-symbols-outlined text-emerald-600 text-xl shrink-0 select-none"
+                data-icon="check_circle"
+              >
+                check_circle
+              </span>
+              <div className="flex-1">
+                <p className="text-xs sm:text-sm font-medium text-emerald-700 leading-snug">
+                  {SENT_TEXT}
+                </p>
+                <p className="text-[12px] text-emerald-600/90 mt-0.5">{SENT_HINT}</p>
+              </div>
             </div>
           )}
 
-          <Button type="submit" variant="primary" fullWidth loading={submitting} className="mt-5 h-11">
-            Send reset link
-          </Button>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-medium text-sm rounded-lg shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 flex items-center justify-center gap-2 mt-5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span>{submitting ? "Sending reset link..." : "Send reset link"}</span>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
+          </button>
         </div>
       </form>
 
       <div className="mt-6 flex items-center gap-2.5 border-t border-slate-100 pt-5 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400">
-        <LockGlyph className="h-4 w-4 shrink-0 text-slate-400" />
-        <span>Secure password reset with single-use link verification.</span>
+        <span className="material-symbols-outlined text-slate-400 text-base shrink-0" data-icon="lock_reset">
+          lock_reset
+        </span>
+        <span>Secure password reset with single-use magic link verification.</span>
       </div>
 
       <div className="mt-6 text-center">
         <Link
           to="/login"
-          className="inline-flex items-center gap-1.5 py-1 text-sm font-medium text-brand-700 transition-colors hover:text-brand-800 hover:underline dark:text-brand-400"
+          className="inline-flex items-center gap-1.5 py-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 hover:underline transition-colors"
         >
-          <span aria-hidden="true">←</span>
+          <span className="material-symbols-outlined text-base">arrow_back</span>
           <span>Back to sign in</span>
         </Link>
       </div>

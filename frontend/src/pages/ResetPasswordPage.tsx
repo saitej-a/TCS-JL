@@ -68,6 +68,7 @@ export function ResetPasswordPage() {
     <AuthCard
       title="Choose a new password"
       subtitle="Your reset link is time-limited and single-use. It expires 60 minutes after it was issued."
+      skin="skin-v2"
     >
       {/* The composition's breadcrumb: Account Access → Reset Password. */}
       <nav aria-label="Breadcrumb" className="mb-1 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
