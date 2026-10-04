@@ -475,9 +475,17 @@ Plans:
 **Goal:** Replace the current screens in `frontend/src` with the exact markup, hierarchy, classes, and visual structure from the Stitch design compositions in `frontend/stitch designs/`, preserving all existing application functionality, API integrations, authentication state, real-time WebSockets, typing indicators, and test suites.
 **Requirements**: UI-AUTH-01, UI-AUTH-02, UI-AUTH-03, UI-SHELL-01, UI-SHELL-02, UI-DASH-01, UI-DASH-02, UI-COMM-01, UI-COMM-02, UI-SETT-01, UI-SETT-02, UI-MISC-01, UI-MISC-02, UI-FIDE-01
 **Depends on:** Phase 15
-**Plans:** 7 plans
+**Plans:** 1/7 plans executed
 
 Plans:
+
+- [x] 16-01-PLAN.md
+- [ ] 16-02-PLAN.md
+- [ ] 16-03-PLAN.md
+- [ ] 16-04-PLAN.md
+- [ ] 16-05-PLAN.md
+- [ ] 16-06-PLAN.md
+- [ ] 16-07-PLAN.md
 
 - [ ] `16-01-PLAN.md` — Wave 1: Auth & Onboarding verbatim port (Login, Register, Forgot Password, Reset Password, Email Verification, 3-Step Onboarding Wizard)
 - [ ] `16-02-PLAN.md` — Wave 2: Application Shell & Navigation verbatim port (Desktop light/dark shell, mobile shell & tab bar, notification center)
