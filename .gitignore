@@ -1,6 +1,7 @@
 # Environment & secrets (T1.1 — strictly excluded)
 .env
 .env.prod
+.env.render
 *.pem
 *.key
 serviceAccountKey.json

@@ -55,6 +55,9 @@ subscriptions. Apply the notifications migration when deploying.
 The frontend refreshes the registered FCM token on authenticated visits after
 notification permission has already been granted; it does not prompt again.
 
+For Render service setup and the separate Render-oriented Compose file, see
+[`../RENDER_DEPLOYMENT.md`](../RENDER_DEPLOYMENT.md).
+
 ## Commands
 
 | Command | What it does |

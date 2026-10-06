@@ -1,0 +1,129 @@
+# Render-oriented app containers for local validation and Docker-based hosts.
+# Render does not deploy Compose files directly; deploy each service separately
+# there, using this file as the source for the image and process commands.
+# PostgreSQL and Redis are external managed services; no database/data volume
+# from docker-compose.prod.yml is reused.
+
+x-app-env: &app-env
+  DJANGO_SETTINGS_MODULE: config.settings.production
+  DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,.onrender.com}
+  FRONTEND_URL: ${FRONTEND_URL:?Set FRONTEND_URL in .env.render}
+  CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:?Set CORS_ALLOWED_ORIGINS in .env.render}
+  CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:?Set CSRF_TRUSTED_ORIGINS in .env.render}
+  DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL to the managed PostgreSQL connection URL}
+  REDIS_URL: ${REDIS_URL:?Set REDIS_URL to the managed Redis connection URL}
+  CELERY_BROKER_URL: ${CELERY_BROKER_URL:?Set CELERY_BROKER_URL to the managed Redis connection URL}
+  CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND:?Set CELERY_RESULT_BACKEND to the managed Redis connection URL}
+  PORT: ${PORT:-10000}
+
+services:
+  web:
+    build:
+      context: .
+    command:
+      - /app/docker/entrypoint.sh
+      - gunicorn
+      - config.wsgi:application
+      - --bind
+      - 0.0.0.0:10000
+      - --workers
+      - "4"
+      - --threads
+      - "2"
+      - --timeout
+      - "60"
+      - --access-logfile
+      - "-"
+    env_file:
+      - .env.render
+    environment:
+      <<: *app-env
+      RUN_DB_MIGRATIONS: "1"
+    ports:
+      - "${HOST_PORT:-10000}:${PORT:-10000}"
+    expose:
+      - "${PORT:-10000}"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import http.client,os; c=http.client.HTTPConnection('127.0.0.1',int(os.environ.get('PORT','10000')),timeout=5); c.request('GET','/health/ready/',headers={'Host':'localhost','X-Forwarded-Proto':'https'}); r=c.getresponse(); r.read(); assert r.status==200,r.status"
+      interval: 20s
+      timeout: 5s
+      retries: 6
+      start_period: 60s
+    restart: unless-stopped
+
+  asgi:
+    build:
+      context: .
+    command:
+      - /app/docker/entrypoint.sh
+      - daphne
+      - -b
+      - 0.0.0.0
+      - -p
+      - "8001"
+      - config.asgi:application
+    env_file:
+      - .env.render
+    environment:
+      <<: *app-env
+      PORT: "8001"
+    expose:
+      - "8001"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import http.client; c=http.client.HTTPConnection('127.0.0.1',8001,timeout=5); c.request('GET','/health/ready/',headers={'Host':'localhost','X-Forwarded-Proto':'https'}); r=c.getresponse(); r.read(); assert r.status==200,r.status"
+      interval: 20s
+      timeout: 5s
+      retries: 6
+      start_period: 60s
+    restart: unless-stopped
+
+  celery_worker:
+    build:
+      context: .
+    command:
+      - /app/docker/entrypoint.sh
+      - celery
+      - -A
+      - config
+      - worker
+      - --loglevel=INFO
+      - --concurrency=2
+      - -Q
+      - default,notifications,maintenance
+    env_file:
+      - .env.render
+    environment:
+      <<: *app-env
+      PUSH_BACKEND: firebase
+      FIREBASE_CREDENTIALS_PATH: /run/secrets/firebase_service_account
+    secrets:
+      - firebase_service_account
+    restart: unless-stopped
+
+  celery_beat:
+    build:
+      context: .
+    command:
+      - /app/docker/entrypoint.sh
+      - celery
+      - -A
+      - config
+      - beat
+      - --loglevel=INFO
+    env_file:
+      - .env.render
+    environment:
+      <<: *app-env
+    restart: unless-stopped
+
+secrets:
+  firebase_service_account:
+    file: ./secrets/firebase-service-account.json
