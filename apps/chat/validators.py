@@ -4,6 +4,8 @@ These raise Django's `ValidationError` so they work from both `Model.clean()`
 and the chat service functions.
 """
 
+import re
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 
@@ -17,10 +19,6 @@ ROOM_SLUG_CODE = "invalid_room_slug"
 def chat_rooms() -> list[tuple[str, str]]:
     """The (slug, label) vocabulary read at call time (Phase 13 D-02)."""
     return list(getattr(settings, "CHAT_ROOMS", [("general", "General")]))
-
-
-def chat_room_slugs() -> set[str]:
-    return {slug for slug, _label in chat_rooms()}
 
 
 def validate_not_blank(value) -> None:
@@ -39,9 +37,13 @@ def validate_message_length(value) -> None:
 
 
 def validate_room_slug(value) -> None:
-    """Reject room slugs that do not match configured room vocabulary."""
-    if value not in chat_room_slugs():
+    """Reject room slugs that cannot safely identify a dynamic chat room."""
+    valid_slug = isinstance(value, str) and re.fullmatch(
+        r"[a-z0-9]+(?:[-_][a-z0-9]+)*",
+        value,
+    )
+    if not valid_slug:
         raise ValidationError(
-            f"Unknown chat room: {value!r}.",
+            f"Invalid chat room slug: {value!r}.",
             code=ROOM_SLUG_CODE,
         )

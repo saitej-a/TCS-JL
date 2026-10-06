@@ -13,14 +13,16 @@ import type { ChatMessage, ChatRoom } from "@/types/chat";
 
 // Mock API module
 vi.mock("@/api/chat", () => ({
+  createChatRoom: vi.fn(),
   listChatRooms: vi.fn(),
+  listAdminMembers: vi.fn(),
   listChatMessages: vi.fn(),
   sendChatMessage: vi.fn(),
   deleteChatMessage: vi.fn(),
   fetchWsTicket: vi.fn(),
 }));
 
-let currentMockUser: { id: string; email: string } | null = {
+let currentMockUser: { id: string; email: string; is_staff?: boolean } | null = {
   id: "u-me",
   email: "me@example.com",
 };
@@ -191,6 +193,31 @@ describe("MessagesPage", () => {
     });
 
     expect(screen.getAllByText("Joining Letter").length).toBeGreaterThan(0);
+  });
+
+  it("lets staff create a channel and opens it", async () => {
+    const user = userEvent.setup();
+    currentMockUser = { id: "u-admin", email: "admin@example.com", is_staff: true };
+    vi.mocked(chatApi.createChatRoom).mockResolvedValue({
+      id: "r-data",
+      slug: "data-science",
+      label: "Data Science",
+      is_default: false,
+      is_archived: false,
+      message_count: 0,
+      last_message_at: null,
+      created_at: "2026-10-01T00:00:00Z",
+    });
+
+    renderMessages();
+    await user.click(await screen.findByRole("button", { name: "Create channel" }));
+    await user.type(screen.getByRole("textbox", { name: "Channel name" }), "Data Science");
+    await user.click(screen.getAllByRole("button", { name: "Create channel" })[1]);
+
+    await waitFor(() => {
+      expect(chatApi.createChatRoom).toHaveBeenCalledWith("Data Science");
+      expect(screen.getByLabelText("Chat channel: Data Science")).toBeInTheDocument();
+    });
   });
 
   it("renders the message log with author and message content", async () => {

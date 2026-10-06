@@ -57,6 +57,7 @@ describe("VisitorHeader auth zones", () => {
   it("shows the §5.4 nav and the visitor auth zone for a signed-out reader", async () => {
     renderShell();
     const header = screen.getByRole("banner");
+    expect(header).toHaveClass("sticky", "top-0", "shadow-sm", "px-8", "py-3");
     await waitFor(() => {
       expect(within(header).getByRole("link", { name: "Sign in" })).toBeInTheDocument();
     });

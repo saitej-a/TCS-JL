@@ -7,23 +7,29 @@
 import { Link } from "react-router-dom";
 
 import { useAuth } from "@/context/AuthContext";
+import { APP_HEADER_SURFACE } from "@/layouts/appHeaderStyles";
 
 export function VisitorHeader() {
   const { status } = useAuth();
 
   return (
-    <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+    <header className={`${APP_HEADER_SURFACE} sticky top-0`}>
+      <div className="flex w-full items-center justify-between gap-4">
         <div className="flex items-center gap-6">
-          <Link to="/" className="flex items-center gap-2" aria-label="TCSJL home">
-            <span className="inline-flex items-center justify-center rounded-lg bg-brand-700 px-2 py-1 text-xs font-bold text-white">
-            TCSJL
+          <Link to="/" className="flex shrink-0 items-center gap-2.5" aria-label="TCSJL home">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-[9px] font-bold text-white shadow-sm">
+              TCSJL
             </span>
-            <span className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">
-            TCSJL
+            <span className="hidden sm:block">
+              <span className="block text-sm font-bold leading-none tracking-tight text-slate-900 dark:text-slate-100">
+                TCSJL
+              </span>
+              <span className="mt-1 block text-[10px] leading-none text-slate-500 dark:text-slate-400">
+                Recruitment Status
+              </span>
             </span>
           </Link>
-          <nav aria-label="Visitor" className="flex items-center gap-4">
+          <nav aria-label="Visitor" className="hidden items-center gap-4 sm:flex">
             <Link
               to="/community"
               className="flex min-h-[44px] items-center text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"

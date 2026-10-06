@@ -9,7 +9,6 @@ than deleting it, and `AuthorPublicSerializer` renders that anonymized row.
 import uuid
 
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.db import models
 
 from apps.chat.validators import (
@@ -22,8 +21,7 @@ from apps.chat.validators import (
 class ChatRoom(models.Model):
     """A chat channel (Phase 13 D-02).
 
-    The rooms correspond to the General channel plus category-specific channels
-    derived from the `POST_CATEGORIES` setting.
+    Rooms include the configured default channels and staff-created channels.
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

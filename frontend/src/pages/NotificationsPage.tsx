@@ -16,11 +16,11 @@
  *    handled as the contract shapes it).
  * 2. **Awaiting slots (D-02).** A slot whose concept does not exist in the
  *    product keeps the document's frame and prints an em dash with
- *    `data-awaiting="<name>"`: the status card's Role Track / Location Pref /
- *    BGV Verification / Offer Date rows and its "since" line, the preferences
- *    card's email-digest row, and the pulse card's "Confirmed" counter (the
- *    overview publishes no such figure). Every one is listed in
- *    RECONCILIATION-14.md; none is filled with the mockup's numbers.
+ *    `data-awaiting="<name>"`: the preferences card's email-digest row and the
+ *    pulse card's "Confirmed" counter (the overview publishes no such figure).
+ *    The status summary is shared with the Dashboard and uses only real fields.
+ *    Every awaiting slot is listed in RECONCILIATION-14.md; none is filled
+ *    with the mockup's numbers.
  * 3. **Controls without a backing behaviour are kept disabled**, not deleted and
  *    not faked: the type filter group ("Replies / Upvotes / Announcements") — the
  *    API filters by read state, not by type.
@@ -54,10 +54,10 @@ import { Skeleton } from "@/components/Skeleton";
 import { useToast } from "@/components/Toast";
 import { RailPortal } from "@/layouts/AppShell";
 import { isOnline, subscribeConnectivity } from "@/pwa/registerSW";
-import { STATUS_LABELS } from "@/theme/badges";
 import { IN_APP_ALERT_GROUPS } from "@/theme/notificationRows";
 import type { DashboardPayload } from "@/api/dashboard";
 import type { NotificationItem } from "@/types/notifications";
+import { RailStatusSummary } from "@/components/RailStatusSummary";
 
 /** 04 §10's page size (DRF PAGE_SIZE) — used only for the page counter label. */
 const PAGE_SIZE = 20;
@@ -459,99 +459,11 @@ export function NotificationsPage(): React.ReactElement {
           {/* Right Rail Sidebar (w-80) — the shell's 320px slot (RailPortal). */}
           <RailPortal>
             <aside className="w-full lg:w-80 space-y-5 flex-shrink-0">
-              {/* Card 1: My Status Summary */}
-              <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4 dark:bg-slate-900 dark:border-slate-800">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
-                  <h2 className="font-headline text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    My Status Summary
-                  </h2>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                    {status === null ? <Awaiting slot="profile.status" /> : STATUS_LABELS[status].toUpperCase()}
-                  </span>
-                </div>
-                {/* Current Milestone Pill */}
-                <div className="bg-slate-50 rounded-lg p-3 border border-slate-200 dark:bg-slate-800/60 dark:border-slate-700">
-                  <div className="text-[11px] font-medium text-slate-400 uppercase">
-                    Current Stage
-                  </div>
-                  <div className="text-sm font-bold text-slate-900 mt-0.5 dark:text-white">
-                    {status === null ? (
-                      <Awaiting slot="profile.status" />
-                    ) : (
-                      STATUS_LABELS[status].toUpperCase()
-                    )}
-                  </div>
-                  <div className="text-xs text-slate-500 mt-1 flex items-center gap-1 dark:text-slate-400">
-                    <span
-                      className="material-symbols-outlined text-[14px] text-slate-400"
-                      data-icon="calendar_today"
-                      aria-hidden="true"
-                    >
-                      calendar_today
-                    </span>
-                    {/* The dashboard payload publishes no status-since date
-                        (its `latest_event` is the last timeline event, not the
-                        stage's start), so the line is an awaiting slot. */}
-                    <span>
-                      Since <Awaiting slot="profile.status_since" /> •{" "}
-                      <strong>
-                        <Awaiting slot="profile.days_pending" />
-                      </strong>
-                    </span>
-                  </div>
-                </div>
-                {/* Meta details list — the document's own rows, none of which
-                    the candidate model carries (09.5 VERIFICATION §3). */}
-                <dl className="space-y-2.5 text-xs">
-                  <div className="flex justify-between items-center">
-                    <dt className="text-slate-500 dark:text-slate-400">Role Track:</dt>
-                    <dd className="font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">
-                      <Awaiting slot="profile.role_track" />
-                    </dd>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <dt className="text-slate-500 dark:text-slate-400">Location Pref:</dt>
-                    <dd className="font-medium text-slate-800 dark:text-slate-200">
-                      <Awaiting slot="profile.location_preference" />
-                    </dd>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <dt className="text-slate-500 dark:text-slate-400">BGV Verification:</dt>
-                    <dd className="font-semibold text-emerald-700 flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded">
-                      <span
-                        className="material-symbols-outlined text-[14px]"
-                        data-icon="check_circle"
-                        aria-hidden="true"
-                      >
-                        check_circle
-                      </span>
-                      <Awaiting slot="profile.bgv_status" />
-                    </dd>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <dt className="text-slate-500 dark:text-slate-400">Offer Date:</dt>
-                    <dd className="font-medium text-slate-800 dark:text-slate-200">
-                      <Awaiting slot="profile.offer_date" />
-                    </dd>
-                  </div>
-                </dl>
-                {/* Status Action CTA */}
-                <div className="pt-2">
-                  <Link
-                    to="/timeline"
-                    className="w-full flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition-colors"
-                  >
-                    <span>Update my status</span>
-                    <span
-                      className="material-symbols-outlined text-[14px]"
-                      data-icon="arrow_forward"
-                      aria-hidden="true"
-                    >
-                      arrow_forward
-                    </span>
-                  </Link>
-                </div>
-              </div>
+              <RailStatusSummary
+                status={status}
+                completion={dashboard?.profile.completion_percentage ?? null}
+                unread={dashboard?.community.unread_notifications ?? null}
+              />
 
               {/* Card 2: Notification Preferences */}
               <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4 dark:bg-slate-900 dark:border-slate-800">

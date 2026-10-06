@@ -2,13 +2,14 @@
 
 from datetime import timedelta
 
+import pytest
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.utils import timezone
-import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from apps.candidates.models import CandidateProfile
 from apps.chat.models import ChatMessage, ChatRoom
 from apps.chat.services import ensure_default_rooms
 
@@ -73,6 +74,70 @@ class TestChatRoomListEndpoint:
         general = next(r for r in data if r["slug"] == "general")
         assert general["is_default"] is True
         assert general["label"] == "General"
+
+    def test_non_staff_cannot_create_rooms(self, auth_client1):
+        response = auth_client1.post(
+            "/api/v1/chat/rooms/",
+            {"label": "Data Science"},
+            format="json",
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert not ChatRoom.objects.filter(slug="data-science").exists()
+
+    def test_staff_creates_dynamic_room(self, auth_client1, user1):
+        user1.is_staff = True
+        user1.save(update_fields=["is_staff"])
+        response = auth_client1.post(
+            "/api/v1/chat/rooms/",
+            {"label": "Data Science"},
+            format="json",
+        )
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.json()["slug"] == "data-science"
+        assert response.json()["label"] == "Data Science"
+        assert ChatRoom.objects.filter(slug="data-science", is_default=False).exists()
+
+    def test_staff_cannot_create_duplicate_room(self, auth_client1, user1):
+        user1.is_staff = True
+        user1.save(update_fields=["is_staff"])
+        ChatRoom.objects.create(slug="data-science", label="Data Science")
+        response = auth_client1.post(
+            "/api/v1/chat/rooms/",
+            {"label": "Data Science"},
+            format="json",
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.django_db
+class TestAdminMemberListEndpoint:
+    def test_non_staff_cannot_view_members(self, auth_client1):
+        response = auth_client1.get("/api/v1/chat/admin/members/")
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_staff_can_view_member_email_and_profile_details(self, auth_client1, user1):
+        user1.is_staff = True
+        user1.save(update_fields=["is_staff"])
+        CandidateProfile.objects.create(
+            user=user1,
+            display_name="Candidate One",
+            public_identity_mode=CandidateProfile.PublicIdentityMode.DISPLAY_NAME,
+            batch="2026",
+            hiring_type=CandidateProfile.HiringType.DIGITAL,
+            region="Hyderabad",
+        )
+        response = auth_client1.get("/api/v1/chat/admin/members/")
+        assert response.status_code == status.HTTP_200_OK
+        member = next(row for row in response.json()["results"] if row["id"] == str(user1.id))
+        assert member == {
+            "id": str(user1.id),
+            "email": user1.email,
+            "display_name": "Candidate One",
+            "batch": "2026",
+            "hiring_type": "DIGITAL",
+            "region": "Hyderabad",
+            "current_status": "REGISTERED",
+        }
 
 
 @pytest.mark.django_db

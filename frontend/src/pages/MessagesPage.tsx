@@ -16,11 +16,12 @@ import {
   ArrowDown,
   Hash,
   MessageCircle,
+  Plus,
   Send,
   WifiOff,
 } from "lucide-react";
 
-import { listChatRooms } from "@/api/chat";
+import { createChatRoom, listChatRooms } from "@/api/chat";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import {
   RoomPillsMobile,
@@ -40,6 +41,11 @@ export function MessagesPage() {
   const [inputBody, setInputBody] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isScrolledUp, setIsScrolledUp] = useState<boolean>(false);
+  const [isCreateOpen, setIsCreateOpen] = useState<boolean>(false);
+  const [newRoomLabel, setNewRoomLabel] = useState<string>("");
+  const [isCreatingRoom, setIsCreatingRoom] = useState<boolean>(false);
+  const [createRoomError, setCreateRoomError] = useState<string | null>(null);
+  const isStaff = user?.is_staff === true;
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -99,6 +105,25 @@ export function MessagesPage() {
 
   const handleSelectRoom = (slug: string) => {
     setSearchParams({ room: slug });
+  };
+
+  const handleCreateRoom = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!newRoomLabel.trim() || isCreatingRoom) return;
+
+    setIsCreatingRoom(true);
+    setCreateRoomError(null);
+    try {
+      const room = await createChatRoom(newRoomLabel.trim());
+      setRooms((current) => [...current, room].sort((a, b) => a.slug.localeCompare(b.slug)));
+      setNewRoomLabel("");
+      setIsCreateOpen(false);
+      handleSelectRoom(room.slug);
+    } catch {
+      setCreateRoomError("Could not create the channel. Check the name and try again.");
+    } finally {
+      setIsCreatingRoom(false);
+    }
   };
 
   // 2. Auto-scroll logic
@@ -191,6 +216,19 @@ export function MessagesPage() {
             </div>
 
             <div className="flex items-center gap-2">
+              {isStaff && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCreateRoomError(null);
+                    setIsCreateOpen(true);
+                  }}
+                  className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+                >
+                  <Plus className="h-4 w-4" aria-hidden="true" />
+                  Create channel
+                </button>
+              )}
               <span
                 className={`w-2.5 h-2.5 rounded-full ${
                   isDegraded
@@ -204,6 +242,56 @@ export function MessagesPage() {
               </span>
             </div>
           </header>
+
+          {isCreateOpen && isStaff && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+              <form
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="create-chat-room-title"
+                onSubmit={handleCreateRoom}
+                className="w-full max-w-md space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-xl dark:border-slate-700 dark:bg-slate-900"
+              >
+                <div>
+                  <h2 id="create-chat-room-title" className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                    Create message channel
+                  </h2>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                    All members will be able to join this channel.
+                  </p>
+                </div>
+                <label htmlFor="new-chat-room-name" className="block text-sm font-medium text-slate-700 dark:text-slate-200">
+                  Channel name
+                </label>
+                <input
+                  id="new-chat-room-name"
+                  autoFocus
+                  maxLength={100}
+                  value={newRoomLabel}
+                  onChange={(event) => setNewRoomLabel(event.target.value)}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  required
+                />
+                {createRoomError && <p role="alert" className="text-sm text-rose-600 dark:text-rose-400">{createRoomError}</p>}
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateOpen(false)}
+                    className="min-h-10 rounded-lg px-3 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!newRoomLabel.trim() || isCreatingRoom}
+                    className="min-h-10 rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
+                  >
+                    {isCreatingRoom ? "Creating…" : "Create channel"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
 
           {/* Degraded Connection Banner */}
           {isDegraded && (

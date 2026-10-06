@@ -1,8 +1,8 @@
 """WebSocket consumer for real-time chat (Phase 13 D-04, D-05, D-06)."""
 
-from datetime import timedelta
 import json
 import time
+from datetime import timedelta
 from urllib.parse import parse_qs
 
 from channels.db import database_sync_to_async
@@ -22,7 +22,6 @@ from apps.chat.services import (
     send_message,
     soft_delete_message,
 )
-from apps.chat.validators import chat_room_slugs
 from apps.community.serializers import CommunityAuthorSerializer
 
 User = get_user_model()
@@ -40,7 +39,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
     async def connect(self):
         self.room_slug = self.scope["url_route"]["kwargs"].get("room_slug")
-        if not self.room_slug or self.room_slug not in chat_room_slugs():
+        if not self.room_slug:
             await self.close(code=4404)
             return
 

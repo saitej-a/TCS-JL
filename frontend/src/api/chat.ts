@@ -2,7 +2,9 @@
  * Chat API client module (Phase 13 D-03, D-05).
  */
 import { apiGet, apiPost } from "@/api/client";
+import type { Paginated } from "@/types/api";
 import type {
+  AdminMember,
   ChatMessage,
   ChatMessageListResponse,
   ChatRoom,
@@ -11,6 +13,14 @@ import type {
 
 export async function listChatRooms(): Promise<ChatRoom[]> {
   return apiGet<ChatRoom[]>("/chat/rooms/");
+}
+
+export function createChatRoom(label: string): Promise<ChatRoom> {
+  return apiPost<ChatRoom>("/chat/rooms/", { label });
+}
+
+export function listAdminMembers(page = 1): Promise<Paginated<AdminMember>> {
+  return apiGet<Paginated<AdminMember>>(`/chat/admin/members/?page=${page}`);
 }
 
 export async function listChatMessages(

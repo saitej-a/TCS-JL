@@ -503,36 +503,11 @@ export function DashboardPage(): React.ReactElement {
 
       {/* RIGHT RAIL — the composition's 4 columns */}
       <aside className="lg:col-span-4 flex flex-col gap-6">
-        {/* Card: My Status Summary (composition markup, real fields only) */}
-        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm dark:bg-slate-800 dark:border-slate-800">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
-            <h3 className="text-xs font-bold tracking-tight text-slate-900 uppercase dark:text-slate-100">
-              My Status Summary
-            </h3>
-            <span
-              className="material-symbols-outlined text-slate-400 text-lg dark:text-slate-500"
-              data-icon="account_circle"
-              aria-hidden="true"
-            >
-              account_circle
-            </span>
-          </div>
-          <div className="mt-4 space-y-3">
-            <RailStatusSummary
-              status={status}
-              completion={data?.dashboard.profile.completion_percentage ?? null}
-              unread={data?.dashboard.community.unread_notifications ?? null}
-            />
-          </div>
-          <div className="mt-5 pt-3 border-t border-slate-100 dark:border-slate-700">
-            <Link
-              to="/timeline"
-              className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition active:scale-[0.98] flex items-center justify-center"
-            >
-              Update my status
-            </Link>
-          </div>
-        </div>
+        <RailStatusSummary
+          status={status}
+          completion={data?.dashboard.profile.completion_percentage ?? null}
+          unread={data?.dashboard.community.unread_notifications ?? null}
+        />
       </aside>
     </main>
   );

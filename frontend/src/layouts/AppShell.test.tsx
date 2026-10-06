@@ -61,7 +61,10 @@ describe("AppShell", () => {
     renderShell();
     expect(screen.getByText("page-content")).toBeInTheDocument();
     await waitFor(() => {
-      expect(screen.getByTestId("mobile-menu-button")).toBeInTheDocument();
+      const menuButton = screen.getByTestId("mobile-menu-button");
+      expect(menuButton).toBeInTheDocument();
+      expect(menuButton.querySelector("svg")).toBeInTheDocument();
+      expect(screen.getByRole("banner")).toHaveClass("px-8", "py-3", "shadow-sm");
     });
     expect(screen.getByTestId("disclaimer-footer")).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "Primary" })).toBeInTheDocument();

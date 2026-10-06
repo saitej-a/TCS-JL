@@ -10,6 +10,7 @@
  */
 import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { Menu, UsersRound } from "lucide-react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 
 import { apiGet } from "@/api/client";
@@ -25,6 +26,7 @@ import { useAuth } from "@/context/AuthContext";
 // Mobile tab bar removed in favor of a hamburger mobile menu
 // import { MobileTabBar } from "@/layouts/MobileTabBar";
 import { setRailOccupied, useRailOccupied } from "@/layouts/railStore";
+import { APP_HEADER_SURFACE } from "@/layouts/appHeaderStyles";
 import { PwaLayer } from "@/pwa/PwaLayer";
 import { NAV_ITEMS } from "@/layouts/navItems";
 import type { Paginated } from "@/types/api";
@@ -244,6 +246,18 @@ function AdminNavGroup(): React.ReactElement | null {
             </span>
           )}
         </NavLink>
+        <NavLink
+          to="/admin/members"
+          className={navLinkClasses}
+          data-testid="admin-members-link"
+        >
+          {() => (
+            <span className="flex items-center gap-3">
+              <UsersRound className="h-5 w-5" aria-hidden="true" />
+              <span>Members</span>
+            </span>
+          )}
+        </NavLink>
       </nav>
     </div>
   );
@@ -351,9 +365,9 @@ export function AppShell({ children }: { children?: ReactNode }) {
         {/* Center column */}
         <div className="flex-1 min-w-0 bg-slate-50 dark:bg-slate-900 flex flex-col min-h-screen">
           <header
-            className={`bg-white border-b border-slate-200 px-8 py-3 max-sm:px-4 max-sm:py-2.5 flex items-center justify-between sticky ${
+            className={`${APP_HEADER_SURFACE} sticky ${
               bannerVisible ? "top-9" : "top-0"
-            } z-20 shadow-sm dark:bg-slate-900 dark:border-slate-800`}
+            }`}
           >
             {/* Mobile Top Bar with hamburger (replaces bottom tab bar) */}
             <div className="flex items-center justify-between w-full lg:hidden">
@@ -366,7 +380,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
                   onClick={() => setMobileMenuOpen((s) => !s)}
                   className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[22px]" data-icon="menu" aria-hidden="true">menu</span>
+                  <Menu className="h-[22px] w-[22px]" aria-hidden="true" />
                 </button>
                 <div className="flex items-center gap-2 font-display text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
                   <span className="bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded-md tracking-wider shadow-sm select-none">
@@ -413,6 +427,16 @@ export function AppShell({ children }: { children?: ReactNode }) {
                           <span>{item.label}</span>
                         </Link>
                       ))}
+                      {user !== null && user.is_staff && (
+                        <div className="mt-3 border-t border-slate-200 pt-3 dark:border-slate-800">
+                          <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                            Administration
+                          </p>
+                          <Link to="/admin/moderation/reports" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">Reports</Link>
+                          <Link to="/admin/announcements" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">Announcements</Link>
+                          <Link to="/admin/members" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">Members</Link>
+                        </div>
+                      )}
                     </nav>
                   </aside>
                 </div>

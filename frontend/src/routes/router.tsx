@@ -12,6 +12,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import {
   AboutPage,
   AdminAnnouncementsPage,
+  AdminMembersPage,
   AdminReportsPage,
   AnalyticsPage,
   CommunityFeedPage,
@@ -108,6 +109,7 @@ export const router = createBrowserRouter([
         children: [
           { path: "/admin/moderation/reports", element: <AdminReportsPage /> },
           { path: "/admin/announcements", element: <AdminAnnouncementsPage /> },
+          { path: "/admin/members", element: <AdminMembersPage /> },
         ],
       },
       // 9.5 Task 10: an unknown route inside the app keeps the shell —

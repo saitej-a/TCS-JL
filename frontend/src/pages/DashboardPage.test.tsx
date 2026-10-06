@@ -57,7 +57,10 @@ describe("DashboardPage", () => {
       expect(
         screen.getAllByText("Not enough community data to display this breakdown.").length,
       ).toBeGreaterThanOrEqual(1);
+      expect(screen.getByRole("region", { name: "My Status Summary" })).toBeInTheDocument();
     });
+    expect(screen.getByText("80%")).toBeInTheDocument();
+    expect(screen.getByText("Unread notifications")).toBeInTheDocument();
     expect(screen.queryByText("0")).not.toBeInTheDocument();
   });
 

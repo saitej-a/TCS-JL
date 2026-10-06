@@ -21,6 +21,7 @@ import { getDashboard } from "@/api/dashboard";
 import { CategoryTabs, FEED_TABS, type FeedTab } from "@/components/CategoryTabs";
 import { CreatePostModal } from "@/components/CreatePostModal";
 import { EmptyState } from "@/components/EmptyState";
+import { PageHeader } from "@/components/PageHeader";
 import { PostCard } from "@/components/PostCard";
 import { RailStatusSummary } from "@/components/RailStatusSummary";
 import { SkeletonCard } from "@/components/Skeleton";
@@ -244,37 +245,32 @@ export function CommunityFeedPage(): React.ReactElement {
         </RailPortal>
       )}
 
-      {/* 1. Header row — the composition's card with its live-feed eyebrow. */}
-      <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 dark:bg-slate-800 dark:border-slate-700/80">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-bold tracking-wider uppercase border border-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800/60">
+      <PageHeader
+        eyebrow={
+          <>
+            <span className="rounded-md border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:border-indigo-800/60 dark:bg-indigo-950/60 dark:text-indigo-300">
               Live Peer Feed
             </span>
             {posts !== null && (
               <span className="text-xs text-slate-400 dark:text-slate-400">• {total} posts</span>
             )}
-          </div>
-          <h1 className="font-headline text-2xl font-bold tracking-tight text-slate-900 leading-tight dark:text-slate-100">
-            COMMUNITY DISCUSSIONS
-          </h1>
-          <p className="text-sm text-slate-500 mt-1 leading-normal dark:text-slate-400">
-            Connect, share updates, and verify regional batch timelines with peers.
-          </p>
-        </div>
-        <div className="shrink-0">
-          {status === "authenticated" ? (
+          </>
+        }
+        title="COMMUNITY DISCUSSIONS"
+        description="Connect, share updates, and verify regional batch timelines with peers."
+        action={
+          status === "authenticated" ? (
             createCta
           ) : (
             <Link
               to="/login?next=%2Fcommunity"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-lg shadow-sm hover:shadow active:scale-[0.98] transition-all dark:bg-indigo-600 dark:hover:bg-indigo-500"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 hover:shadow active:scale-[0.98] dark:bg-indigo-600 dark:hover:bg-indigo-500"
             >
               Sign in to post
             </Link>
-          )}
-        </div>
-      </div>
+          )
+        }
+      />
 
       {pinned !== null && (
         /* §7.6's pinned announcement card, in the composition's amber gradient

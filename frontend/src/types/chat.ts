@@ -13,6 +13,16 @@ export interface ChatRoom {
   created_at: string;
 }
 
+export interface AdminMember {
+  id: string;
+  email: string;
+  display_name: string;
+  batch: string | null;
+  hiring_type: string | null;
+  region: string | null;
+  current_status: string | null;
+}
+
 export interface ChatAuthor {
   id: string;
   display_name: string;

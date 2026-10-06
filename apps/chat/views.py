@@ -1,7 +1,7 @@
 """Views for chat domain (Phase 13 D-03)."""
 
-from datetime import timedelta
 import secrets
+from datetime import timedelta
 
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
@@ -14,8 +14,14 @@ from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
+from apps.accounts.models import User
 from apps.chat.models import ChatMessage, ChatRoom
-from apps.chat.serializers import ChatMessageSerializer, ChatRoomSerializer
+from apps.chat.serializers import (
+    AdminMemberSerializer,
+    ChatMessageSerializer,
+    ChatRoomCreateSerializer,
+    ChatRoomSerializer,
+)
 from apps.chat.services import (
     DuplicateMessageError,
     InvalidMessageError,
@@ -26,13 +32,22 @@ from apps.chat.services import (
 
 
 class ChatRoomListView(generics.ListAPIView):
-    """List all available chat rooms with metadata (Phase 13 D-03)."""
+    """List rooms for authenticated users and create rooms for staff."""
 
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ChatRoomSerializer
     pagination_class = None
     throttle_classes = [ScopedRateThrottle]
     throttle_scope = "chat_reads"
+
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [permissions.IsAdminUser()]
+        return super().get_permissions()
+
+    def get_throttles(self):
+        self.throttle_scope = "chat_writes" if self.request.method == "POST" else "chat_reads"
+        return super().get_throttles()
 
     def get_queryset(self):
         ensure_default_rooms()
@@ -46,6 +61,28 @@ class ChatRoomListView(generics.ListAPIView):
                 last_message_at=Max("messages__created_at"),
             )
             .order_by("-is_default", "slug")
+        )
+
+    def post(self, request):
+        serializer = ChatRoomCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        room = serializer.save()
+        return Response(ChatRoomSerializer(room).data, status=status.HTTP_201_CREATED)
+
+
+class AdminMemberListView(generics.ListAPIView):
+    """Paginated member directory; profile and email fields are staff-only."""
+
+    permission_classes = [permissions.IsAdminUser]
+    serializer_class = AdminMemberSerializer
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "chat_reads"
+
+    def get_queryset(self):
+        return (
+            User.objects.filter(is_active=True)
+            .select_related("candidate_profile")
+            .order_by("email")
         )
 
 

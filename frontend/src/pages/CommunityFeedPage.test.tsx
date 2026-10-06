@@ -223,12 +223,14 @@ describe("CommunityFeedPage", () => {
     await screen.findByText("Anyone from Hyderabad got JL?");
     const pinButton = await screen.findByRole("button", { name: /Pin post/i });
     expect(pinButton).toBeInTheDocument();
+    expect(pinButton.querySelector("svg")).toBeInTheDocument();
     await user.click(pinButton);
 
     await waitFor(() => {
       expect(calls.some((c) => String(c.url).includes("/community/posts/p1/pin/"))).toBe(true);
     });
     // Once pinned, button becomes "Unpin"
-    expect(await screen.findByRole("button", { name: /Unpin post/i })).toBeInTheDocument();
+    const unpinButton = await screen.findByRole("button", { name: /Unpin post/i });
+    expect(unpinButton.querySelector("svg")).toBeInTheDocument();
   });
 });

@@ -1,13 +1,14 @@
 """Tests for real-time WebSocket consumer (Phase 13 D-04, D-05, D-06, D-08)."""
 
-from datetime import timedelta
 import secrets
+from datetime import timedelta
 
+import pytest
+from channels.db import database_sync_to_async
 from channels.testing import WebsocketCommunicator
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.utils import timezone
-import pytest
 
 from apps.chat.models import ChatMessage, ChatRoom
 from config.asgi import application
@@ -103,6 +104,22 @@ class TestChatConsumer:
         # Ticket must be popped from cache (single-use guarantee)
         assert cache.get(f"ws-ticket:{ticket}") is None
 
+        await communicator.disconnect()
+
+    async def test_connect_staff_created_room_accepted(self, chat_user):
+        room = await database_sync_to_async(ChatRoom.objects.create)(
+            slug="data-science",
+            label="Data Science",
+        )
+        ticket = _issue_ticket(chat_user)
+        communicator = _make_communicator(
+            f"/ws/chat/{room.slug}/?ticket={ticket}",
+        )
+        connected, _subprotocol = await communicator.connect()
+        assert connected
+        welcome = await communicator.receive_json_from()
+        assert welcome["type"] == "chat.joined"
+        assert welcome["room"] == "data-science"
         await communicator.disconnect()
 
     async def test_connect_consumed_ticket_rejected(self, chat_user, general_room):

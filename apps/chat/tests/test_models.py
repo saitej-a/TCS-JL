@@ -36,7 +36,7 @@ class TestChatRoomModel:
         assert str(general_room) == "General"
 
     def test_clean_invalid_slug_raises(self, db):
-        room = ChatRoom(slug="invalid_room_slug_not_in_settings", label="Bad Room")
+        room = ChatRoom(slug="Invalid Room!", label="Bad Room")
         with pytest.raises(ValidationError):
             room.clean()
 

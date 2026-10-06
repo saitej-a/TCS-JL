@@ -20,6 +20,7 @@
  * byte-identical.
  */
 import { useEffect, useState } from "react";
+import { Pin, PinOff } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import {
@@ -219,13 +220,11 @@ export function PostCard({
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-100"
               }`}
             >
-              <span
-                className="material-symbols-outlined text-[17px]"
-                data-icon={isPinned ? "keep_off" : "push_pin"}
-                aria-hidden="true"
-              >
-                {isPinned ? "keep_off" : "push_pin"}
-              </span>
+              {isPinned ? (
+                <PinOff className="h-[17px] w-[17px]" aria-hidden="true" />
+              ) : (
+                <Pin className="h-[17px] w-[17px]" aria-hidden="true" />
+              )}
               <span>{isPinned ? "Unpin" : "Pin"}</span>
             </button>
           )}
