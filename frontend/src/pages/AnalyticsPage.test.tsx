@@ -139,6 +139,17 @@ afterEach(() => {
 });
 
 describe("§7.9 AnalyticsPage", () => {
+  it("uses the full content width without a third-column status rail", async () => {
+    routeAdapter(defaultRoutes());
+    renderPage();
+
+    const page = screen.getByTestId("analytics-page");
+    expect(page).toHaveClass("w-full", "max-w-none");
+    expect(page).not.toHaveClass("max-w-5xl", "mx-auto");
+    expect(screen.queryByRole("region", { name: "My Status Summary" })).not.toBeInTheDocument();
+    expect(await screen.findByTestId("kpi-grid")).toBeInTheDocument();
+  });
+
   it("renders the spec copy and the content module's disclaimer", async () => {
     routeAdapter(defaultRoutes());
     renderPage();

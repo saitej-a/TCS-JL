@@ -6,7 +6,7 @@
  * Script steps must match the page's actual request order: the initial load
  * fires GET /timeline/ (refresh) and GET /profile/ (status) via Promise.all.
  */
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
@@ -56,6 +56,21 @@ function renderTimeline() {
 }
 
 describe("TimelinePage", () => {
+  it("renders the shared timeline-style My Status Summary card", async () => {
+    scriptAdapter([
+      { url: "/timeline/", method: "get", respond: () => listResponse([EVENT]) },
+      { url: "/profile/", respond: () => ({ status: 200, data: PROFILE }) },
+    ]);
+    renderTimeline();
+
+    const summary = await screen.findByRole("region", { name: "My Status Summary" });
+    expect(summary).toHaveClass("rounded-2xl", "bg-white", "dark:bg-slate-800");
+    expect(within(summary).getByText("Latest milestone:")).toBeInTheDocument();
+    expect(
+      within(summary).getByRole("button", { name: /Update my status/i }),
+    ).toBeInTheDocument();
+  });
+
   it("posts exactly the three writable fields on create", async () => {
     const user = userEvent.setup();
     const bodies: string[] = [];

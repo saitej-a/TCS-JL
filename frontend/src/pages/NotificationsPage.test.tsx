@@ -69,30 +69,50 @@ function DashboardProbe(): React.ReactElement {
 
 function renderPage(): ReturnType<typeof render> {
   return render(
-    <MemoryRouter initialEntries={["/notifications"]}>
-      <AuthProvider>
-        <ToastProvider>
-          <Routes>
-            <Route path="/notifications" element={<NotificationsPage />} />
-            <Route path="/community/posts/:id" element={<PostProbe />} />
-            <Route path="/dashboard" element={<DashboardProbe />} />
-          </Routes>
-        </ToastProvider>
-      </AuthProvider>
-    </MemoryRouter>,
+    <>
+      <div id="appshell-rail-slot" />
+      <MemoryRouter initialEntries={["/notifications"]}>
+        <AuthProvider>
+          <ToastProvider>
+            <Routes>
+              <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/community/posts/:id" element={<PostProbe />} />
+              <Route path="/dashboard" element={<DashboardProbe />} />
+            </Routes>
+          </ToastProvider>
+        </AuthProvider>
+      </MemoryRouter>
+    </>,
   );
 }
 
 /** Route order matters: exact paths before the bare list path. The rail's
  *  dashboard fetch is scripted per-test where it matters (failure is
  *  non-fatal, so tests that don't script it just render skeletons). */
-function routes(overrides: Parameters<typeof routeAdapter>[0] = []) {
+function routes(
+  overrides: Parameters<typeof routeAdapter>[0] = [],
+  timelineResults: unknown[] = [],
+) {
   return [
     { url: "/notifications/read-all/", answers: [{ status: 200, data: { updated_count: 2, message: "ok" } }] },
     { url: "/read/", answers: [{ status: 200, data: { id: "n1", is_read: true, read_at: "now" } }] },
     {
       url: "/notifications/",
       answers: [{ status: 200, data: envelope([UNREAD_REPLY, UNREAD_MILESTONE, READ_REMINDER], 2) }],
+    },
+    {
+      url: "/timeline/",
+      answers: [
+        {
+          status: 200,
+          data: {
+            count: 0,
+            next: null,
+            previous: null,
+            results: timelineResults,
+          },
+        },
+      ],
     },
     ...overrides,
   ];
@@ -104,6 +124,38 @@ afterEach(() => {
 });
 
 describe("§7.10 NotificationsPage (notification_center composition)", () => {
+  it("uses the same timeline milestone summary card in the right rail", async () => {
+    routeAdapter(
+      routes([], [
+        {
+          id: "event-latest",
+          event_type: "INTERVIEW",
+          event_date: "2026-04-23",
+          description: "",
+          is_verified: true,
+          created_at: "2026-04-23T00:00:00Z",
+        },
+        {
+          id: "event-offer",
+          event_type: "OFFER_LETTER",
+          event_date: "2026-03-12",
+          description: "",
+          is_verified: false,
+          created_at: "2026-03-12T00:00:00Z",
+        },
+      ]),
+    );
+    renderPage();
+
+    const summary = await screen.findByRole("region", { name: "My Status Summary" });
+    expect(await screen.findByText("Latest milestone:")).toBeInTheDocument();
+    expect(summary).toHaveTextContent("Offer Date:");
+    expect(summary).toHaveTextContent("Recorded milestones:");
+    expect(summary).toHaveTextContent("1 pending");
+    expect(summary).not.toHaveTextContent("Profile completeness");
+    expect(summary).not.toHaveTextContent("Unread notifications");
+  });
+
   it("renders the composition's header, tabs and row anatomy from the real payload", async () => {
     routeAdapter(routes());
     renderPage();

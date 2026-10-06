@@ -18,6 +18,7 @@ import {
 } from "@/api/community";
 import { listAnnouncements, type AnnouncementPublic } from "@/api/announcements";
 import { getDashboard } from "@/api/dashboard";
+import { listMyTimelineEvents, type TimelineEventPrivate } from "@/api/timeline";
 import { CategoryTabs, FEED_TABS, type FeedTab } from "@/components/CategoryTabs";
 import { CreatePostModal } from "@/components/CreatePostModal";
 import { EmptyState } from "@/components/EmptyState";
@@ -43,8 +44,6 @@ interface VoteState {
 /** §7.6's rail fills the shell's slot with §7.4's status summary. */
 interface RailState {
   status: CandidateStatus;
-  completion: number;
-  unread: number;
 }
 
 export function CommunityFeedPage(): React.ReactElement {
@@ -78,6 +77,8 @@ export function CommunityFeedPage(): React.ReactElement {
   const [votes, setVotes] = useState<Record<string, VoteState>>({});
   const [failed, setFailed] = useState(false);
   const [rail, setRail] = useState<RailState | null>(null);
+  const [railEvents, setRailEvents] = useState<TimelineEventPrivate[] | null>(null);
+  const [railTimelineFailed, setRailTimelineFailed] = useState(false);
   const [pinned, setPinned] = useState<AnnouncementPublic | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -142,20 +143,25 @@ export function CommunityFeedPage(): React.ReactElement {
   useEffect(() => {
     if (status !== "authenticated") {
       setRail(null);
+      setRailEvents(null);
+      setRailTimelineFailed(false);
       return;
     }
     let cancelled = false;
     getDashboard()
       .then((payload) => {
         if (cancelled) return;
-        setRail({
-          status: payload.profile.current_status,
-          completion: payload.profile.completion_percentage,
-          unread: payload.community.unread_notifications,
-        });
+        setRail({ status: payload.profile.current_status });
       })
       .catch(() => {
         // A failed rail read leaves the slot empty; the feed itself is unaffected.
+      });
+    listMyTimelineEvents()
+      .then((result) => {
+        if (!cancelled) setRailEvents(result.results);
+      })
+      .catch(() => {
+        if (!cancelled) setRailTimelineFailed(true);
       });
     return () => {
       cancelled = true;
@@ -239,8 +245,8 @@ export function CommunityFeedPage(): React.ReactElement {
         <RailPortal>
           <RailStatusSummary
             status={rail?.status ?? null}
-            completion={rail?.completion ?? null}
-            unread={rail?.unread ?? null}
+            events={railEvents}
+            timelineFailed={railTimelineFailed}
           />
         </RailPortal>
       )}

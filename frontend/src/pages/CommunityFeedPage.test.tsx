@@ -43,13 +43,16 @@ function listBody(results: unknown[]) {
 
 function renderFeed(initialEntry = "/community") {
   return render(
-    <MemoryRouter initialEntries={[initialEntry]}>
-      <AuthProvider>
-        <ToastProvider>
-          <CommunityFeedPage />
-        </ToastProvider>
-      </AuthProvider>
-    </MemoryRouter>,
+    <>
+      <div id="appshell-rail-slot" />
+      <MemoryRouter initialEntries={[initialEntry]}>
+        <AuthProvider>
+          <ToastProvider>
+            <CommunityFeedPage />
+          </ToastProvider>
+        </AuthProvider>
+      </MemoryRouter>
+    </>,
   );
 }
 
@@ -217,6 +220,29 @@ describe("CommunityFeedPage", () => {
           },
         ],
       },
+      {
+        url: "/timeline/",
+        answers: [
+          {
+            status: 200,
+            data: {
+              count: 1,
+              next: null,
+              previous: null,
+              results: [
+                {
+                  id: "timeline-event",
+                  event_type: "OFFER_LETTER",
+                  event_date: "2026-05-10",
+                  description: "",
+                  is_verified: false,
+                  created_at: "2026-05-10T00:00:00Z",
+                },
+              ],
+            },
+          },
+        ],
+      },
     ]);
 
     renderFeed();
@@ -232,5 +258,11 @@ describe("CommunityFeedPage", () => {
     // Once pinned, button becomes "Unpin"
     const unpinButton = await screen.findByRole("button", { name: /Unpin post/i });
     expect(unpinButton.querySelector("svg")).toBeInTheDocument();
+    const summary = await screen.findByRole("region", { name: "My Status Summary" });
+    expect(summary).toHaveTextContent("Offer Date:");
+    expect(summary).toHaveTextContent("Recorded milestones:");
+    expect(summary).toHaveTextContent("1 pending");
+    expect(summary).not.toHaveTextContent("Profile completeness");
+    expect(summary).not.toHaveTextContent("Unread notifications");
   });
 });

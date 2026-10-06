@@ -42,6 +42,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { getAnalyticsOverview, type AnalyticsOverview } from "@/api/analytics";
 import { getDashboard } from "@/api/dashboard";
+import { listMyTimelineEvents, type TimelineEventPrivate } from "@/api/timeline";
 import {
   listNotifications,
   markAllNotificationsRead,
@@ -50,6 +51,7 @@ import {
 import { getUnreadCount, setUnreadCount, useUnreadCount } from "@/api/unreadStore";
 import { EmptyState } from "@/components/EmptyState";
 import { NotificationRow } from "@/components/NotificationRow";
+import { PageHeader } from "@/components/PageHeader";
 import { Skeleton } from "@/components/Skeleton";
 import { useToast } from "@/components/Toast";
 import { RailPortal } from "@/layouts/AppShell";
@@ -58,6 +60,7 @@ import { IN_APP_ALERT_GROUPS } from "@/theme/notificationRows";
 import type { DashboardPayload } from "@/api/dashboard";
 import type { NotificationItem } from "@/types/notifications";
 import { RailStatusSummary } from "@/components/RailStatusSummary";
+import { daysSince, formatDateShort } from "@/utils/date";
 
 /** 04 §10's page size (DRF PAGE_SIZE) — used only for the page counter label. */
 const PAGE_SIZE = 20;
@@ -105,6 +108,8 @@ export function NotificationsPage(): React.ReactElement {
   const [failed, setFailed] = useState(false);
   const [markingAll, setMarkingAll] = useState(false);
   const [dashboard, setDashboard] = useState<DashboardPayload | null>(null);
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEventPrivate[] | null>(null);
+  const [timelineFailed, setTimelineFailed] = useState(false);
   const [pulse, setPulse] = useState<AnalyticsOverview | null>(null);
   const [online, setOnline] = useState<boolean>(() => isOnline());
 
@@ -144,6 +149,20 @@ export function NotificationsPage(): React.ReactElement {
       })
       .catch(() => {
         if (!cancelled) setDashboard(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    listMyTimelineEvents()
+      .then((envelope) => {
+        if (!cancelled) setTimelineEvents(envelope.results);
+      })
+      .catch(() => {
+        if (!cancelled) setTimelineFailed(true);
       });
     return () => {
       cancelled = true;
@@ -240,49 +259,45 @@ export function NotificationsPage(): React.ReactElement {
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const status = dashboard?.profile.current_status ?? null;
   const suppressed = pulse !== null && pulse.suppressed;
+  const timeline = timelineEvents ?? [];
+  const latest = timeline.length === 0
+    ? null
+    : timeline.reduce((a, b) => (a.event_date > b.event_date ? a : b));
+  const offerEvent = timeline
+    .filter((event) => event.event_type === "OFFER_LETTER")
+    .reduce<TimelineEventPrivate | null>(
+      (earliest, event) =>
+        earliest === null || event.event_date < earliest.event_date ? event : earliest,
+      null,
+    );
+  const unverifiedCount = timeline.filter((event) => !event.is_verified).length;
 
   return (
     <main className="skin-v1 flex-1 w-full pb-12 bg-slate-50 font-body text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-800 dark:bg-slate-950 dark:text-slate-200">
-      <div className="max-w-7xl mx-auto px-8 pt-7">
-        {/* Top Breadcrumb & Support Status */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-            <Link to="/dashboard" className="hover:text-indigo-600 cursor-pointer">
-              Candidate Portal
-            </Link>
-            <span className="text-slate-300">/</span>
-            <span className="text-slate-900 font-semibold dark:text-slate-100">
-              Notifications &amp; Alerts
+      <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
+        <PageHeader
+          eyebrow={
+            <span
+              data-testid="sync-status"
+              className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300"
+            >
+              <span className={`h-2 w-2 rounded-full ${online ? "animate-pulse bg-emerald-500" : "bg-slate-400"}`} />
+              <span>{online ? "Online" : "Offline"}</span>
             </span>
-          </div>
-          {/* The document claims a realtime sync; the product's honest status is
-              its connectivity, which is what this pill reports (recorded). */}
-          <div
-            data-testid="sync-status"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium"
-          >
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>{online ? "Online" : "Offline"}</span>
-          </div>
-        </div>
-
-        {/* Page Header: Title + Secondary Action */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-200 gap-4 dark:border-slate-800">
-          <div>
-            <h1 className="font-headline text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5 dark:text-white">
+          }
+          title={
+            <span className="flex flex-wrap items-center gap-2.5">
               <span>NOTIFICATIONS</span>
               <span
                 data-testid="unread-pill"
-                className="text-xs font-semibold px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-md tracking-normal"
+                className="rounded-md bg-indigo-100 px-2 py-0.5 text-xs font-semibold tracking-normal text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300"
               >
                 {unreadCount} UNREAD
               </span>
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1 dark:text-slate-400">
-              Stay updated with community replies, milestone reactions, and cohort announcements.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
+            </span>
+          }
+          description="Stay updated with community replies, milestone reactions, and cohort announcements."
+          action={
             <button
               type="button"
               data-testid="mark-all-read"
@@ -299,8 +314,8 @@ export function NotificationsPage(): React.ReactElement {
               </span>
               <span>Mark All as Read</span>
             </button>
-          </div>
-        </div>
+          }
+        />
 
         {/* Layout Grid (Main 4xl Column + Right Rail 80w) */}
         <div className="mt-6 flex flex-col lg:flex-row gap-8 items-start">
@@ -461,8 +476,66 @@ export function NotificationsPage(): React.ReactElement {
             <aside className="w-full lg:w-80 space-y-5 flex-shrink-0">
               <RailStatusSummary
                 status={status}
-                completion={dashboard?.profile.completion_percentage ?? null}
-                unread={dashboard?.community.unread_notifications ?? null}
+                statusDescription={
+                  latest !== null && (
+                    <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                      Since {formatDateShort(latest.event_date)} (
+                      <strong className="text-slate-700 dark:text-slate-200">
+                        {daysSince(latest.event_date)} days pending
+                      </strong>
+                      )
+                    </p>
+                  )
+                }
+                details={
+                  timelineEvents === null ? (
+                    timelineFailed ? (
+                      <p role="status" className="text-xs text-rose-700 dark:text-rose-300">
+                        Timeline milestones could not be loaded.
+                      </p>
+                    ) : (
+                      <>
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-full" />
+                      </>
+                    )
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 dark:text-slate-400">Latest milestone:</span>
+                        <span className="text-right font-semibold text-slate-800 dark:text-slate-200">
+                          {latest === null ? "—" : formatDateShort(latest.event_date)}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 dark:text-slate-400">Offer Date:</span>
+                        <span className="font-semibold text-slate-800 dark:text-slate-200">
+                          {offerEvent === null ? "Not reported" : formatDateShort(offerEvent.event_date)}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 dark:text-slate-400">Recorded milestones:</span>
+                        <span className="rounded bg-slate-100 px-2 py-0.5 font-semibold text-slate-800 dark:border dark:border-slate-700/70 dark:bg-slate-900/60 dark:text-slate-200">
+                          {timeline.length}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 dark:text-slate-400">Verification:</span>
+                        <span className="inline-flex items-center gap-1 rounded border border-emerald-100 bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700 dark:border-emerald-800/60 dark:bg-emerald-950/60 dark:text-emerald-300">
+                          <span
+                            className="material-symbols-outlined text-xs font-bold text-emerald-600 dark:text-emerald-400"
+                            aria-hidden="true"
+                          >
+                            check_circle
+                          </span>
+                          {unverifiedCount === 0 ? "All verified" : `${unverifiedCount} pending`}
+                        </span>
+                      </div>
+                    </>
+                  )
+                }
               />
 
               {/* Card 2: Notification Preferences */}

@@ -6,7 +6,7 @@
  */
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { setUnreadCount } from "@/api/unreadStore";
@@ -23,19 +23,22 @@ const ANNOUNCEMENT = {
   expires_at: null,
 };
 
+function CurrentLocation(): React.ReactElement {
+  const location = useLocation();
+  return (
+    <>
+      <p data-testid="current-location">{`${location.pathname}${location.search}`}</p>
+      <p>page-content</p>
+    </>
+  );
+}
+
 function renderShell(path = "/dashboard") {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <AuthProvider>
         <Routes>
-          <Route
-            path="/dashboard"
-            element={
-              <AppShell>
-                <p>page-content</p>
-              </AppShell>
-            }
-          />
+          <Route path="*" element={<AppShell><CurrentLocation /></AppShell>} />
           <Route path="/notifications" element={<p>notifications-here</p>} />
         </Routes>
       </AuthProvider>
@@ -59,15 +62,36 @@ describe("AppShell", () => {
   it("renders content, the mobile tab bar, and the footer disclaimer", async () => {
     scriptAnnouncements([]);
     renderShell();
+    expect(screen.getByTestId("current-location")).toHaveTextContent("/dashboard");
     expect(screen.getByText("page-content")).toBeInTheDocument();
     await waitFor(() => {
       const menuButton = screen.getByTestId("mobile-menu-button");
       expect(menuButton).toBeInTheDocument();
       expect(menuButton.querySelector("svg")).toBeInTheDocument();
       expect(screen.getByRole("banner")).toHaveClass("px-8", "py-3", "shadow-sm");
+      expect(screen.getByTestId("app-header").parentElement).toContainElement(
+        screen.getByTestId("app-content-row"),
+      );
+      expect(screen.getByTestId("app-title")).toBeInTheDocument();
+      expect(screen.getByRole("searchbox", { name: "Search community" })).toBeInTheDocument();
     });
     expect(screen.getByTestId("disclaimer-footer")).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "Primary" })).toBeInTheDocument();
+  });
+
+  it("submits the shared search to community and applies the query", async () => {
+    const user = userEvent.setup();
+    scriptAnnouncements([]);
+    renderShell();
+
+    const search = screen.getByRole("searchbox", { name: "Search community" });
+    await user.type(search, "Hyderabad batch");
+    await user.keyboard("{Enter}");
+
+    expect(await screen.findByTestId("current-location")).toHaveTextContent(
+      "/community?search=Hyderabad%20batch",
+    );
+    expect(search).toHaveValue("Hyderabad batch");
   });
 
   it("shows the latest announcement with a Read update link", async () => {
@@ -130,7 +154,7 @@ describe("AppShell", () => {
     renderShell();
 
     const bells = await screen.findAllByTestId("notification-bell");
-    expect(bells).toHaveLength(2); // the mobile app bar and the desktop cluster
+    expect(bells).toHaveLength(1); // the shared responsive app bar
     expect(screen.queryAllByTestId("notification-badge")).toHaveLength(0);
     for (const bell of bells) {
       expect(bell).toHaveAttribute("href", "/login?next=%2Fnotifications");
@@ -138,7 +162,7 @@ describe("AppShell", () => {
   });
 
   it("shows the unread badge when authenticated, fed by the notification API", async () => {
-    // Routed (not ordered) fake: the shell's two reads race on mount.
+    // Routed (not ordered) fake: the shell's reads race on mount.
     routeAdapter([
       {
         url: "/auth/token/refresh/",
@@ -174,11 +198,9 @@ describe("AppShell", () => {
     renderShell();
 
     await waitFor(() => {
-      expect(screen.getAllByTestId("notification-badge")).toHaveLength(2);
+      expect(screen.getAllByTestId("notification-badge")).toHaveLength(1);
     });
     expect(screen.getAllByTestId("notification-badge")[0]).toHaveTextContent("3");
-    for (const bell of screen.getAllByTestId("notification-bell")) {
-      expect(bell).toHaveAttribute("href", "/notifications");
-    }
+    expect(screen.getByTestId("notification-bell")).toHaveAttribute("href", "/notifications");
   });
 });

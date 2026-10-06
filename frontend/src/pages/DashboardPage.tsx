@@ -505,8 +505,7 @@ export function DashboardPage(): React.ReactElement {
       <aside className="lg:col-span-4 flex flex-col gap-6">
         <RailStatusSummary
           status={status}
-          completion={data?.dashboard.profile.completion_percentage ?? null}
-          unread={data?.dashboard.community.unread_notifications ?? null}
+          events={data?.events ?? null}
         />
       </aside>
     </main>

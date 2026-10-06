@@ -33,6 +33,7 @@ import { getProfile } from "@/api/profile";
 import { Button } from "@/components/Button";
 import { EmptyState } from "@/components/EmptyState";
 import { Modal } from "@/components/Modal";
+import { RailStatusSummary } from "@/components/RailStatusSummary";
 import { Skeleton, SkeletonCard } from "@/components/Skeleton";
 import { TimelineEventModal } from "@/components/TimelineEventModal";
 import { TimelineRoadmap } from "@/components/TimelineRoadmap";
@@ -85,16 +86,6 @@ function StatChip({
         {value}
       </strong>
     </span>
-  );
-}
-
-/** One `label — value` row of the composition's rail card. */
-function RailRow({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-between">
-      <span className="text-slate-500 dark:text-slate-400">{label}:</span>
-      {value}
-    </div>
   );
 }
 
@@ -371,81 +362,55 @@ export function TimelinePage(): React.ReactElement {
 
       {/* RIGHT RAIL — the composition's MY STATUS SUMMARY card, real fields */}
       <aside className="w-full xl:w-80 flex flex-col gap-6 shrink-0">
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col gap-4 dark:bg-slate-800 dark:border-slate-700/80">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700/60 pb-3">
-            <h2 className="text-xs font-bold tracking-wider text-slate-500 dark:text-slate-400 uppercase">
-              MY STATUS SUMMARY
-            </h2>
-            <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 text-sm" aria-hidden="true">
-              badge
-            </span>
-          </div>
-          <div>
-            {currentStatus === null ? (
-              <Skeleton className="h-6 w-44 rounded-full" />
-            ) : (
-              <>
-                <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-800 border border-amber-300 font-semibold text-[11px] tracking-wide px-3 py-1 rounded-full uppercase dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/60">
-                  <span className="w-2 h-2 rounded-full bg-amber-500 dark:bg-amber-400" aria-hidden="true" />
-                  {STATUS_LABELS[currentStatus as CandidateStatus] ?? currentStatus}
-                </span>
-                {latest !== null && (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">
-                    Since {formatDateShort(latest.event_date)} (
-                    <strong className="text-slate-700 dark:text-slate-200">{daysSince(latest.event_date)} days pending</strong>)
-                  </p>
-                )}
-              </>
-            )}
-          </div>
-          <div className="border-t border-b border-slate-100 dark:border-slate-700/60 py-3 space-y-2.5 text-xs">
-            <RailRow
-              label="Latest milestone"
-              value={
-                <span className="font-semibold text-slate-800 dark:text-slate-200 text-right">
+        <RailStatusSummary
+          status={currentStatus}
+          statusDescription={
+            latest !== null && (
+              <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                Since {formatDateShort(latest.event_date)} (
+                <strong className="text-slate-700 dark:text-slate-200">
+                  {daysSince(latest.event_date)} days pending
+                </strong>
+                )
+              </p>
+            )
+          }
+          details={
+            <>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500 dark:text-slate-400">Latest milestone:</span>
+                <span className="text-right font-semibold text-slate-800 dark:text-slate-200">
                   {latest === null ? "—" : formatDateShort(latest.event_date)}
                 </span>
-              }
-            />
-            <RailRow
-              label="Offer Date"
-              value={
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500 dark:text-slate-400">Offer Date:</span>
                 <span className="font-semibold text-slate-800 dark:text-slate-200">
                   {offerEvent === null ? "Not reported" : formatDateShort(offerEvent.event_date)}
                 </span>
-              }
-            />
-            <RailRow
-              label="Recorded milestones"
-              value={
-                <span className="font-semibold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-900/60 dark:border dark:border-slate-700/70 px-2 py-0.5 rounded">
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500 dark:text-slate-400">Recorded milestones:</span>
+                <span className="rounded bg-slate-100 px-2 py-0.5 font-semibold text-slate-800 dark:border dark:border-slate-700/70 dark:bg-slate-900/60 dark:text-slate-200">
                   {list.length}
                 </span>
-              }
-            />
-            <RailRow
-              label="Verification"
-              value={
-                <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-300 font-semibold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-100 dark:border-emerald-800/60">
-                  <span className="material-symbols-outlined text-xs font-bold text-emerald-600 dark:text-emerald-400" aria-hidden="true">
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500 dark:text-slate-400">Verification:</span>
+                <span className="inline-flex items-center gap-1 rounded border border-emerald-100 bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700 dark:border-emerald-800/60 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  <span
+                    className="material-symbols-outlined text-xs font-bold text-emerald-600 dark:text-emerald-400"
+                    aria-hidden="true"
+                  >
                     check_circle
                   </span>
                   {unverifiedCount === 0 ? "All verified" : `${unverifiedCount} pending`}
                 </span>
-              }
-            />
-          </div>
-          <button
-            type="button"
-            onClick={() => openAdd()}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs py-2.5 px-4 rounded-lg shadow-sm transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 dark:bg-indigo-600 dark:hover:bg-indigo-500"
-          >
-            <span>Update my status</span>
-            <span className="material-symbols-outlined text-sm" aria-hidden="true">
-              arrow_forward
-            </span>
-          </button>
-        </div>
+              </div>
+            </>
+          }
+          onUpdate={() => openAdd()}
+        />
       </aside>
 
       <TimelineEventModal

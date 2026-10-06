@@ -57,11 +57,15 @@ describe("DashboardPage", () => {
       expect(
         screen.getAllByText("Not enough community data to display this breakdown.").length,
       ).toBeGreaterThanOrEqual(1);
-      expect(screen.getByRole("region", { name: "My Status Summary" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("region", { name: "My Status Summary" }),
+      ).toHaveClass("rounded-2xl", "bg-white", "dark:bg-slate-800");
     });
-    expect(screen.getByText("80%")).toBeInTheDocument();
-    expect(screen.getByText("Unread notifications")).toBeInTheDocument();
-    expect(screen.queryByText("0")).not.toBeInTheDocument();
+    const summary = screen.getByRole("region", { name: "My Status Summary" });
+    expect(summary).toHaveTextContent("Latest milestone:");
+    expect(summary).toHaveTextContent("Recorded milestones:");
+    expect(summary).not.toHaveTextContent("Profile completeness");
+    expect(summary).not.toHaveTextContent("Unread notifications");
   });
 
   it("labels the discussions block as the community's newest (D6), never 'your stream'", async () => {

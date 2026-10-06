@@ -8,10 +8,10 @@
  * - 640–1279px (§5.3 tablet): sidebar persists, rail collapses.
  * - <640px (§5.4 mobile): top app bar + fixed bottom tab bar, ≥44px targets.
  */
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { Menu, UsersRound } from "lucide-react";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Menu, Search, UsersRound } from "lucide-react";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { apiGet } from "@/api/client";
 import { listAnnouncements } from "@/api/announcements";
@@ -279,7 +279,12 @@ export function RailPortal({ children }: { children: ReactNode }) {
 export function AppShell({ children }: { children?: ReactNode }) {
   const { user } = useAuth();
   const railOccupied = useRailOccupied();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [bannerVisible, setBannerVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(
+    () => new URLSearchParams(location.search).get("search") ?? "",
+  );
   // Mobile menu state (replaces bottom mobile tab bar)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   /**
@@ -290,6 +295,19 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const stickyOffset = bannerVisible
     ? "top-9 h-[calc(100vh-36px)]"
     : "top-0 h-screen";
+
+  useEffect(() => {
+    setSearchQuery(new URLSearchParams(location.search).get("search") ?? "");
+  }, [location.search]);
+
+  function handleSearch(event: FormEvent<HTMLFormElement>): void {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    navigate(query === "" ? "/community" : `/community?search=${encodeURIComponent(query)}`);
+  }
+  const railStickyOffset = bannerVisible
+    ? "top-[100px] h-[calc(100vh-100px)]"
+    : "top-16 h-[calc(100vh-64px)]";
 
   return (
     <div
@@ -362,168 +380,156 @@ export function AppShell({ children }: { children?: ReactNode }) {
           </div>
         </aside>
 
-        {/* Center column */}
-        <div className="flex-1 min-w-0 bg-slate-50 dark:bg-slate-900 flex flex-col min-h-screen">
+        <div className="flex min-h-screen min-w-0 flex-1 flex-col">
           <header
+            data-testid="app-header"
             className={`${APP_HEADER_SURFACE} sticky ${
               bannerVisible ? "top-9" : "top-0"
             }`}
           >
-            {/* Mobile Top Bar with hamburger (replaces bottom tab bar) */}
-            <div className="flex items-center justify-between w-full lg:hidden">
-              <div className="flex items-center gap-3">
+            <div className="flex w-full min-w-0 items-center gap-3 sm:gap-4">
+              <div className="flex shrink-0 items-center gap-2.5">
                 <button
                   type="button"
                   data-testid="mobile-menu-button"
                   aria-label="Open menu"
                   aria-expanded={mobileMenuOpen}
                   onClick={() => setMobileMenuOpen((s) => !s)}
-                  className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="rounded-lg p-2 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden"
                 >
-                  <Menu className="h-[22px] w-[22px]" aria-hidden="true" />
+                  <Menu className="h-[22px] w-[22px] lg:hidden" aria-hidden="true" />
                 </button>
-                <div className="flex items-center gap-2 font-display text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
-                  <span className="bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded-md tracking-wider shadow-sm select-none">
+                <Link
+                  to="/dashboard"
+                  aria-label="TCSJL home"
+                  data-testid="app-title"
+                  className="flex items-center gap-2.5"
+                >
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-[9px] font-bold tracking-wider text-white shadow-sm">
                     TCSJL
                   </span>
-                  <span className="text-slate-900 dark:text-slate-100 font-extrabold tracking-tight text-lg">
-                    TCSJL
+                  <span className="hidden sm:block">
+                    <span className="block text-sm font-bold leading-none tracking-tight text-slate-900 dark:text-slate-100">
+                      TCSJL
+                    </span>
+                    <span className="mt-1 block text-[10px] leading-none text-slate-500 dark:text-slate-400">
+                      Recruitment Status
+                    </span>
                   </span>
-                </div>
+                </Link>
               </div>
 
-              <div className="flex items-center gap-2">
+              <form
+                role="search"
+                onSubmit={handleSearch}
+                className="relative min-w-0 flex-1 sm:max-w-xl"
+              >
+                <Search
+                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                  aria-hidden="true"
+                />
+                <input
+                  type="search"
+                  aria-label="Search community"
+                  placeholder="Search community, region, batch…"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50/70 py-2 pl-9 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-100 dark:placeholder:text-slate-500 sm:text-sm"
+                />
+              </form>
+
+              <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+                <div className="hidden lg:block">
+                  <Link
+                    to="/community/create"
+                    className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-700 active:scale-[0.98] sm:text-sm"
+                  >
+                    <span className="material-symbols-outlined text-[18px]" data-icon="add" aria-hidden="true">
+                      add
+                    </span>
+                    <span>+ Post</span>
+                  </Link>
+                </div>
+                {user !== null && user.is_staff && (
+                  <span
+                    data-testid="moderator-chip"
+                    className="hidden rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 sm:inline-flex"
+                  >
+                    Moderator
+                  </span>
+                )}
                 <NotificationBell />
                 {user !== null && (
                   <Link
                     to="/settings"
                     aria-label="User profile settings"
-                    className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    className="flex min-h-10 min-w-10 items-center justify-center gap-2 rounded-lg p-1 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 sm:px-2"
                   >
-                    <div className="w-8 h-8 rounded-full bg-indigo-50 border border-indigo-200 dark:bg-indigo-950 dark:border-indigo-800 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-xs ring-2 ring-indigo-500/10">
-                      {user.email ? user.email.slice(0, 1).toUpperCase() : "C"}
-                    </div>
-                  </Link>
-                )}
-              </div>
-
-              {/* Mobile Drawer */}
-              {mobileMenuOpen && (
-                <div className="fixed inset-0 z-50 lg:hidden">
-                  <div
-                    className="absolute inset-0 bg-black/40"
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                  <aside className="absolute left-0 top-0 bottom-0 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-4 shadow-xl overflow-y-auto">
-                    <nav aria-label="Mobile primary">
-                      {NAV_ITEMS.map((item) => (
-                        <Link
-                          key={item.to}
-                          to={item.to}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
-                        >
-                          <span className="material-symbols-outlined text-[20px]" data-icon={item.glyph} aria-hidden="true">{item.glyph}</span>
-                          <span>{item.label}</span>
-                        </Link>
-                      ))}
-                      {user !== null && user.is_staff && (
-                        <div className="mt-3 border-t border-slate-200 pt-3 dark:border-slate-800">
-                          <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                            Administration
-                          </p>
-                          <Link to="/admin/moderation/reports" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">Reports</Link>
-                          <Link to="/admin/announcements" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">Announcements</Link>
-                          <Link to="/admin/members" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">Members</Link>
-                        </div>
-                      )}
-                    </nav>
-                  </aside>
-                </div>
-              )}
-            </div>
-
-            {/* Desktop Search and Actions */}
-            <div className="hidden lg:flex items-center justify-between w-full">
-              <div className="relative w-80">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <span className="material-symbols-outlined text-slate-400 text-[18px]" data-icon="search" aria-hidden="true">
-                    search
-                  </span>
-                </span>
-                <input
-                  type="search"
-                  aria-label="Search community"
-                  placeholder="Search community reports, region, batch…"
-                  className="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-slate-50/70 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition duration-150 dark:bg-slate-800/70 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-500"
-                />
-              </div>
-
-              <div className="flex items-center gap-4">
-                <Link
-                  to="/community/create"
-                  className="bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-lg shadow-sm flex items-center gap-1.5 transition duration-150"
-                >
-                  <span className="material-symbols-outlined text-[18px]" data-icon="add" aria-hidden="true">
-                    add
-                  </span>
-                  <span>+ Post</span>
-                </Link>
-                <NotificationBell />
-                <div className="h-5 w-px bg-slate-200 dark:bg-slate-800" aria-hidden="true" />
-                {user !== null && user.is_staff && (
-                  <span
-                    data-testid="moderator-chip"
-                    className="rounded-full bg-indigo-50 border border-indigo-200 px-2 py-0.5 text-[11px] font-semibold text-indigo-700 dark:bg-indigo-950/60 dark:border-indigo-800 dark:text-indigo-300"
-                  >
-                    Moderator
-                  </span>
-                )}
-                {user !== null && (
-                  <Link
-                    to="/settings"
-                    className="flex items-center gap-2.5 cursor-pointer p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-150"
-                  >
-                    <div className="h-8 w-8 rounded-full bg-indigo-100 text-indigo-700 font-semibold text-xs flex items-center justify-center border border-indigo-200 dark:bg-indigo-950 dark:text-indigo-300 dark:border-indigo-800">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full border border-indigo-200 bg-indigo-100 text-xs font-semibold text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">
                       {user.email ? user.email.slice(0, 2).toUpperCase() : "CA"}
-                    </div>
-                    <div className="hidden sm:block text-left">
-                      <div className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-tight">
-                        {user.email}
-                      </div>
-                      {/* The composition's second line ("Sai T." / "Digital 2025") is
-                          dropped: the account exposes an email, not a display name or
-                          batch, and inventing one would misstate a candidate's identity. */}
-                    </div>
-                    <span
-                      className="material-symbols-outlined text-slate-400 text-[18px]"
-                      data-icon="expand_more"
-                      aria-hidden="true"
-                    >
-                      expand_more
+                    </span>
+                    <span className="hidden max-w-36 truncate text-xs font-semibold text-slate-900 dark:text-slate-100 md:block">
+                      {user.email}
                     </span>
                   </Link>
                 )}
               </div>
             </div>
+
+            {mobileMenuOpen && (
+              <div className="fixed inset-0 z-50 lg:hidden">
+                <div
+                  className="absolute inset-0 bg-black/40"
+                  onClick={() => setMobileMenuOpen(false)}
+                />
+                <aside className="absolute bottom-0 left-0 top-0 w-64 overflow-y-auto border-r border-slate-200 bg-white p-4 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+                  <nav aria-label="Mobile primary">
+                    {NAV_ITEMS.map((item) => (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                      >
+                        <span className="material-symbols-outlined text-[20px]" data-icon={item.glyph} aria-hidden="true">{item.glyph}</span>
+                        <span>{item.label}</span>
+                      </Link>
+                    ))}
+                    {user !== null && user.is_staff && (
+                      <div className="mt-3 border-t border-slate-200 pt-3 dark:border-slate-800">
+                        <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                          Administration
+                        </p>
+                        <Link to="/admin/moderation/reports" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">Reports</Link>
+                        <Link to="/admin/announcements" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">Announcements</Link>
+                        <Link to="/admin/members" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">Members</Link>
+                      </div>
+                    )}
+                  </nav>
+                </aside>
+              </div>
+            )}
           </header>
 
-          <main className="flex-1 px-4 pb-28 pt-4 space-y-4 lg:px-8 lg:pb-8">
-            {children ?? <Outlet />}
-          </main>
+          <div data-testid="app-content-row" className="flex min-w-0 flex-1">
+            <div className="flex min-w-0 flex-1 flex-col bg-slate-50 dark:bg-slate-900">
+              <main className="flex-1 space-y-4 px-4 pb-28 pt-4 lg:px-8 lg:pb-8">
+                {children ?? <Outlet />}
+              </main>
 
-          <footer className="border-t border-slate-200 px-4 py-3 lg:px-8 dark:border-slate-800">
-            <Disclaimer variant="footer" />
-          </footer>
+              <footer className="border-t border-slate-200 px-4 py-3 lg:px-8 dark:border-slate-800">
+                <Disclaimer variant="footer" />
+              </footer>
+            </div>
+
+            {/* Right rail shares the content row, below the app-wide top bar. */}
+            <aside
+              className={`${railOccupied ? "hidden lg:block" : "hidden"} sticky ${railStickyOffset} z-10 w-80 shrink-0 overflow-y-auto border-l border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900`}
+            >
+              <div id={RAIL_SLOT_ID} className="space-y-5" />
+            </aside>
+          </div>
         </div>
-
-        {/* Right rail: the composition's 320px column, from `lg` up, and only while
-            a page actually fills it (see railStore). */}
-        <aside
-          className={`${railOccupied ? "hidden lg:block" : "hidden"} w-80 bg-white border-l border-slate-200 p-5 shrink-0 sticky ${stickyOffset} z-20 overflow-y-auto dark:bg-slate-900 dark:border-slate-800`}
-        >
-          <div id={RAIL_SLOT_ID} className="space-y-5" />
-        </aside>
       </div>
 
     </div>

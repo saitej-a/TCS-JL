@@ -38,8 +38,6 @@ import {
   TriangleAlert,
   Users,
 } from "lucide-react";
-import { Link } from "react-router-dom";
-
 import {
   getAnalyticsOverview,
   getBatchBreakdown,
@@ -52,15 +50,11 @@ import {
   type StatusDistribution,
   type WaitTimeMetric,
 } from "@/api/analytics";
-import { getDashboard } from "@/api/dashboard";
 import { ApiError } from "@/api/errors";
 import { Disclaimer } from "@/components/Disclaimer";
-import { RailStatusSummary } from "@/components/RailStatusSummary";
+import { PageHeader } from "@/components/PageHeader";
 import { Skeleton } from "@/components/Skeleton";
-import { useAuth } from "@/context/AuthContext";
-import { RailPortal } from "@/layouts/AppShell";
 import { TYPOGRAPHY } from "@/theme/tokens";
-import type { CandidateStatus } from "@/types/user";
 
 const CARD =
   "rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-800 sm:p-6";
@@ -136,12 +130,6 @@ interface FilterOptions {
   batch: string[];
   stream: string[];
   region: string[];
-}
-
-interface RailData {
-  status: CandidateStatus;
-  completion: number | null;
-  unread: number | null;
 }
 
 function uniqueSorted(values: readonly unknown[]): string[] {
@@ -724,14 +712,12 @@ function filterErrorMessage(error: unknown): string {
 const FILTER_DEBOUNCE_MS = 200;
 
 export function AnalyticsPage(): React.ReactElement {
-  const { isAuthenticated } = useAuth();
   const [filters, setFilters] = useState<AnalyticsFilters>({});
   const [overview, setOverview] = useState<AnalyticsOverview | null>(null);
   const [band, setBand] = useState<HiringTypeBreakdown | null>(null);
   const [distribution, setDistribution] = useState<StatusDistribution | null>(null);
   const [options, setOptions] = useState<FilterOptions | null>(null);
   const [filterError, setFilterError] = useState<string | null>(null);
-  const [rail, setRail] = useState<RailData | null>(null);
 
   // Overview is unfiltered by API design (`/analytics/overview/` accepts no
   // filter params), and the option lists are read once from the unfiltered
@@ -752,31 +738,6 @@ export function AnalyticsPage(): React.ReactElement {
       cancelled = true;
     };
   }, []);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setRail(null);
-      return;
-    }
-    let cancelled = false;
-    getDashboard()
-      .then((payload) => {
-        if (cancelled) return;
-        setRail({
-          status: payload.profile.current_status,
-          completion: payload.profile.completion_percentage,
-          unread: payload.community.unread_notifications,
-        });
-      })
-      .catch(() => {
-        // The rail is decoration on a public page — a failure leaves it empty
-        // rather than failing the analytics read the visitor actually came for.
-        if (!cancelled) setRail(null);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [isAuthenticated]);
 
   // Filter-dependent reads, debounced so a visitor clicking through the selects
   // does not fire a request per keystroke/change (§7.9: filters refetch).
@@ -826,48 +787,18 @@ export function AnalyticsPage(): React.ReactElement {
   ].filter((entry): entry is { label: string; value: string } => entry !== null);
 
   return (
-    <>
-      <RailPortal>
-        {isAuthenticated && (
-          <RailStatusSummary
-            status={rail?.status ?? null}
-            completion={rail?.completion ?? null}
-            unread={rail?.unread ?? null}
-          />
-        )}
-      </RailPortal>
-
-      <main className="skin-v1 mx-auto max-w-5xl space-y-6 p-4 lg:p-8 font-body antialiased" data-testid="analytics-page">
-        {/* The composition's context row. */}
-        <nav
-          aria-label="Breadcrumb"
-          className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400"
-        >
-          <Link to="/community" className="hover:text-brand-700 dark:hover:text-brand-300">
-            Community Intelligence
-          </Link>
-          <span aria-hidden="true" className="text-slate-300 dark:text-slate-600">
-            /
-          </span>
-          <span aria-current="page" className="font-semibold text-slate-800 dark:text-slate-200">
-            Cohort Benchmarks &amp; Telemetry
-          </span>
-        </nav>
-
-        {/* Header card: attribution badge, title, cohort meta, filter bar. */}
-        <div className={`${CARD} relative overflow-hidden`}>
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-8 -top-8 h-64 w-64 rounded-full bg-brand-50/70 blur-3xl dark:bg-brand-900/20"
-          />
-          <div className="relative z-10">
-            <div className="mb-2 inline-flex items-center gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[11px] font-semibold text-amber-800 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200">
+      <main className="skin-v1 w-full max-w-none space-y-6 p-4 font-body antialiased lg:p-8" data-testid="analytics-page">
+        <PageHeader
+          className="overflow-hidden"
+          eyebrow={
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[11px] font-semibold text-amber-800 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200">
               <TriangleAlert aria-hidden="true" className="h-3.5 w-3.5" />
               {SUBTITLE}
-            </div>
-            <h1 className={`${TYPOGRAPHY.pageTitle} uppercase text-slate-900 dark:text-white`}>
-              {TITLE}
-            </h1>
+            </span>
+          }
+          title={<span className="uppercase">{TITLE}</span>}
+        >
+          <div className="relative z-10">
             <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
               {overview !== null && !overview.suppressed && (
                 <>
@@ -906,7 +837,7 @@ export function AnalyticsPage(): React.ReactElement {
               onChange={(next) => setFilters(next)}
             />
           </div>
-        </div>
+        </PageHeader>
 
         {filterError !== null && (
           <p
@@ -928,7 +859,6 @@ export function AnalyticsPage(): React.ReactElement {
         <WaitTimesSection overview={overview} />
         <SuppressionNotice />
       </main>
-    </>
   );
 }
 
