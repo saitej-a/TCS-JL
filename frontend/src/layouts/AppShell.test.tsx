@@ -61,7 +61,7 @@ describe("AppShell", () => {
     renderShell();
     expect(screen.getByText("page-content")).toBeInTheDocument();
     await waitFor(() => {
-      expect(screen.getByTestId("mobile-tab-bar")).toBeInTheDocument();
+      expect(screen.getByTestId("mobile-menu-button")).toBeInTheDocument();
     });
     expect(screen.getByTestId("disclaimer-footer")).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "Primary" })).toBeInTheDocument();

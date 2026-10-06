@@ -59,7 +59,7 @@ describe("404 routing (9.5 Task 10)", () => {
     await screen.findByTestId("not-found-panel");
     expect(screen.getByTestId("not-found-panel")).toHaveTextContent("/dashboard/typo");
     expect(screen.getByTestId("app-shell")).toBeInTheDocument();
-    expect(screen.getByTestId("mobile-tab-bar")).toBeInTheDocument();
+    expect(screen.getByTestId("mobile-menu-button")).toBeInTheDocument();
   });
 
   it("renders the panel chromeless for visitors on unknown routes", async () => {

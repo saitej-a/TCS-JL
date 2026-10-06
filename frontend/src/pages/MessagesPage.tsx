@@ -222,7 +222,7 @@ export function MessagesPage() {
           <div
             ref={scrollContainerRef}
             onScroll={handleScroll}
-            className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-2 relative"
+            className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 pb-28 lg:pb-4 space-y-2 relative"
             role="log"
             aria-live="polite"
             aria-label={`${activeRoom.label} messages`}
@@ -302,7 +302,7 @@ export function MessagesPage() {
           )}
 
           {/* Composer Footer */}
-          <footer className="p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
+          <footer className="p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0 fixed bottom-0 left-0 right-0 z-40 lg:static lg:relative pb-[env(safe-area-inset-bottom,12px)]">
             <div className="max-w-4xl mx-auto">
               <TypingIndicator users={typingUsers} />
               <form onSubmit={handleSend}>

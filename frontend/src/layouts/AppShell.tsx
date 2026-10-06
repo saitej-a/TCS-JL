@@ -22,7 +22,8 @@ import {
   recordDismissedAnnouncement,
 } from "@/components/announcementStorage";
 import { useAuth } from "@/context/AuthContext";
-import { MobileTabBar } from "@/layouts/MobileTabBar";
+// Mobile tab bar removed in favor of a hamburger mobile menu
+// import { MobileTabBar } from "@/layouts/MobileTabBar";
 import { setRailOccupied, useRailOccupied } from "@/layouts/railStore";
 import { PwaLayer } from "@/pwa/PwaLayer";
 import { NAV_ITEMS } from "@/layouts/navItems";
@@ -265,6 +266,8 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const { user } = useAuth();
   const railOccupied = useRailOccupied();
   const [bannerVisible, setBannerVisible] = useState(false);
+  // Mobile menu state (replaces bottom mobile tab bar)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   /**
    * The composition's sticky offsets assume the 36px announcement banner is
    * always there; the app's banner is data-driven and dismissible, so the chrome
@@ -352,16 +355,29 @@ export function AppShell({ children }: { children?: ReactNode }) {
               bannerVisible ? "top-9" : "top-0"
             } z-20 shadow-sm dark:bg-slate-900 dark:border-slate-800`}
           >
-            {/* Mobile Top Bar */}
+            {/* Mobile Top Bar with hamburger (replaces bottom tab bar) */}
             <div className="flex items-center justify-between w-full lg:hidden">
-              <div className="flex items-center gap-2 font-display text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
-                <span className="bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded-md tracking-wider shadow-sm select-none">
-                  TCSJL
-                </span>
-                <span className="text-slate-900 dark:text-slate-100 font-extrabold tracking-tight text-lg">
-                  TCSJL
-                </span>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  data-testid="mobile-menu-button"
+                  aria-label="Open menu"
+                  aria-expanded={mobileMenuOpen}
+                  onClick={() => setMobileMenuOpen((s) => !s)}
+                  className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[22px]" data-icon="menu" aria-hidden="true">menu</span>
+                </button>
+                <div className="flex items-center gap-2 font-display text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
+                  <span className="bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded-md tracking-wider shadow-sm select-none">
+                    TCSJL
+                  </span>
+                  <span className="text-slate-900 dark:text-slate-100 font-extrabold tracking-tight text-lg">
+                    TCSJL
+                  </span>
+                </div>
               </div>
+
               <div className="flex items-center gap-2">
                 <NotificationBell />
                 {user !== null && (
@@ -376,6 +392,31 @@ export function AppShell({ children }: { children?: ReactNode }) {
                   </Link>
                 )}
               </div>
+
+              {/* Mobile Drawer */}
+              {mobileMenuOpen && (
+                <div className="fixed inset-0 z-50 lg:hidden">
+                  <div
+                    className="absolute inset-0 bg-black/40"
+                    onClick={() => setMobileMenuOpen(false)}
+                  />
+                  <aside className="absolute left-0 top-0 bottom-0 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-4 shadow-xl overflow-y-auto">
+                    <nav aria-label="Mobile primary">
+                      {NAV_ITEMS.map((item) => (
+                        <Link
+                          key={item.to}
+                          to={item.to}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        >
+                          <span className="material-symbols-outlined text-[20px]" data-icon={item.glyph} aria-hidden="true">{item.glyph}</span>
+                          <span>{item.label}</span>
+                        </Link>
+                      ))}
+                    </nav>
+                  </aside>
+                </div>
+              )}
             </div>
 
             {/* Desktop Search and Actions */}
@@ -461,8 +502,6 @@ export function AppShell({ children }: { children?: ReactNode }) {
         </aside>
       </div>
 
-      {/* Mobile bottom tab bar */}
-      <MobileTabBar />
     </div>
   );
 }
