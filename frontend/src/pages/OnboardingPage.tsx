@@ -33,6 +33,7 @@ import { createTimelineEvent, type TimelineEventType } from "@/api/timeline";
 import type { CandidateStatus } from "@/types/user";
 import { useAuth } from "@/context/AuthContext";
 import { ErrorStrip } from "@/pages/authCard";
+import { shiftDays } from "@/utils/date";
 
 /**
  * The status picks the wizard offers, in the 4.1 chain order. Each maps to the
@@ -84,11 +85,11 @@ function CardHeader() {
     <header className="flex items-center justify-between border-b border-slate-100 pb-6 dark:border-slate-700">
       <div className="flex items-center gap-3">
         <span className="bg-indigo-600 text-white font-bold text-xs px-2.5 py-1 rounded-md tracking-wide shadow-sm">
-          [TJT]
+          [TCSJL]
         </span>
         <div className="flex flex-col">
           <span className="text-base font-semibold leading-tight text-slate-900 dark:text-slate-100">
-            TCS Joining Tracker
+            TCSJL
           </span>
           <span className="text-xs font-normal text-slate-400 dark:text-slate-500">
             Candidate Onboarding Portal
@@ -168,6 +169,30 @@ export function OnboardingPage() {
   const [status, setStatus] = useState<CandidateStatus>("OFFER_RECEIVED");
   const [statusEvent, setStatusEvent] = useState<TimelineEventType>("OFFER_LETTER");
   const [statusDate, setStatusDate] = useState<string>("");
+  const [includePriorEvents, setIncludePriorEvents] = useState(false);
+  const [interviewDate, setInterviewDate] = useState<string>("");
+  const [selectionDate, setSelectionDate] = useState<string>("");
+  const [customizedPrior, setCustomizedPrior] = useState(false);
+
+  const handleStatusDateChange = (val: string) => {
+    setStatusDate(val);
+    if (!customizedPrior) {
+      setInterviewDate(shiftDays(val, -21));
+      setSelectionDate(shiftDays(val, -7));
+    }
+  };
+
+  const handleTogglePriorEvents = (checked: boolean) => {
+    setIncludePriorEvents(checked);
+    if (checked) {
+      if (!interviewDate && statusDate) {
+        setInterviewDate(shiftDays(statusDate, -21));
+      }
+      if (!selectionDate && statusDate) {
+        setSelectionDate(shiftDays(statusDate, -7));
+      }
+    }
+  };
   // Step 3 state (review rows + accuracy confirmation)
   const [confirmed, setConfirmed] = useState(false);
 
@@ -244,6 +269,21 @@ export function OnboardingPage() {
         event_date: statusDate,
         description: `Recorded during onboarding (${status}).`,
       });
+      // When offer letter is recorded, also optionally persist prior events with distinct timeline dates.
+      if (statusEvent === "OFFER_LETTER" && includePriorEvents) {
+        const iDate = interviewDate || shiftDays(statusDate, -21);
+        const sDate = selectionDate || shiftDays(statusDate, -7);
+        await createTimelineEvent({
+          event_type: "INTERVIEW",
+          event_date: iDate,
+          description: "Technical & HR Interview cleared prior to offer letter.",
+        }).catch(() => {});
+        await createTimelineEvent({
+          event_type: "SELECTION",
+          event_date: sDate,
+          description: "Selection confirmed prior to offer letter.",
+        }).catch(() => {});
+      }
       setStep(3);
     } catch (err) {
       const apiError = err as { message?: string };
@@ -276,14 +316,7 @@ export function OnboardingPage() {
   }
 
   return (
-    <div
-      className="skin-v1 min-h-screen flex flex-col justify-between py-10 px-4 sm:px-6 md:px-8 selection:bg-indigo-100 selection:text-indigo-900 font-body text-slate-800 antialiased"
-      style={{
-        backgroundColor: "#F8FAFC",
-        backgroundImage: "radial-gradient(#CBD5E1 0.75px, transparent 0.75px)",
-        backgroundSize: "20px 20px",
-      }}
-    >
+    <div className="skin-v1 min-h-screen flex flex-col justify-between py-10 px-4 sm:px-6 md:px-8 selection:bg-indigo-100 selection:text-indigo-900 font-body text-slate-800 dark:text-slate-200 antialiased bg-[#F8FAFC] dark:bg-slate-950 bg-[radial-gradient(#CBD5E1_0.75px,transparent_0.75px)] dark:bg-[radial-gradient(#334155_0.75px,transparent_0.75px)] [background-size:20px_20px]">
       <div className="mx-auto w-full max-w-2xl">
         <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-xl transition-all sm:p-8 md:p-10 dark:border-slate-800 dark:bg-slate-800">
           <CardHeader />
@@ -350,8 +383,8 @@ export function OnboardingPage() {
                         key={ht}
                         className={`flex min-h-[44px] cursor-pointer flex-col justify-center rounded-xl px-3.5 py-2.5 transition-all ${
                           s1.hiring_type === ht
-                            ? "border-2 border-indigo-600 bg-indigo-50/70 shadow-sm text-indigo-900"
-                            : "border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50 text-slate-800"
+                            ? "border-2 border-indigo-600 bg-indigo-50/70 shadow-sm text-indigo-900 dark:border-indigo-500 dark:bg-indigo-950/60 dark:text-indigo-200"
+                            : "border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50 text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-slate-600 dark:hover:bg-slate-700/60 dark:text-slate-200"
                         }`}
                       >
                         <input
@@ -365,7 +398,7 @@ export function OnboardingPage() {
                         <span
                           className={`text-sm font-semibold ${
                             s1.hiring_type === ht
-                              ? "text-indigo-900"
+                              ? "text-indigo-900 dark:text-indigo-200"
                               : "text-slate-900 dark:text-slate-100"
                           }`}
                         >
@@ -499,16 +532,64 @@ export function OnboardingPage() {
                     id="ob-status-date"
                     type="date"
                     value={statusDate}
-                    onChange={(e) => setStatusDate(e.target.value)}
+                    onChange={(e) => handleStatusDateChange(e.target.value)}
                     required
                   />
                 </div>
+
+                {statusEvent === "OFFER_LETTER" && (
+                  <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 p-4 space-y-3 dark:border-indigo-900/50 dark:bg-indigo-950/20">
+                    <div className="flex items-start gap-2.5">
+                      <input
+                        id="ob-prior-events"
+                        type="checkbox"
+                        checked={includePriorEvents}
+                        onChange={(e) => handleTogglePriorEvents(e.target.checked)}
+                        className="mt-0.5 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-800"
+                      />
+                      <label
+                        htmlFor="ob-prior-events"
+                        className="text-xs font-semibold text-slate-800 dark:text-slate-200 cursor-pointer"
+                      >
+                        Also mark prior milestones (Interview & Selection) as complete
+                        <p className="text-[11px] font-normal text-slate-500 dark:text-slate-400 mt-0.5">
+                          Set the timeline for each prior stage so your milestones reflect your journey.
+                        </p>
+                      </label>
+                    </div>
+
+                    {includePriorEvents && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-indigo-100 dark:border-indigo-900/50">
+                        <Input
+                          label="INTERVIEW DATE *"
+                          type="date"
+                          value={interviewDate}
+                          onChange={(e) => {
+                            setInterviewDate(e.target.value);
+                            setCustomizedPrior(true);
+                          }}
+                          required={includePriorEvents}
+                        />
+                        <Input
+                          label="SELECTION DATE *"
+                          type="date"
+                          value={selectionDate}
+                          onChange={(e) => {
+                            setSelectionDate(e.target.value);
+                            setCustomizedPrior(true);
+                          }}
+                          required={includePriorEvents}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-6 dark:border-slate-700">
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors dark:text-slate-300 dark:hover:text-slate-100"
                 >
                   <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
                     arrow_back
@@ -582,7 +663,7 @@ export function OnboardingPage() {
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors dark:text-slate-300 dark:hover:text-slate-100"
                 >
                   <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
                     arrow_back

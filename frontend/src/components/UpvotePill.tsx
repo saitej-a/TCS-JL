@@ -41,6 +41,14 @@ export interface UpvotePillProps {
   /** Report the reconciled outcome back to the feed's per-card state. */
   onCommit: (commit: CommitVote) => void;
   className?: string;
+  /**
+   * Replaces §6.8's idle class set outright (not appended — competing Tailwind
+   * utilities resolve by stylesheet order, not by className order). The feed
+   * composition's pill markup goes here.
+   */
+  controlClassName?: string;
+  /** Replaces §6.8's voted class set outright, same contract as above. */
+  activeControlClassName?: string;
 }
 
 const PULSE_MS = 150;
@@ -53,6 +61,8 @@ export function UpvotePill({
   request,
   onCommit,
   className = "",
+  controlClassName,
+  activeControlClassName,
 }: UpvotePillProps): React.ReactElement {
   const { toast } = useToast();
   const [override, setOverride] = useState<CommitVote | null>(null);
@@ -115,7 +125,9 @@ export function UpvotePill({
       aria-busy={inFlight}
       title={disabled ? disabledReason : undefined}
       className={[
-        shownVoted ? ACTIVE_CLASSES : IDLE_CLASSES,
+        shownVoted
+          ? (activeControlClassName ?? ACTIVE_CLASSES)
+          : (controlClassName ?? IDLE_CLASSES),
         pulse ? "scale-110" : "",
         disabled ? "cursor-not-allowed opacity-50" : "",
         className,

@@ -1,8 +1,13 @@
 /**
  * SettingsPrivacyPage tests (9.5 Task 4): the preview is derived from the same
- * state the toggle edits (toggle → preview within the same render), the failed
+ * state the control edits (select → preview within the same render), the failed
  * save rolls the preview back to the saved state, and the export request is
  * explicitly disabled with its reason.
+ *
+ * Phase 16 note: the control is the ported composition's radio-card group rather
+ * than the pre-port switch, so the assertions address it as a radio. The
+ * contract is unchanged: the control and the preview read the same state, and a
+ * failed PATCH leaves both describing the saved value.
  */
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -68,7 +73,7 @@ afterEach(() => {
 });
 
 describe("SettingsPrivacyPage (9.5 Task 4)", () => {
-  it("reflects the toggle in the preview within the same render (ANONYMOUS → DISPLAY_NAME)", async () => {
+  it("reflects the chosen radio in the preview once the PATCH lands (DISPLAY_NAME → ANONYMOUS)", async () => {
     const user = userEvent.setup();
     setup([
       {
@@ -84,15 +89,14 @@ describe("SettingsPrivacyPage (9.5 Task 4)", () => {
     ]);
     // Loaded state: display name visible in the preview.
     expect(await screen.findByTestId("preview-name")).toHaveTextContent("Sai Teja");
-    const toggle = screen.getByRole("switch", { name: /show my display name/i });
-    expect(toggle).toBeChecked();
+    expect(screen.getByRole("radio", { name: /show my display name/i })).toBeChecked();
 
-    // Toggle off → the PATCH returns ANONYMOUS and the preview updates.
-    await user.click(toggle);
+    // Choosing anonymous writes the profile and the preview follows it.
+    await user.click(screen.getByRole("radio", { name: /^Anonymous/ }));
     await waitFor(() => {
       expect(screen.getByTestId("preview-name")).toHaveTextContent("Anonymous Candidate");
     });
-    expect(screen.getByRole("switch", { name: /show my display name/i })).not.toBeChecked();
+    expect(screen.getByRole("radio", { name: /show my display name/i })).not.toBeChecked();
   });
 
   it("keeps the preview honest on a failed save (rolls back to the saved state)", async () => {
@@ -107,9 +111,9 @@ describe("SettingsPrivacyPage (9.5 Task 4)", () => {
       },
     ]);
     expect(await screen.findByTestId("preview-name")).toHaveTextContent("Sai Teja");
-    await user.click(screen.getByRole("switch", { name: /show my display name/i }));
-    // The optimistic flip must not survive a failed PATCH: the preview still
-    // describes the SAVED state and the error is surfaced.
+    await user.click(screen.getByRole("radio", { name: /^Anonymous/ }));
+    // A failed PATCH must not leave the preview describing a value that was
+    // never saved: it still describes the SAVED state, and the error surfaces.
     await waitFor(() => {
       expect(screen.getByTestId("privacy-error")).toBeInTheDocument();
     });

@@ -31,6 +31,13 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
   fullWidth?: boolean;
   leadingIcon?: ReactNode;
+  /**
+   * Replaces the variant and size classes outright. A Stitch composition draws its
+   * own action button (radius, shadow, ring colour) and two competing utilities are
+   * resolved by stylesheet order rather than by `className` order, so a screen that
+   * claims its mockup's button passes that button's whole class string.
+   */
+  controlClassName?: string;
 }
 
 export function Button({
@@ -41,19 +48,23 @@ export function Button({
   fullWidth = false,
   leadingIcon,
   className = "",
+  controlClassName,
   children,
   type = "button",
   ...rest
 }: ButtonProps) {
-  const classes = [
-    VARIANT_CLASSES[variant],
-    SIZE_CLASSES[size],
-    // §6.1.3 active/focus/disabled shared state classes.
-    "active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2",
-    disabled && "opacity-50 cursor-not-allowed pointer-events-none",
-    fullWidth && "w-full",
-    className,
-  ]
+  const classes = (controlClassName === undefined
+    ? [
+        VARIANT_CLASSES[variant],
+        SIZE_CLASSES[size],
+        // §6.1.3 active/focus/disabled shared state classes.
+        "active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2",
+        disabled && "opacity-50 cursor-not-allowed pointer-events-none",
+        fullWidth && "w-full",
+        className,
+      ]
+    : [controlClassName, disabled && "opacity-50 cursor-not-allowed pointer-events-none"]
+  )
     .filter(Boolean)
     .join(" ");
 

@@ -1,7 +1,8 @@
 /**
- * VerifyEmailPendingPage tests (9.5.1 D-11): the resend address is a real
- * in-card field prefilled from router state — not a window.prompt — and the
- * cooldown / rate-limit behaviour survives the rework.
+ * VerifyEmailPendingPage tests (9.5.1 D-11): the address the link went to is
+ * shown inline as the composition's pill (never a masked stand-in), and when the
+ * caller supplies no address the resend target becomes a real in-card field —
+ * not a window.prompt. The cooldown / rate-limit behaviour survives the rework.
  */
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -26,13 +27,14 @@ function renderAt(state?: { email?: string }) {
 }
 
 describe("VerifyEmailPendingPage", () => {
-  it("prefills the email field from router state (RegisterPage's handoff)", () => {
+  it("names the address the link went to in the composition's inline pill", () => {
     renderAt({ email: "cand@example.com" });
-    const field = screen.getByLabelText("Registered email address") as HTMLInputElement;
-    expect(field.value).toBe("cand@example.com");
+    expect(screen.getByText("cand@example.com")).toBeInTheDocument();
+    // With a known address there is nothing to correct, so no field is offered.
+    expect(screen.queryByLabelText("Registered email address")).not.toBeInTheDocument();
   });
 
-  it("starts empty without router state and stays editable", async () => {
+  it("falls back to a real editable field when no address was handed over", async () => {
     const user = userEvent.setup();
     renderAt();
     const field = screen.getByLabelText("Registered email address") as HTMLInputElement;
@@ -41,26 +43,7 @@ describe("VerifyEmailPendingPage", () => {
     expect(field.value).toBe("late@example.com");
   });
 
-  it("resends using the field's current value and shows the success state", async () => {
-    const user = userEvent.setup();
-    const { calls } = scriptAdapter([
-      {
-        url: "/auth/verification/resend/",
-        respond: () => ({ status: 204, data: null }),
-      },
-    ]);
-    renderAt({ email: "cand@example.com" });
-    await user.click(screen.getByRole("button", { name: "Resend verification email" }));
-    await waitFor(() => {
-      expect(screen.getByRole("status")).toHaveTextContent("Verification email sent.");
-    });
-    expect(calls).toHaveLength(1);
-    expect(JSON.parse(String(calls[0].data))).toMatchObject({ email: "cand@example.com" });
-    // The cooldown engages immediately after a successful resend.
-    expect(screen.getByRole("button", { name: /Resend available in/ })).toBeDisabled();
-  });
-
-  it("uses the edited address when the user corrects the prefill", async () => {
+  it("reveals the correction field on demand and resends to the edited address", async () => {
     const user = userEvent.setup();
     const { calls } = scriptAdapter([
       {
@@ -69,17 +52,21 @@ describe("VerifyEmailPendingPage", () => {
       },
     ]);
     renderAt({ email: "wrong@example.com" });
+    await user.click(screen.getByRole("button", { name: "Use a different address" }));
     const field = screen.getByLabelText("Registered email address");
     await user.clear(field);
     await user.type(field, "right@example.com");
     await user.click(screen.getByRole("button", { name: "Resend verification email" }));
     await waitFor(() => {
-      expect(screen.getByRole("status")).toHaveTextContent("Verification email sent.");
+      expect(screen.getByRole("status")).toHaveTextContent("A fresh link is on its way.");
     });
+    expect(calls).toHaveLength(1);
     expect(JSON.parse(String(calls[0].data))).toMatchObject({ email: "right@example.com" });
+    // The cooldown engages immediately after a successful resend.
+    expect(screen.getByRole("button", { name: /Resend available in/ })).toBeDisabled();
   });
 
-  it("shows the rate-limit strip and the 30s cooldown on RATE_LIMITED", async () => {
+  it("shows the composition's rate-limit banner and the 30s cooldown on RATE_LIMITED", async () => {
     const user = userEvent.setup();
     scriptAdapter([
       {
@@ -94,7 +81,7 @@ describe("VerifyEmailPendingPage", () => {
     await user.click(screen.getByRole("button", { name: "Resend verification email" }));
     await waitFor(() => {
       expect(screen.getByRole("alert")).toHaveTextContent(
-        "Please wait before requesting another email.",
+        "Too many requests. Please wait a moment before trying again.",
       );
     });
     expect(screen.getByRole("button", { name: "Resend available in 30s" })).toBeDisabled();

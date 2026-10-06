@@ -15,6 +15,18 @@ export type HiringType = "PRIME" | "DIGITAL" | "NINJA" | "OTHER";
 
 export const HIRING_TYPES: readonly HiringType[] = ["PRIME", "DIGITAL", "NINJA", "OTHER"] as const;
 
+/**
+ * The vocabulary's display labels, keyed `Record`-style so a new hiring type is a
+ * compile error rather than a blank cell. The label is the one the profile form's
+ * category control and the privacy preview both show.
+ */
+export const HIRING_TYPE_LABELS: Record<HiringType, string> = {
+  PRIME: "TCS Prime",
+  DIGITAL: "TCS Digital",
+  NINJA: "TCS Ninja",
+  OTHER: "Other",
+};
+
 export interface CandidateProfilePrivate {
   id: string;
   display_name: string;

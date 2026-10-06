@@ -12,7 +12,7 @@ import { describe, expect, it } from "vitest";
 import { CommunityFeedPage } from "@/pages/CommunityFeedPage";
 import { ToastProvider } from "@/components/Toast";
 import { AuthProvider } from "@/context/AuthContext";
-import { scriptAdapter } from "@/test/axiosTestHelper";
+import { routeAdapter, scriptAdapter } from "@/test/axiosTestHelper";
 
 const POST = {
   id: "p1",
@@ -122,7 +122,8 @@ describe("CommunityFeedPage", () => {
       },
     ]);
     renderFeed();
-    expect(await screen.findByText("Community Discussions")).toBeInTheDocument();
+    // The composition's own heading casing.
+    expect(await screen.findByText("COMMUNITY DISCUSSIONS")).toBeInTheDocument();
     expect(screen.getByLabelText("Search posts")).toHaveAttribute(
       "placeholder",
       "Search posts by keyword, location, or batch...",
@@ -166,5 +167,68 @@ describe("CommunityFeedPage", () => {
     });
     expect(screen.queryByText("41")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Upvoted/ })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("allows admin user to pin and unpin a post", async () => {
+    const user = userEvent.setup();
+    localStorage.setItem("tjt.refresh_token", "test-refresh");
+    const { calls } = routeAdapter([
+      {
+        url: "/auth/token/refresh/",
+        answers: [{ status: 200, data: { access: "a", refresh: "r" } }],
+      },
+      {
+        url: "/me/",
+        answers: [
+          {
+            status: 200,
+            data: {
+              id: "u1",
+              email: "admin@example.com",
+              is_verified: true,
+              is_staff: true,
+              created_at: "2026-08-15T09:00:00Z",
+              profile_completed: true,
+            },
+          },
+        ],
+      },
+      {
+        url: "/community/posts/p1/pin/",
+        answers: [{ status: 200, data: { ...POST, is_pinned: true } }],
+      },
+      {
+        url: "/community/posts/",
+        answers: [{ status: 200, data: { count: 1, next: null, previous: null, results: [POST] } }],
+      },
+      {
+        url: "/announcements/",
+        answers: [{ status: 200, data: { count: 0, next: null, previous: null, results: [] } }],
+      },
+      {
+        url: "/dashboard/",
+        answers: [
+          {
+            status: 200,
+            data: {
+              profile: { current_status: "REGISTERED", completion_percentage: 100 },
+              community: { unread_notifications: 0 },
+            },
+          },
+        ],
+      },
+    ]);
+
+    renderFeed();
+    await screen.findByText("Anyone from Hyderabad got JL?");
+    const pinButton = await screen.findByRole("button", { name: /Pin post/i });
+    expect(pinButton).toBeInTheDocument();
+    await user.click(pinButton);
+
+    await waitFor(() => {
+      expect(calls.some((c) => String(c.url).includes("/community/posts/p1/pin/"))).toBe(true);
+    });
+    // Once pinned, button becomes "Unpin"
+    expect(await screen.findByRole("button", { name: /Unpin post/i })).toBeInTheDocument();
   });
 });

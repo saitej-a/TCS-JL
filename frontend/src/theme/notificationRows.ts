@@ -21,6 +21,11 @@
  * MODERATION and SYSTEM take the advisory treatment: a platform notice is what
  * the document's violet `campaign` row already draws, and inventing a new colour
  * for them would mean the markup is no longer the composition's.
+ *
+ * Dark parity (Phase 16 follow-up): every class list below keeps its transcription
+ * of the composition's light markup and adds the `dark:` pair the row needs on the
+ * app's default dark surface — the light bytes are unchanged, the tinted chips and
+ * action buttons just gain a dark counterpart.
  */
 import type { NotificationType } from "@/types/notifications";
 
@@ -59,69 +64,69 @@ const VIEW_DISCUSSION: RowAction = {
 const VIEW_POST: RowAction = {
   label: "View Post",
   className:
-    "px-3 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-medium text-xs transition-colors",
+    "px-3 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-medium text-xs transition-colors dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 dark:text-slate-200",
 };
 
 const READ_NOTICE: RowAction = {
   label: "Read Notice",
   className:
-    "px-3 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium text-xs transition-colors flex items-center gap-1.5",
+    "px-3 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium text-xs transition-colors flex items-center gap-1.5 dark:bg-indigo-950/60 dark:text-indigo-300 dark:hover:bg-indigo-900/60",
   glyph: "open_in_new",
 };
 
 const UPDATE_STATUS: RowAction = {
   label: "Update My Status",
   className:
-    "px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs transition-colors",
+    "px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs transition-colors dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-200",
 };
 
 /** Row 3's treatment — shared with the two types the library does not draw. */
 const ADVISORY: RowTreatment = {
-  chip: "h-10 w-10 rounded-xl bg-violet-50 border border-violet-100 flex items-center justify-center text-violet-600 flex-shrink-0",
+  chip: "h-10 w-10 rounded-xl bg-violet-50 border border-violet-100 flex items-center justify-center text-violet-600 flex-shrink-0 dark:bg-violet-950/50 dark:border-violet-900/60 dark:text-violet-300",
   glyph: "campaign",
   label:
-    "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-700 tracking-wide",
+    "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-700 tracking-wide dark:bg-indigo-950/60 dark:text-indigo-300",
   badge: true,
-  primary: "text-sm font-semibold text-slate-900 mt-1 leading-snug",
+  primary: "text-sm font-semibold text-slate-900 mt-1 leading-snug dark:text-slate-100",
   body: "prose",
   action: READ_NOTICE,
 };
 
 export const ROW_TREATMENTS: Record<NotificationType, RowTreatment> = {
   REPLY: {
-    chip: "h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 flex-shrink-0",
+    chip: "h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 flex-shrink-0 dark:bg-indigo-950/50 dark:border-indigo-900/60 dark:text-indigo-300",
     glyph: "forum",
-    label: "text-xs font-semibold text-indigo-600 uppercase tracking-wider",
+    label: "text-xs font-semibold text-indigo-600 uppercase tracking-wider dark:text-indigo-400",
     badge: false,
-    primary: "text-sm text-slate-700 mt-1 leading-snug",
+    primary: "text-sm text-slate-700 mt-1 leading-snug dark:text-slate-200",
     body: "callout",
     action: VIEW_DISCUSSION,
   },
   COMMENT: {
-    chip: "h-10 w-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 flex-shrink-0",
+    chip: "h-10 w-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 flex-shrink-0 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300",
     glyph: "forum",
-    label: "text-xs font-medium text-slate-400 uppercase tracking-wider",
+    label: "text-xs font-medium text-slate-400 uppercase tracking-wider dark:text-slate-500",
     badge: false,
-    primary: "text-sm text-slate-800 mt-1 leading-snug",
+    primary: "text-sm text-slate-800 mt-1 leading-snug dark:text-slate-200",
     body: "quote",
     action: null,
   },
   VOTE_MILESTONE: {
-    chip: "h-10 w-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 flex-shrink-0",
+    chip: "h-10 w-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 flex-shrink-0 dark:bg-amber-950/50 dark:border-amber-900/60 dark:text-amber-300",
     glyph: "thumb_up",
-    label: "text-xs font-semibold text-amber-600 uppercase tracking-wider",
+    label: "text-xs font-semibold text-amber-600 uppercase tracking-wider dark:text-amber-400",
     badge: false,
-    primary: "text-sm text-slate-700 mt-1 leading-snug",
+    primary: "text-sm text-slate-700 mt-1 leading-snug dark:text-slate-200",
     body: "meta",
     action: VIEW_POST,
   },
   ANNOUNCEMENT: ADVISORY,
   TIMELINE_REMINDER: {
-    chip: "h-10 w-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 flex-shrink-0",
+    chip: "h-10 w-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 flex-shrink-0 dark:bg-emerald-950/50 dark:border-emerald-900/60 dark:text-emerald-300",
     glyph: "pin_drop",
-    label: "text-xs font-medium text-emerald-700 uppercase tracking-wider",
+    label: "text-xs font-medium text-emerald-700 uppercase tracking-wider dark:text-emerald-400",
     badge: false,
-    primary: "text-sm font-semibold text-slate-900 mt-1 leading-snug",
+    primary: "text-sm font-semibold text-slate-900 mt-1 leading-snug dark:text-slate-100",
     body: "prose",
     action: UPDATE_STATUS,
   },

@@ -23,6 +23,7 @@ import {
 } from "@/components/announcementStorage";
 import { useAuth } from "@/context/AuthContext";
 import { MobileTabBar } from "@/layouts/MobileTabBar";
+import { setRailOccupied, useRailOccupied } from "@/layouts/railStore";
 import { PwaLayer } from "@/pwa/PwaLayer";
 import { NAV_ITEMS } from "@/layouts/navItems";
 import type { Paginated } from "@/types/api";
@@ -30,15 +31,15 @@ import type { Paginated } from "@/types/api";
 const BRAND = (
   <Link
     to="/dashboard"
-    aria-label="TCS Joining Tracker home"
+    aria-label="TCSJL home"
     className="flex items-center gap-2.5 px-2 py-1"
   >
-    <div className="h-9 w-9 rounded-lg bg-indigo-600 text-white font-headline font-bold text-sm flex items-center justify-center shadow-sm">
-      TJT
+    <div className="h-9 w-9 rounded-lg bg-indigo-600 text-white font-headline font-bold text-xs flex items-center justify-center shadow-sm">
+      TCSJL
     </div>
     <div>
       <h1 className="font-headline text-base font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-none">
-        TJT Tracker
+        TCSJL
       </h1>
       <p className="font-body text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-none font-medium">
         Recruitment Status
@@ -56,8 +57,17 @@ function navLinkClasses({ isActive }: { isActive: boolean }): string {
   ].join(" ");
 }
 
-/** The §5.5 announcement banner: latest un-dismissed announcement, persisted dismissal. */
-function AnnouncementBanner() {
+/**
+ * The §5.5 announcement banner: latest un-dismissed announcement, persisted
+ * dismissal. It reports its own visibility upward because the composition's
+ * chrome sticks below it (`top-9` / `h-[calc(100vh-36px)]`) — an offset that must
+ * not apply when the banner is absent or dismissed.
+ */
+function AnnouncementBanner({
+  onVisibilityChange,
+}: {
+  onVisibilityChange: (visible: boolean) => void;
+}) {
   const [item, setItem] = useState<{ id: string; title: string; body: string } | null>(null);
 
   useEffect(() => {
@@ -78,6 +88,10 @@ function AnnouncementBanner() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    onVisibilityChange(item !== null);
+  }, [item, onVisibilityChange]);
 
   if (item === null) return null;
 
@@ -146,7 +160,7 @@ function NotificationBell(): React.ReactElement {
       to={isAuthenticated ? "/notifications" : "/login?next=%2Fnotifications"}
       aria-label={isAuthenticated ? "Notifications" : "Sign in to see notifications"}
       data-testid="notification-bell"
-      className="relative flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-100 dark:hover:bg-slate-800 transition-colors duration-150"
+      className="relative p-2 flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-100 dark:hover:bg-slate-800 transition-colors duration-150"
     >
       <span className="material-symbols-outlined text-[22px]" data-icon="notifications" aria-hidden="true">
         notifications
@@ -240,6 +254,8 @@ export function RailPortal({ children }: { children: ReactNode }) {
   const [container, setContainer] = useState<HTMLElement | null>(null);
   useEffect(() => {
     setContainer(document.getElementById(RAIL_SLOT_ID));
+    setRailOccupied(true);
+    return () => setRailOccupied(false);
   }, []);
   if (container === null) return null;
   return createPortal(children, container);
@@ -247,6 +263,16 @@ export function RailPortal({ children }: { children: ReactNode }) {
 
 export function AppShell({ children }: { children?: ReactNode }) {
   const { user } = useAuth();
+  const railOccupied = useRailOccupied();
+  const [bannerVisible, setBannerVisible] = useState(false);
+  /**
+   * The composition's sticky offsets assume the 36px announcement banner is
+   * always there; the app's banner is data-driven and dismissible, so the chrome
+   * only offsets while it is actually rendered.
+   */
+  const stickyOffset = bannerVisible
+    ? "top-9 h-[calc(100vh-36px)]"
+    : "top-0 h-screen";
 
   return (
     <div
@@ -254,11 +280,13 @@ export function AppShell({ children }: { children?: ReactNode }) {
       data-testid="app-shell"
     >
       <PwaLayer />
-      <AnnouncementBanner />
+      <AnnouncementBanner onVisibilityChange={setBannerVisible} />
 
       <div className="flex flex-1 w-full min-w-0">
         {/* Sidebar: 240px wide, desktop ≥1024px */}
-        <aside className="w-60 bg-white border-r border-slate-200 dark:bg-slate-900 dark:border-slate-800 p-4 flex flex-col justify-between shrink-0 sticky top-0 h-screen z-30 overflow-y-auto hidden lg:flex">
+        <aside
+          className={`w-60 bg-white border-r border-slate-200 dark:bg-slate-900 dark:border-slate-800 p-4 flex flex-col justify-between shrink-0 sticky ${stickyOffset} z-30 overflow-y-auto hidden lg:flex`}
+        >
           <div className="flex flex-col gap-6">
             {BRAND}
             <nav
@@ -319,15 +347,19 @@ export function AppShell({ children }: { children?: ReactNode }) {
 
         {/* Center column */}
         <div className="flex-1 min-w-0 bg-slate-50 dark:bg-slate-900 flex flex-col min-h-screen">
-          <header className="bg-white border-b border-slate-200 px-4 sm:px-8 py-2.5 flex items-center justify-between sticky top-0 z-20 shadow-sm dark:bg-slate-900 dark:border-slate-800">
+          <header
+            className={`bg-white border-b border-slate-200 px-8 py-3 max-sm:px-4 max-sm:py-2.5 flex items-center justify-between sticky ${
+              bannerVisible ? "top-9" : "top-0"
+            } z-20 shadow-sm dark:bg-slate-900 dark:border-slate-800`}
+          >
             {/* Mobile Top Bar */}
             <div className="flex items-center justify-between w-full lg:hidden">
               <div className="flex items-center gap-2 font-display text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
                 <span className="bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded-md tracking-wider shadow-sm select-none">
-                  TJT
+                  TCSJL
                 </span>
                 <span className="text-slate-900 dark:text-slate-100 font-extrabold tracking-tight text-lg">
-                  Tracker
+                  TCSJL
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -373,6 +405,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
                   <span>+ Post</span>
                 </Link>
                 <NotificationBell />
+                <div className="h-5 w-px bg-slate-200 dark:bg-slate-800" aria-hidden="true" />
                 {user !== null && user.is_staff && (
                   <span
                     data-testid="moderator-chip"
@@ -393,14 +426,24 @@ export function AppShell({ children }: { children?: ReactNode }) {
                       <div className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-tight">
                         {user.email}
                       </div>
+                      {/* The composition's second line ("Sai T." / "Digital 2025") is
+                          dropped: the account exposes an email, not a display name or
+                          batch, and inventing one would misstate a candidate's identity. */}
                     </div>
+                    <span
+                      className="material-symbols-outlined text-slate-400 text-[18px]"
+                      data-icon="expand_more"
+                      aria-hidden="true"
+                    >
+                      expand_more
+                    </span>
                   </Link>
                 )}
               </div>
             </div>
           </header>
 
-          <main className="flex-1 px-4 pb-24 pt-4 lg:px-8 lg:pb-8">
+          <main className="flex-1 px-4 pb-28 pt-4 space-y-4 lg:px-8 lg:pb-8">
             {children ?? <Outlet />}
           </main>
 
@@ -409,9 +452,12 @@ export function AppShell({ children }: { children?: ReactNode }) {
           </footer>
         </div>
 
-        {/* Right rail: 320px on xl screens */}
-        <aside className="hidden xl:block w-80 bg-white border-l border-slate-200 p-4 shrink-0 sticky top-0 h-screen z-20 overflow-y-auto dark:bg-slate-900 dark:border-slate-800">
-          <div id={RAIL_SLOT_ID} className="space-y-4" />
+        {/* Right rail: the composition's 320px column, from `lg` up, and only while
+            a page actually fills it (see railStore). */}
+        <aside
+          className={`${railOccupied ? "hidden lg:block" : "hidden"} w-80 bg-white border-l border-slate-200 p-5 shrink-0 sticky ${stickyOffset} z-20 overflow-y-auto dark:bg-slate-900 dark:border-slate-800`}
+        >
+          <div id={RAIL_SLOT_ID} className="space-y-5" />
         </aside>
       </div>
 

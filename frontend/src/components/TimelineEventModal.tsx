@@ -23,6 +23,7 @@ import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { Modal } from "@/components/Modal";
 import { Textarea } from "@/components/Textarea";
+import { shiftDays } from "@/utils/date";
 
 export const EVENT_TYPE_OPTIONS: readonly { value: TimelineEventType; label: string }[] = [
   { value: "INTERVIEW", label: "Technical & HR Interview" },
@@ -42,27 +43,53 @@ export interface TimelineEventModalProps {
   /** Pre-selected type for §7.5's quick actions ("Mark as Received" / "Set Date"). */
   presetType?: TimelineEventType;
   onClose: () => void;
-  onSubmit: (payload: { event_type: TimelineEventType; event_date: string; description: string }) => Promise<void>;
+  onSubmit: (payload: {
+    event_type: TimelineEventType;
+    event_date: string;
+    description: string;
+    priorEvents?: {
+      interviewDate?: string;
+      selectionDate?: string;
+    };
+  }) => Promise<void>;
 }
 
 export function TimelineEventModal({ open, event, presetType, onClose, onSubmit }: TimelineEventModalProps): React.ReactElement {
   const [eventType, setEventType] = useState<TimelineEventType>("OTHER");
   const [eventDate, setEventDate] = useState("");
   const [description, setDescription] = useState("");
+  const [includePriorEvents, setIncludePriorEvents] = useState(true);
+  const [interviewDate, setInterviewDate] = useState("");
+  const [selectionDate, setSelectionDate] = useState("");
+  const [customizedPrior, setCustomizedPrior] = useState(false);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (open) {
-      setEventType(event?.event_type ?? presetType ?? "OTHER");
-      setEventDate(event?.event_date ?? new Date().toISOString().slice(0, 10));
+      const initialType = event?.event_type ?? presetType ?? "OTHER";
+      const initialDate = event?.event_date ?? new Date().toISOString().slice(0, 10);
+      setEventType(initialType);
+      setEventDate(initialDate);
       setDescription(event?.description ?? "");
+      setIncludePriorEvents(event === null);
+      setInterviewDate(shiftDays(initialDate, -21));
+      setSelectionDate(shiftDays(initialDate, -7));
+      setCustomizedPrior(false);
       setFieldError(null);
       setFormError(null);
       setSaving(false);
     }
   }, [open, event, presetType]);
+
+  const handleEventDateChange = (newDate: string) => {
+    setEventDate(newDate);
+    if (!customizedPrior) {
+      setInterviewDate(shiftDays(newDate, -21));
+      setSelectionDate(shiftDays(newDate, -7));
+    }
+  };
 
   async function handleSubmit(formEvent: FormEvent): Promise<void> {
     formEvent.preventDefault();
@@ -70,7 +97,26 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
     setFieldError(null);
     setFormError(null);
     try {
-      await onSubmit({ event_type: eventType, event_date: eventDate, description: description });
+      const payload: {
+        event_type: TimelineEventType;
+        event_date: string;
+        description: string;
+        priorEvents?: {
+          interviewDate?: string;
+          selectionDate?: string;
+        };
+      } = {
+        event_type: eventType,
+        event_date: eventDate,
+        description: description,
+      };
+      if (eventType === "OFFER_LETTER" && includePriorEvents) {
+        payload.priorEvents = {
+          interviewDate: interviewDate || shiftDays(eventDate, -21),
+          selectionDate: selectionDate || shiftDays(eventDate, -7),
+        };
+      }
+      await onSubmit(payload);
     } catch (error) {
       if (error instanceof ApiError) {
         // DRF's raw field-errors shape lands in `details` (errors.ts): render
@@ -130,10 +176,58 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
           label="DATE OCCURRED *"
           type="date"
           value={eventDate}
-          onChange={(e) => setEventDate(e.target.value)}
+          onChange={(e) => handleEventDateChange(e.target.value)}
           required
           errorText={fieldError ?? undefined}
         />
+
+        {eventType === "OFFER_LETTER" && (
+          <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 p-4 space-y-3 dark:border-indigo-900/50 dark:bg-indigo-950/20">
+            <div className="flex items-start gap-2.5">
+              <input
+                id="auto-complete-prior"
+                type="checkbox"
+                checked={includePriorEvents}
+                onChange={(e) => setIncludePriorEvents(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-800"
+              />
+              <label
+                htmlFor="auto-complete-prior"
+                className="text-xs font-semibold text-slate-800 dark:text-slate-200 cursor-pointer"
+              >
+                Mark previous events (Interview & Selection) as complete
+                <p className="text-[11px] font-normal text-slate-500 dark:text-slate-400 mt-0.5">
+                  Set the timeline for your interview and selection stages so each milestone is accurately dated.
+                </p>
+              </label>
+            </div>
+
+            {includePriorEvents && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-indigo-100 dark:border-indigo-900/50">
+                <Input
+                  label="INTERVIEW DATE *"
+                  type="date"
+                  value={interviewDate}
+                  onChange={(e) => {
+                    setInterviewDate(e.target.value);
+                    setCustomizedPrior(true);
+                  }}
+                  required={includePriorEvents}
+                />
+                <Input
+                  label="SELECTION DATE *"
+                  type="date"
+                  value={selectionDate}
+                  onChange={(e) => {
+                    setSelectionDate(e.target.value);
+                    setCustomizedPrior(true);
+                  }}
+                  required={includePriorEvents}
+                />
+              </div>
+            )}
+          </div>
+        )}
 
         <div>
           <div className="mb-1.5 flex items-center justify-between">

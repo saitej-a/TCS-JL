@@ -15,12 +15,12 @@ export function VisitorHeader() {
     <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
         <div className="flex items-center gap-6">
-          <Link to="/" className="flex items-center gap-2" aria-label="TCS Joining Tracker home">
+          <Link to="/" className="flex items-center gap-2" aria-label="TCSJL home">
             <span className="inline-flex items-center justify-center rounded-lg bg-brand-700 px-2 py-1 text-xs font-bold text-white">
-              TJT
+            TCSJL
             </span>
             <span className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">
-              TCS Joining Tracker
+            TCSJL
             </span>
           </Link>
           <nav aria-label="Visitor" className="flex items-center gap-4">

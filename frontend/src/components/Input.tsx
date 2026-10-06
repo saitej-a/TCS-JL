@@ -3,10 +3,26 @@ import { useId, useState, type InputHTMLAttributes, type ReactNode } from "react
 const CONTROL_CLASSES =
   "w-full h-10 px-3.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all";
 
+/** The composition's own reveal-button treatment, when the screen specifies one. */
+const REVEAL_CLASSES =
+  "absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 focus:outline-none flex items-center justify-center";
+
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   helperText?: string;
   errorText?: string;
+  /**
+   * Replaces the control's default treatment outright. Every Stitch composition
+   * draws its own field — padding, border colour, ring, background tint — and two
+   * competing utilities on one element are resolved by stylesheet order rather than
+   * by the order they appear in `className`, so a screen that claims its mockup's
+   * field passes the whole class string instead of appending to the default.
+   */
+  controlClassName?: string;
+  /** The composition's reveal-button classes, when its field is a password. */
+  revealClassName?: string;
+  /** The composition's reveal glyph, when it draws one instead of the ligature. */
+  revealIcon?: (revealed: boolean) => ReactNode;
 }
 
 /** §6.2.1: label + control + helper/error, with aria wiring for announcement. */
@@ -16,6 +32,9 @@ export function Input({
   errorText,
   type = "text",
   className = "",
+  controlClassName,
+  revealClassName = REVEAL_CLASSES,
+  revealIcon,
   id,
   ...rest
 }: InputProps) {
@@ -44,7 +63,9 @@ export function Input({
         <input
           id={inputId}
           type={effectiveType}
-          className={`${CONTROL_CLASSES} ${isPassword ? "pr-10" : ""} ${className}`.trim()}
+          className={(
+            controlClassName ?? `${CONTROL_CLASSES} ${isPassword ? "pr-10" : ""} ${className}`
+          ).trim()}
           aria-invalid={errorText !== undefined}
           aria-describedby={describedBy}
           {...rest}
@@ -55,11 +76,15 @@ export function Input({
             aria-label="Toggle password visibility"
             aria-pressed={revealed}
             onClick={() => setRevealed((current) => !current)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 focus:outline-none flex items-center justify-center"
+            className={revealClassName}
           >
-            <span className="material-symbols-outlined text-[18px]" data-icon="visibility">
-              {revealed ? "visibility_off" : "visibility"}
-            </span>
+            {revealIcon !== undefined ? (
+              revealIcon(revealed)
+            ) : (
+              <span className="material-symbols-outlined text-[18px]" data-icon="visibility">
+                {revealed ? "visibility_off" : "visibility"}
+              </span>
+            )}
           </button>
         )}
       </div>

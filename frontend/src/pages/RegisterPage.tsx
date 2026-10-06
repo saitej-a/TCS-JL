@@ -15,6 +15,10 @@
  *
  * Client-side validation is UX only — the server stays the authority. Success
  * → /verify-email-pending (the account is created unverified).
+ *
+ * Dark parity (Phase 16 follow-up): the shell's card and dot-grid come from
+ * `AuthCard`; the fields, helper row, alert strip and secondary link here carry
+ * their own `dark:` pairs so the form reads on the app's default dark surface.
  */
 import { useState, type FormEvent, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -23,12 +27,27 @@ import { register } from "@/api/auth";
 import { Input } from "@/components/Input";
 import { recordAccountCreated } from "@/pwa/installSignals";
 import { AuthCard } from "@/pages/authCard";
-import { RULE_LABELS, validatePassword } from "@/utils/passwordRules";
+import { PASSWORD_MIN_LENGTH, RULE_LABELS, validatePassword } from "@/utils/passwordRules";
 
 /** Thin wrapper keeping the field blocks uniform (the composition's spacing). */
 function FieldBlock({ children }: { children: ReactNode }) {
   return <div>{children}</div>;
 }
+
+/**
+ * The composition's field treatments, verbatim. Its display-name field is the
+ * fifth kept out (see the class doc), so its identity and password fields carry
+ * the mockup's own ring and border, and the confirmation carries the mockup's
+ * mismatch state.
+ */
+const FIELD =
+  "w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-colors shadow-sm dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500";
+const PASSWORD_FIELD =
+  "w-full pl-3.5 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-colors shadow-sm dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500";
+const CONFIRM_FIELD =
+  "w-full px-3.5 py-2.5 bg-white border border-rose-300 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-colors shadow-sm dark:bg-slate-800 dark:border-rose-800 dark:text-slate-100 dark:placeholder:text-slate-500";
+const REVEAL =
+  "absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none dark:text-slate-500 dark:hover:text-slate-300";
 
 export function RegisterPage() {
   const navigate = useNavigate();
@@ -101,6 +120,7 @@ export function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              controlClassName={FIELD}
             />
           </FieldBlock>
 
@@ -119,7 +139,24 @@ export function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               aria-invalid={passwordInvalid || undefined}
+              controlClassName={PASSWORD_FIELD}
+              revealClassName={REVEAL}
             />
+            {/* The composition's helper row under the password field. Its hint text
+                ("Must be at least 8 characters") understates the real policy, so the
+                row carries the real requirement instead. */}
+            <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1 dark:text-slate-400">
+              <span
+                className="material-symbols-outlined text-slate-400 text-[14px] shrink-0 translate-y-0.5 dark:text-slate-500"
+                data-icon="info"
+              >
+                info
+              </span>
+              <span>
+                At least {PASSWORD_MIN_LENGTH} characters, with upper and lower case, a digit and a
+                symbol.
+              </span>
+            </p>
             {password !== "" && failures.length > 0 && (
               <ul className="mt-1.5 space-y-1 text-xs" data-testid="password-rules">
                 {RULE_LABELS.map((rule) => {
@@ -153,15 +190,19 @@ export function RegisterPage() {
               onChange={(e) => setConfirm(e.target.value)}
               required
               aria-invalid={mismatch || undefined}
+              controlClassName={mismatch ? CONFIRM_FIELD : FIELD}
             />
           </FieldBlock>
 
           {(mismatch || passwordInvalid || errorMessage !== null) && (
             <div
               role="alert"
-              className="mt-2 bg-rose-50 border border-rose-200 rounded-lg p-2.5 flex items-center gap-2 text-rose-700 text-xs font-medium"
+              className="mt-2 bg-rose-50 border border-rose-200 rounded-lg p-2.5 flex items-center gap-2 text-rose-700 text-xs font-medium dark:bg-rose-950/50 dark:border-rose-900/60 dark:text-rose-300"
             >
-              <span className="material-symbols-outlined text-rose-600 text-[16px] shrink-0" data-icon="error">
+              <span
+                className="material-symbols-outlined text-rose-600 text-[16px] shrink-0 dark:text-rose-400"
+                data-icon="error"
+              >
                 error
               </span>
               <span>
@@ -180,16 +221,22 @@ export function RegisterPage() {
                 type="checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
-                className="h-4 w-4 mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600/30 cursor-pointer"
+                className="h-4 w-4 mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600/30 cursor-pointer dark:border-slate-600"
                 data-testid="terms-checkbox"
               />
-              <span className="text-xs text-slate-600 leading-snug">
+              <span className="text-xs text-slate-600 leading-snug dark:text-slate-400">
                 I agree to the{" "}
-                <Link to="/terms" className="text-indigo-600 hover:text-indigo-700 hover:underline font-medium">
+                <Link
+                  to="/terms"
+                  className="text-indigo-600 hover:text-indigo-700 hover:underline font-medium dark:text-indigo-400 dark:hover:text-indigo-300"
+                >
                   Terms
                 </Link>{" "}
                 and{" "}
-                <Link to="/privacy" className="text-indigo-600 hover:text-indigo-700 hover:underline font-medium">
+                <Link
+                  to="/privacy"
+                  className="text-indigo-600 hover:text-indigo-700 hover:underline font-medium dark:text-indigo-400 dark:hover:text-indigo-300"
+                >
                   Privacy Policy
                 </Link>
               </span>
@@ -206,16 +253,18 @@ export function RegisterPage() {
 
           <div className="relative py-2" aria-hidden="true">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200" />
+              <div className="w-full border-t border-slate-200 dark:border-slate-700" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-white px-3 text-slate-400 font-medium">or</span>
+              <span className="bg-white px-3 text-slate-400 font-medium dark:bg-slate-900 dark:text-slate-500">
+                or
+              </span>
             </div>
           </div>
 
           <Link
             to="/login"
-            className="w-full flex items-center justify-center py-2.5 border border-slate-200 hover:bg-slate-50 active:scale-[0.98] text-slate-700 font-medium rounded-lg text-sm transition-all focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1 text-center"
+            className="w-full flex items-center justify-center py-2.5 border border-slate-200 hover:bg-slate-50 active:scale-[0.98] text-slate-700 font-medium rounded-lg text-sm transition-all focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1 text-center dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-200"
           >
             I already have an account
           </Link>

@@ -35,21 +35,65 @@ function initialsOf(displayName: string): string {
 interface IdentityPillProps {
   author: PublicAuthor;
   className?: string;
+  /**
+   * The feed composition's row: a 24px avatar with the cohort as a single
+   * `name • batch • hiring_type • region` line whose region carries the accent.
+   * The default (false) keeps §6.5's 36px avatar for the post detail surface.
+   */
+  compact?: boolean;
 }
 
 /**
- * §6.5's identity presentation: a 36px avatar circle plus the cohort tagline
- * (`batch • hiring_type • region`, null-safe). Anonymous identities render
- * the mask glyph on a deterministic pastel; display names render two-letter
+ * §6.5's identity presentation: an avatar circle plus the cohort tagline
+ * (`batch • hiring_type • region`, null-safe). Anonymous identities render the
+ * mask glyph on a deterministic pastel; display names render two-letter
  * initials. NEVER renders an email or a real full name (privacy-first).
+ *
+ * Recorded divergence from the feed composition: its sample avatar is a single
+ * violet disc; the app keeps §6.5's six-hue deterministic palette so two
+ * candidates on one page are distinguishable. The row's own anatomy (24px disc,
+ * `mx-1` separators, accented region) is carried verbatim.
  */
-export function IdentityPill({ author, className = "" }: IdentityPillProps) {
+export function IdentityPill({ author, className = "", compact = false }: IdentityPillProps) {
   const isAnonymous = author.display_name === ANONYMOUS_SENTINEL;
   const pastel = PASTELS[pastelIndex(author.display_name, author.avatar_seed)];
 
   const cohortParts = [author.batch, author.hiring_type, author.region].filter(
     (part): part is string => part !== null && part !== "",
   );
+
+  if (compact) {
+    return (
+      <div className={`flex items-center gap-2.5 ${className}`.trim()} data-testid="identity-pill">
+        <div
+          className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] border border-slate-200 dark:border-slate-700 ${pastel}`}
+          aria-hidden={isAnonymous ? undefined : "true"}
+        >
+          {isAnonymous ? (
+            <span className="text-[11px] leading-none select-none" role="img" aria-label="Anonymous">
+              🎭
+            </span>
+          ) : (
+            initialsOf(author.display_name)
+          )}
+        </div>
+        <div className="text-xs text-slate-500 dark:text-slate-400">
+          <span className="font-semibold text-slate-700 dark:text-slate-200">{author.display_name}</span>
+          {cohortParts.map((part, index) => (
+            <span key={`${part}-${index}`}>
+              <span className="mx-1" aria-hidden="true">
+                •
+              </span>
+              <span className={part === author.region ? "text-indigo-600 dark:text-indigo-400 font-medium" : undefined}>
+                {part}
+              </span>
+            </span>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   const tagline = cohortParts.join(" • ");
 
   return (

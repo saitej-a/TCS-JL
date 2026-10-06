@@ -120,10 +120,208 @@ describe("TimelinePage", () => {
       { url: "/timeline/", method: "get", respond: () => listResponse([]) },
     ]);
     renderTimeline();
-    const deleteButtons = await screen.findAllByRole("button", { name: "Delete" });
+    // The composition's literal bracketed row actions ([Edit] / [Delete]).
+    const deleteButtons = await screen.findAllByRole("button", { name: "[Delete]" });
     await user.click(deleteButtons[0] as HTMLElement);
     const confirmButton = await screen.findByRole("button", { name: /Delete event/i });
     await user.click(confirmButton);
     await waitFor(() => expect(deletes).toHaveLength(1));
+  });
+
+  it("marks previous events as complete when offer letter received date is entered", async () => {
+    const user = userEvent.setup();
+    const bodies: string[] = [];
+    const OFFER_EVENT = {
+      id: "evt-offer",
+      event_type: "OFFER_LETTER",
+      event_date: "2026-05-15",
+      description: "Offer Letter Issued",
+      is_verified: false,
+      created_at: "2026-05-15T00:00:00Z",
+    };
+    const INTERVIEW_EVENT = {
+      id: "evt-interview",
+      event_type: "INTERVIEW",
+      event_date: "2026-05-15",
+      description: "Technical & HR Interview cleared prior to offer letter.",
+      is_verified: false,
+      created_at: "2026-05-15T00:00:00Z",
+    };
+    const SELECTION_EVENT = {
+      id: "evt-selection",
+      event_type: "SELECTION",
+      event_date: "2026-05-15",
+      description: "Selection confirmed prior to offer letter.",
+      is_verified: false,
+      created_at: "2026-05-15T00:00:00Z",
+    };
+
+    scriptAdapter([
+      { url: "/timeline/", method: "get", respond: () => listResponse([]) },
+      { url: "/profile/", respond: () => ({ status: 200, data: PROFILE }) },
+      // First call creates OFFER_LETTER
+      {
+        url: "/timeline/",
+        method: "post",
+        respond: (config) => {
+          bodies.push(String(config.data));
+          return { status: 201, data: OFFER_EVENT };
+        },
+      },
+      // Automatically creates INTERVIEW
+      {
+        url: "/timeline/",
+        method: "post",
+        respond: (config) => {
+          bodies.push(String(config.data));
+          return { status: 201, data: INTERVIEW_EVENT };
+        },
+      },
+      // Automatically creates SELECTION
+      {
+        url: "/timeline/",
+        method: "post",
+        respond: (config) => {
+          bodies.push(String(config.data));
+          return { status: 201, data: SELECTION_EVENT };
+        },
+      },
+      {
+        url: "/timeline/",
+        method: "get",
+        respond: () => listResponse([OFFER_EVENT, SELECTION_EVENT, INTERVIEW_EVENT]),
+      },
+      {
+        url: "/profile/",
+        respond: () => ({ status: 200, data: { ...PROFILE, current_status: "OFFER_RECEIVED" } }),
+      },
+    ]);
+
+    renderTimeline();
+    const addButton = await screen.findByRole("button", { name: /Add Milestone Event/i });
+    await user.click(addButton);
+
+    // Select OFFER_LETTER
+    const select = screen.getByLabelText(/Event Milestone Type/i);
+    await user.selectOptions(select, "OFFER_LETTER");
+
+    const saveButton = await screen.findByRole("button", { name: /Add Event/i });
+    await user.click(saveButton);
+
+    await waitFor(() => expect(bodies).toHaveLength(3));
+    const parsedBodies = bodies.map((b) => JSON.parse(b) as { event_type: string; event_date: string });
+    const offerBody = parsedBodies.find((b) => b.event_type === "OFFER_LETTER");
+    const interviewBody = parsedBodies.find((b) => b.event_type === "INTERVIEW");
+    const selectionBody = parsedBodies.find((b) => b.event_type === "SELECTION");
+
+    expect(offerBody).toBeDefined();
+    expect(interviewBody).toBeDefined();
+    expect(selectionBody).toBeDefined();
+
+    // Verify distinct timeline dates (not the same date as offer letter)
+    expect(interviewBody?.event_date).not.toBe(offerBody?.event_date);
+    expect(selectionBody?.event_date).not.toBe(offerBody?.event_date);
+    expect((interviewBody?.event_date ?? "") < (selectionBody?.event_date ?? "")).toBe(true);
+    expect((selectionBody?.event_date ?? "") < (offerBody?.event_date ?? "")).toBe(true);
+  });
+
+  it("allows setting custom prior event dates when entering offer letter date", async () => {
+    const user = userEvent.setup();
+    const bodies: string[] = [];
+
+    scriptAdapter([
+      { url: "/timeline/", method: "get", respond: () => listResponse([]) },
+      { url: "/profile/", respond: () => ({ status: 200, data: PROFILE }) },
+      {
+        url: "/timeline/",
+        method: "post",
+        respond: (config) => {
+          bodies.push(String(config.data));
+          return { status: 201, data: { id: "e1", ...JSON.parse(String(config.data)) } };
+        },
+      },
+      {
+        url: "/timeline/",
+        method: "post",
+        respond: (config) => {
+          bodies.push(String(config.data));
+          return { status: 201, data: { id: "e2", ...JSON.parse(String(config.data)) } };
+        },
+      },
+      {
+        url: "/timeline/",
+        method: "post",
+        respond: (config) => {
+          bodies.push(String(config.data));
+          return { status: 201, data: { id: "e3", ...JSON.parse(String(config.data)) } };
+        },
+      },
+      { url: "/timeline/", method: "get", respond: () => listResponse([]) },
+      { url: "/profile/", respond: () => ({ status: 200, data: PROFILE }) },
+    ]);
+
+    renderTimeline();
+    const addButton = await screen.findByRole("button", { name: /Add Milestone Event/i });
+    await user.click(addButton);
+
+    // Select OFFER_LETTER
+    const select = screen.getByLabelText(/Event Milestone Type/i);
+    await user.selectOptions(select, "OFFER_LETTER");
+
+    // Enter custom offer letter date
+    const offerDateInput = screen.getByLabelText(/Date Occurred/i);
+    await user.clear(offerDateInput);
+    await user.type(offerDateInput, "2026-06-01");
+
+    // Enter custom interview date
+    const interviewInput = screen.getByLabelText(/Interview Date/i);
+    await user.clear(interviewInput);
+    await user.type(interviewInput, "2026-05-10");
+
+    // Enter custom selection date
+    const selectionInput = screen.getByLabelText(/Selection Date/i);
+    await user.clear(selectionInput);
+    await user.type(selectionInput, "2026-05-20");
+
+    const saveButton = await screen.findByRole("button", { name: /Add Event/i });
+    await user.click(saveButton);
+
+    await waitFor(() => expect(bodies).toHaveLength(3));
+    const parsedBodies = bodies.map((b) => JSON.parse(b) as { event_type: string; event_date: string });
+    const interviewBody = parsedBodies.find((b) => b.event_type === "INTERVIEW");
+    const selectionBody = parsedBodies.find((b) => b.event_type === "SELECTION");
+    const offerBody = parsedBodies.find((b) => b.event_type === "OFFER_LETTER");
+
+    expect(offerBody?.event_date).toBe("2026-06-01");
+    expect(interviewBody?.event_date).toBe("2026-05-10");
+    expect(selectionBody?.event_date).toBe("2026-05-20");
+  });
+
+  it("displays previous milestones as completed when offer letter exists", async () => {
+    const OFFER_EVENT = {
+      id: "evt-offer",
+      event_type: "OFFER_LETTER",
+      event_date: "2026-05-15",
+      description: "Offer Letter Issued",
+      is_verified: true,
+      created_at: "2026-05-15T00:00:00Z",
+    };
+    scriptAdapter([
+      { url: "/timeline/", method: "get", respond: () => listResponse([OFFER_EVENT]) },
+      {
+        url: "/profile/",
+        respond: () => ({ status: 200, data: { ...PROFILE, current_status: "OFFER_RECEIVED" } }),
+      },
+    ]);
+    renderTimeline();
+
+    // Verify Technical & HR Interview and Selection are rendered as completed
+    const interviewElements = await screen.findAllByText(/Technical & HR Interview/i);
+    expect(interviewElements.length).toBeGreaterThan(0);
+    const selectionElements = screen.getAllByText(/Selection Communicated/i);
+    expect(selectionElements.length).toBeGreaterThan(0);
+    // And NOT rendered as PENDING steps
+    expect(screen.queryByText(/PENDING — Technical & HR Interview/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/PENDING — Selection Communicated/i)).not.toBeInTheDocument();
   });
 });

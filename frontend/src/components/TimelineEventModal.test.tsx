@@ -64,4 +64,29 @@ describe("TimelineEventModal", () => {
     const payload = submitted[0] as Record<string, unknown>;
     expect(Object.keys(payload).sort()).toEqual(["description", "event_date", "event_type"]);
   });
+
+  it("shows prior events inputs and includes them in payload when OFFER_LETTER is selected", async () => {
+    const user = userEvent.setup();
+    const { submitted } = setup();
+
+    const typeSelect = screen.getByLabelText(/Event Milestone Type/i);
+    await user.selectOptions(typeSelect, "OFFER_LETTER");
+
+    expect(screen.getByLabelText(/Interview Date/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Selection Date/i)).toBeInTheDocument();
+
+    const saveButton = screen.getByRole("button", { name: /Add Event/i });
+    await user.click(saveButton);
+
+    await waitFor(() => expect(submitted).toHaveLength(1));
+    const payload = submitted[0] as {
+      event_type: string;
+      event_date: string;
+      priorEvents?: { interviewDate: string; selectionDate: string };
+    };
+    expect(payload.event_type).toBe("OFFER_LETTER");
+    expect(payload.priorEvents).toBeDefined();
+    expect(payload.priorEvents?.interviewDate).not.toBe(payload.event_date);
+    expect(payload.priorEvents?.selectionDate).not.toBe(payload.event_date);
+  });
 });

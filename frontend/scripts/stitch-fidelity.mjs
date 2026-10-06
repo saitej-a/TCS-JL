@@ -18,10 +18,16 @@
  *      RECONCILIATION-14.md declares it "not carried" (a deliberate drop, with its
  *      own column and reason). Nothing may vanish quietly.
  *   2. **Glyphs.** Every `data-icon` name and every `material-symbols-outlined`
- *      span body in the region appears in the source (as the attribute value and
- *      as the ligature text).
+ *      span body in the region appears in the source — as `data-icon="…"` or as
+ *      the ligature the span renders. A React span spells its ligature as a JSX
+ *      *child* (`<span …>arrow_back</span>`), which is not a string literal, so
+ *      glyphs are matched against the whole source minus its comments rather than
+ *      against the string spans alone.
  *   3. **Structure.** Every heading text the region declares appears in the source
- *      — the composition's section order, in the composition's words.
+ *      — the composition's section order, in the composition's words. Compared
+ *      case-insensitively: the mockups hard-code `YOUR RECRUITMENT PROGRESSION`
+ *      where the ported side renders title case under Tailwind's `uppercase`, and
+ *      the two are the same heading.
  *   4. **Awaiting slots (D-02).** Every `data-awaiting="…"` in the source is listed
  *      in the row's Awaiting column, and every listed slot exists in the source
  *      (bidirectional: no undeclared gaps, no stale declarations).
@@ -34,8 +40,16 @@
  *   node scripts/stitch-fidelity.mjs --all                     # every rowed screen
  *   node scripts/stitch-fidelity.mjs --screen <folder> --verbose
  *   node scripts/stitch-fidelity.mjs --all --family settings,timeline
+ *   node scripts/stitch-fidelity.mjs --all --coverage          # how much of each design is in src AT ALL
  *
  * Exit 0 prints `FIDELITY-OK`; any failure prints the offending tokens and exits 1.
+ *
+ * `--coverage` adds a second, weaker measure per composition: how many of the
+ * composition's own tokens appear **nowhere in any file under `src/`** — not just
+ * nowhere in the row's declared sources. A row can only fail the strict check by
+ * omission; coverage is how you tell an under-declared row (the token is in the
+ * app, the ledger named the wrong file) from a design that never made it in at
+ * all. It is diagnostic, so it reports and exits 0.
  */
 import { readdir, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
@@ -64,6 +78,7 @@ const values = (name) =>
   args.reduce((all, arg, index) => (arg === name ? [...all, args[index + 1]] : all), []);
 
 const VERBOSE = flag("--verbose");
+const COVERAGE = flag("--coverage");
 
 function getRecordPath() {
   const custom = value("--record");
@@ -266,7 +281,8 @@ function normalizeText(text) {
     .replace(/\{[^{}]*\}/g, " ")
     .replace(/\d+/g, " ")
     .replace(/\s+/g, " ")
-    .trim();
+    .trim()
+    .toLowerCase();
 }
 
 /** Decode the entities the documents write in text nodes. */
@@ -334,29 +350,96 @@ function cellTokens(cell) {
   return tokens;
 }
 
+/**
+ * A result for a composition that never got as far as reading markup. `--all` must
+ * finish the sweep: one stale row used to abort the whole audit, hiding the state of
+ * every composition after it. Structural faults are returned as problems instead, so
+ * a single run reports every folder that needs attention.
+ */
+function unreachable(folder, message) {
+  return {
+    folder,
+    boundary: "-",
+    counts: { classes: 0, glyphs: 0, headings: 0, sourceTokens: 0, awaiting: 0, dropped: 0 },
+    problems: [`  ${message}`],
+  };
+}
+
+/**
+ * Every non-test source file under src/, read once. The coverage measure needs the
+ * whole corpus, not one row's declared files.
+ */
+let corpusPromise = null;
+function loadCorpus() {
+  corpusPromise ??= (async () => {
+    const files = [];
+    const walk = async (dir) => {
+      for (const entry of await readdir(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          if (entry.name === "node_modules") continue;
+          await walk(full);
+        } else if (/\.(ts|tsx)$/.test(entry.name) && !/\.test\./.test(entry.name)) {
+          files.push(full);
+        }
+      }
+    };
+    await walk(path.join(FRONTEND_DIR, "src"));
+    const entries = [];
+    for (const file of files) {
+      const text = await readFile(file, "utf8");
+      const { code, spans } = lex(text);
+      entries.push({
+        relative: path.relative(FRONTEND_DIR, file).split(path.sep).join("/"),
+        tokens: stringTokens(spans),
+        text: `${code}\n${spans.join("\n")}`,
+      });
+    }
+    return entries;
+  })();
+  return corpusPromise;
+}
+
+/** Which of `tokens` appear nowhere in the whole of src/. */
+function absentEverywhere(tokens, corpus, matches) {
+  const absent = [];
+  for (const token of tokens) {
+    if (corpus.some((entry) => matches(entry, token))) continue;
+    absent.push(token);
+  }
+  return absent;
+}
+
 async function checkScreen(folder, rows, extraSources = []) {
   const row = rows.get(folder);
   if (row === undefined) {
-    fail(`MISSING ROW: ${folder} has no row in ${path.basename(getRecordPath())}`);
+    return unreachable(folder, `MISSING ROW: no row in ${path.basename(getRecordPath())}`);
   }
   for (const [key, header] of Object.entries(REGISTERS)) {
     if (!(header in row)) {
-      fail(`MISSING COLUMN: the record has no "${header}" column (needed for ${key}).`);
+      return unreachable(folder, `MISSING COLUMN: the record has no "${header}" column (needed for ${key}).`);
     }
   }
 
   const declaredSources = cellTokens(row[REGISTERS.sources]);
   if (declaredSources === null || declaredSources.size === 0) {
-    fail(`NO SOURCES: ${folder}'s row declares no ported source.`);
+    return unreachable(folder, "NO SOURCES: the row declares no ported source.");
   }
   // `--source` names files the run cares about beyond the record's row (a
   // composition can be fed by a layout the caller wants checked in the same run);
   // it adds to the row, it never replaces it — the record stays the record.
+  const structural = [];
   const sources = [];
   for (const relative of [...declaredSources, ...extraSources]) {
     const file = path.join(FRONTEND_DIR, relative);
-    if (!existsSync(file)) fail(`MISSING SOURCE: ${folder} declares ${relative}, which is not on disk.`);
+    if (!existsSync(file)) {
+      structural.push(`  MISSING SOURCE: declares ${relative}, which is not on disk.`);
+      continue;
+    }
     sources.push({ relative, text: await readFile(file, "utf8") });
+  }
+  if (sources.length === 0) {
+    return unreachable(folder, `UNREADABLE SOURCES: every declared source is missing (${[...declaredSources].join(", ")}).`);
   }
 
   const html = await readComposition(folder);
@@ -380,6 +463,12 @@ async function checkScreen(folder, rows, extraSources = []) {
   const missingGlyphs = [];
   for (const glyph of glyphNames(region)) {
     if (sourceTokens.has(glyph)) continue;
+    // A glyph name is literal copy too, so `Not carried` can excuse it the same way.
+    if (notCarried.has(glyph)) continue;
+    // Not a string literal: the ligature is a JSX text child, and the source has
+    // already lost its comments, so a whole-word hit anywhere in `rawText` is the
+    // source carrying the glyph.
+    if (new RegExp(`\\b${glyph}\\b`).test(rawText)) continue;
     missingGlyphs.push(glyph);
   }
 
@@ -391,6 +480,9 @@ async function checkScreen(folder, rows, extraSources = []) {
     // heading's words can sit either side of a `<span>` or a `{count}` while still
     // being the composition's heading word for word.
     if (wordsInOrder(decoded, haystack)) continue;
+    // The record's `Not carried` column holds "class tokens (or literal copy)",
+    // so a heading declared dropped there is a declared gap, not a miss.
+    if (notCarried.has(decoded)) continue;
     missingHeadings.push(decoded);
   }
 
@@ -409,7 +501,19 @@ async function checkScreen(folder, rows, extraSources = []) {
     if (rawText.includes(value)) fabrications.push(value);
   }
 
-  const problems = [];
+  let coverage = null;
+  if (COVERAGE) {
+    const corpus = await loadCorpus();
+    coverage = {
+      classes: absentEverywhere(classes, corpus, (entry, token) => entry.text.includes(token)),
+      glyphs: absentEverywhere(glyphNames(region), corpus, (entry, token) => entry.text.includes(token)),
+      headings: absentEverywhere(headingTexts(region), corpus, (entry, heading) =>
+        wordsInOrder(normalizeText(decode(heading)), normalizeText(entry.text)),
+      ),
+    };
+  }
+
+  const problems = [...structural];
   if (missingClasses.length > 0) {
     problems.push(
       `  classes not carried and not declared dropped: ${missingClasses.join(" ")}`,
@@ -434,6 +538,7 @@ async function checkScreen(folder, rows, extraSources = []) {
       awaiting: awaitingInSource.size,
       dropped: notCarried.size,
     },
+    coverage,
     problems,
   };
 }
@@ -479,6 +584,27 @@ async function main() {
   }
 
   const failed = results.filter((result) => result.problems.length > 0);
+  if (COVERAGE) {
+    let totals = { classes: 0, glyphs: 0, headings: 0 };
+    for (const result of results) {
+      const { coverage } = result;
+      totals.classes += coverage.classes.length;
+      totals.glyphs += coverage.glyphs.length;
+      totals.headings += coverage.headings.length;
+      console.log(
+        `COVERAGE ${result.folder} absent=${coverage.classes.length}/${coverage.glyphs.length}/${coverage.headings.length}`,
+      );
+      if (VERBOSE) {
+        if (coverage.classes.length > 0) console.log(`  classes: ${coverage.classes.join(" ")}`);
+        if (coverage.glyphs.length > 0) console.log(`  glyphs: ${coverage.glyphs.join(" ")}`);
+        if (coverage.headings.length > 0) console.log(`  headings: ${coverage.headings.join(" | ")}`);
+      }
+    }
+    console.log(
+      `COVERAGE-TOTAL compositions=${results.length} faithful=${results.filter((r) => r.coverage.classes.length + r.coverage.glyphs.length + r.coverage.headings.length === 0).length}` +
+        ` absent=${totals.classes}/${totals.glyphs}/${totals.headings}`,
+    );
+  }
   if (VERBOSE) {
     for (const result of results) {
       const { counts } = result;

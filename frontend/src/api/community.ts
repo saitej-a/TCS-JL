@@ -91,6 +91,16 @@ export async function unvoteCommunityPost(id: string): Promise<void> {
   await apiDelete<unknown>(`/community/posts/${id}/vote/`);
 }
 
+/** Moderator pin (POST /community/posts/{id}/pin/, 04 §38). */
+export function pinCommunityPost(id: string): Promise<PostCard> {
+  return apiPost<PostCard>(`/community/posts/${id}/pin/`);
+}
+
+/** Moderator unpin (DELETE /community/posts/{id}/pin/). */
+export function unpinCommunityPost(id: string): Promise<PostCard> {
+  return apiDelete<PostCard>(`/community/posts/${id}/pin/`);
+}
+
 // --- 9.4 (§7.8): comments, reports, share -----------------------------------
 
 import type {

@@ -16,6 +16,10 @@
  * read-then-navigate lives in the page), and the per-kind action button is the
  * composition's own. `data-testid`/`aria-*` attributes are additive — no class or
  * element of the document changed to make this testable.
+ *
+ * Dark parity (Phase 16 follow-up): the row surface, the read/unread markers and
+ * each body shape carry a `dark:` pair, so the center reads on the default dark
+ * surface without touching a single light class.
  */
 import {
   NOTIFICATION_TYPE_LABELS,
@@ -55,8 +59,10 @@ export function NotificationRow({
           onSelect(item);
         }
       }}
-      className={`p-4 sm:p-5 hover:bg-slate-50/80 transition-colors cursor-pointer group ${
-        read ? "bg-white opacity-85 hover:opacity-100" : "bg-indigo-50/20"
+      className={`p-4 sm:p-5 hover:bg-slate-50/80 dark:hover:bg-slate-800/60 transition-colors cursor-pointer group ${
+        read
+          ? "bg-white opacity-85 hover:opacity-100 dark:bg-slate-900"
+          : "bg-indigo-50/20 dark:bg-indigo-950/30"
       }`}
     >
       <div className="flex items-start gap-3.5">
@@ -66,8 +72,8 @@ export function NotificationRow({
             data-testid={`marker-${read ? "read" : "unread"}-${item.id}`}
             className={
               read
-                ? "h-2.5 w-2.5 rounded-full border border-slate-300 bg-transparent block"
-                : "h-2.5 w-2.5 rounded-full bg-indigo-600 ring-4 ring-indigo-100 block"
+                ? "h-2.5 w-2.5 rounded-full border border-slate-300 bg-transparent block dark:border-slate-600"
+                : "h-2.5 w-2.5 rounded-full bg-indigo-600 ring-4 ring-indigo-100 block dark:ring-indigo-900/60"
             }
           />
         </div>
@@ -94,7 +100,7 @@ export function NotificationRow({
             ) : (
               <p className={treatment.label}>{NOTIFICATION_TYPE_LABELS[item.type]}</p>
             )}
-            <time className="text-xs text-slate-400 whitespace-nowrap">
+            <time className="text-xs text-slate-400 whitespace-nowrap dark:text-slate-500">
               {timeAgoLong(item.created_at)}
             </time>
           </div>
@@ -104,7 +110,7 @@ export function NotificationRow({
           {item.message !== "" && treatment.body === "callout" && (
             <blockquote
               data-testid={`notification-snippet-${item.id}`}
-              className="text-xs text-slate-600 italic bg-slate-50 p-2.5 rounded-lg border-l-2 border-indigo-500 mt-2 font-normal leading-relaxed"
+              className="text-xs text-slate-600 italic bg-slate-50 p-2.5 rounded-lg border-l-2 border-indigo-500 mt-2 font-normal leading-relaxed dark:text-slate-300 dark:bg-slate-800"
             >
               {item.message}
             </blockquote>
@@ -113,7 +119,7 @@ export function NotificationRow({
           {item.message !== "" && treatment.body === "quote" && (
             <blockquote
               data-testid={`notification-snippet-${item.id}`}
-              className="text-xs text-slate-500 italic mt-1.5 font-normal"
+              className="text-xs text-slate-500 italic mt-1.5 font-normal dark:text-slate-400"
             >
               {item.message}
             </blockquote>
@@ -122,7 +128,7 @@ export function NotificationRow({
           {item.message !== "" && treatment.body === "prose" && (
             <p
               data-testid={`notification-snippet-${item.id}`}
-              className="text-xs text-slate-600 mt-1 leading-relaxed"
+              className="text-xs text-slate-600 mt-1 leading-relaxed dark:text-slate-300"
             >
               {item.message}
             </p>
@@ -131,7 +137,7 @@ export function NotificationRow({
           {item.message !== "" && treatment.body === "meta" && (
             <p
               data-testid={`notification-snippet-${item.id}`}
-              className="text-xs text-slate-500 mt-1 flex items-center gap-1.5"
+              className="text-xs text-slate-500 mt-1 flex items-center gap-1.5 dark:text-slate-400"
             >
               <span
                 className="material-symbols-outlined text-[14px] text-amber-500"

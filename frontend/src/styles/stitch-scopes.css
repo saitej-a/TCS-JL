@@ -27,6 +27,141 @@
  * top, exactly as they do).
  */
 
+/*
+ * The compositions' scroll-affordance helpers: three of the mockups put an
+ * overflowing pill/tab row on screen and name these classes to hide the
+ * scrollbar it would otherwise show. Defined here for the same reason as the
+ * aliases below — the markup is ported literally, so the class has to resolve.
+ */
+.no-scrollbar,
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * Composition utility aliases.
+ *
+ * The mockups name a handful of classes their inline Tailwind config never
+ * defines — `code-text`, `font-mono-code`, `shadow-subtle`, `focus-ring`,
+ * `btn-brand-primary` and friends. Porting that markup literally would otherwise
+ * mean writing class names that resolve to nothing, so each one is defined once
+ * here with the treatment its composition intends. Values are the mockups' own
+ * tokens (`--color-brand-700`, Fira Code under `.skin-v2`); nothing here changes
+ * a class the app already emits.
+ */
+.code-text,
+.font-mono-code,
+.font-mono-val,
+.font-mono-tabular,
+.font-mono-numbers {
+  font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.shadow-subtle {
+  box-shadow:
+    0 1px 2px rgb(15 23 42 / 0.06),
+    0 1px 3px rgb(15 23 42 / 0.1);
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-brand-700);
+  outline-offset: 2px;
+}
+
+/*
+ * The security composition names two more classes its document never defines —
+ * it ships no inline `tailwind.config` at all. `rounded-custom` is its control
+ * radius (8px, the value the v2 family stores as `--radius-elem`), and
+ * `focus-brand` its brand-coloured focus ring, applied exactly as `focus-ring`
+ * is. Defined here for the same reason as the rest of this block: the markup is
+ * ported literally, so the class has to resolve.
+ */
+.rounded-custom {
+  border-radius: 0.5rem;
+}
+
+.focus-brand:focus-visible {
+  outline: 2px solid var(--color-brand-700);
+  outline-offset: 2px;
+}
+
+.btn-brand-primary {
+  background-color: var(--color-brand-700);
+  color: #fff;
+  transition: background-color 150ms ease;
+}
+
+.btn-brand-primary:hover {
+  background-color: var(--color-brand-800);
+}
+
+.btn-brand-primary:active {
+  background-color: var(--color-brand-900);
+}
+
+/*
+ * The privacy composition's own switch rules — verbatim from its <style> block,
+ * which is where `switch-checkbox` / `switch-bg` / `switch-dot` get their
+ * behaviour (the markup names the classes, the document defines them). The
+ * colour is the composition's `#0369A1` — its inline brand scale is one step off
+ * `@theme`'s, so the rule, not the class, is what makes the track the right blue.
+ * The dot's `translateX(20px)` is the mockup's own distance for a `w-11` track.
+ */
+.switch-checkbox:checked + .switch-bg {
+  background-color: #0369a1;
+}
+
+.switch-checkbox:checked + .switch-bg .switch-dot {
+  transform: translateX(20px);
+}
+
+/*
+ * The devices composition's own toggle — verbatim from its <style> block: a
+ * 44×24 track whose dot is an `::after`, brand-700 when active and slate-300
+ * when not. The markup names `switch-toggle active|inactive` and nothing else
+ * defines it.
+ */
+.switch-toggle {
+  width: 44px;
+  height: 24px;
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.switch-toggle::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 9999px;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.15);
+}
+
+.switch-toggle.active {
+  background-color: #0369a1;
+}
+
+.switch-toggle.active::after {
+  transform: translateX(20px);
+}
+
+.switch-toggle.inactive {
+  background-color: #cbd5e1;
+}
+
 /* The compositions' own icon-class rules — verbatim from their <style> blocks. */
 .material-symbols-outlined {
   font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;

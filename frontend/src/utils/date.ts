@@ -35,6 +35,18 @@ export function daysSince(isoDate: string): number {
 }
 
 /**
+ * Shift an ISO date string (YYYY-MM-DD) by a given number of days.
+ * E.g. shiftDays("2026-05-15", -7) → "2026-05-08".
+ */
+export function shiftDays(isoDate: string, days: number): string {
+  if (!isoDate || isoDate.length < 10) return isoDate;
+  const d = new Date(`${isoDate.slice(0, 10)}T00:00:00Z`);
+  if (isNaN(d.getTime())) return isoDate;
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+/**
  * Long-form relative time for §7.10's notification rows ("15 minutes ago",
  * "2 hours ago", "3 days ago") — the spec's own wording, distinct from the
  * compact `timeAgo` the feed cards use.

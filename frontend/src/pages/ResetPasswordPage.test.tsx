@@ -38,7 +38,7 @@ describe("ResetPasswordPage", () => {
     renderReset();
     await user.type(screen.getByLabelText("New password"), "weakpass");
     await user.type(screen.getByLabelText("Confirm new password"), "weakpass");
-    await user.click(screen.getByRole("button", { name: "Reset password" }));
+    await user.click(screen.getByRole("button", { name: "Set new password" }));
     await waitFor(() => {
       expect(screen.getByRole("alert")).toHaveTextContent("Password needs");
     });
@@ -63,7 +63,7 @@ describe("ResetPasswordPage", () => {
     renderReset(LONG_TOKEN);
     await user.type(screen.getByLabelText("New password"), "Str0ng!Pass");
     await user.type(screen.getByLabelText("Confirm new password"), "Str0ng!Pass");
-    await user.click(screen.getByRole("button", { name: "Reset password" }));
+    await user.click(screen.getByRole("button", { name: "Set new password" }));
     await waitFor(() => {
       expect(screen.getByRole("alert")).toHaveTextContent(
         "This reset link is invalid or has expired. Request a new one.",
@@ -95,7 +95,7 @@ describe("ResetPasswordPage", () => {
     renderReset();
     await user.type(screen.getByLabelText("New password"), "Str0ng!Pass");
     await user.type(screen.getByLabelText("Confirm new password"), "Str0ng!Pass");
-    await user.click(screen.getByRole("button", { name: "Reset password" }));
+    await user.click(screen.getByRole("button", { name: "Set new password" }));
     await waitFor(() => {
       expect(screen.getByText("login-here")).toBeInTheDocument();
     });

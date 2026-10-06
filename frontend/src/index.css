@@ -45,6 +45,34 @@
   --radius-card: 0.75rem;
   --radius-elem: 0.5rem;
 
+  /* Phase 16: the token names the settings compositions' inline `tailwind.config`
+     declares — the brand DEFAULT/hover/tint/light set, the named slate roles
+     (page/border/primary/secondary/muted), `borderRadius.control` and
+     `boxShadow.hover`. Declaring them lets a ported screen keep the
+     composition's own class names (`text-slate-primary`, `bg-brand-tint`,
+     `rounded-control`, `hover:shadow-hover`) instead of having every one
+     rewritten to the numeric scale carrying the same value — the same treatment
+     `rounded-card`, `shadow-subtle` and `font-mono-numbers` already get, and the
+     classes resolve to nothing without it. Values are the configs' bytes
+     (`#0369A1` is exactly `--color-brand-700`; `#E2E8F0` exactly slate-200).
+
+     These stay *static light* values. Dark mode in this app is the `dark:`
+     variant on the light markup (05 §4.2), so a ported screen pairs an alias with
+     an explicit `dark:` class rather than the token flipping underneath it — which
+     also keeps `bg-brand text-white` readable on both themes. */
+  --color-brand: #0369a1;
+  --color-brand-hover: #075985;
+  --color-brand-tint: #e0f2fe;
+  --color-brand-light: #f0f9ff;
+  --color-slate-page: #f8fafc;
+  --color-slate-border: #e2e8f0;
+  --color-slate-primary: #0f172a;
+  --color-slate-secondary: #475569;
+  --color-slate-muted: #64748b;
+  --radius-control: 0.5rem;
+  --shadow-hover: 0 4px 6px -1px rgb(15 23 42 / 0.07),
+    0 2px 4px -2px rgb(15 23 42 / 0.05);
+
   /* 05 §4.2 semantic aliases — light values. Utilities read these variables,
      so `bg-background` / `border-default` flip with the theme below while
      every explicit `bg-slate-50 dark:bg-slate-900` pair still works. */
@@ -73,7 +101,15 @@
 
 /* 05 §4.2 dark values override the same custom properties under `.dark`. */
 @layer base {
+  /* Native scrollbars, form controls and the browser chrome follow the active
+     theme. The `.dark` class outranks this element selector, so the pair flips
+     with the root class the ThemeContext toggles. */
+  html {
+    color-scheme: light;
+  }
+
   .dark {
+    color-scheme: dark;
     --color-background: #0f172a; /* slate-900 */
     --color-surface: #1e293b; /* slate-800 */
     --color-surface-elevated: #334155; /* slate-700 */

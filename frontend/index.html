@@ -12,7 +12,31 @@
       name="description"
       content="TCS Joining Tracker — an independent community platform for candidates tracking their TCS joining journey. Not affiliated with TCS."
     />
-    <title>TCS Joining Tracker</title>
+    <title>TCSJL</title>
+    <!-- Pre-paint theme resolution. Dark is the app default (see
+         `src/theme/theme.ts`), and applying it only from React's effect would
+         flash the light markup first. This mirrors `readStoredMode` exactly:
+         a valid stored mode wins, `system` follows the OS, and anything else —
+         including storage being unavailable — resolves to dark. -->
+    <script>
+      (function () {
+        var mode = null;
+        try {
+          mode = localStorage.getItem("theme");
+        } catch (error) {
+          // Storage disabled: fall through to the default.
+        }
+        if (mode !== "light" && mode !== "dark" && mode !== "system") {
+          mode = "dark";
+        }
+        var dark =
+          mode === "dark" ||
+          (mode === "system" &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.classList.toggle("dark", dark);
+        document.documentElement.style.colorScheme = dark ? "dark" : "light";
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

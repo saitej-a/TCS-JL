@@ -48,15 +48,15 @@ function ModeProbe(): React.ReactElement {
 }
 
 describe("ThemeProvider", () => {
-  it("defaults to system and applies no dark class when the OS is light", () => {
+  it("defaults to dark when nothing is stored, even on a light OS", () => {
     render(
       <ThemeProvider>
         <ModeProbe />
       </ThemeProvider>,
     );
-    expect(screen.getByTestId("mode")).toHaveTextContent("system");
-    expect(screen.getByTestId("resolved")).toHaveTextContent("light");
-    expect(document.documentElement.classList.contains("dark")).toBe(false);
+    expect(screen.getByTestId("mode")).toHaveTextContent("dark");
+    expect(screen.getByTestId("resolved")).toHaveTextContent("dark");
+    expect(document.documentElement.classList.contains("dark")).toBe(true);
   });
 
   it("applies the dark class on <html> for dark mode and removes it for light", async () => {
@@ -66,10 +66,10 @@ describe("ThemeProvider", () => {
         <ModeProbe />
       </ThemeProvider>,
     );
-    await user.click(screen.getByText("dark"));
+    await user.click(screen.getByRole("button", { name: "dark" }));
     expect(document.documentElement.classList.contains("dark")).toBe(true);
     expect(localStorage.getItem("theme")).toBe("dark");
-    await user.click(screen.getByText("light"));
+    await user.click(screen.getByRole("button", { name: "light" }));
     expect(document.documentElement.classList.contains("dark")).toBe(false);
     expect(localStorage.getItem("theme")).toBe("light");
   });
@@ -98,5 +98,17 @@ describe("ThemeProvider", () => {
     );
     expect(screen.getByTestId("mode")).toHaveTextContent("dark");
     expect(document.documentElement.classList.contains("dark")).toBe(true);
+  });
+
+  it("honours a stored light mode, so the default only applies when nothing is stored", () => {
+    localStorage.setItem("theme", "light");
+    render(
+      <ThemeProvider>
+        <ModeProbe />
+      </ThemeProvider>,
+    );
+    expect(screen.getByTestId("mode")).toHaveTextContent("light");
+    expect(screen.getByTestId("resolved")).toHaveTextContent("light");
+    expect(document.documentElement.classList.contains("dark")).toBe(false);
   });
 });

@@ -8,6 +8,10 @@
  * whether the email exists (the shipped contract — the composition's shown
  * success banner is the same honest wording, not a confirmation the address
  * exists).
+ *
+ * Dark parity (Phase 16 follow-up): the shell's card and dot-grid come from
+ * `AuthCard`; the field, the emerald sent strip and the lock hint here carry
+ * their own `dark:` pairs.
  */
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
@@ -44,6 +48,7 @@ export function ForgotPasswordPage() {
       title="Reset your password"
       subtitle="Enter the email you registered with and we will send you a reset link."
       skin="skin-v1"
+      shell="forgot"
     >
       <form onSubmit={handleSubmit} noValidate>
         <div className="space-y-4">
@@ -61,25 +66,28 @@ export function ForgotPasswordPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              controlClassName="border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-all w-full bg-slate-50/30 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder:text-slate-500 dark:hover:border-slate-600"
             />
           </div>
 
           {sent && (
             <div
               role="status"
-              className="bg-emerald-50 rounded-lg border border-emerald-200/80 p-3.5 flex items-start gap-3 mt-4 transition-all duration-300"
+              className="bg-emerald-50 rounded-lg border border-emerald-200/80 p-3.5 flex items-start gap-3 mt-4 transition-all duration-300 dark:bg-emerald-950/50 dark:border-emerald-900/60"
             >
               <span
-                className="material-symbols-outlined text-emerald-600 text-xl shrink-0 select-none"
+                className="material-symbols-outlined text-emerald-600 text-xl shrink-0 select-none dark:text-emerald-400"
                 data-icon="check_circle"
               >
                 check_circle
               </span>
               <div className="flex-1">
-                <p className="text-xs sm:text-sm font-medium text-emerald-700 leading-snug">
+                <p className="text-xs sm:text-sm font-medium text-emerald-700 leading-snug dark:text-emerald-300">
                   {SENT_TEXT}
                 </p>
-                <p className="text-[12px] text-emerald-600/90 mt-0.5">{SENT_HINT}</p>
+                <p className="text-[12px] text-emerald-600/90 mt-0.5 dark:text-emerald-400/90">
+                  {SENT_HINT}
+                </p>
               </div>
             </div>
           )}
@@ -96,7 +104,10 @@ export function ForgotPasswordPage() {
       </form>
 
       <div className="mt-6 flex items-center gap-2.5 border-t border-slate-100 pt-5 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400">
-        <span className="material-symbols-outlined text-slate-400 text-base shrink-0" data-icon="lock_reset">
+        <span
+          className="material-symbols-outlined text-slate-400 text-base shrink-0 dark:text-slate-500"
+          data-icon="lock_reset"
+        >
           lock_reset
         </span>
         <span>Secure password reset with single-use magic link verification.</span>
@@ -105,9 +116,11 @@ export function ForgotPasswordPage() {
       <div className="mt-6 text-center">
         <Link
           to="/login"
-          className="inline-flex items-center gap-1.5 py-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 hover:underline transition-colors"
+          className="group inline-flex items-center gap-1.5 py-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 hover:underline transition-colors dark:text-indigo-400 dark:hover:text-indigo-300"
         >
-          <span className="material-symbols-outlined text-base">arrow_back</span>
+          <span className="material-symbols-outlined text-base transition-transform group-hover:-translate-x-0.5">
+            arrow_back
+          </span>
           <span>Back to sign in</span>
         </Link>
       </div>
