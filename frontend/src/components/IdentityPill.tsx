@@ -1,4 +1,5 @@
 import type { PublicAuthor } from "@/types/user";
+import { Drama } from "lucide-react";
 
 /** The literal sentinel `AuthorPublicSerializer` emits for anonymous/blank identities. */
 export const ANONYMOUS_SENTINEL = "Anonymous Candidate";
@@ -45,8 +46,8 @@ interface IdentityPillProps {
 
 /**
  * §6.5's identity presentation: an avatar circle plus the cohort tagline
- * (`batch • hiring_type • region`, null-safe). Anonymous identities render the
- * mask glyph on a deterministic pastel; display names render two-letter
+ * (`batch • hiring_type • region`, null-safe). Anonymous identities render a
+ * mask icon on a deterministic pastel; display names render two-letter
  * initials. NEVER renders an email or a real full name (privacy-first).
  *
  * Recorded divergence from the feed composition: its sample avatar is a single
@@ -70,9 +71,7 @@ export function IdentityPill({ author, className = "", compact = false }: Identi
           aria-hidden={isAnonymous ? undefined : "true"}
         >
           {isAnonymous ? (
-            <span className="text-[11px] leading-none select-none" role="img" aria-label="Anonymous">
-              🎭
-            </span>
+            <Drama className="h-3.5 w-3.5" role="img" aria-label="Anonymous" />
           ) : (
             initialsOf(author.display_name)
           )}
@@ -102,7 +101,11 @@ export function IdentityPill({ author, className = "", compact = false }: Identi
         className={`w-9 h-9 rounded-full flex items-center justify-center font-semibold text-xs ${pastel}`}
         aria-hidden={isAnonymous ? undefined : "true"}
       >
-        {isAnonymous ? "🎭" : initialsOf(author.display_name)}
+        {isAnonymous ? (
+          <Drama className="h-5 w-5" role="img" aria-label="Anonymous" />
+        ) : (
+          initialsOf(author.display_name)
+        )}
       </div>
       <div className="flex flex-col min-w-0">
         <span className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">

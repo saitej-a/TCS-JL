@@ -89,7 +89,9 @@ describe("TimelinePage", () => {
       { url: "/profile/", respond: () => ({ status: 200, data: PROFILE }) },
     ]);
     renderTimeline();
-    const addButton = await screen.findByRole("button", { name: /Add Milestone Event/i });
+    const addButton = await screen.findByRole("button", { name: "Add Milestone Event" });
+    expect(addButton).not.toHaveTextContent("+");
+
     await user.click(addButton);
     const saveButton = await screen.findByRole("button", { name: /Add Event/i });
     await user.click(saveButton);

@@ -82,15 +82,16 @@ def test_each_adapter_declares_the_types_it_speaks():
     assert webpush.handles_device_type(Device.DeviceType.WEB) is True
     assert webpush.handles_device_type(Device.DeviceType.ANDROID) is False
     assert webpush.handles_device_type(Device.DeviceType.IOS) is False
+    assert webpush.handles_device_type(Device.DeviceType.FIREBASE_WEB) is False
 
     assert firebase.handles_device_type(Device.DeviceType.ANDROID) is True
     assert firebase.handles_device_type(Device.DeviceType.IOS) is True
-    # WEB is excluded on purpose: since 9.4 D2 that row is a subscription JSON,
-    # which FCM would reject as a malformed registration token.
+    assert firebase.handles_device_type(Device.DeviceType.FIREBASE_WEB) is True
+    # Legacy WEB rows contain a PushManager subscription, not an FCM token.
     assert firebase.handles_device_type(Device.DeviceType.WEB) is False
 
     # The double stays type-agnostic so it can stand in for either adapter.
-    for device_type in ("WEB", "ANDROID", "IOS", "OTHER"):
+    for device_type in ("WEB", "FIREBASE_WEB", "ANDROID", "IOS", "OTHER"):
         assert recording.handles_device_type(device_type) is True
 
 
@@ -104,6 +105,11 @@ def test_auto_with_vapid_sends_only_the_web_token_and_keeps_native_rows_active(
     user = make_user()
     android = make_device(
         user=user, fcm_token=NATIVE_TOKEN, device_type=Device.DeviceType.ANDROID
+    )
+    firebase_web = make_device(
+        user=user,
+        fcm_token="firebase-web-token-123456789",
+        device_type=Device.DeviceType.FIREBASE_WEB,
     )
     web = make_device(
         user=user, fcm_token=web_subscription(), device_type=Device.DeviceType.WEB
@@ -125,8 +131,10 @@ def test_auto_with_vapid_sends_only_the_web_token_and_keeps_native_rows_active(
     assert send.call_args.kwargs["tokens"] == [web.fcm_token]
 
     android.refresh_from_db()
+    firebase_web.refresh_from_db()
     web.refresh_from_db()
     assert android.is_active is True, "a native row must never be deactivated by web-push routing"
+    assert firebase_web.is_active is True, "an FCM web token must not reach Web Push"
     assert web.is_active is True
 
 
@@ -168,6 +176,31 @@ def test_firebase_backend_never_receives_a_web_subscription(
 
     assert result is False
     assert send.call_count == 0
+    web.refresh_from_db()
+    assert web.is_active is True
+
+
+def test_firebase_backend_delivers_to_firebase_web_tokens(
+    make_user, make_device
+) -> None:
+    user = make_user()
+    web = make_device(
+        user=user,
+        fcm_token="firebase-web-token-123456789",
+        device_type=Device.DeviceType.FIREBASE_WEB,
+    )
+    notification = _notification_for(user)
+
+    with override_settings(PUSH_BACKEND="firebase"), patch.object(
+        FirebasePushBackend,
+        "send_multicast",
+        return_value=SendResult(success_count=1, failure_count=0),
+    ) as send:
+        result = send_push_notification.apply(args=[str(notification.id)]).get()
+
+    assert result is True
+    assert send.call_count == 1
+    assert send.call_args.kwargs["tokens"] == [web.fcm_token]
     web.refresh_from_db()
     assert web.is_active is True
 

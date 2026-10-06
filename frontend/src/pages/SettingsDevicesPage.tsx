@@ -50,15 +50,19 @@ import type { ReactElement } from "react";
 
 const DEVICE_TYPE_LABELS: Record<DeviceInfo["device_type"], string> = {
   WEB: "Browser (Web Push)",
+  FIREBASE_WEB: "Browser (Firebase)",
   ANDROID: "Android (FCM)",
   IOS: "iOS (FCM)",
+  OTHER: "Other device (FCM)",
 };
 
 /** The row's second line: what the channel is, never a repeat of the name. */
 const DEVICE_TYPE_DETAILS: Record<DeviceInfo["device_type"], string> = {
   WEB: "Web push registration",
+  FIREBASE_WEB: "Firebase Cloud Messaging",
   ANDROID: "Firebase Cloud Messaging",
   IOS: "Firebase Cloud Messaging",
+  OTHER: "Firebase Cloud Messaging",
 };
 
 /** The six real preference keys, in the composition's row order and grouping. */
@@ -323,7 +327,10 @@ export function SettingsDevicesPage(): ReactElement {
           variant: "error",
         });
       } else if (outcome === "unconfigured") {
-        toast({ message: "Push is not configured on the server yet.", variant: "error" });
+        toast({
+          message: "Firebase push configuration is missing or invalid for this build.",
+          variant: "error",
+        });
       } else if (outcome === "unsupported") {
         toast({ message: "This browser cannot receive push alerts.", variant: "error" });
       } else {
@@ -349,7 +356,7 @@ export function SettingsDevicesPage(): ReactElement {
   const banner = prefs === null ? null : permissionBanner(permission, prefs.push_enabled);
   const activeDevices = devices?.filter((d) => d.is_active) ?? [];
   const thisDevice = activeDevices.find(
-    (d) => d.device_type === "WEB" && d.browser === describeBrowser(),
+    (d) => d.device_type === "FIREBASE_WEB" && d.browser === describeBrowser(),
   );
   const activeAlerts =
     prefs === null ? 0 : ALERT_ROWS.filter(({ key }) => prefs[key] === true).length;
@@ -603,7 +610,7 @@ export function SettingsDevicesPage(): ReactElement {
                             <td className="py-3 pr-2">
                               <div className="flex items-start gap-2">
                                 <div className="w-7 h-7 rounded bg-slate-100 flex items-center justify-center text-slate-600 shrink-0 mt-0.5 dark:bg-slate-700 dark:text-slate-300">
-                                  {device.device_type === "WEB" ? (
+                                  {device.device_type === "WEB" || device.device_type === "FIREBASE_WEB" ? (
                                     <svg
                                       className="w-4 h-4"
                                       viewBox="0 0 24 24"

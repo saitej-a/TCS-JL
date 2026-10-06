@@ -94,6 +94,24 @@ describe("AppShell", () => {
     expect(search).toHaveValue("Hyderabad batch");
   });
 
+  it("shows Post without a literal plus and puts Share Update in the mobile menu", async () => {
+    const user = userEvent.setup();
+    scriptAnnouncements([]);
+    renderShell();
+
+    const postLink = screen.getByRole("link", { name: "Post" });
+    expect(postLink).toHaveAttribute("href", "/community/create");
+    expect(postLink).not.toHaveTextContent("+");
+    expect(screen.getByRole("link", { name: "Share Update" })).not.toHaveTextContent("+");
+
+    await user.click(screen.getByTestId("mobile-menu-button"));
+    expect(
+      screen.getByRole("navigation", { name: "Mobile primary" }).querySelector(
+        'a[href="/community/create"]',
+      ),
+    ).toHaveTextContent("Share Update");
+  });
+
   it("shows the latest announcement with a Read update link", async () => {
     scriptAnnouncements([ANNOUNCEMENT]);
     renderShell();

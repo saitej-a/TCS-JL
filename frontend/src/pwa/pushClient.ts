@@ -1,32 +1,25 @@
 /**
- * Web Push subscription client (9.4 Task 8, decision D2).
+ * Firebase Cloud Messaging browser registration.
  *
- * Flow, in the order §10.1 requires:
+ * Flow:
  *   1. the primer's "Enable Alerts" (caller's job — `subscribeToPush` is only
  *      ever invoked from that button, and `askNotificationPermission` below is
  *      the app's ONLY caller of `Notification.requestPermission()`);
- *   2. read the VAPID public key from the anonymous endpoint;
- *   3. ask for permission (never before step 1);
- *   4. `PushManager.subscribe({userVisibleOnly: true, applicationServerKey})`;
- *   5. register the subscription as a WEB device — the 6.2 contract stores the
- *      subscription JSON in the token column, which is exactly what
- *      `WebPushBackend` parses back into `subscription_info`.
+ *   2. ask for permission (never before step 1);
+ *   3. acquire an FCM token using the configured Firebase VAPID key and app SW;
+ *   4. register the token as a FIREBASE_WEB device.
  *
  * A denial is persisted and never re-prompted (§10.1), matching the browser's
  * own "don't nag" rule: re-prompting a denied origin is a silent no-op.
  */
-import { apiGet, apiPost } from "@/api/client";
+import { apiPost } from "@/api/client";
+import {
+  getFirebaseMessagingToken,
+  isFirebaseMessagingConfigured,
+} from "@/pwa/firebaseMessaging";
 import { registerServiceWorker } from "@/pwa/registerSW";
 
-/** The anonymous, cached endpoint Task 8 adds (public key only). */
-export const VAPID_KEY_PATH = "/devices/vapid-key/";
-
 export const PUSH_DENIED_FLAG = "tjt.push_denied";
-
-export interface VapidKeyPayload {
-  public_key: string;
-  configured: boolean;
-}
 
 export type PushOutcome =
   | "subscribed"
@@ -54,22 +47,6 @@ export function markPushDenied(): void {
   localStorage.setItem(PUSH_DENIED_FLAG, "1");
 }
 
-/** Base64url VAPID key → the bytes `applicationServerKey` expects. */
-export function urlBase64ToUint8Array(base64: string): Uint8Array {
-  const padding = "=".repeat((4 - (base64.length % 4)) % 4);
-  const normalized = (base64 + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const raw = atob(normalized);
-  const output = new Uint8Array(raw.length);
-  for (let index = 0; index < raw.length; index += 1) {
-    output[index] = raw.charCodeAt(index);
-  }
-  return output;
-}
-
-export function getVapidKey(): Promise<VapidKeyPayload> {
-  return apiGet<VapidKeyPayload>(VAPID_KEY_PATH);
-}
-
 /** A ≤64-char browser label for the device row (the serializer's max length). */
 export function describeBrowser(agent = typeof navigator === "undefined" ? "" : navigator.userAgent): string {
   const candidates: ReadonlyArray<readonly [string, RegExp]> = [
@@ -81,6 +58,30 @@ export function describeBrowser(agent = typeof navigator === "undefined" ? "" : 
   ];
   const match = candidates.find(([, pattern]) => pattern.test(agent));
   return (match?.[0] ?? "Browser").slice(0, 64);
+}
+
+async function registerFirebaseToken(registration: ServiceWorkerRegistration): Promise<void> {
+  const token = await getFirebaseMessagingToken(registration);
+  if (!token) throw new Error("Firebase returned an empty browser registration token.");
+  await apiPost("/devices/", {
+    fcm_token: token,
+    device_type: "FIREBASE_WEB",
+    browser: describeBrowser(),
+  });
+}
+
+/** Refresh the server's token record when an already-enabled user returns. */
+export async function refreshPushRegistration(
+  registration: ServiceWorkerRegistration,
+): Promise<void> {
+  if (
+    !isFirebaseMessagingConfigured() ||
+    typeof Notification === "undefined" ||
+    Notification.permission !== "granted"
+  ) {
+    return;
+  }
+  await registerFirebaseToken(registration);
 }
 
 /**
@@ -107,22 +108,13 @@ async function askNotificationPermission(): Promise<NotificationPermission | nul
 }
 
 /**
- * Run the subscription flow. Every failure mode returns a value instead of
- * throwing: the caller is a modal that must close either way.
+ * Run the Firebase subscription flow. Every failure mode returns a value
+ * instead of throwing: the caller is a modal that must close either way.
  */
 export async function subscribeToPush(): Promise<PushOutcome> {
   if (!pushSupported()) return "unsupported";
   if (isPushDenied()) return "denied";
-
-  let key: VapidKeyPayload;
-  try {
-    key = await getVapidKey();
-  } catch {
-    return "failed";
-  }
-  // No key configured server-side: subscribing would fail in the browser with
-  // an opaque `InvalidStateError`, so the UI skips it and can say why.
-  if (!key.configured || key.public_key.trim() === "") return "unconfigured";
+  if (!isFirebaseMessagingConfigured()) return "unconfigured";
 
   const permission = await askNotificationPermission();
   if (permission === null) return "failed";
@@ -137,19 +129,7 @@ export async function subscribeToPush(): Promise<PushOutcome> {
   if (registration === null) return "failed";
 
   try {
-    const existing = await registration.pushManager.getSubscription();
-    const subscription =
-      existing ??
-      (await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(key.public_key),
-      }));
-
-    await apiPost("/devices/", {
-      fcm_token: JSON.stringify(subscription.toJSON()),
-      device_type: "WEB",
-      browser: describeBrowser(),
-    });
+    await registerFirebaseToken(registration);
     return "subscribed";
   } catch {
     return "failed";

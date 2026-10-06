@@ -2,7 +2,7 @@
  * §7.6's filter row, built to the `community_discussions_feed` composition: the
  * overflowing pill row (`flex items-center gap-2 overflow-x-auto pb-1 text-xs
  * no-scrollbar`) carrying `All` plus a capped set of categories and the
- * composition's `+ More` pill with its `tune` glyph, and the three sort tabs as
+ * composition's `More` pill with its `tune` glyph, and the three sort tabs as
  * the composition's `border-b-2` row with a glyph per tab (`schedule`,
  * `local_fire_department`, `thumb_up`).
  *
@@ -107,7 +107,7 @@ export function CategoryTabs({ category, tab, onCategoryChange, onTabChange }: C
             <span className="material-symbols-outlined text-sm" data-icon="tune" aria-hidden="true">
               tune
             </span>
-            <span>{expanded ? "Fewer" : "+ More"}</span>
+            <span>{expanded ? "Fewer" : "More"}</span>
           </button>
         )}
       </div>

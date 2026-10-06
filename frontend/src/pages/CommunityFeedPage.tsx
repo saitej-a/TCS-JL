@@ -224,7 +224,7 @@ export function CommunityFeedPage(): React.ReactElement {
         <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
           add
         </span>
-        <span>+ Create New Post</span>
+        <span>Create New Post</span>
       </button>
     ),
     [],

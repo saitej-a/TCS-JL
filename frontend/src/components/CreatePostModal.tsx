@@ -19,6 +19,7 @@
  * line are mock fiction (the API does neither) and are not copied.
  */
 import { useEffect, useState, type FormEvent } from "react";
+import { Drama } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { createCommunityPost } from "@/api/community";
@@ -191,9 +192,11 @@ export function CreatePostModal({ open, onClose, onPublished }: CreatePostModalP
         {identity !== null && (
           <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-3.5 dark:border-slate-700 dark:bg-slate-800/60">
             <p className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-slate-800 dark:text-slate-200">
-              <span className="material-symbols-outlined text-[16px] text-slate-500" data-icon="theater_comedy">
-                theater_comedy
-              </span>
+              <Drama
+                className="h-4 w-4 text-slate-500"
+                aria-hidden="true"
+                data-testid="posting-identity-icon"
+              />
               <span>Posting as:</span>
               <span className="font-semibold text-slate-900 dark:text-slate-100">{identity.handle}</span>
             </p>

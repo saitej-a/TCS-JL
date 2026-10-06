@@ -37,9 +37,9 @@ const BRAND = (
     aria-label="TCSJL home"
     className="flex items-center gap-2.5 px-2 py-1"
   >
-    <div className="h-9 w-9 rounded-lg bg-indigo-600 text-white font-headline font-bold text-xs flex items-center justify-center shadow-sm">
+    {/* <div className="h-9 w-9 rounded-lg bg-indigo-600 text-white font-headline font-bold text-xs flex items-center justify-center shadow-sm">
       TCSJL
-    </div>
+    </div> */}
     <div>
       <h1 className="font-headline text-base font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-none">
         TCSJL
@@ -361,7 +361,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
               <span className="material-symbols-outlined text-[16px]" data-icon="add" aria-hidden="true">
                 add
               </span>
-              <span>+ Share Update</span>
+              <span>Share Update</span>
             </Link>
             <div className="flex items-center gap-3 px-2 text-xs text-slate-500 dark:text-slate-400">
               <Link to="/about" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
@@ -447,7 +447,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
                     <span className="material-symbols-outlined text-[18px]" data-icon="add" aria-hidden="true">
                       add
                     </span>
-                    <span>+ Post</span>
+                    <span>Post</span>
                   </Link>
                 </div>
                 {user !== null && user.is_staff && (
@@ -484,6 +484,19 @@ export function AppShell({ children }: { children?: ReactNode }) {
                 />
                 <aside className="absolute bottom-0 left-0 top-0 w-64 overflow-y-auto border-r border-slate-200 bg-white p-4 shadow-xl dark:border-slate-800 dark:bg-slate-900">
                   <nav aria-label="Mobile primary">
+                    <Link
+                      to="/community/create"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="mb-2 flex items-center gap-3 rounded-lg bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 dark:hover:bg-indigo-900/60"
+                    >
+                      <span
+                        className="material-symbols-outlined text-[20px]"
+                        aria-hidden="true"
+                      >
+                        add
+                      </span>
+                      <span>Share Update</span>
+                    </Link>
                     {NAV_ITEMS.map((item) => (
                       <Link
                         key={item.to}

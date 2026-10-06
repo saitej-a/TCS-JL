@@ -42,7 +42,7 @@ _firebase_app: Any = None
 #: (9.4 F-94-1). So every real adapter declares the types it speaks through
 #: `device_types`, and dispatch filters the recipient's devices on it.
 WEB_DEVICE_TYPE = "WEB"
-FCM_DEVICE_TYPES = frozenset({"ANDROID", "IOS", "OTHER"})
+FCM_DEVICE_TYPES = frozenset({"FIREBASE_WEB", "ANDROID", "IOS", "OTHER"})
 
 
 @dataclass(frozen=True)
@@ -146,9 +146,8 @@ class RecordingPushBackend(PushBackend):
 class FirebasePushBackend(PushBackend):
     """Production push backend backed by firebase-admin.
 
-    Owns the native token vocabulary (ANDROID/IOS/OTHER) — and deliberately not
-    `WEB`: since 9.4 D2 a WEB row holds a browser subscription JSON, which FCM
-    would reject as a malformed registration token.
+    Owns Firebase registration tokens, including `FIREBASE_WEB`. The legacy
+    `WEB` device type still holds a browser subscription JSON for Web Push.
     """
 
     device_types = FCM_DEVICE_TYPES
@@ -194,10 +193,9 @@ class FirebasePushBackend(PushBackend):
             notification=messaging.WebpushNotification(
                 title=title,
                 body=body,
-                icon="/icons/icon-192x192.png",
-                badge="/icons/badge-72x72.png",
+                icon="/icons/icon-192.png",
+                badge="/icons/icon-192.png",
             ),
-            fcm_options=messaging.WebpushFCMOptions(link=data.get("click_action", "/dashboard")),
             headers={
                 "Urgency": "high",
                 "TTL": "86400",
@@ -385,9 +383,11 @@ def get_push_backend() -> PushBackend:
 
     Resolution chain (9.4 D2 adds the third value): explicit `recording`,
     `firebase` or `webpush` wins; `auto` resolves to Web Push when VAPID keys are
-    configured (the browser is this project's first-class client), otherwise to
+    configured, otherwise to
     Firebase when credentials exist, otherwise to the recording double — which
-    keeps the credential-free dev/CI posture 6.2 established.
+    keeps the credential-free dev/CI posture 6.2 established. Production
+    Compose selects `firebase` explicitly so Firebase Web tokens and native
+    FCM tokens use the same adapter.
     """
     backend = getattr(settings, "PUSH_BACKEND", "auto")
     if backend == "recording":

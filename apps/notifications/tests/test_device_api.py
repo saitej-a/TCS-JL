@@ -35,6 +35,23 @@ def test_register_device_success_201_omits_fcm_token(auth_api):
     assert device.fcm_token == "valid-sample-fcm-token-12345"
 
 
+def test_register_firebase_web_device(auth_api):
+    client, user = auth_api()
+    response = client.post(
+        "/api/v1/devices/",
+        {
+            "fcm_token": "firebase-web-token-123456789",
+            "device_type": "FIREBASE_WEB",
+            "browser": "Chrome",
+        },
+        format="json",
+    )
+
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.json()["device_type"] == "FIREBASE_WEB"
+    assert Device.objects.get(user=user).fcm_token == "firebase-web-token-123456789"
+
+
 def test_list_devices_200_active_only_omits_fcm_token(auth_api, make_device):
     client, user = auth_api()
     make_device(user=user, fcm_token="secret-token-active-1")

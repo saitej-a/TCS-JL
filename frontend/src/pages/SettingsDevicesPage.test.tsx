@@ -27,7 +27,7 @@ const PREFS = {
 const DEVICES = [
   {
     id: "d1",
-    device_type: "WEB",
+    device_type: "FIREBASE_WEB",
     browser: "Chrome",
     is_active: true,
     last_seen_at: "2026-09-28T10:00:00Z",
@@ -136,7 +136,7 @@ describe("SettingsDevicesPage (9.5 Task 5)", () => {
             data: [
               {
                 id: "d1",
-                device_type: "WEB",
+                device_type: "FIREBASE_WEB",
                 browser: "Browser",
                 is_active: true,
                 last_seen_at: null,

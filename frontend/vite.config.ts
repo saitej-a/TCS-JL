@@ -9,14 +9,24 @@ import { VitePWA } from "vite-plugin-pwa";
 // /static and /media are proxied to the compose stack's nginx on :80, which
 // forwards to web:8000. No CORS change anywhere in config/.
 const NGINX_DEV_ORIGIN = "http://localhost:80";
+const NGINX_PROD_PREVIEW_ORIGIN = "https://localhost:443";
 
-/** Same-origin API access for both serving modes (dev and built preview). */
-const PROXY = {
+/** Local development nginx serves plain HTTP. */
+const DEV_PROXY = {
   "/api": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
   "/admin": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
   "/static": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
   "/media": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
   "/ws": { target: NGINX_DEV_ORIGIN, ws: true },
+};
+
+/** Production nginx redirects port 80 to HTTPS and may use a local self-signed cert. */
+const PROD_PREVIEW_PROXY = {
+  "/api": { target: NGINX_PROD_PREVIEW_ORIGIN, changeOrigin: true, secure: false },
+  "/admin": { target: NGINX_PROD_PREVIEW_ORIGIN, changeOrigin: true, secure: false },
+  "/static": { target: NGINX_PROD_PREVIEW_ORIGIN, changeOrigin: true, secure: false },
+  "/media": { target: NGINX_PROD_PREVIEW_ORIGIN, changeOrigin: true, secure: false },
+  "/ws": { target: NGINX_PROD_PREVIEW_ORIGIN, ws: true, secure: false },
 };
 
 export default defineConfig({
@@ -115,15 +125,14 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
-    proxy: PROXY,
+    proxy: DEV_PROXY,
   },
-  // `vite preview` serves the built bundle, which is the only way to exercise
-  // §10.1's service worker offline (the built shell), so it needs the same API
-  // proxy the dev server has — or the built app could not reach /api.
+  // `vite preview` targets production nginx directly over HTTPS. Port 80
+  // redirects to TLS in nginx.prod.conf, while a local TLS cert may be self-signed.
   preview: {
     port: 4173,
     strictPort: true,
-    proxy: PROXY,
+    proxy: PROD_PREVIEW_PROXY,
   },
   build: {
     outDir: "dist",

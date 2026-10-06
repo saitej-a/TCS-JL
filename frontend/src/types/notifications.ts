@@ -56,7 +56,7 @@ export interface NotificationReadAllResult {
 /** DeviceSerializer (07 §11.4) — the token is never echoed back. */
 export interface DeviceInfo {
   id: string;
-  device_type: "WEB" | "ANDROID" | "IOS";
+  device_type: "WEB" | "FIREBASE_WEB" | "ANDROID" | "IOS" | "OTHER";
   browser: string;
   is_active: boolean;
   last_seen_at: string | null;

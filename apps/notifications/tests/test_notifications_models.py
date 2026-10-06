@@ -46,6 +46,7 @@ MVP_TASK_TYPES = {
 }
 EXPECTED_DEVICE_TYPES = {
     "WEB": "Web Browser",
+    "FIREBASE_WEB": "Web Browser (Firebase)",
     "ANDROID": "Android Web/PWA",
     "IOS": "iOS Web/PWA",
     "OTHER": "Other",

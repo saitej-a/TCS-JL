@@ -266,6 +266,8 @@ describe("CreatePostModal (contracts)", () => {
     await waitFor(() => {
       expect(screen.getByText(/Anonymous Candidate • 2025 • DIGITAL • Hyderabad/)).toBeInTheDocument();
     });
+    expect(screen.getByTestId("posting-identity-icon").tagName.toLowerCase()).toBe("svg");
+    expect(screen.queryByText("theater_comedy")).not.toBeInTheDocument();
     expect(screen.queryByText(/^Sai$/)).not.toBeInTheDocument();
   });
 });

@@ -41,9 +41,22 @@ describe("IdentityPill (§6.5)", () => {
     };
     render(<IdentityPill author={author} />);
     const pill = screen.getByTestId("identity-pill");
-    expect(pill.textContent).toContain("🎭");
+    expect(screen.getByRole("img", { name: "Anonymous" })).toHaveClass("h-5", "w-5");
+    expect(pill.textContent).not.toContain("🎭");
     expect(pill.textContent).toContain(ANONYMOUS_SENTINEL);
     expect(pill.textContent).toContain("2025 • Digital • Hyderabad");
+  });
+
+  it("uses a compact vector mask icon for anonymous community feed identities", () => {
+    const author: PublicAuthor = {
+      id: "a1",
+      display_name: ANONYMOUS_SENTINEL,
+      batch: "2025",
+      hiring_type: "Digital",
+      region: "Hyderabad",
+    };
+    render(<IdentityPill author={author} compact />);
+    expect(screen.getByRole("img", { name: "Anonymous" })).toHaveClass("h-3.5", "w-3.5");
   });
 
   it("renders two-letter uppercase initials for a display name", () => {

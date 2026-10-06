@@ -22,8 +22,9 @@ self.addEventListener("push", (event) => {
     payload = {};
   }
 
-  var title = payload.title || "TCS Joining Tracker";
-  var body = payload.body || "";
+  var notification = payload.notification || {};
+  var title = payload.title || notification.title || "TCS Joining Tracker";
+  var body = payload.body || notification.body || "";
   var data = payload.data || {};
 
   event.waitUntil(

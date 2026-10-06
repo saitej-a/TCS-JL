@@ -4,6 +4,7 @@
 *.pem
 *.key
 serviceAccountKey.json
+secrets/
 
 # Local media & dependencies
 media/

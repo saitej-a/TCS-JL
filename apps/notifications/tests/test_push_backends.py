@@ -149,9 +149,9 @@ def test_firebase_push_backend_builds_exact_multicast_message():
         wp = multicast_msg.webpush
         assert wp.notification.title == title
         assert wp.notification.body == body
-        assert wp.notification.icon == "/icons/icon-192x192.png"
-        assert wp.notification.badge == "/icons/badge-72x72.png"
-        assert wp.fcm_options.link == "/community/posts/456"
+        assert wp.notification.icon == "/icons/icon-192.png"
+        assert wp.notification.badge == "/icons/icon-192.png"
+        assert wp.fcm_options is None
         assert wp.headers == {"Urgency": "high", "TTL": "86400"}
 
 

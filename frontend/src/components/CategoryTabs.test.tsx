@@ -35,6 +35,8 @@ describe("CategoryTabs", () => {
     expect(screen.getByRole("radio", { name: "Joining Letter" })).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: "Offer Letter" })).toBeInTheDocument();
     expect(screen.queryByRole("radio", { name: "Help Needed" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "More" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "+ More" })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /More/ }));
     // Expanded, the whole D7 vocabulary is reachable and nothing else appears.

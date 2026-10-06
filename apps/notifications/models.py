@@ -214,6 +214,7 @@ class Device(models.Model):
         """
 
         WEB = "WEB", "Web Browser"
+        FIREBASE_WEB = "FIREBASE_WEB", "Web Browser (Firebase)"
         ANDROID = "ANDROID", "Android Web/PWA"
         IOS = "IOS", "iOS Web/PWA"
         OTHER = "OTHER", "Other"

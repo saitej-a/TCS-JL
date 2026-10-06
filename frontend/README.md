@@ -14,10 +14,11 @@ npm run dev
 The dev server listens on **http://localhost:5173** (`strictPort` — the port is
 part of the topology).
 
-### The dev proxy (same-origin API)
+### API proxy
 
-The Vite dev server proxies these paths to the compose stack's nginx on :80
-(which forwards to the Django `web` container):
+The Vite dev server proxies these paths to the development Compose nginx on
+`:80`. The production build preview instead proxies to production Compose nginx
+on `https://localhost:443`:
 
 | Path | Proxied to | Why |
 |---|---|---|
@@ -26,16 +27,33 @@ The Vite dev server proxies these paths to the compose stack's nginx on :80
 | `/static` | `http://localhost:80` | Static assets |
 | `/media` | `http://localhost:80` | Uploaded media |
 
-This keeps the SPA **same-origin** with the API in dev exactly as a reverse
-proxy will in production — no CORS setting is touched anywhere in `config/`.
-With `docker compose up -d` running, `http://localhost:5173/api/v1/...`
-answers from the real backend.
+For the production preview, start the production Compose backend first. The
+preview proxy accepts its local self-signed certificate; this setting is only
+for the local Vite proxy and does not weaken Django/nginx TLS configuration.
 
 ### API base URL
 
 `src/api/client.ts` reads `VITE_API_BASE_URL` (default `/api/v1`) — the only
 module that touches this env var. In development you never need to set it; the
-relative path flows through the proxy above.
+relative path flows through the development or preview proxy above.
+
+### Firebase Cloud Messaging (browser push)
+
+Copy `firebase.env.example` to `.env.production` and set
+`VITE_FIREBASE_VAPID_KEY` to the Web Push certificate public key from Firebase
+Console → Project settings → Cloud Messaging. The other `VITE_FIREBASE_*`
+values are the Firebase web-app configuration. They are embedded in the SPA at
+build time; set them before `npm run build` (Vite preview uses the same built
+configuration).
+
+Production `docker-compose.prod.yml` runs FCM delivery through Django/Celery.
+Place the Firebase Admin service-account JSON at
+`secrets/firebase-service-account.json`; it is mounted read-only into the API
+and worker containers and must never be committed. The browser FCM token is
+stored as a `FIREBASE_WEB` device, distinct from legacy `WEB` Web Push
+subscriptions. Apply the notifications migration when deploying.
+The frontend refreshes the registered FCM token on authenticated visits after
+notification permission has already been granted; it does not prompt again.
 
 ## Commands
 

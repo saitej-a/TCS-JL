@@ -247,6 +247,8 @@ describe("CommunityFeedPage", () => {
 
     renderFeed();
     await screen.findByText("Anyone from Hyderabad got JL?");
+    const createPostButton = await screen.findByRole("button", { name: "Create New Post" });
+    expect(createPostButton).not.toHaveTextContent("+");
     const pinButton = await screen.findByRole("button", { name: /Pin post/i });
     expect(pinButton).toBeInTheDocument();
     expect(pinButton.querySelector("svg")).toBeInTheDocument();

@@ -265,7 +265,7 @@ export function TimelinePage(): React.ReactElement {
               <span className="material-symbols-outlined text-lg" aria-hidden="true">
                 add_circle
               </span>
-              <span>+ Add Milestone Event</span>
+              <span>Add Milestone Event</span>
             </button>
           </div>
         </div>

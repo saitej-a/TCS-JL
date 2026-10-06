@@ -25,8 +25,14 @@ import {
   dismissPrimerForSession,
   primerDismissedThisSession,
 } from "@/pwa/PushPrimer";
-import { isPushDenied, pushSupported, type PushOutcome } from "@/pwa/pushClient";
+import { subscribeToForegroundMessages } from "@/pwa/firebaseMessaging";
 import { recordCommunityVisit } from "@/pwa/installSignals";
+import {
+  isPushDenied,
+  pushSupported,
+  refreshPushRegistration,
+  type PushOutcome,
+} from "@/pwa/pushClient";
 import { registerServiceWorker, subscribePushClicks } from "@/pwa/registerSW";
 
 /** Where the primer may appear (see the module docstring). */
@@ -40,10 +46,28 @@ export function PwaLayer(): React.ReactElement {
   const toastApi = useOptionalToast();
   const [primerOpen, setPrimerOpen] = useState(false);
 
-  // Register once per page load; failures are silent (registerSW.ts).
   useEffect(() => {
-    void registerServiceWorker();
-  }, []);
+    let disposed = false;
+    let unsubscribe = (): void => undefined;
+    void registerServiceWorker()
+      .then(async (registration) => {
+        if (!registration || disposed) return;
+        const stop = await subscribeToForegroundMessages(registration);
+        if (disposed) {
+          stop();
+          return;
+        }
+        unsubscribe = stop;
+        if (isAuthenticated) await refreshPushRegistration(registration);
+      })
+      .catch((error: unknown) => {
+        console.error("Firebase messaging could not be initialized.", error);
+      });
+    return () => {
+      disposed = true;
+      unsubscribe();
+    };
+  }, [isAuthenticated]);
 
   // §10.1's second install trigger: distinct visit days to the community.
   useEffect(() => {
