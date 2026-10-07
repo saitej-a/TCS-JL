@@ -3,7 +3,21 @@
 # NO host ports on db/redis (threat T-1.1-03), no source bind mounts.
 # Placeholder certs are self-signed; Phase 10.2 owns real certs + hardening.
 
+name: tcsjl-prod
+
 services:
+  db:
+    image: postgres:16.15-alpine
+    env_file: .env.prod
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "PGPASSWORD=\"$${POSTGRES_PASSWORD}\" psql -w -h 127.0.0.1 -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\" -tAc 'SELECT 1' | grep -qx 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+    restart: unless-stopped
   web:
     build: .
     command:
@@ -24,6 +38,8 @@ services:
       - firebase_service_account
     depends_on:
       redis:
+        condition: service_healthy
+      db:
         condition: service_healthy
     healthcheck:
       # X-Forwarded-Proto mirrors what nginx sends; without it SECURE_SSL_REDIRECT
@@ -52,6 +68,8 @@ services:
       - firebase_service_account
     depends_on:
       redis:
+        condition: service_healthy
+      db:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "python", "-c", "import http.client; c = http.client.HTTPConnection('127.0.0.1', 8000, timeout=5); c.request('GET', '/health/ready/', headers={'X-Forwarded-Proto': 'https'}); r = c.getresponse(); r.read(); assert r.status == 200, r.status"]

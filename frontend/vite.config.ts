@@ -5,19 +5,18 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
-// D3 (CONTEXT): the dev SPA stays same-origin with the API — /api, /admin,
-// /static and /media are proxied to the compose stack's nginx on :80, which
-// forwards to web:8000. No CORS change anywhere in config/.
-const NGINX_DEV_ORIGIN = "http://localhost:80";
+// D3 (CONTEXT): keep API requests same-origin to the browser by proxying through
+// Vite directly to nginx's TLS listener; its HTTP listener redirects to HTTPS.
+const NGINX_DEV_ORIGIN = "https://localhost:443";
 const NGINX_PROD_PREVIEW_ORIGIN = "https://localhost:443";
 
-/** Local development nginx serves plain HTTP. */
+/** Compose nginx uses a local self-signed certificate. */
 const DEV_PROXY = {
-  "/api": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
-  "/admin": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
-  "/static": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
-  "/media": { target: NGINX_DEV_ORIGIN, changeOrigin: true },
-  "/ws": { target: NGINX_DEV_ORIGIN, ws: true },
+  "/api": { target: NGINX_DEV_ORIGIN, changeOrigin: true, secure: false },
+  "/admin": { target: NGINX_DEV_ORIGIN, changeOrigin: true, secure: false },
+  "/static": { target: NGINX_DEV_ORIGIN, changeOrigin: true, secure: false },
+  "/media": { target: NGINX_DEV_ORIGIN, changeOrigin: true, secure: false },
+  "/ws": { target: NGINX_DEV_ORIGIN, ws: true, secure: false },
 };
 
 /** Production nginx redirects port 80 to HTTPS and may use a local self-signed cert. */
