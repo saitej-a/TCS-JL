@@ -30,7 +30,11 @@ def test_broadcast_announcement_task_is_not_implemented():
 def test_no_service_worker_or_frontend_js_in_repo_and_no_producer_functions_for_dormant_types():
     """D16 / R1: Repo is backend-only (no JS), and producer functions exist only for real events."""
     repo_root = Path(__file__).resolve().parent.parent.parent.parent
-    sw_matches = list(repo_root.glob("**/firebase-messaging-sw.js"))
+    sw_matches = [
+        path
+        for path in repo_root.glob("**/firebase-messaging-sw.js")
+        if "node_modules" not in path.parts
+    ]
     assert len(sw_matches) == 0
 
     # Producer functions exist only for COMMENT, REPLY, and VOTE_MILESTONE (R1)
