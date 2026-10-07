@@ -68,8 +68,9 @@ class TestPublishTransition:
         dispatch.assert_called_once_with(str(announcement.pk))
 
     def test_republish_is_a_noop(self, announcement):
-        announcement.publish()
         with mock.patch("apps.community.tasks.broadcast_announcement_dispatch") as dispatch:
+            announcement.publish()
+            dispatch.reset_mock()
             assert announcement.publish() is False
             dispatch.assert_not_called()
 

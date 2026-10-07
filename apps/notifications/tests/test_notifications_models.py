@@ -208,11 +208,14 @@ def test_constraint_is_declared_with_condition_not_the_deprecated_check():
     assert "check=" not in text  # R2: Django 5.2 deprecated the old spelling
 
 
-def test_one_migration_creates_the_three_tables():
-    """The phase's whole schema is one generated artifact — never hand-edited, and
-    never carrying a `RunPython` (R-2: `--reuse-db` truncates, it does not re-migrate)."""
+def test_initial_migration_creates_the_three_tables():
+    """The initial schema is generated, not hand-edited or carrying a `RunPython`.
+
+    Later generated migrations may extend the schema; `--reuse-db` truncates, it
+    does not re-migrate (R-2).
+    """
     migration_files = sorted(p.name for p in MIGRATION_DIR.glob("[0-9]*.py"))
-    assert migration_files == ["0001_initial.py"]
+    assert "0001_initial.py" in migration_files
 
     text = _migration_text()
     assert text.count("migrations.CreateModel(") == 3
