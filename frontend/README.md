@@ -16,26 +16,26 @@ part of the topology).
 
 ### API proxy
 
-The Vite dev server proxies these paths to the development Compose nginx on
-`:80`. The production build preview instead proxies to production Compose nginx
-on `https://localhost:443`:
+The Vite dev server and production build preview proxy these paths to
+`https://34.131.136.21`:
 
 | Path | Proxied to | Why |
 |---|---|---|
-| `/api` | `http://localhost:80` | All API traffic (`/api/v1/...`) |
-| `/admin` | `http://localhost:80` | Django admin |
-| `/static` | `http://localhost:80` | Static assets |
-| `/media` | `http://localhost:80` | Uploaded media |
+| `/api` | `https://34.131.136.21` | All API traffic (`/api/v1/...`) |
+| `/admin` | `https://34.131.136.21` | Django admin |
+| `/static` | `https://34.131.136.21` | Static assets |
+| `/media` | `https://34.131.136.21` | Uploaded media |
 
-For the production preview, start the production Compose backend first. The
-preview proxy accepts its local self-signed certificate; this setting is only
-for the local Vite proxy and does not weaken Django/nginx TLS configuration.
+The Vite proxy accepts the backend's TLS certificate for proxied requests.
+This setting applies only to Vite's server-side proxy; browsers still enforce
+TLS validation for direct production API requests.
 
 ### API base URL
 
 `src/api/client.ts` reads `VITE_API_BASE_URL` (default `/api/v1`) — the only
-module that touches this env var. In development you never need to set it; the
-relative path flows through the development or preview proxy above.
+module that touches this env var. Production builds set it to
+`https://34.131.136.21/api/v1`; the relative development default flows through
+the Vite proxy above.
 
 ### Firebase Cloud Messaging (browser push)
 

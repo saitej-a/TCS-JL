@@ -5,27 +5,15 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
-// D3 (CONTEXT): keep API requests same-origin to the browser by proxying through
-// Vite directly to nginx's TLS listener; its HTTP listener redirects to HTTPS.
-const NGINX_DEV_ORIGIN = "https://localhost:443";
-const NGINX_PROD_PREVIEW_ORIGIN = "https://localhost:443";
+// Keep API requests same-origin to the browser by proxying through Vite.
+const BACKEND_ORIGIN = "https://34.131.136.21";
 
-/** Compose nginx uses a local self-signed certificate. */
-const DEV_PROXY = {
-  "/api": { target: NGINX_DEV_ORIGIN, changeOrigin: true, secure: false },
-  "/admin": { target: NGINX_DEV_ORIGIN, changeOrigin: true, secure: false },
-  "/static": { target: NGINX_DEV_ORIGIN, changeOrigin: true, secure: false },
-  "/media": { target: NGINX_DEV_ORIGIN, changeOrigin: true, secure: false },
-  "/ws": { target: NGINX_DEV_ORIGIN, ws: true, secure: false },
-};
-
-/** Production nginx redirects port 80 to HTTPS and may use a local self-signed cert. */
-const PROD_PREVIEW_PROXY = {
-  "/api": { target: NGINX_PROD_PREVIEW_ORIGIN, changeOrigin: true, secure: false },
-  "/admin": { target: NGINX_PROD_PREVIEW_ORIGIN, changeOrigin: true, secure: false },
-  "/static": { target: NGINX_PROD_PREVIEW_ORIGIN, changeOrigin: true, secure: false },
-  "/media": { target: NGINX_PROD_PREVIEW_ORIGIN, changeOrigin: true, secure: false },
-  "/ws": { target: NGINX_PROD_PREVIEW_ORIGIN, ws: true, secure: false },
+const BACKEND_PROXY = {
+  "/api": { target: BACKEND_ORIGIN, changeOrigin: true, secure: false },
+  "/admin": { target: BACKEND_ORIGIN, changeOrigin: true, secure: false },
+  "/static": { target: BACKEND_ORIGIN, changeOrigin: true, secure: false },
+  "/media": { target: BACKEND_ORIGIN, changeOrigin: true, secure: false },
+  "/ws": { target: BACKEND_ORIGIN, ws: true, secure: false },
 };
 
 export default defineConfig({
@@ -124,14 +112,12 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
-    proxy: DEV_PROXY,
+    proxy: BACKEND_PROXY,
   },
-  // `vite preview` targets production nginx directly over HTTPS. Port 80
-  // redirects to TLS in nginx.prod.conf, while a local TLS cert may be self-signed.
   preview: {
     port: 4173,
     strictPort: true,
-    proxy: PROD_PREVIEW_PROXY,
+    proxy: BACKEND_PROXY,
   },
   build: {
     outDir: "dist",
