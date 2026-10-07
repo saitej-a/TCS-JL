@@ -3,7 +3,7 @@
 .planning/
 .github/
 
-# Local container topology — Vercel builds the Django app itself.
+# Local container topology — this Vercel project builds the frontend SPA.
 Dockerfile
 .dockerignore
 docker-compose*.yml
