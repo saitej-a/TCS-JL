@@ -23,10 +23,7 @@ jobs:
       - run: ruff format --check .
 
   test:
-    # Fail-fast pipeline (Lint → Test): if lint fails, the test job is
-    # skipped entirely rather than burning runners on a commit that already
-    # failed the gate.
-    needs: lint
+    # Run tests independently so a lint failure does not prevent test results.
     runs-on: ubuntu-latest
     services:
       postgres:
