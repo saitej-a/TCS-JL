@@ -12,6 +12,7 @@ import {
   listChatMessages,
   sendChatMessage,
 } from "@/api/chat";
+import { API_BASE_URL } from "@/api/client";
 import { useAuth } from "@/context/AuthContext";
 import type { ChatMessage, ChatTypingUser, ChatWsFrame } from "@/types/chat";
 
@@ -98,11 +99,11 @@ export function useChatRoom(roomSlug: string, overrideUserId?: string): UseChatR
         const { ticket } = await fetchWsTicket();
         if (cancelled) return;
 
-        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-        const host = window.location.host;
-        const wsUrl = `${protocol}//${host}/ws/chat/${roomSlug}/?ticket=${ticket}`;
+        const wsUrl = new URL(`/ws/chat/${roomSlug}/`, API_BASE_URL || window.location.origin);
+        wsUrl.protocol = wsUrl.protocol === "https:" ? "wss:" : "ws:";
+        wsUrl.searchParams.set("ticket", ticket);
 
-        const ws = new WebSocket(wsUrl);
+        const ws = new WebSocket(wsUrl.toString());
         wsRef.current = ws;
 
         ws.onopen = () => {

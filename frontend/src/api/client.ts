@@ -9,8 +9,8 @@
  * concurrent 401s share ONE refresh; the `_replayed` marker makes a second
  * replay impossible (no infinite refresh loops, 04 §112).
  *
- * `VITE_API_BASE_URL` is read here and only here (D3) — default `/api/v1`
- * keeps the SPA same-origin with the API through the dev proxy.
+ * `VITE_API_BASE_URL` is read here and only here (D3). Local development uses
+ * the Vite proxy; production defaults to the deployed API origin.
  */
 import axios, {
   AxiosError,
@@ -33,8 +33,14 @@ declare module "axios" {
   }
 }
 
-const API_BASE_URL: string =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "/api/v1";
+const configuredApiBaseUrl = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim();
+const productionApiBaseUrl = "https://34.131.136.21/api/v1";
+
+export const API_BASE_URL: string = import.meta.env.PROD
+  ? configuredApiBaseUrl?.startsWith("http")
+    ? configuredApiBaseUrl
+    : productionApiBaseUrl
+  : configuredApiBaseUrl || "/api/v1";
 const REQUEST_TIMEOUT_MS = 10_000;
 
 export const apiClient: AxiosInstance = axios.create({

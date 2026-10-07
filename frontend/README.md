@@ -32,10 +32,13 @@ TLS validation for direct production API requests.
 
 ### API base URL
 
-`src/api/client.ts` reads `VITE_API_BASE_URL` (default `/api/v1`) — the only
-module that touches this env var. Production builds set it to
-`https://34.131.136.21/api/v1`; the relative development default flows through
-the Vite proxy above.
+`src/api/client.ts` reads `VITE_API_BASE_URL` — the only module that touches
+this env var. Local development defaults to `/api/v1` and uses the Vite proxy;
+production defaults to `https://34.131.136.21/api/v1`. Set
+`VITE_API_BASE_URL` to an absolute API URL in Vercel only if overriding that
+default; relative values such as `/api/v1` are ignored in production to prevent
+requests from going to the frontend host. Vite embeds this value at build time,
+so redeploy after changing it. Chat WebSockets use the same host as the API.
 
 ### Firebase Cloud Messaging (browser push)
 
