@@ -25,9 +25,6 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.production
       RUN_DB_MIGRATIONS: "1"
-      # The healthcheck connects on loopback: "localhost" is in the default
-      # ALLOWED_HOSTS but the bare 127.0.0.1 Host header is not, so Django 400s.
-      DJANGO_ALLOWED_HOSTS: 127.0.0.1,localhost
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
       CELERY_BROKER_URL: ${CELERY_BROKER_URL:-redis://redis:6379/1}
       PUSH_BACKEND: firebase
@@ -57,7 +54,6 @@ services:
       ["/app/docker/entrypoint.sh", "daphne", "-b", "0.0.0.0", "-p", "8000", "config.asgi:application"]
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.production
-      DJANGO_ALLOWED_HOSTS: 127.0.0.1,localhost
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
       CELERY_BROKER_URL: ${CELERY_BROKER_URL:-redis://redis:6379/1}
       PUSH_BACKEND: firebase

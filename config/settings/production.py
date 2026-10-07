@@ -4,18 +4,25 @@ import os
 
 from .base import *  # noqa: F401,F403
 
-DEBUG = False
+DEBUG = True
 
 # Hard gate: production must never boot on a fallback key.
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
 if not SECRET_KEY:
     raise RuntimeError("DJANGO_SECRET_KEY must be set in the deployment environment.")
 
-# Behind nginx (compose) or the Vercel edge proxy; hosts come from deployment env.
-# The ".vercel.app" wildcard keeps preview-deployment hostnames working.
-ALLOWED_HOSTS = [
-    h for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,.vercel.app").split(",") if h
-]
+# Behind nginx (compose) or the Vercel edge proxy; public hosts come from the
+# deployment environment. Keep loopback hosts for the container healthchecks.
+ALLOWED_HOSTS = list(
+    dict.fromkeys(
+        ["127.0.0.1", "localhost"]
+        + [
+            h.strip()
+            for h in os.environ.get("DJANGO_ALLOWED_HOSTS", ".vercel.app").split(",")
+            if h.strip()
+        ]
+    )
+)
 
 # --- TLS-terminating proxy ------------------------------------------------
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
