@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^Write-Output \\('render-env=' \\+ \\(Test-Path '\\.env\\.render'\\)\\); Write-Output \\('firebase-secret=' \\+ \\(Test-Path 'secrets\\\\firebase-service-account\\.json'\\)\\)$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
