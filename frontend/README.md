@@ -40,6 +40,13 @@ default; relative values such as `/api/v1` are ignored in production to prevent
 requests from going to the frontend host. Vite embeds this value at build time,
 so redeploy after changing it. Chat WebSockets use the same host as the API.
 
+For Vercel, set the project's **Root Directory** to `frontend`. The
+`frontend/vercel.json` rewrite sends SPA routes (including verification-email
+links) to `index.html`; without it, opening a link such as
+`/verify-email/<token>` directly returns Vercel's 404. Set the backend's
+`FRONTEND_URL` to the deployed frontend origin so verification emails link to
+the right site.
+
 ### Firebase Cloud Messaging (browser push)
 
 Copy `firebase.env.example` to `.env.production` and set
@@ -88,8 +95,8 @@ truth — components never invent hex values or spacing.
 
 - **History-mode routing** (`createBrowserRouter`) is live from 9.1. Whatever
   serves `dist/` in production must rewrite unknown paths to `index.html`
-  (nginx `try_files ... /index.html` or a Vercel rewrite) or deep links 404 —
-  recorded as an open item (9.1 D4).
+  (nginx `try_files ... /index.html` or the Vercel rewrite above) or deep links
+  404 — recorded as an open item (9.1 D4).
 - **Token storage** follows 06 §3.3 Option 1: the access token is memory-only;
   the refresh token sits in `localStorage` under one namespaced key and is
   blacklisted server-side on logout. The 401 path is a single-flight refresh
