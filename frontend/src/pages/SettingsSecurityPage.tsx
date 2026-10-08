@@ -39,7 +39,7 @@ import { useToast } from "@/components/Toast";
 import type { ReactElement } from "react";
 
 const CARD =
-  "bg-white rounded-custom border border-slate-200 shadow-sm p-6 dark:border-slate-800 dark:bg-slate-800";
+  "bg-white rounded-custom border border-slate-200 shadow-sm p-4 sm:p-6 dark:border-slate-800 dark:bg-slate-800";
 const HEAD_5 = "border-b border-slate-100 pb-4 mb-5 dark:border-slate-800";
 const HEAD_4 = "border-b border-slate-100 pb-4 mb-4 dark:border-slate-800";
 const CARD_H2 = "text-base font-semibold text-slate-900 dark:text-slate-100";

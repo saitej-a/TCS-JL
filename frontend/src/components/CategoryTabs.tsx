@@ -56,11 +56,11 @@ const PILL_MORE =
 
 /** The composition's tab row. */
 const TAB_ROW =
-  "border-b border-slate-200 dark:border-slate-800 flex items-center gap-6 text-sm font-medium";
+  "border-b border-slate-200 dark:border-slate-800 flex items-center gap-4 sm:gap-6 text-sm font-medium overflow-x-auto no-scrollbar";
 const TAB_ACTIVE =
-  "py-2.5 px-1 border-b-2 border-indigo-600 text-indigo-600 font-semibold flex items-center gap-1.5 dark:border-indigo-500 dark:text-indigo-400";
+  "py-2.5 px-1 border-b-2 border-indigo-600 text-indigo-600 font-semibold flex items-center gap-1.5 shrink-0 whitespace-nowrap dark:border-indigo-500 dark:text-indigo-400";
 const TAB_IDLE =
-  "py-2.5 px-1 border-b-2 border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-300 transition-colors flex items-center gap-1.5 dark:text-slate-400 dark:hover:text-slate-100 dark:hover:border-slate-600";
+  "py-2.5 px-1 border-b-2 border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-300 transition-colors flex items-center gap-1.5 shrink-0 whitespace-nowrap dark:text-slate-400 dark:hover:text-slate-100 dark:hover:border-slate-600";
 
 export function CategoryTabs({ category, tab, onCategoryChange, onTabChange }: CategoryTabsProps): React.ReactElement {
   const [expanded, setExpanded] = useState(false);

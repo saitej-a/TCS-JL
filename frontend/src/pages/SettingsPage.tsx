@@ -270,7 +270,8 @@ export function SettingsPage(): ReactElement {
     let cancelled = false;
     listDevices()
       .then((devices) => {
-        if (!cancelled) setDeviceCount(devices.filter((d) => d.is_active).length);
+        const list = Array.isArray(devices) ? devices : [];
+        if (!cancelled) setDeviceCount(list.filter((d) => d.is_active).length);
       })
       .catch(() => {
         if (!cancelled) setDeviceCount(null);

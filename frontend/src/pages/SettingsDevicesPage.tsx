@@ -354,7 +354,8 @@ export function SettingsDevicesPage(): ReactElement {
 
   const permission = typeof Notification === "undefined" ? undefined : Notification.permission;
   const banner = prefs === null ? null : permissionBanner(permission, prefs.push_enabled);
-  const activeDevices = devices?.filter((d) => d.is_active) ?? [];
+  const deviceList = Array.isArray(devices) ? devices : [];
+  const activeDevices = deviceList.filter((d) => d.is_active);
   const thisDevice = activeDevices.find(
     (d) => d.device_type === "FIREBASE_WEB" && d.browser === describeBrowser(),
   );
@@ -477,8 +478,8 @@ export function SettingsDevicesPage(): ReactElement {
             </div>
           </div>
 
-          <div className="grid grid-cols-12 gap-6 items-start mb-6">
-            <section className="col-span-12 lg:col-span-7 bg-white rounded-[12px] border border-slate-200 p-6 shadow-xs dark:border-slate-800 dark:bg-slate-800">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mb-6">
+            <section className="col-span-1 lg:col-span-7 bg-white rounded-[12px] border border-slate-200 p-4 sm:p-6 shadow-xs dark:border-slate-800 dark:bg-slate-800">
               <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
                 <div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Alert types</h3>
@@ -522,7 +523,7 @@ export function SettingsDevicesPage(): ReactElement {
               </div>
             </section>
 
-            <section className="col-span-12 lg:col-span-5 bg-white rounded-[12px] border border-slate-200 p-6 shadow-xs flex flex-col justify-between dark:border-slate-800 dark:bg-slate-800">
+            <section className="col-span-1 lg:col-span-5 bg-white rounded-[12px] border border-slate-200 p-4 sm:p-6 shadow-xs flex flex-col justify-between dark:border-slate-800 dark:bg-slate-800">
               <div>
                 <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                   <div>

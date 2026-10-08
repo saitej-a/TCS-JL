@@ -307,7 +307,7 @@ export function TimelinePage(): React.ReactElement {
         </div>
 
         {/* Roadmap card */}
-        <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm dark:bg-slate-800 dark:border-slate-700/80">
+        <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 border border-slate-200 shadow-sm dark:bg-slate-800 dark:border-slate-700/80">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-6 border-b border-slate-100 dark:border-slate-700/60 gap-2">
             <div>
               <h2 className="font-headline text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight">

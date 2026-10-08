@@ -8,6 +8,7 @@
  * through `registerDevice` — the token column carries the subscription JSON.
  */
 import { apiDelete, apiGet, apiPatch, apiPost } from "@/api/client";
+import type { Paginated } from "@/types/api";
 import type {
   DeviceInfo,
   DeviceRegistrationPayload,
@@ -31,8 +32,15 @@ export function markAllNotificationsRead(): Promise<NotificationReadAllResult> {
   return apiPost<NotificationReadAllResult>("/notifications/read-all/");
 }
 
-export function listDevices(): Promise<DeviceInfo[]> {
-  return apiGet<DeviceInfo[]>("/devices/");
+export async function listDevices(): Promise<DeviceInfo[]> {
+  const data = await apiGet<Paginated<DeviceInfo> | DeviceInfo[]>("/devices/");
+  if (Array.isArray(data)) {
+    return data;
+  }
+  if (data && Array.isArray((data as Paginated<DeviceInfo>).results)) {
+    return (data as Paginated<DeviceInfo>).results;
+  }
+  return [];
 }
 
 /** 9.4 D2: the subscription JSON goes in the opaque token column, device_type WEB. */

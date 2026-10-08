@@ -46,7 +46,7 @@ import { SkeletonCard } from "@/components/Skeleton";
 import { useAuth } from "@/context/AuthContext";
 import type { ReactElement, ReactNode } from "react";
 
-const CARD = "bg-white rounded-card border border-slate-200 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800";
+const CARD = "bg-white rounded-card border border-slate-200 p-4 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800";
 const CARD_HEAD = "mb-4";
 const CARD_H2 = "text-base font-semibold text-slate-900 dark:text-slate-100";
 const CARD_SUB = "text-xs text-slate-500 mt-0.5 dark:text-slate-400";
@@ -54,7 +54,7 @@ const RADIO_ROW = "flex items-start p-4 rounded-xl cursor-pointer transition-all
 const RADIO = "mt-0.5 h-4 w-4 text-brand-600 border-slate-300 focus:ring-brand-600 focus-ring";
 const RADIO_TITLE = "block text-sm font-semibold text-slate-900 dark:text-slate-100";
 const RADIO_SUB = "block text-xs text-slate-500 mt-0.5 dark:text-slate-400";
-const ROW = "py-4 flex items-center justify-between";
+const ROW = "py-4 flex items-start sm:items-center justify-between gap-4";
 const ROW_TITLE = "text-sm font-medium text-slate-900 dark:text-slate-100";
 const ROW_SUB = "text-xs text-slate-500 mt-0.5 dark:text-slate-400";
 const CHEVRON = "w-3.5 h-3.5 text-slate-400";
@@ -72,7 +72,7 @@ function FixedSwitch({
   return (
     <label
       htmlFor={id}
-      className="relative inline-flex items-center flex-shrink-0 cursor-not-allowed"
+      className="relative inline-flex items-center shrink-0 cursor-not-allowed mt-0.5 sm:mt-0"
     >
       <input
         id={id}
@@ -112,7 +112,7 @@ function SwitchRow({
 }): ReactElement {
   return (
     <div className={ROW}>
-      <div className="pr-6">
+      <div className="flex-1 min-w-0">
         <div className={ROW_TITLE}>{title}</div>
         <div id={`${id}-note`} className={ROW_SUB}>
           {description}
@@ -246,9 +246,9 @@ export function SettingsPrivacyPage(): ReactElement {
       )}
 
       {profile !== null && (
-        <div className="flex items-start gap-8">
+        <div className="flex flex-col lg:flex-row items-start gap-8 min-w-0">
           {/* Left column: the settings stack. */}
-          <div className="w-[720px] space-y-6">
+          <div className="w-full lg:max-w-[720px] min-w-0 space-y-6">
             <section className={CARD} aria-label="Profile visibility">
               <div className={CARD_HEAD}>
                 <h2 className={CARD_H2}>Profile visibility</h2>
@@ -277,7 +277,7 @@ export function SettingsPrivacyPage(): ReactElement {
                     onChange={() => void setIdentityMode("ANONYMOUS")}
                     className={RADIO}
                   />
-                  <div className="ml-3">
+                  <div className="ml-3 flex-1 min-w-0">
                     <span className={RADIO_TITLE}>Anonymous</span>
                     <span className={RADIO_SUB}>
                       You appear as “Anonymous Candidate” — your name is never shown to other
@@ -301,7 +301,7 @@ export function SettingsPrivacyPage(): ReactElement {
                     onChange={() => void setIdentityMode("DISPLAY_NAME")}
                     className={RADIO}
                   />
-                  <div className="ml-3">
+                  <div className="ml-3 flex-1 min-w-0">
                     <span className={RADIO_TITLE}>Show my display name</span>
                     <span className={RADIO_SUB}>
                       Your display name appears with your posts, comments and upvotes
@@ -367,7 +367,7 @@ export function SettingsPrivacyPage(): ReactElement {
                   on={false}
                 />
 
-                <div className="pt-4 flex items-center justify-between">
+                <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
                   <div>
                     <label htmlFor="post-visibility" className={`${ROW_TITLE} block`}>
                       Default post visibility
@@ -380,7 +380,7 @@ export function SettingsPrivacyPage(): ReactElement {
                       default to set here.
                     </span>
                   </div>
-                  <div className="w-48">
+                  <div className="w-full sm:w-48 shrink-0">
                     <select
                       id="post-visibility"
                       disabled
@@ -429,8 +429,8 @@ export function SettingsPrivacyPage(): ReactElement {
                 </div>
               </div>
 
-              <div className="pt-2 flex items-start justify-between border-t border-slate-100 dark:border-slate-800">
-                <div className="pr-4">
+              <div className="pt-2 flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex-1 min-w-0">
                   <div className={ROW_TITLE}>Download my data</div>
                   <div className={ROW_SUB}>
                     A machine-readable copy of your profile, timeline and posts.
@@ -446,7 +446,7 @@ export function SettingsPrivacyPage(): ReactElement {
                   disabled
                   data-testid="export-request"
                   title="Data export is not available yet."
-                  className="px-3.5 py-1.5 border border-slate-300 text-slate-700 font-medium text-xs rounded-lg flex items-center gap-1.5 focus-ring transition-colors flex-shrink-0 disabled:opacity-60 disabled:cursor-not-allowed dark:border-slate-600 dark:text-slate-300"
+                  className="px-3.5 py-1.5 border border-slate-300 text-slate-700 font-medium text-xs rounded-lg flex items-center gap-1.5 focus-ring transition-colors shrink-0 disabled:opacity-60 disabled:cursor-not-allowed dark:border-slate-600 dark:text-slate-300 self-start sm:self-auto"
                 >
                   <svg
                     className="w-4 h-4 text-slate-500"
@@ -466,8 +466,8 @@ export function SettingsPrivacyPage(): ReactElement {
                 </button>
               </div>
 
-              <div className="pt-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
-                <div>
+              <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex-1 min-w-0">
                   <div className={ROW_TITLE}>Danger zone</div>
                   <div className={ROW_SUB}>
                     Permanently erase your timeline, survey answers, and profile record.
@@ -475,7 +475,7 @@ export function SettingsPrivacyPage(): ReactElement {
                 </div>
                 <Link
                   to="/settings/danger"
-                  className="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline flex items-center gap-1 focus-ring rounded p-1 dark:text-rose-400 dark:hover:text-rose-300"
+                  className="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline flex items-center gap-1 focus-ring rounded p-1 dark:text-rose-400 dark:hover:text-rose-300 self-start sm:self-auto shrink-0"
                 >
                   <svg
                     className="w-4 h-4 text-rose-500"
@@ -497,8 +497,8 @@ export function SettingsPrivacyPage(): ReactElement {
             </section>
           </div>
 
-          {/* Right column: the 320px sticky preview. */}
-          <div className="w-[320px] sticky top-8 space-y-6 flex-shrink-0">
+          {/* Right column: the preview card (sticky on desktop). */}
+          <div className="w-full lg:w-[320px] lg:sticky lg:top-8 space-y-6 flex-shrink-0">
             <div className="bg-white rounded-card border border-slate-200 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-800">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4 dark:border-slate-800">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">

@@ -47,7 +47,7 @@ import { useAuth } from "@/context/AuthContext";
 import type { ReactElement, ReactNode } from "react";
 
 const CARD =
-  "bg-white rounded-xl border border-slate-200/90 shadow-sm p-6 dark:border-slate-800 dark:bg-slate-800";
+  "bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 sm:p-6 dark:border-slate-800 dark:bg-slate-800";
 const CARD_HEAD = "border-b border-slate-100 pb-4 mb-5 dark:border-slate-800";
 const CARD_H2 = "text-[22px] font-semibold text-slate-900 leading-tight dark:text-slate-100";
 const CARD_SUB = "text-sm text-slate-500 mt-1 dark:text-slate-400";
@@ -351,9 +351,9 @@ export function SettingsProfilePage(): ReactElement {
             </div>
           )}
 
-          <div className="flex items-start gap-8">
+          <div className="flex flex-col lg:flex-row items-start gap-8">
             {/* Left column: the form stack (max 720px, room for the sticky bar). */}
-            <div className="w-full max-w-[720px] space-y-6 pb-28">
+            <div className="w-full lg:max-w-[720px] space-y-6 pb-28">
               <section className={CARD} aria-label="Identity">
                 <div className={CARD_HEAD}>
                   <h2 className={CARD_H2}>Identity</h2>
@@ -594,7 +594,7 @@ export function SettingsProfilePage(): ReactElement {
             </div>
 
             {/* Right column: the 320px help card and the rose danger link. */}
-            <div className="w-80 shrink-0 space-y-6">
+            <div className="w-full lg:w-80 shrink-0 space-y-6">
               <div className="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 dark:border-slate-800 dark:bg-slate-800">
                 <div className="flex items-center gap-2 mb-3 text-slate-900 font-semibold text-sm dark:text-slate-100">
                   <InfoGlyph className="w-4 h-4 text-brand-700 dark:text-brand-300" />
@@ -675,21 +675,21 @@ export function SettingsProfilePage(): ReactElement {
           )}
 
           {/* Sticky action bar (screen #2): Cancel reverts to the saved profile. */}
-          <div className="sticky bottom-0 bg-white/95 backdrop-blur border-t border-slate-200 z-20 py-3.5 px-8 shadow-md dark:border-slate-700 dark:bg-slate-900/95">
-            <div className="max-w-[1040px] mx-auto flex items-center justify-between">
+          <div className="sticky bottom-0 bg-white/95 backdrop-blur border-t border-slate-200 z-20 py-3 px-4 sm:px-8 shadow-md dark:border-slate-700 dark:bg-slate-900/95">
+            <div className="max-w-[1040px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
               {dirty ? (
                 <div
                   data-testid="unsaved-indicator"
-                  className="flex items-center gap-2 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200/70 px-3 py-1.5 rounded-md dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300"
+                  className="flex items-center gap-2 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200/70 px-3 py-1.5 rounded-md dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300 w-full sm:w-auto justify-center sm:justify-start"
                 >
                   <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" aria-hidden="true" />
                   <span>Unsaved changes</span>
                 </div>
               ) : (
-                <span className="text-xs text-slate-400 dark:text-slate-500">All changes saved</span>
+                <span className="text-xs text-slate-400 dark:text-slate-500 hidden sm:inline">All changes saved</span>
               )}
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
                 <button
                   type="button"
                   disabled={!dirty || saving}
@@ -698,7 +698,7 @@ export function SettingsProfilePage(): ReactElement {
                     setErrors({});
                     setFormError(null);
                   }}
-                  className="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-700 focus:ring-offset-2 disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                  className="flex-1 sm:flex-none px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-700 focus:ring-offset-2 disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                 >
                   Cancel
                 </button>
@@ -706,7 +706,7 @@ export function SettingsProfilePage(): ReactElement {
                   type="submit"
                   disabled={!dirty || saving}
                   aria-busy={saving}
-                  className="px-5 py-2 text-xs font-semibold text-white bg-[#0369A1] hover:bg-[#0284C7] rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-brand-700 focus:ring-offset-2 flex items-center gap-2 disabled:opacity-60"
+                  className="flex-1 sm:flex-none px-5 py-2 text-xs font-semibold text-white bg-[#0369A1] hover:bg-[#0284C7] rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-brand-700 focus:ring-offset-2 flex items-center justify-center gap-2 disabled:opacity-60"
                 >
                   <svg
                     className="w-3.5 h-3.5 text-white"

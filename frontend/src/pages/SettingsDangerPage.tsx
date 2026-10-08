@@ -38,7 +38,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/Toast";
 import type { ReactElement } from "react";
 
-const CARD = "bg-white rounded-custom border border-slate-200 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800";
+const CARD = "bg-white rounded-custom border border-slate-200 p-4 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800";
 const CARD_ICON =
   "w-10 h-10 rounded-xl border flex items-center justify-center flex-shrink-0 mt-0.5";
 const CARD_H2 = "text-base font-semibold text-slate-900 dark:text-slate-100";

@@ -312,13 +312,13 @@ export function DashboardPage(): React.ReactElement {
 
   return (
     <main
-      className="skin-v1 flex-1 p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-[1600px] w-full mx-auto font-body antialiased max-sm:p-4"
+      className="skin-v1 flex-1 p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-[1600px] w-full mx-auto font-body antialiased"
       data-testid="dashboard-page"
     >
       {/* CENTER COLUMN — the composition's 8 columns */}
       <div className="lg:col-span-8 flex flex-col gap-6">
         {/* SECTION 1: welcome header card with inline status chip + both CTAs */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 dark:bg-slate-800 dark:border-slate-800">
+        <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 dark:bg-slate-800 dark:border-slate-800">
           <div className="space-y-1">
             <div className="flex items-center gap-2.5 flex-wrap">
               <h1 className="font-headline text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
@@ -337,7 +337,7 @@ export function DashboardPage(): React.ReactElement {
               {since !== null ? `Latest milestone since ${since}` : "Your recruitment at a glance"}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Link
               to="/timeline"
               className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition active:scale-[0.98] flex items-center gap-1.5"
