@@ -50,10 +50,7 @@ class UserPrivateSerializer(serializers.ModelSerializer):
             return False
         if profile.offer_letter_date is not None:
             return True
-        if profile.current_status in (
-            CandidateProfile.Status.INTERVIEWED,
-            CandidateProfile.Status.SELECTED,
-        ) and profile.interview_date is not None:
+        if profile.current_status in ("INTERVIEWED", "SELECTED") and profile.interview_date is not None:
             return True
         return False
 
