@@ -96,8 +96,20 @@ jobs:
             exit 1
           }
           install -m 700 -d "$HOME/.ssh"
-          printf '%s\n' "$VM_SSH_PRIVATE_KEY" > "$HOME/.ssh/deploy_key"
+          # Secrets pasted from JSON or escaped strings often contain literal "\n"
+          # or CRLF endings; OpenSSH rejects those with "error in libcrypto".
+          case "$VM_SSH_PRIVATE_KEY" in
+            *'\n'*) echo "Note: VM_SSH_PRIVATE_KEY contains literal '\n' sequences; converting them to newlines." ;;
+          esac
+          printf '%s\n' "$VM_SSH_PRIVATE_KEY" \
+            | sed -e 's/\\n/\n/g' -e 's/\r$//' > "$HOME/.ssh/deploy_key"
           chmod 600 "$HOME/.ssh/deploy_key"
+          # Fail here, with an actionable message, instead of a cryptic ssh error.
+          if ! ssh-keygen -y -f "$HOME/.ssh/deploy_key" >/dev/null 2>&1; then
+            echo "::error::VM_SSH_PRIVATE_KEY did not load as a private key. Store the complete,"
+            echo "unencrypted PEM or OpenSSH private key in the secret, with real newlines."
+            exit 1
+          fi
 
           rsync -az \
             --exclude='.git/' \
