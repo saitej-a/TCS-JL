@@ -41,13 +41,21 @@ class UserPrivateSerializer(serializers.ModelSerializer):
 
         The 9.2 onboarding wizard gates on this flag, so it must be truthful:
         ``hiring_type``/``batch``/``region`` are non-nullable on CandidateProfile
-        (their presence is structural once the row exists), and the one nullable
-        wizard field is ``offer_letter_date`` — completion means it is set.
+        (their presence is structural once the row exists), and completion means
+        the candidate has completed the wizard with an offer letter date or
+        advanced past REGISTERED (e.g. interview / selection stages).
         """
         profile = getattr(obj, "candidate_profile", None)
         if profile is None:
             return False
-        return profile.offer_letter_date is not None
+        if profile.offer_letter_date is not None:
+            return True
+        if profile.current_status in (
+            CandidateProfile.Status.INTERVIEWED,
+            CandidateProfile.Status.SELECTED,
+        ) and profile.interview_date is not None:
+            return True
+        return False
 
 
 class RegisterSerializer(serializers.ModelSerializer):

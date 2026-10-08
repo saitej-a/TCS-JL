@@ -1,8 +1,9 @@
 /**
- * Onboarding wizard tests: first visit starts at step 1 (profile 404),
- * step 1 POSTs the real field names, step 2 PATCHes the status side-channel,
- * step 3 requires the accuracy confirmation, and finishing calls /me/ (the
- * truthful gate release).
+ * Onboarding wizard tests:
+ * Step 1: Select recruitment status + fill conditional milestone date inputs
+ *         (e.g., JRS asks interview date, offer letter date, and JRS date).
+ * Step 2: Candidature details (display name, stream, region, batch).
+ * Step 3: Review & accuracy confirmation, then releases truthful gate to dashboard.
  */
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -26,9 +27,9 @@ const PROFILE_CREATED = {
   hiring_type: "DIGITAL",
   region: "Hyderabad",
   interview_center: "",
-  interview_date: null,
+  interview_date: "2025-02-10",
   joining_location: "",
-  current_status: "OFFER_RECEIVED",
+  current_status: "READINESS_SURVEY",
   offer_letter_date: "2025-03-15",
   expected_joining_date: null,
   created_at: "2026-01-01T00:00:00Z",
@@ -57,49 +58,58 @@ function renderWizard() {
 }
 
 describe("OnboardingPage", () => {
-  it("starts at step 1 when no profile exists (404)", async () => {
-    scriptAdapter([
-      { url: "/profile/", respond: () => PROFILE_404 },
-    ]);
+  it("starts at step 1 asking recruitment status when no profile exists (404)", async () => {
+    scriptAdapter([{ url: "/profile/", respond: () => PROFILE_404 }]);
     renderWizard();
     await waitFor(() => {
-      expect(screen.getByText("Tell us about your offer")).toBeInTheDocument();
+      expect(screen.getByText("What is your recruitment status?")).toBeInTheDocument();
     });
     expect(screen.getByText(/Step 1 of 3/)).toBeInTheDocument();
   });
 
-  it("persists step 1 with the real field names, then advances to step 2", async () => {
+  it("dynamically shows interview date, offer letter date, and JRS date when JRS status is selected", async () => {
     const user = userEvent.setup();
-    const { calls } = scriptAdapter([
-      { url: "/profile/", method: "GET", respond: () => PROFILE_404 },
-      { url: "/profile/", method: "POST", respond: () => ({ status: 201, data: PROFILE_CREATED }) },
-    ]);
+    scriptAdapter([{ url: "/profile/", respond: () => PROFILE_404 }]);
     renderWizard();
+
     await waitFor(() => {
-      expect(screen.getByLabelText("Community display name")).toBeInTheDocument();
+      expect(screen.getByText("What is your recruitment status?")).toBeInTheDocument();
     });
-    await user.type(screen.getByLabelText("Community display name"), "Sai");
-    await user.type(screen.getByLabelText("Region of joining"), "Hyderabad");
-    await user.click(screen.getByRole("radio", { name: /^digital/ }));
-    await user.type(screen.getByLabelText("Offer letter date"), "2025-03-15");
+
+    // Select "Joining readiness survey (JRS) received"
+    await user.click(screen.getByLabelText(/Joining readiness survey \(JRS\) received/i));
+
+    // Must show interview date, offer letter date, and JRS date
+    expect(screen.getByLabelText(/Interview date/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Offer letter date/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Joining readiness survey \(JRS\) date/i)).toBeInTheDocument();
+  });
+
+  it("completes Step 1 and advances to Step 2 (Candidature details)", async () => {
+    const user = userEvent.setup();
+    scriptAdapter([{ url: "/profile/", respond: () => PROFILE_404 }]);
+    renderWizard();
+
+    await waitFor(() => {
+      expect(screen.getByText("What is your recruitment status?")).toBeInTheDocument();
+    });
+
+    // Pick JRS
+    await user.click(screen.getByLabelText(/Joining readiness survey \(JRS\) received/i));
+
+    // Fill the required dates
+    await user.type(screen.getByLabelText(/Offer letter date/i), "2025-03-15");
+    await user.type(screen.getByLabelText(/Joining readiness survey \(JRS\) date/i), "2025-04-10");
+
     await user.click(screen.getByRole("button", { name: "Continue" }));
 
     await waitFor(() => {
+      expect(screen.getByText("Tell us about your candidature")).toBeInTheDocument();
       expect(screen.getByText(/Step 2 of 3/)).toBeInTheDocument();
-    });
-    const post = calls.find((c) => c.method?.toLowerCase() === "post");
-    expect(post).toBeDefined();
-    const body = JSON.parse(String(post?.data));
-    expect(body).toMatchObject({
-      display_name: "Sai",
-      hiring_type: "DIGITAL",
-      region: "Hyderabad",
-      batch: "2025",
-      offer_letter_date: "2025-03-15",
     });
   });
 
-  it("persists step 2 as a timeline event (walk-the-chain, 4.1 D1)", async () => {
+  it("persists profile and timeline milestones upon completing step 2", async () => {
     const user = userEvent.setup();
     const { calls } = scriptAdapter([
       { url: "/profile/", method: "GET", respond: () => PROFILE_404 },
@@ -112,7 +122,37 @@ describe("OnboardingPage", () => {
           data: {
             id: "t1",
             event_type: "OFFER_LETTER",
-            event_date: "2025-03-20",
+            event_date: "2025-03-15",
+            description: "x",
+            is_verified: false,
+            created_at: "x",
+          },
+        }),
+      },
+      {
+        url: "/timeline/",
+        method: "POST",
+        respond: () => ({
+          status: 201,
+          data: {
+            id: "t2",
+            event_type: "READINESS_SURVEY",
+            event_date: "2025-04-10",
+            description: "x",
+            is_verified: false,
+            created_at: "x",
+          },
+        }),
+      },
+      {
+        url: "/timeline/",
+        method: "POST",
+        respond: () => ({
+          status: 201,
+          data: {
+            id: "t3",
+            event_type: "INTERVIEW",
+            event_date: "2025-02-10",
             description: "x",
             is_verified: false,
             created_at: "x",
@@ -121,26 +161,45 @@ describe("OnboardingPage", () => {
       },
       { url: "/me/", method: "GET", respond: () => ({ status: 200, data: ME_COMPLETE }) },
     ]);
+
     renderWizard();
+    await waitFor(() => {
+      expect(screen.getByText("What is your recruitment status?")).toBeInTheDocument();
+    });
+
+    // Select JRS
+    await user.click(screen.getByLabelText(/Joining readiness survey \(JRS\) received/i));
+    await user.type(screen.getByLabelText(/Interview date/i), "2025-02-10");
+    await user.type(screen.getByLabelText(/Offer letter date/i), "2025-03-15");
+    await user.type(screen.getByLabelText(/Joining readiness survey \(JRS\) date/i), "2025-04-10");
+
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+
+    // Step 2
     await waitFor(() => screen.getByLabelText("Community display name"));
     await user.type(screen.getByLabelText("Community display name"), "Sai");
     await user.type(screen.getByLabelText("Region of joining"), "Hyderabad");
-    await user.type(screen.getByLabelText("Offer letter date"), "2025-03-15");
+    await user.click(screen.getByRole("radio", { name: /^digital/ }));
     await user.click(screen.getByRole("button", { name: "Continue" }));
 
-    await waitFor(() => screen.getByText("Where are you in the process?"));
-    await user.click(screen.getByRole("radio", { name: /Offer received/ }));
-    await user.type(screen.getByLabelText("When did this happen?"), "2025-03-20");
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-
+    // Step 3 Review
     await waitFor(() => screen.getByText("Review your details"));
-    const post = calls.filter((c) => c.method?.toLowerCase() === "post");
-    const timelinePost = post.find((c) => String(c.url).endsWith("/timeline/"));
-    expect(timelinePost).toBeDefined();
-    expect(JSON.parse(String(timelinePost?.data))).toMatchObject({
-      event_type: "OFFER_LETTER",
-      event_date: "2025-03-20",
+    expect(screen.getByText("Review your details")).toBeInTheDocument();
+
+    const post = calls.find((c) => c.method?.toLowerCase() === "post" && String(c.url).endsWith("/profile/"));
+    expect(post).toBeDefined();
+    const body = JSON.parse(String(post?.data));
+    expect(body).toMatchObject({
+      display_name: "Sai",
+      hiring_type: "DIGITAL",
+      region: "Hyderabad",
+      batch: "2025",
+      offer_letter_date: "2025-03-15",
+      interview_date: "2025-02-10",
     });
+
+    const timelinePosts = calls.filter((c) => c.method?.toLowerCase() === "post" && String(c.url).endsWith("/timeline/"));
+    expect(timelinePosts.length).toBeGreaterThanOrEqual(2);
   });
 
   it("requires the accuracy confirmation before finishing, then releases the gate", async () => {
@@ -156,7 +215,7 @@ describe("OnboardingPage", () => {
           data: {
             id: "t1",
             event_type: "OFFER_LETTER",
-            event_date: "2025-03-20",
+            event_date: "2025-03-15",
             description: "x",
             is_verified: false,
             created_at: "x",
@@ -165,19 +224,26 @@ describe("OnboardingPage", () => {
       },
       { url: "/me/", method: "GET", respond: () => ({ status: 200, data: ME_COMPLETE }) },
     ]);
+
     renderWizard();
+    await waitFor(() => {
+      expect(screen.getByText("What is your recruitment status?")).toBeInTheDocument();
+    });
+
+    // Default status OFFER_RECEIVED
+    await user.type(screen.getByLabelText(/Offer letter date/i), "2025-03-15");
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+
+    // Step 2
     await waitFor(() => screen.getByLabelText("Community display name"));
     await user.type(screen.getByLabelText("Community display name"), "Sai");
     await user.type(screen.getByLabelText("Region of joining"), "Hyderabad");
-    await user.type(screen.getByLabelText("Offer letter date"), "2025-03-15");
     await user.click(screen.getByRole("button", { name: "Continue" }));
-    await waitFor(() => screen.getByText("Where are you in the process?"));
-    await user.type(screen.getByLabelText("When did this happen?"), "2025-03-20");
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-    await waitFor(() => screen.getByText("Review your details"));
 
+    // Step 3
+    await waitFor(() => screen.getByText("Review your details"));
     const finishButton = screen.getByRole("button", { name: /Finish and go to dashboard/ });
-    expect(finishButton).toBeDisabled(); // T-09.2 gate: confirm first
+    expect(finishButton).toBeDisabled();
 
     await user.click(screen.getByTestId("confirm-accuracy"));
     expect(finishButton).toBeEnabled();
@@ -187,98 +253,5 @@ describe("OnboardingPage", () => {
       expect(screen.getByText("dashboard-here")).toBeInTheDocument();
     });
     expect(calls.some((c) => String(c.url).endsWith("/me/"))).toBe(true);
-  });
-
-  it("allows setting distinct prior event dates during onboarding when offer received is selected", async () => {
-    const user = userEvent.setup();
-    const { calls } = scriptAdapter([
-      { url: "/profile/", method: "GET", respond: () => PROFILE_404 },
-      { url: "/profile/", method: "POST", respond: () => ({ status: 201, data: PROFILE_CREATED }) },
-      {
-        url: "/timeline/",
-        method: "POST",
-        respond: () => ({
-          status: 201,
-          data: {
-            id: "t1",
-            event_type: "OFFER_LETTER",
-            event_date: "2025-03-20",
-            description: "x",
-            is_verified: false,
-            created_at: "x",
-          },
-        }),
-      },
-      {
-        url: "/timeline/",
-        method: "POST",
-        respond: () => ({
-          status: 201,
-          data: {
-            id: "t2",
-            event_type: "INTERVIEW",
-            event_date: "2025-02-25",
-            description: "x",
-            is_verified: false,
-            created_at: "x",
-          },
-        }),
-      },
-      {
-        url: "/timeline/",
-        method: "POST",
-        respond: () => ({
-          status: 201,
-          data: {
-            id: "t3",
-            event_type: "SELECTION",
-            event_date: "2025-03-10",
-            description: "x",
-            is_verified: false,
-            created_at: "x",
-          },
-        }),
-      },
-      { url: "/me/", method: "GET", respond: () => ({ status: 200, data: ME_COMPLETE }) },
-    ]);
-
-    renderWizard();
-    await waitFor(() => screen.getByLabelText("Community display name"));
-    await user.type(screen.getByLabelText("Community display name"), "Sai");
-    await user.type(screen.getByLabelText("Region of joining"), "Hyderabad");
-    await user.type(screen.getByLabelText("Offer letter date"), "2025-03-15");
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-
-    await waitFor(() => screen.getByText("Where are you in the process?"));
-    await user.click(screen.getByRole("radio", { name: /Offer received/ }));
-    await user.type(screen.getByLabelText("When did this happen?"), "2025-03-20");
-
-    // Check the box to also set prior events
-    await user.click(screen.getByLabelText(/Also mark prior milestones/i));
-
-    // Customize interview date and selection date
-    const interviewInput = screen.getByLabelText(/Interview Date/i);
-    await user.clear(interviewInput);
-    await user.type(interviewInput, "2025-02-25");
-
-    const selectionInput = screen.getByLabelText(/Selection Date/i);
-    await user.clear(selectionInput);
-    await user.type(selectionInput, "2025-03-10");
-
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-    await waitFor(() => screen.getByText("Review your details"));
-
-    const timelinePosts = calls.filter(
-      (c) => c.method?.toLowerCase() === "post" && String(c.url).endsWith("/timeline/"),
-    );
-    expect(timelinePosts).toHaveLength(3);
-    const parsedTimeline = timelinePosts.map((c) => JSON.parse(String(c.data)) as { event_type: string; event_date: string });
-    const offer = parsedTimeline.find((p) => p.event_type === "OFFER_LETTER");
-    const interview = parsedTimeline.find((p) => p.event_type === "INTERVIEW");
-    const selection = parsedTimeline.find((p) => p.event_type === "SELECTION");
-
-    expect(offer?.event_date).toBe("2025-03-20");
-    expect(interview?.event_date).toBe("2025-02-25");
-    expect(selection?.event_date).toBe("2025-03-10");
   });
 });

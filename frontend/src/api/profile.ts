@@ -51,7 +51,11 @@ export interface ProfileWritePayload {
   batch: string;
   hiring_type: HiringType;
   region: string;
-  offer_letter_date: string;
+  offer_letter_date?: string | null;
+  interview_date?: string | null;
+  interview_center?: string;
+  joining_location?: string;
+  expected_joining_date?: string | null;
 }
 
 /** 404 shape of `GET /profile/` when no profile exists yet (the wizard's first visit). */
@@ -91,4 +95,11 @@ export function saveCurrentStatus(
   status: CandidateStatus,
 ): Promise<CandidateProfilePrivate> {
   return apiPatch<CandidateProfilePrivate>("/profile/", { current_status: status });
+}
+
+/** Update profile fields (dates, locations, etc.) */
+export function updateProfile(
+  payload: Partial<ProfileWritePayload> & { current_status?: CandidateStatus },
+): Promise<CandidateProfilePrivate> {
+  return apiPatch<CandidateProfilePrivate>("/profile/", payload);
 }
