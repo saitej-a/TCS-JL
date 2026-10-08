@@ -34,7 +34,7 @@ declare module "axios" {
 }
 
 const configuredApiBaseUrl = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim();
-const productionApiBaseUrl = "https://34.131.136.21/api/v1";
+const productionApiBaseUrl = "https://tcsjl-backend.bond/api/v1";
 
 export const API_BASE_URL: string = import.meta.env.PROD
   ? configuredApiBaseUrl?.startsWith("http")

@@ -17,14 +17,14 @@ part of the topology).
 ### API proxy
 
 The Vite dev server and production build preview proxy these paths to
-`https://34.131.136.21`:
+`https://tcsjl-backend.bond`:
 
 | Path | Proxied to | Why |
 |---|---|---|
-| `/api` | `https://34.131.136.21` | All API traffic (`/api/v1/...`) |
-| `/admin` | `https://34.131.136.21` | Django admin |
-| `/static` | `https://34.131.136.21` | Static assets |
-| `/media` | `https://34.131.136.21` | Uploaded media |
+| `/api` | `https://tcsjl-backend.bond` | All API traffic (`/api/v1/...`) |
+| `/admin` | `https://tcsjl-backend.bond` | Django admin |
+| `/static` | `https://tcsjl-backend.bond` | Static assets |
+| `/media` | `https://tcsjl-backend.bond` | Uploaded media |
 
 The Vite proxy accepts the backend's TLS certificate for proxied requests.
 This setting applies only to Vite's server-side proxy; browsers still enforce
@@ -34,7 +34,7 @@ TLS validation for direct production API requests.
 
 `src/api/client.ts` reads `VITE_API_BASE_URL` — the only module that touches
 this env var. Local development defaults to `/api/v1` and uses the Vite proxy;
-production defaults to `https://34.131.136.21/api/v1`. Set
+production defaults to `https://tcsjl-backend.bond/api/v1`. Set
 `VITE_API_BASE_URL` to an absolute API URL in Vercel only if overriding that
 default; relative values such as `/api/v1` are ignored in production to prevent
 requests from going to the frontend host. Vite embeds this value at build time,

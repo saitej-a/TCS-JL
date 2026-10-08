@@ -34,7 +34,12 @@ directory:
 
 - `.env.prod`
 - `secrets/firebase-service-account.json`
-- `nginx/certs/server.crt` and `nginx/certs/server.key`
+
+Nginx and SSL certificates (Certbot / Let's Encrypt) are installed and managed directly
+on the host VM, proxying traffic to the Docker container services:
+- `127.0.0.1:8000` (WSGI / Gunicorn)
+- `127.0.0.1:8001` (ASGI / Daphne for WebSockets)
+- `/static/` mapped to `/home/ankamsaiteja16/TCS-JL/staticfiles/`
 
 These files are deliberately excluded from transfer; the workflow does not
 upload repository environment files, secrets, or local TLS certificates, and

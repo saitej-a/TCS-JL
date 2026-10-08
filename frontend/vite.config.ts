@@ -6,7 +6,7 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 // Keep API requests same-origin to the browser by proxying through Vite.
-const BACKEND_ORIGIN = "https://34.131.136.21";
+const BACKEND_ORIGIN = "https://tcsjl-backend.bond";
 
 const BACKEND_PROXY = {
   "/api": { target: BACKEND_ORIGIN, changeOrigin: true, secure: false },
