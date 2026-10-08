@@ -104,10 +104,36 @@ jobs:
           printf '%s\n' "$VM_SSH_PRIVATE_KEY" \
             | sed -e 's/\\n/\n/g' -e 's/\r$//' > "$HOME/.ssh/deploy_key"
           chmod 600 "$HOME/.ssh/deploy_key"
-          # Fail here, with an actionable message, instead of a cryptic ssh error.
-          if ! ssh-keygen -y -f "$HOME/.ssh/deploy_key" >/dev/null 2>&1; then
-            echo "::error::VM_SSH_PRIVATE_KEY did not load as a private key. Store the complete,"
-            echo "unencrypted PEM or OpenSSH private key in the secret, with real newlines."
+          # Fail here with a diagnosis instead of a cryptic ssh/rsync error. Only a
+          # classification is printed; the key material itself is never echoed.
+          if ! key_err=$(ssh-keygen -y -P '' -f "$HOME/.ssh/deploy_key" 2>&1 >/dev/null); then
+            key_bytes=$(wc -c < "$HOME/.ssh/deploy_key")
+            key_lines=$(wc -l < "$HOME/.ssh/deploy_key")
+            echo "::error::VM_SSH_PRIVATE_KEY did not load as an unencrypted private key ($key_bytes bytes, $key_lines lines)."
+            case "$key_err" in
+              *passphrase*)
+                echo "::error::The key is passphrase-protected, which GitHub Actions cannot unlock. Re-save it without a passphrase: ssh-keygen -p -f <keyfile> -N ''"
+                ;;
+            esac
+            case "$(head -c 200 "$HOME/.ssh/deploy_key" | tr -d '\r\n')" in
+              *"BEGIN OPENSSH PRIVATE KEY"*|*"BEGIN RSA PRIVATE KEY"*|*"BEGIN EC PRIVATE KEY"*|*"BEGIN DSA PRIVATE KEY"*|*"BEGIN PRIVATE KEY"*)
+                if [[ $key_lines -le 1 ]]; then
+                  echo "::error::The whole key sits on one line, so its newlines were stripped when the secret was saved. Re-save the raw file."
+                else
+                  echo "::error::The header is a valid private-key header, so the body was truncated or altered in transit. Store the complete file."
+                fi
+                ;;
+              *"PUBLIC KEY"*|ssh-*|ecdsa-*)
+                echo "::error::The secret holds a PUBLIC key. Store the matching private key file (no .pub extension) instead."
+                ;;
+              *"PuTTY-User-Key-File"*)
+                echo "::error::The secret is a PuTTY .ppk file. Convert it first: puttygen key.ppk -O private-openssh -o key"
+                ;;
+              *)
+                echo "::error::No private-key header was found. Store the private key file itself, not its path or a copied-from-terminal rendering of it."
+                ;;
+            esac
+            echo "::error::Set it with: gh secret set VM_SSH_PRIVATE_KEY --repo <owner>/<repo> < <private-key-file>"
             exit 1
           fi
 
