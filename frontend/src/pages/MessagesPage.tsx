@@ -17,8 +17,10 @@ import {
   Hash,
   MessageCircle,
   Plus,
+  Reply,
   Send,
   WifiOff,
+  X,
 } from "lucide-react";
 
 import { createChatRoom, listChatRooms } from "@/api/chat";
@@ -30,7 +32,7 @@ import {
 import { TypingIndicator } from "@/components/chat/TypingIndicator";
 import { useAuth } from "@/context/AuthContext";
 import { useChatRoom } from "@/hooks/useChatRoom";
-import type { ChatRoom } from "@/types/chat";
+import type { ChatMessage, ChatRoom } from "@/types/chat";
 
 export function MessagesPage() {
   const { user } = useAuth();
@@ -39,6 +41,7 @@ export function MessagesPage() {
 
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [inputBody, setInputBody] = useState<string>("");
+  const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isScrolledUp, setIsScrolledUp] = useState<boolean>(false);
   const [isCreateOpen, setIsCreateOpen] = useState<boolean>(false);
@@ -152,8 +155,9 @@ export function MessagesPage() {
 
     setIsSubmitting(true);
     try {
-      await sendMessage(trimmed);
+      await sendMessage(trimmed, replyingTo?.id);
       setInputBody("");
+      setReplyingTo(null);
       setIsScrolledUp(false);
       setTimeout(() => scrollToBottom("smooth"), 50);
     } catch {
@@ -369,6 +373,7 @@ export function MessagesPage() {
                   message={msg}
                   isOwn={msg.author.id === user?.id}
                   onDelete={deleteMessage}
+                  onReply={(targetMsg) => setReplyingTo(targetMsg)}
                 />
               ))
             )}
@@ -392,6 +397,31 @@ export function MessagesPage() {
           {/* Composer Footer */}
           <footer className="p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0 fixed bottom-0 left-0 right-0 z-40 lg:static lg:relative pb-[env(safe-area-inset-bottom,12px)]">
             <div className="max-w-4xl mx-auto">
+              {replyingTo && (
+                <div
+                  className="mb-2 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3 text-xs"
+                  data-testid="reply-banner"
+                >
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <Reply className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 shrink-0 rotate-180" />
+                    <span className="font-semibold text-slate-700 dark:text-slate-300 shrink-0">
+                      Replying to {replyingTo.author.display_name || "Anonymous Candidate"}:
+                    </span>
+                    <span className="truncate italic text-slate-500 dark:text-slate-400">
+                      {replyingTo.is_deleted ? "This message was removed." : replyingTo.body}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setReplyingTo(null)}
+                    className="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0"
+                    aria-label="Cancel reply"
+                    title="Cancel reply"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
               <TypingIndicator users={typingUsers} />
               <form onSubmit={handleSend}>
                 <div className="relative flex items-end gap-2 p-1.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20 transition-all">

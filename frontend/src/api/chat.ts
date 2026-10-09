@@ -34,8 +34,13 @@ export async function listChatMessages(
 export async function sendChatMessage(
   slug: string,
   body: string,
+  reply_to_id?: string,
 ): Promise<ChatMessage> {
-  return apiPost<ChatMessage>(`/chat/rooms/${slug}/messages/`, { body });
+  const payload: { body: string; reply_to_id?: string } = { body };
+  if (reply_to_id) {
+    payload.reply_to_id = reply_to_id;
+  }
+  return apiPost<ChatMessage>(`/chat/rooms/${slug}/messages/`, payload);
 }
 
 export async function deleteChatMessage(id: string): Promise<ChatMessage> {

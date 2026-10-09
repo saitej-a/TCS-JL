@@ -101,6 +101,27 @@ class AdminMemberSerializer(serializers.ModelSerializer):
         return self._profile_value(obj, "current_status")
 
 
+class ChatMessageReplySummarySerializer(serializers.ModelSerializer):
+    """Minimal representation of a message being replied to."""
+
+    author = CommunityAuthorSerializer(read_only=True)
+    body = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ChatMessage
+        fields = [
+            "id",
+            "author",
+            "body",
+            "is_deleted",
+        ]
+
+    def get_body(self, obj: ChatMessage) -> str:
+        if obj.is_deleted:
+            return "This message was removed."
+        return obj.body
+
+
 class ChatMessageSerializer(serializers.ModelSerializer):
     """Chat message representation with tombstoning and author redaction."""
 
@@ -109,6 +130,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
     body = serializers.SerializerMethodField()
     room_slug = serializers.CharField(source="room.slug", read_only=True)
     can_delete = serializers.SerializerMethodField()
+    reply_to = ChatMessageReplySummarySerializer(read_only=True)
 
     class Meta:
         model = ChatMessage
@@ -118,6 +140,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
             "room_slug",
             "author",
             "body",
+            "reply_to",
             "is_deleted",
             "created_at",
             "can_delete",

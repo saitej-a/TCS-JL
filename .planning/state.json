@@ -62,12 +62,22 @@
       "number": "12",
       "name": "Replace current screens with the Stitch designs",
       "status": "complete"
+    },
+    {
+      "number": "15",
+      "name": "Fix real-time chat and add a typing wave indicator",
+      "status": "complete"
+    },
+    {
+      "number": "16",
+      "name": "replace the current screens with the frontend/stitch designs",
+      "status": "complete"
     }
   ],
   "next": {
-    "command": "/gsd:progress --next",
-    "label": "Advance to the next step",
-    "reason": "Phase 16 of 36 · executing"
+    "command": "/gsd:verify-work",
+    "label": "Re-verify work",
+    "reason": "Recent verification failed — re-verify or debug"
   },
-  "updated_at": "2026-10-04T10:20:32.394Z"
+  "updated_at": "2026-10-09T09:48:41.194Z"
 }

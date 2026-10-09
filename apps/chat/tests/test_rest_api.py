@@ -167,6 +167,47 @@ class TestChatMessageListCreateEndpoint:
         assert data["room_slug"] == "general"
         assert data["can_delete"] is True
         assert data["is_deleted"] is False
+        assert data["reply_to"] is None
+
+    def test_post_reply_message_success(self, auth_client1, auth_client2, user1, general_room):
+        cache.clear()
+        orig_res = auth_client1.post(
+            f"/api/v1/chat/rooms/{general_room.slug}/messages/",
+            {"body": "Original question"},
+            format="json",
+        )
+        orig_id = orig_res.json()["id"]
+
+        reply_res = auth_client2.post(
+            f"/api/v1/chat/rooms/{general_room.slug}/messages/",
+            {"body": "Replying to question", "reply_to_id": orig_id},
+            format="json",
+        )
+        assert reply_res.status_code == status.HTTP_201_CREATED
+        data = reply_res.json()
+        assert data["body"] == "Replying to question"
+        assert data["reply_to"] is not None
+        assert data["reply_to"]["id"] == orig_id
+        assert data["reply_to"]["body"] == "Original question"
+        assert data["reply_to"]["is_deleted"] is False
+
+    def test_post_reply_tombstoned_preview(self, auth_client1, auth_client2, user1, general_room):
+        cache.clear()
+        orig_msg = ChatMessage.objects.create(
+            author=user1,
+            room=general_room,
+            body="Secret text",
+            is_deleted=True,
+        )
+        reply_res = auth_client2.post(
+            f"/api/v1/chat/rooms/{general_room.slug}/messages/",
+            {"body": "Replying to deleted msg", "reply_to_id": str(orig_msg.id)},
+            format="json",
+        )
+        assert reply_res.status_code == status.HTTP_201_CREATED
+        data = reply_res.json()
+        assert data["reply_to"]["is_deleted"] is True
+        assert data["reply_to"]["body"] == "This message was removed."
 
     def test_post_blank_message_fails(self, auth_client1, general_room):
         res = auth_client1.post(

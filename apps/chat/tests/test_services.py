@@ -87,6 +87,22 @@ class TestSendMessageService:
         with pytest.raises(DuplicateMessageError):
             send_message(user1, general_room, body="Duplicate debounce check")
 
+    def test_send_reply_message(self, user1, user2, general_room):
+        cache.clear()
+        orig = send_message(user1, general_room, body="Original message")
+        reply = send_message(user2, general_room, body="Replying back", reply_to=orig)
+        assert reply.reply_to == orig
+        assert reply.reply_to.author == user1
+        assert reply.room == general_room
+
+    def test_send_reply_cross_room_raises(self, user1, user2, general_room):
+        cache.clear()
+        other_room = ChatRoom.objects.create(slug="interviews", label="Interviews")
+        orig = send_message(user1, other_room, body="Interview question")
+        with pytest.raises(InvalidMessageError) as exc_info:
+            send_message(user2, general_room, body="Replying in general", reply_to=orig)
+        assert exc_info.value.code == "invalid_reply_target"
+
 
 @pytest.mark.django_db
 class TestSoftDeleteMessageService:

@@ -60,6 +60,13 @@ class ChatMessage(models.Model):
         related_name="chat_messages",
     )
     body = models.TextField()
+    reply_to = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="replies",
+    )
     is_deleted = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

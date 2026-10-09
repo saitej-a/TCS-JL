@@ -168,6 +168,64 @@ class TestChatConsumer:
 
         await communicator.disconnect()
 
+    async def test_send_reply_message_broadcast(self, chat_user, general_room):
+        cache.clear()
+        orig_msg = await ChatMessage.objects.acreate(
+            author=chat_user,
+            room=general_room,
+            body="First message to reply to",
+        )
+
+        ticket = _issue_ticket(chat_user)
+        communicator = _make_communicator(
+            f"/ws/chat/{general_room.slug}/?ticket={ticket}",
+        )
+        connected, _ = await communicator.connect()
+        assert connected
+        await communicator.receive_json_from()  # consume welcome frame
+
+        await communicator.send_json_to(
+            {
+                "action": "send",
+                "body": "Replying via websocket",
+                "reply_to_id": str(orig_msg.id),
+            }
+        )
+
+        response = await communicator.receive_json_from()
+        assert response["type"] == "chat.message"
+        msg_data = response["message"]
+        assert msg_data["body"] == "Replying via websocket"
+        assert msg_data["reply_to"] is not None
+        assert msg_data["reply_to"]["id"] == str(orig_msg.id)
+        assert msg_data["reply_to"]["body"] == "First message to reply to"
+
+        await communicator.disconnect()
+
+    async def test_send_reply_invalid_target(self, chat_user, general_room):
+        cache.clear()
+        ticket = _issue_ticket(chat_user)
+        communicator = _make_communicator(
+            f"/ws/chat/{general_room.slug}/?ticket={ticket}",
+        )
+        connected, _ = await communicator.connect()
+        assert connected
+        await communicator.receive_json_from()  # consume welcome frame
+
+        await communicator.send_json_to(
+            {
+                "action": "send",
+                "body": "Replying to ghost message",
+                "reply_to_id": "00000000-0000-0000-0000-000000000000",
+            }
+        )
+
+        response = await communicator.receive_json_from()
+        assert response["type"] == "chat.error"
+        assert response["error"]["code"] == "invalid_reply_target"
+
+        await communicator.disconnect()
+
     async def test_delete_message_broadcast(self, chat_user, general_room):
         cache.clear()
         msg = await ChatMessage.objects.acreate(

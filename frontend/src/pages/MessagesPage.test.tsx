@@ -457,4 +457,114 @@ describe("MessagesPage", () => {
       expect(screen.queryByRole("status")).not.toBeInTheDocument();
     });
   });
+
+  it("shows reply banner when clicking reply button and sends message with reply_to_id", async () => {
+    const user = userEvent.setup();
+    vi.mocked(chatApi.sendChatMessage).mockResolvedValue({
+      id: "m-reply-res",
+      room: "r-general",
+      room_slug: "general",
+      author: {
+        id: "u-me",
+        display_name: "My Name",
+        batch: "2025 Digital",
+        hiring_type: "DIGITAL",
+        region: "Hyderabad",
+      },
+      body: "This is a response to you",
+      reply_to: {
+        id: "m-1",
+        author: {
+          id: "u-1",
+          display_name: "Sai Teja",
+          batch: "2025 Digital",
+          hiring_type: "DIGITAL",
+          region: "Hyderabad",
+        },
+        body: "Hello everyone in the General room!",
+        is_deleted: false,
+      },
+      is_deleted: false,
+      created_at: "2026-09-30T10:16:00Z",
+      can_delete: true,
+    });
+
+    renderMessages();
+
+    await waitFor(() => {
+      expect(screen.getByText("Hello everyone in the General room!")).toBeInTheDocument();
+    });
+
+    // Hover or find reply button
+    const replyButtons = screen.getAllByRole("button", { name: /reply to message/i });
+    expect(replyButtons.length).toBeGreaterThan(0);
+
+    // Click reply on first message (m-1 by Sai Teja)
+    await user.click(replyButtons[0]);
+
+    // Reply banner should be visible
+    const banner = screen.getByTestId("reply-banner");
+    expect(banner).toBeInTheDocument();
+    expect(banner).toHaveTextContent("Replying to Sai Teja:");
+    expect(banner).toHaveTextContent("Hello everyone in the General room!");
+
+    // Type a reply and send
+    const input = screen.getByRole("textbox", { name: /message #general/i });
+    await user.type(input, "This is a response to you");
+
+    const sendBtn = screen.getByRole("button", { name: /send message/i });
+    await user.click(sendBtn);
+
+    // The message should be sent with reply_to_id m-1 either via WS or REST fallback
+    await waitFor(() => {
+      const socket = MockWebSocket.instances[0];
+      const sendMock = socket?.send as unknown as { mock?: { calls: unknown[][] } } | undefined;
+      const sendCalls = sendMock?.mock?.calls || [];
+      const sendActionCall = sendCalls.find((callArgs: unknown[]) => {
+        try {
+          const raw = typeof callArgs[0] === "string" ? callArgs[0] : "";
+          const parsed = JSON.parse(raw);
+          return parsed.action === "send" && parsed.body === "This is a response to you";
+        } catch {
+          return false;
+        }
+      });
+
+      const restCall = vi.mocked(chatApi.sendChatMessage).mock.calls.find(
+        (args) => args[0] === "general" && args[1] === "This is a response to you"
+      );
+
+      const rawPayload = sendActionCall && typeof sendActionCall[0] === "string" ? sendActionCall[0] : null;
+      const sentWithReply =
+        Boolean(rawPayload && JSON.parse(rawPayload).reply_to_id === "m-1") ||
+        Boolean(restCall && restCall[2] === "m-1");
+
+      expect(sentWithReply).toBe(true);
+    });
+
+    // Banner should be dismissed after sending
+    await waitFor(() => {
+      expect(screen.queryByTestId("reply-banner")).not.toBeInTheDocument();
+    });
+  });
+
+  it("allows dismissing the reply banner without sending", async () => {
+    const user = userEvent.setup();
+    renderMessages();
+
+    await waitFor(() => {
+      expect(screen.getByText("Hello everyone in the General room!")).toBeInTheDocument();
+    });
+
+    const replyButtons = screen.getAllByRole("button", { name: /reply to message/i });
+    await user.click(replyButtons[0]);
+
+    expect(screen.getByTestId("reply-banner")).toBeInTheDocument();
+
+    const cancelBtn = screen.getByRole("button", { name: /cancel reply/i });
+    await user.click(cancelBtn);
+
+    expect(screen.queryByTestId("reply-banner")).not.toBeInTheDocument();
+  });
 });
+

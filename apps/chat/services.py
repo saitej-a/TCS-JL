@@ -12,7 +12,6 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from apps.chat.models import ChatMessage, ChatRoom
 from apps.chat.validators import (
     BLANK_CODE,
-    MESSAGE_LENGTH_CODE,
     chat_rooms,
     validate_message_length,
     validate_not_blank,
@@ -65,14 +64,20 @@ def _debounce_key(author_id, body: str) -> str:
     return f"chat_debounce:{author_id}:{body_hash}"
 
 
-def send_message(author, room: ChatRoom, *, body: str) -> ChatMessage:
+def send_message(
+    author,
+    room: ChatRoom,
+    *,
+    body: str,
+    reply_to: ChatMessage | None = None,
+) -> ChatMessage:
     """Validate, debounce, and persist a chat message."""
     try:
         validate_not_blank(body)
         validate_message_length(body)
     except ValidationError as err:
         code = getattr(err, "code", BLANK_CODE)
-        raise InvalidMessageError(code=code, message=str(err.message))
+        raise InvalidMessageError(code=code, message=str(err.message)) from err
 
     cleaned_body = str(body).strip()
     cache_key = _debounce_key(author.id, cleaned_body)
@@ -82,10 +87,18 @@ def send_message(author, room: ChatRoom, *, body: str) -> ChatMessage:
             message="You sent this message recently. Please wait a moment before sending again.",
         )
 
+    if reply_to is not None:
+        if reply_to.room_id != room.id:
+            raise InvalidMessageError(
+                code="invalid_reply_target",
+                message="Cannot reply to a message from a different channel.",
+            )
+
     message = ChatMessage.objects.create(
         author=author,
         room=room,
         body=cleaned_body,
+        reply_to=reply_to,
     )
 
     cache.set(cache_key, 1, timeout=MESSAGE_DUPLICATE_WINDOW)

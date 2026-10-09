@@ -32,12 +32,20 @@ export interface ChatAuthor {
   avatar_seed?: number;
 }
 
+export interface ChatMessageReplySummary {
+  id: string;
+  author: ChatAuthor;
+  body: string;
+  is_deleted: boolean;
+}
+
 export interface ChatMessage {
   id: string;
   room: string;
   room_slug: string;
   author: ChatAuthor;
   body: string;
+  reply_to?: ChatMessageReplySummary | null;
   is_deleted: boolean;
   created_at: string;
   can_delete: boolean;

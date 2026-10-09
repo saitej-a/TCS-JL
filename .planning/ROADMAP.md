@@ -496,3 +496,14 @@ Plans:
 - [x] `16-05-PLAN.md` — Wave 5: Settings Suite & Admin Tools verbatim port (Profile, privacy, security, danger zone, devices, moderation queue, announcements)
 - [x] `16-06-PLAN.md` — Wave 6: Analytics, Visitor, Legal & PWA verbatim port (Analytics benchmarks, landing page, legal viewer, PWA install/push/offline, error routes)
 - [x] `16-07-PLAN.md` — Wave 7: Machine Fidelity Check, Test Suite Maintenance & Verification Gates (stitch-fidelity.mjs audit, RECONCILIATION-16.md, full regression suite)
+
+### Phase 17: Reply to chat messages
+
+**Goal:** Allow candidates to reply to existing messages in chat channels with quoted preview context across real-time WebSockets and REST fallback.  
+**Requirements**: CHAT-04  
+**Depends on:** Phase 16  
+**Plans:** 1 plan  
+
+Plans:
+
+- [x] `17-01-PLAN.md` — Reply to chat messages across backend models, serializers, services, Channels consumer, frontend hook, and UI composer.

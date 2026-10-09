@@ -95,11 +95,28 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
         if action == "send":
             body = content.get("body", "")
+            reply_to_id = content.get("reply_to_id")
+            reply_to = None
+            if reply_to_id:
+                reply_to = await self._get_message(str(reply_to_id))
+                if not reply_to:
+                    await self.send_json(
+                        {
+                            "type": "chat.error",
+                            "error": {
+                                "code": "invalid_reply_target",
+                                "message": "The message you are replying to does not exist.",
+                            },
+                        }
+                    )
+                    return
+
             try:
                 msg = await database_sync_to_async(send_message)(
                     self.user,
                     self.room,
                     body=body,
+                    reply_to=reply_to,
                 )
             except (InvalidMessageError, DuplicateMessageError) as err:
                 await self.send_json(
@@ -292,8 +309,18 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         dt = parse_datetime(after_iso.replace(" ", "+"))
         if not dt:
             return []
-        qs = ChatMessage.objects.filter(
-            room=self.room,
-            created_at__gt=dt,
-        ).select_related("author", "author__candidate_profile").order_by("created_at")[:50]
+        qs = (
+            ChatMessage.objects.filter(
+                room=self.room,
+                created_at__gt=dt,
+            )
+            .select_related(
+                "author",
+                "author__candidate_profile",
+                "reply_to",
+                "reply_to__author",
+                "reply_to__author__candidate_profile",
+            )
+            .order_by("created_at")[:50]
+        )
         return ChatMessageSerializer(qs, many=True).data

@@ -160,10 +160,14 @@ Deferred to future post-MVP release.
 | UI-07 | Phase 9.5 | **Complete** — 404 panel with shell-intact catch-all, reference-id boundary (shown id = logged id, asserted), inline `SectionRetry` |
 | SET-01 | Phase 9.5 | Planned — six `/settings*` routes implemented from their Stitch references, irreversible actions typed-confirmed (Tasks 2–7) |
 | MOD-07 | Phase 9.5 | Planned — admin shell (role-guarded) + report queue + announcements composer, masked PII enforced by test (Tasks 8–9) |
+| CHAT-01 | Phase 13, rev. Phase 15 | Complete — real-time shared channel messaging with ASGI daphne backend, Redis broadcast, and degraded REST fallback |
+| CHAT-02 | Deferred | Out of scope — private 1-on-1 direct messages deferred to keep candidate safe-space public and moderated |
+| CHAT-03 | Phase 15 | Complete — server-authoritative typing presence wave indicator with Redis TTL and per-connection throttling |
+| CHAT-04 | Phase 17 | Complete — replying to chat messages with inline quoted snippet, tombstone preview, and cross-channel rejection |
 
 **Coverage:**
-- v1 requirements: 47 total *(was 43 before 9.5 added SET-01, UI-06, UI-07, MOD-07)*
-- Mapped to phases: 47
+- v1 requirements: 51 total *(was 43 before 9.5 added SET-01, UI-06, UI-07, MOD-07; and 13-17 added CHAT-01, CHAT-02, CHAT-03, CHAT-04)*
+- Mapped to phases: 51
 - Unmapped: 0 ✓
 
 ## Sub-Phase Traceability

@@ -33,7 +33,7 @@ export interface UseChatRoomResult {
   hasMore: boolean;
   error: string | null;
   loadOlder: () => Promise<void>;
-  sendMessage: (body: string) => Promise<void>;
+  sendMessage: (body: string, replyToId?: string) => Promise<void>;
   deleteMessage: (messageId: string) => Promise<void>;
   notifyTyping: () => void;
 }
@@ -99,7 +99,10 @@ export function useChatRoom(roomSlug: string, overrideUserId?: string): UseChatR
         const { ticket } = await fetchWsTicket();
         if (cancelled) return;
 
-        const wsUrl = new URL(`/ws/chat/${roomSlug}/`, API_BASE_URL || window.location.origin);
+        const baseOrigin = API_BASE_URL.startsWith("http")
+          ? new URL(API_BASE_URL).origin
+          : (typeof window !== "undefined" && window.location.origin) || "http://localhost";
+        const wsUrl = new URL(`/ws/chat/${roomSlug}/`, baseOrigin);
         wsUrl.protocol = wsUrl.protocol === "https:" ? "wss:" : "ws:";
         wsUrl.searchParams.set("ticket", ticket);
 
@@ -244,17 +247,24 @@ export function useChatRoom(roomSlug: string, overrideUserId?: string): UseChatR
 
   // 3. Send message via WS or REST fallback
   const sendMessage = useCallback(
-    async (body: string) => {
+    async (body: string, replyToId?: string) => {
       const cleanBody = body.trim();
       if (!cleanBody) return;
 
       const ws = wsRef.current;
       if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ action: "send", body: cleanBody }));
+        const payload: { action: string; body: string; reply_to_id?: string } = {
+          action: "send",
+          body: cleanBody,
+        };
+        if (replyToId) {
+          payload.reply_to_id = replyToId;
+        }
+        ws.send(JSON.stringify(payload));
         ws.send(JSON.stringify({ action: "typing", is_typing: false }));
       } else {
         // Fallback to REST POST
-        const sent = await sendChatMessage(roomSlug, cleanBody);
+        const sent = await sendChatMessage(roomSlug, cleanBody, replyToId);
         setMessages((prev) => {
           if (prev.some((m) => m.id === sent.id)) return prev;
           return [...prev, sent];
