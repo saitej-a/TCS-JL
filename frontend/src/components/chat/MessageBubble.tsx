@@ -13,8 +13,13 @@ interface MessageBubbleProps {
   onReply?: (message: ChatMessage) => void;
 }
 
+function formatDisplayName(value?: string | null) {
+  if (!value || value === "Anonymous Candidate") return "Anonymous";
+  return value;
+}
+
 export function MessageBubble({ message, isOwn, onDelete, onReply }: MessageBubbleProps) {
-  const authorName = message.author.display_name || "Anonymous Candidate";
+  const authorName = formatDisplayName(message.author.display_name);
   const cohort = [message.author.batch, message.author.hiring_type]
     .filter(Boolean)
     .join(" • ");
@@ -44,7 +49,7 @@ export function MessageBubble({ message, isOwn, onDelete, onReply }: MessageBubb
           >
             <div className="font-semibold text-[11px] text-slate-600 dark:text-slate-400 flex items-center gap-1">
               <Reply className="w-3 h-3 rotate-180" />
-              <span>{message.reply_to.author.display_name || "Anonymous Candidate"}</span>
+              <span>{formatDisplayName(message.reply_to.author.display_name)}</span>
             </div>
             <p className="truncate line-clamp-1 italic text-slate-500 dark:text-slate-400">
               {message.reply_to.body}

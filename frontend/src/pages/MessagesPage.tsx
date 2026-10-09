@@ -34,6 +34,11 @@ import { useAuth } from "@/context/AuthContext";
 import { useChatRoom } from "@/hooks/useChatRoom";
 import type { ChatMessage, ChatRoom } from "@/types/chat";
 
+function formatDisplayName(value?: string | null) {
+  if (!value || value === "Anonymous Candidate") return "Anonymous";
+  return value;
+}
+
 export function MessagesPage() {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -405,7 +410,7 @@ export function MessagesPage() {
                   <div className="flex items-center gap-2 overflow-hidden">
                     <Reply className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 shrink-0 rotate-180" />
                     <span className="font-semibold text-slate-700 dark:text-slate-300 shrink-0">
-                      Replying to {replyingTo.author.display_name || "Anonymous"}:
+                      Replying to {formatDisplayName(replyingTo.author.display_name)}:
                     </span>
                     <span className="truncate italic text-slate-500 dark:text-slate-400">
                       {replyingTo.is_deleted ? "This message was removed." : replyingTo.body}

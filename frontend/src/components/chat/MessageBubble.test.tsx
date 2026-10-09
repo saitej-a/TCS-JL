@@ -65,10 +65,28 @@ describe("MessageBubble", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders anonymous authors as Anonymous in the message card", () => {
+    const anonymousMessage: ChatMessage = {
+      ...BASE_MESSAGE,
+      id: "msg-3",
+      author: {
+        ...BASE_MESSAGE.author,
+        id: "user-2",
+        display_name: "Anonymous Candidate",
+      },
+      body: "Hidden identity in chat",
+    };
+
+    render(<MessageBubble message={anonymousMessage} isOwn={false} />);
+
+    expect(screen.getByText("Anonymous")).toBeInTheDocument();
+    expect(screen.getByText("Hidden identity in chat")).toBeInTheDocument();
+  });
+
   it("renders tombstone text in reply quote if referenced message was deleted", () => {
     const messageWithDeletedReply: ChatMessage = {
       ...BASE_MESSAGE,
-      id: "msg-3",
+      id: "msg-4",
       body: "Replying to a removed note",
       reply_to: {
         id: "msg-orig",
@@ -88,6 +106,7 @@ describe("MessageBubble", () => {
 
     expect(screen.getByText("This message was removed.")).toBeInTheDocument();
     expect(screen.getByText("Replying to a removed note")).toBeInTheDocument();
+    expect(screen.getByText("Anonymous")).toBeInTheDocument();
   });
 
   it("calls onReply callback when reply button is clicked", async () => {
