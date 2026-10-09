@@ -378,7 +378,8 @@ AVATAR_SEED_SECRET = os.environ.get("DJANGO_AVATAR_SEED_SECRET", "") or SECRET_K
 
 # --- Email (console in dev; SMTP injected in real deployments) ----------------------
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = "no-reply@tcsjoiningtracker.local"
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@tcsjl.cyou")
+SERVER_EMAIL = os.environ.get("SERVER_EMAIL", DEFAULT_FROM_EMAIL)
 
 # --- Security headers (baseline; production.py hardens further) ---------------------
 SECURE_CONTENT_TYPE_NOSNIFF = True
@@ -397,7 +398,7 @@ FIREBASE_CREDENTIALS_PATH = os.environ.get("FIREBASE_CREDENTIALS_PATH", "")
 # names. Keys are read at call time, so a restart applies a rotation.
 VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "")
 VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY", "")
-VAPID_SUBJECT = os.environ.get("VAPID_SUBJECT", "mailto:no-reply@tcsjoiningtracker.local")
+VAPID_SUBJECT = os.environ.get("VAPID_SUBJECT", "mailto:noreply@tcsjl.cyou")
 VOTE_MILESTONE_THRESHOLDS = [10, 25, 50, 100, 250, 500]  # §10, read at call time (D4)
 THREAD_PUSH_DEBOUNCE_SECONDS = 900  # §10.1, read at call time (D3)
 PUSH_MAX_RETRIES = int(os.environ.get("PUSH_MAX_RETRIES", "3"))

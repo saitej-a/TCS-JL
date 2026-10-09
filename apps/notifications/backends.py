@@ -268,7 +268,7 @@ class WebPushBackend(PushBackend):
     silently failing at send time.
     """
 
-    DEFAULT_VAPID_SUBJECT = "mailto:no-reply@tcsjoiningtracker.local"
+    DEFAULT_VAPID_SUBJECT = "mailto:noreply@tcsjl.cyou"
 
     device_types = frozenset({WEB_DEVICE_TYPE})
 
