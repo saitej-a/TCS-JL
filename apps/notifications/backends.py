@@ -268,7 +268,7 @@ class WebPushBackend(PushBackend):
     silently failing at send time.
     """
 
-    DEFAULT_VAPID_SUBJECT = "mailto:noreply@tcsjl.cyou"
+    DEFAULT_VAPID_SUBJECT = "mailto:noreply@noreply.tcsjl.cyou"
 
     device_types = frozenset({WEB_DEVICE_TYPE})
 
