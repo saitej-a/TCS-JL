@@ -405,7 +405,7 @@ export function MessagesPage() {
                   <div className="flex items-center gap-2 overflow-hidden">
                     <Reply className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 shrink-0 rotate-180" />
                     <span className="font-semibold text-slate-700 dark:text-slate-300 shrink-0">
-                      Replying to {replyingTo.author.display_name || "Anonymous Candidate"}:
+                      Replying to {replyingTo.author.display_name || "Anonymous"}:
                     </span>
                     <span className="truncate italic text-slate-500 dark:text-slate-400">
                       {replyingTo.is_deleted ? "This message was removed." : replyingTo.body}
