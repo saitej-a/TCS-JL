@@ -37,6 +37,10 @@ export function pushSupported(): boolean {
   );
 }
 
+export function isPushGranted(): boolean {
+  return typeof Notification !== "undefined" && Notification.permission === "granted";
+}
+
 export function isPushDenied(): boolean {
   if (typeof localStorage === "undefined") return false;
   return localStorage.getItem(PUSH_DENIED_FLAG) === "1";

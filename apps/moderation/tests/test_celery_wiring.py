@@ -43,6 +43,7 @@ EXPECTED_BEAT = {
 EXPECTED_ROUTES = {
     "notifications.tasks.send_push_notification": "notifications",
     "notifications.tasks.broadcast_announcement": "notifications",
+    "notifications.tasks.broadcast_new_post": "notifications",
     "notifications.tasks.prune_stale_devices": "maintenance",
     "analytics.tasks.warm_analytics_cache": "maintenance",
     "moderation.tasks.sever_banned_user_sessions": "default",

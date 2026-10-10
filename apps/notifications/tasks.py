@@ -275,6 +275,68 @@ def broadcast_announcement(announcement_id: str) -> dict[str, int]:
 
 
 @shared_task(
+    name="notifications.tasks.broadcast_new_post",
+    queue="notifications",
+)
+def broadcast_new_post(post_id: str) -> dict[str, int]:
+    """Fan out in-app and push notification for a newly created post to active candidates."""
+    from django.contrib.auth import get_user_model
+
+    from apps.candidates.models import resolve_public_display_name
+    from apps.community.models import Post
+
+    try:
+        post = Post.objects.select_related("author").filter(id=post_id, is_deleted=False).first()
+    except (ValueError, ValidationError):
+        post = None
+    if post is None:
+        logger.warning("BROADCAST_SKIPPED_MISSING_POST post_id=%s", post_id)
+        return {"created": 0, "chunks": 0}
+
+    author_name = resolve_public_display_name(post.author)
+    title = "New Discussion in Community"
+    raw_body = post.body or ""
+    body_snippet = raw_body[:80] + "..." if len(raw_body) > 80 else raw_body
+    message = f"{author_name} posted '{post.title}': {body_snippet}"
+
+    User = get_user_model()
+    chunk_size = getattr(settings, "ANNOUNCEMENT_PUSH_CHUNK", 500)
+    recipients = (
+        User.objects.filter(is_active=True, is_verified=True)
+        .exclude(pk=post.author_id)
+        .order_by("pk")
+    )
+
+    created = 0
+    chunks = 0
+    offset = 0
+    while True:
+        batch = list(recipients[offset : offset + chunk_size])
+        if not batch:
+            break
+        for user in batch:
+            create_notification(
+                user,
+                notification_type=Notification.NotificationType.SYSTEM,
+                title=title,
+                message=message,
+                post=post,
+                actor=post.author,
+            )
+            created += 1
+        chunks += 1
+        offset += chunk_size
+
+    logger.info(
+        "BROADCAST_NEW_POST_DONE post_id=%s created=%d chunks=%d",
+        post_id,
+        created,
+        chunks,
+    )
+    return {"created": created, "chunks": chunks}
+
+
+@shared_task(
     name="notifications.tasks.prune_stale_devices",
     queue="maintenance",
 )

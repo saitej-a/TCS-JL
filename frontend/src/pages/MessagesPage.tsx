@@ -319,7 +319,7 @@ export function MessagesPage() {
           <div
             ref={scrollContainerRef}
             onScroll={handleScroll}
-            className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 pb-28 lg:pb-4 space-y-2 relative"
+            className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 lg:pb-4 space-y-2 relative"
             role="log"
             aria-live="polite"
             aria-label={`${activeRoom.label} messages`}

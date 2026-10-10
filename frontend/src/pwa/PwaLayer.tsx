@@ -29,6 +29,7 @@ import { subscribeToForegroundMessages } from "@/pwa/firebaseMessaging";
 import { recordCommunityVisit } from "@/pwa/installSignals";
 import {
   isPushDenied,
+  isPushGranted,
   pushSupported,
   refreshPushRegistration,
   type PushOutcome,
@@ -80,7 +81,7 @@ export function PwaLayer(): React.ReactElement {
   useEffect(() => {
     if (!isAuthenticated) return;
     if (location.pathname !== PRIMER_ROUTE) return;
-    if (!pushSupported() || isPushDenied() || primerDismissedThisSession()) return;
+    if (!pushSupported() || isPushDenied() || isPushGranted() || primerDismissedThisSession()) return;
     setPrimerOpen(true);
   }, [isAuthenticated, location.pathname]);
 

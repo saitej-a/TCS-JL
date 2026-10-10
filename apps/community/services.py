@@ -91,7 +91,20 @@ def create_post(author, *, title: str, body: str, category: str) -> Post:
         except DjangoValidationError as exc:
             raise _reject_post(field, exc) from exc
 
-    return Post.objects.create(author=author, title=title, body=body, category=category)
+    post = Post.objects.create(author=author, title=title, body=body, category=category)
+
+    def _dispatch_broadcast():
+        try:
+            from apps.notifications.tasks import broadcast_new_post
+
+            broadcast_new_post.delay(str(post.id))
+        except Exception as exc:
+            import logging
+
+            logging.getLogger("community").warning("broadcast_new_post enqueue failed: %s", exc)
+
+    transaction.on_commit(_dispatch_broadcast)
+    return post
 
 
 def create_comment(post: Post, author, *, body: str, parent: Comment | None = None) -> Comment:

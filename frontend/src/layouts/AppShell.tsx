@@ -526,7 +526,11 @@ export function AppShell({ children }: { children?: ReactNode }) {
 
           <div data-testid="app-content-row" className="flex min-w-0 flex-1">
             <div className="flex min-w-0 flex-1 flex-col bg-slate-50 dark:bg-slate-900">
-              <main className="flex-1 space-y-4 px-4 pb-28 pt-4 lg:px-8 lg:pb-8">
+              <main
+                className={`flex-1 space-y-4 px-4 pt-4 lg:px-8 lg:pb-8 ${
+                  location.pathname === "/messages" ? "pb-0" : "pb-28"
+                }`}
+              >
                 {children ?? <Outlet />}
               </main>
 

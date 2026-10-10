@@ -101,6 +101,27 @@ def send_message(
         reply_to=reply_to,
     )
 
+    if reply_to is not None and reply_to.author_id != author.id:
+        try:
+            from apps.candidates.models import resolve_public_display_name
+            from apps.notifications.models import Notification
+            from apps.notifications.services import create_notification
+
+            author_name = resolve_public_display_name(author)
+            title = f"New Reply in #{room.label}"
+            preview = cleaned_body[:80] + "..." if len(cleaned_body) > 80 else cleaned_body
+            create_notification(
+                reply_to.author,
+                notification_type=Notification.NotificationType.REPLY,
+                title=title,
+                message=f"{author_name} replied to your message: '{preview}'",
+                actor=author,
+            )
+        except Exception as exc:
+            import logging
+
+            logging.getLogger("chat").warning("chat reply notification failed: %s", exc)
+
     cache.set(cache_key, 1, timeout=MESSAGE_DUPLICATE_WINDOW)
     return message
 

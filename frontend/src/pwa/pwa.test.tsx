@@ -41,6 +41,7 @@ import {
   PUSH_DENIED_FLAG,
   describeBrowser,
   isPushDenied,
+  isPushGranted,
   markPushDenied,
   subscribeToPush,
 } from "@/pwa/pushClient";
@@ -389,5 +390,14 @@ describe("§10.1 primer session memory", () => {
     expect(isPushDenied()).toBe(false);
     markPushDenied();
     expect(isPushDenied()).toBe(true);
+  });
+
+  it("identifies granted push permission correctly", () => {
+    mockNotification("default");
+    expect(isPushGranted()).toBe(false);
+    mockNotification("denied");
+    expect(isPushGranted()).toBe(false);
+    mockNotification("granted");
+    expect(isPushGranted()).toBe(true);
   });
 });

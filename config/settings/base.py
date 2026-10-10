@@ -277,6 +277,7 @@ CELERY_TASK_QUEUES = {
 CELERY_TASK_ROUTES = {
     "notifications.tasks.send_push_notification": {"queue": "notifications"},
     "notifications.tasks.broadcast_announcement": {"queue": "notifications"},
+    "notifications.tasks.broadcast_new_post": {"queue": "notifications"},
     "accounts.tasks.send_verification_email": {"queue": "default"},
     "accounts.tasks.send_password_reset_email": {"queue": "default"},
     "notifications.tasks.prune_stale_devices": {"queue": "maintenance"},
