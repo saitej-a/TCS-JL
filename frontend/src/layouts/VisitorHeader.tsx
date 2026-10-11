@@ -6,6 +6,7 @@
  */
 import { Link } from "react-router-dom";
 
+import { BrandMark } from "@/components/BrandMark";
 import { useAuth } from "@/context/AuthContext";
 import { APP_HEADER_SURFACE } from "@/layouts/appHeaderStyles";
 
@@ -17,16 +18,9 @@ export function VisitorHeader() {
       <div className="flex w-full items-center justify-between gap-4">
         <div className="flex items-center gap-6">
           <Link to="/" className="flex shrink-0 items-center gap-2.5" aria-label="TCSJL home">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-[9px] font-bold text-white shadow-sm">
-              TCSJL
-            </span>
-            <span className="hidden sm:block">
-              <span className="block text-sm font-bold leading-none tracking-tight text-slate-900 dark:text-slate-100">
-                TCSJL
-              </span>
-              <span className="mt-1 block text-[10px] leading-none text-slate-500 dark:text-slate-400">
-                Recruitment Status
-              </span>
+            <BrandMark className="h-9 w-9 shrink-0" />
+            <span className="hidden text-sm font-bold leading-none tracking-tight text-slate-900 sm:block dark:text-slate-100">
+              Recruitment Status
             </span>
           </Link>
           <nav aria-label="Visitor" className="hidden items-center gap-4 sm:flex">

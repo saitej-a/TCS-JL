@@ -1,5 +1,6 @@
 export { Badge } from "./Badge";
 export type { BadgeCategoryProps, BadgeStatusProps } from "./Badge";
+export { BrandMark } from "./BrandMark";
 export { Button } from "./Button";
 export type { ButtonVariant, ButtonSize } from "./Button";
 export { CategoryTabs, FEED_TABS } from "./CategoryTabs";

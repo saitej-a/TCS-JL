@@ -72,7 +72,11 @@ describe("AppShell", () => {
       expect(screen.getByTestId("app-header").parentElement).toContainElement(
         screen.getByTestId("app-content-row"),
       );
-      expect(screen.getByTestId("app-title")).toBeInTheDocument();
+      // The top-bar brand is the logo mark, not a `TCSJL` text badge.
+      const title = screen.getByTestId("app-title");
+      expect(title).toBeInTheDocument();
+      expect(title.querySelector('[data-testid="brand-mark"]')).toBeInTheDocument();
+      expect(title).not.toHaveTextContent("TCSJL");
       expect(screen.getByRole("searchbox", { name: "Search community" })).toBeInTheDocument();
     });
     expect(screen.getByTestId("disclaimer-footer")).toBeInTheDocument();

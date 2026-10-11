@@ -17,6 +17,7 @@ import {
   type HiringType,
   type ProfileWritePayload,
 } from "@/api/profile";
+import { BrandMark } from "@/components/BrandMark";
 import { Disclaimer } from "@/components/Disclaimer";
 import { Input } from "@/components/Input";
 import { createTimelineEvent, type TimelineEventType } from "@/api/timeline";
@@ -343,14 +344,9 @@ function CardHeader() {
   return (
     <header className="flex items-center justify-between border-b border-slate-100 pb-6 dark:border-slate-700">
       <div className="flex items-center gap-3">
-        <span className="bg-indigo-600 text-white font-bold text-xs px-2.5 py-1 rounded-md tracking-wide shadow-sm">
-          [TCSJL]
-        </span>
+        <BrandMark className="h-9 w-9 shrink-0" />
         <div className="flex flex-col">
           <span className="text-base font-semibold leading-tight text-slate-900 dark:text-slate-100">
-            TCSJL
-          </span>
-          <span className="text-xs font-normal text-slate-400 dark:text-slate-500">
             Candidate Onboarding Portal
           </span>
         </div>

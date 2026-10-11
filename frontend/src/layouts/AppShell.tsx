@@ -17,6 +17,7 @@ import { apiGet } from "@/api/client";
 import { listAnnouncements } from "@/api/announcements";
 import { listNotifications } from "@/api/notifications";
 import { setUnreadCount, useUnreadCount } from "@/api/unreadStore";
+import { BrandMark } from "@/components/BrandMark";
 import { Disclaimer } from "@/components/Disclaimer";
 import {
   readDismissedAnnouncements,
@@ -37,16 +38,11 @@ const BRAND = (
     aria-label="TCSJL home"
     className="flex items-center gap-2.5 px-2 py-1"
   >
-    {/* <div className="h-9 w-9 rounded-lg bg-indigo-600 text-white font-headline font-bold text-xs flex items-center justify-center shadow-sm">
-      TCSJL
-    </div> */}
+    <BrandMark className="h-9 w-9 shrink-0" />
     <div>
       <h1 className="font-headline text-base font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-none">
-        TCSJL
-      </h1>
-      <p className="font-body text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-none font-medium">
         Recruitment Status
-      </p>
+      </h1>
     </div>
   </Link>
 );
@@ -405,16 +401,9 @@ export function AppShell({ children }: { children?: ReactNode }) {
                   data-testid="app-title"
                   className="flex items-center gap-2.5"
                 >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-[9px] font-bold tracking-wider text-white shadow-sm">
-                    TCSJL
-                  </span>
-                  <span className="hidden sm:block">
-                    <span className="block text-sm font-bold leading-none tracking-tight text-slate-900 dark:text-slate-100">
-                      TCSJL
-                    </span>
-                    <span className="mt-1 block text-[10px] leading-none text-slate-500 dark:text-slate-400">
-                      Recruitment Status
-                    </span>
+                  <BrandMark className="h-9 w-9 shrink-0" />
+                  <span className="hidden text-sm font-bold leading-none tracking-tight text-slate-900 dark:text-slate-100 sm:block">
+                    Recruitment Status
                   </span>
                 </Link>
               </div>

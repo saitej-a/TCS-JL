@@ -28,6 +28,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import type { ApiError } from "@/api/errors";
+import { BrandMark } from "@/components/BrandMark";
 import { useAuth } from "@/context/AuthContext";
 
 const INVALID_CREDENTIALS_TEXT = "Invalid email or password.";
@@ -122,21 +123,9 @@ export function LoginPage() {
             />
 
             <div className="relative z-10">
-              {/* Branded Emblem & Title */}
+              {/* Branded Emblem */}
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-brand-700 flex items-center justify-center text-white shadow-sm shadow-indigo-600/30 shrink-0">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                  </svg>
-                </div>
-                <div>
-                  <span className="inline-block text-[11px] font-semibold text-brand-700 tracking-wide uppercase bg-indigo-100/70 px-2 py-0.5 rounded dark:text-brand-300 dark:bg-indigo-950/60">
-                    TCSJL Platform
-                  </span>
-                  <h2 className="text-base font-bold text-slate-900 tracking-tight leading-none mt-0.5 dark:text-slate-100">
-                    TCSJL
-                  </h2>
-                </div>
+                <BrandMark className="h-11 w-11 shrink-0" />
               </div>
 
               {/* Feature Spotlight Content */}

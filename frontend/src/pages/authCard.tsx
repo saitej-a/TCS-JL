@@ -11,21 +11,19 @@
 import type { ReactElement, ReactNode } from "react";
 import { Link } from "react-router-dom";
 
+import { BrandMark } from "@/components/BrandMark";
 import { Disclaimer } from "@/components/Disclaimer";
 
 export function BrandRow({
   row = SHELLS.register.brandRow,
-  badge = SHELLS.register.badge,
-  text = SHELLS.register.brandText,
+  mark = SHELLS.register.brandMark,
 }: {
   row?: string;
-  badge?: string;
-  text?: string;
+  mark?: string;
 } = {}) {
   return (
     <Link to="/" className={row} aria-label="TCSJL home">
-      <span className={badge}>[TCSJL]</span>
-      <span className={text}>TCSJL</span>
+      <BrandMark className={mark} />
     </Link>
   );
 }
@@ -79,7 +77,7 @@ interface AuthCardProps {
 
 /**
  * Each auth composition draws its own card — same skeleton, different width,
- * padding, brand badge and heading rhythm — so the shell is a named variant
+ * padding, brand mark size and heading rhythm — so the shell is a named variant
  * rather than one set of classes every screen has to accept. `register` is the
  * registration composition's shell and the default; the others are added as the
  * screens that need them are ported.
@@ -89,8 +87,7 @@ const SHELLS = {
     main: "flex-grow flex items-center justify-center px-4 py-10 sm:px-6",
     card: "w-full max-w-[460px] bg-white rounded-2xl shadow-xl border border-slate-100 p-8 sm:p-9 relative transition-all dark:bg-slate-900 dark:border-slate-800",
     brandRow: "flex items-center gap-2.5",
-    badge: "bg-indigo-600 text-white font-bold text-sm px-2.5 py-1 rounded-lg tracking-tight select-none shadow-sm",
-    brandText: "font-headline text-slate-900 font-bold text-lg tracking-tight dark:text-slate-100",
+    brandMark: "h-11 w-11 shrink-0",
     heading: "mt-6 mb-6",
     title: "text-[28px] font-bold text-slate-900 tracking-tight leading-tight dark:text-slate-100",
     subtitle: "text-slate-500 text-sm mt-1 leading-relaxed dark:text-slate-400",
@@ -99,8 +96,7 @@ const SHELLS = {
     main: "flex-grow flex items-center justify-center px-4 py-10 relative z-10",
     card: "max-w-md w-full bg-white rounded-2xl shadow-xl border border-slate-100 p-8 sm:p-10 transition-all duration-200 dark:bg-slate-900 dark:border-slate-800",
     brandRow: "flex items-center gap-2.5 mb-2",
-    badge: "bg-indigo-600 px-2.5 py-1 rounded-md text-xs font-bold text-white tracking-wide shadow-xs",
-    brandText: "text-slate-900 font-bold text-base tracking-tight font-headline dark:text-slate-100",
+    brandMark: "h-10 w-10 shrink-0",
     heading: "",
     title: "text-[28px] font-bold text-slate-900 tracking-tight mt-6 mb-2 leading-tight font-headline dark:text-slate-100",
     subtitle: "text-sm text-slate-500 leading-relaxed mb-6 dark:text-slate-400",
@@ -122,7 +118,7 @@ export function AuthCard({
     >
       <main className={styles.main}>
         <div className={styles.card}>
-          <BrandRow row={styles.brandRow} badge={styles.badge} text={styles.brandText} />
+          <BrandRow row={styles.brandRow} mark={styles.brandMark} />
           <div className={styles.heading}>
             <h1 className={styles.title}>{title}</h1>
             <p className={styles.subtitle}>{subtitle}</p>

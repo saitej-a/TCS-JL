@@ -13,6 +13,11 @@
       content="TCS Joining Tracker — an independent community platform for candidates tracking their TCS joining journey. Not affiliated with TCS."
     />
     <title>TCSJL</title>
+    <!-- The project mark: the SVG for browsers that take it, the PWA raster as
+         the fallback and as the iOS home-screen icon. -->
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192.png" />
     <!-- Pre-paint theme resolution. Dark is the app default (see
          `src/theme/theme.ts`), and applying it only from React's effect would
          flash the light markup first. This mirrors `readStoredMode` exactly:
