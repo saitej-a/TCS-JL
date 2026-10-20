@@ -1,16 +1,30 @@
 /**
- * The authenticated chrome (UI-01): responsive per §5.2/§5.3/§5.4.
- * Ported to verbatim Stitch markup (tcs_joining_tracker_app_shell,
- * tcs_joining_tracker_desktop_app_shell_dark_mode, tcs_joining_tracker_mobile_app_shell)
- * under skin-v1 with vendored Material Symbols Outlined icons.
+ * The authenticated & public workspace chrome (UI-01, upgraded in Phase 2
+ * Anti-Slop Overhaul):
  *
- * - ≥1280px (§5.2's 3-col): sidebar 240px + center + right rail 320px.
- * - 640–1279px (§5.3 tablet): sidebar persists, rail collapses.
- * - <640px (§5.4 mobile): top app bar + fixed bottom tab bar, ≥44px targets.
+ * - Built on the drawn `Accent ladder / Open plane` workspace direction
+ *   (seed 1948030239) with the **Forest Emerald & Warm Stone** palette.
+ * - Zero Material Symbols font ligatures: all navigation, alert, announcement,
+ *   and action icons use `lucide-react` vector SVGs (`1.75px` stroke width).
+ * - Keyboard-first `/` shortcut focuses the top-bar search input when no form
+ *   control is active.
+ * - ≥1024px (`lg`): 240px open-plane sidebar + fluid center + collapsible 320px
+ *   right context rail (`RailPortal`).
+ * - <1024px: responsive top bar + slide-over navigation drawer with `Escape`
+ *   key dismissal.
  */
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { Menu, Search, UsersRound } from "lucide-react";
+import {
+  Bell,
+  Flag,
+  Megaphone,
+  Menu,
+  Plus,
+  Search,
+  UsersRound,
+  X,
+} from "lucide-react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { apiGet } from "@/api/client";
@@ -24,8 +38,6 @@ import {
   recordDismissedAnnouncement,
 } from "@/components/announcementStorage";
 import { useAuth } from "@/context/AuthContext";
-// Mobile tab bar removed in favor of a hamburger mobile menu
-// import { MobileTabBar } from "@/layouts/MobileTabBar";
 import { setRailOccupied, useRailOccupied } from "@/layouts/railStore";
 import { APP_HEADER_SURFACE } from "@/layouts/appHeaderStyles";
 import { PwaLayer } from "@/pwa/PwaLayer";
@@ -36,31 +48,33 @@ const BRAND = (
   <Link
     to="/dashboard"
     aria-label="TCSJL home"
-    className="flex items-center gap-2.5 px-2 py-1"
+    className="flex items-center gap-2.5 px-2 py-1 rounded-lg transition-colors duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/50"
   >
     <BrandMark className="h-9 w-9 shrink-0" />
     <div>
-      <h1 className="font-headline text-base font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-none">
+      <h1 className="font-headline text-[15px] font-semibold tracking-tight text-slate-900 dark:text-slate-100 leading-none">
         Recruitment Status
       </h1>
+      <p className="mt-0.5 text-[11px] font-medium text-slate-500 dark:text-slate-400 leading-none">
+        Joining Ledger
+      </p>
     </div>
   </Link>
 );
 
 function navLinkClasses({ isActive }: { isActive: boolean }): string {
   return [
-    "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-150 min-h-[44px]",
+    "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.98] min-h-[44px]",
     isActive
-      ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 dark:border dark:border-indigo-800/40 font-semibold"
-      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200",
+      ? "bg-brand-50 text-brand-700 border border-brand-200/70 dark:bg-brand-950/60 dark:text-brand-300 dark:border-brand-800/50 font-semibold"
+      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200 border border-transparent",
   ].join(" ");
 }
 
 /**
  * The §5.5 announcement banner: latest un-dismissed announcement, persisted
- * dismissal. It reports its own visibility upward because the composition's
- * chrome sticks below it (`top-9` / `h-[calc(100vh-36px)]`) — an offset that must
- * not apply when the banner is absent or dismissed.
+ * dismissal. It reports its own visibility upward because the sticky chrome
+ * offsets below it (`top-9` / `h-[calc(100dvh-36px)]`) only while visible.
  */
 function AnnouncementBanner({
   onVisibilityChange,
@@ -98,36 +112,37 @@ function AnnouncementBanner({
     <aside
       id="global-announcement"
       data-testid="announcement-banner"
-      className="bg-indigo-600 text-white text-xs sm:text-sm font-medium px-4 sm:px-6 py-2 flex items-center justify-between shadow-sm sticky top-0 z-40 transition-all duration-200 dark:bg-indigo-950/90 dark:border-b dark:border-indigo-800/60 dark:text-indigo-100"
+      className="bg-brand-700 text-white text-xs sm:text-sm font-medium px-4 sm:px-6 py-2 flex items-center justify-between sticky top-0 z-40 transition-colors duration-200 dark:bg-brand-950 dark:border-b dark:border-brand-800/60 dark:text-brand-100"
     >
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-        <span className="p-1 rounded bg-indigo-700/60 flex items-center justify-center shrink-0">
-          <span className="material-symbols-outlined text-[18px] text-indigo-100 leading-none" data-icon="campaign" aria-hidden="true">
-            campaign
-          </span>
+      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        <span className="p-1 rounded bg-brand-800/60 flex items-center justify-center shrink-0">
+          <Megaphone className="h-4 w-4 text-brand-100" aria-hidden="true" />
         </span>
         <p className="truncate">
-          <span className="font-bold tracking-wide">NOTICE:</span> {item.title}
-          {item.body !== "" && <span className="hidden truncate font-normal opacity-90 sm:inline"> — {item.body}</span>}
+          <span className="font-semibold">NOTICE:</span> {item.title}
+          {item.body !== "" && (
+            <span className="hidden truncate font-normal opacity-90 sm:inline"> · {item.body}</span>
+          )}
         </p>
       </div>
       <div className="flex items-center gap-3 shrink-0 ml-4">
-        <Link to="/notifications" className="text-xs sm:text-sm underline underline-offset-2 text-indigo-100 hover:text-white font-semibold transition-colors duration-150">
+        <Link
+          to="/notifications"
+          className="text-xs sm:text-sm underline underline-offset-2 text-brand-100 hover:text-white font-semibold transition-colors duration-150"
+        >
           Read update
         </Link>
         <button
           type="button"
           aria-label="Dismiss announcement"
           data-testid="dismiss-announcement"
-          className="p-1 rounded hover:bg-indigo-700/70 text-indigo-200 hover:text-white transition-colors duration-150 flex items-center"
+          className="p-1 rounded hover:bg-brand-800/70 text-brand-200 hover:text-white transition-colors duration-150 flex items-center active:scale-[0.96]"
           onClick={() => {
             recordDismissedAnnouncement(item.id);
             setItem(null);
           }}
         >
-          <span className="material-symbols-outlined text-[18px]" data-icon="close" aria-hidden="true">
-            close
-          </span>
+          <X className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
     </aside>
@@ -159,15 +174,13 @@ function NotificationBell(): React.ReactElement {
       to={isAuthenticated ? "/notifications" : "/login?next=%2Fnotifications"}
       aria-label={isAuthenticated ? "Notifications" : "Sign in to see notifications"}
       data-testid="notification-bell"
-      className="relative p-2 flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-100 dark:hover:bg-slate-800 transition-colors duration-150"
+      className="relative p-2 flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-100 dark:hover:bg-slate-800 transition-[background-color,color,transform] duration-150 active:scale-[0.97]"
     >
-      <span className="material-symbols-outlined text-[22px]" data-icon="notifications" aria-hidden="true">
-        notifications
-      </span>
+      <Bell className="h-5 w-5 stroke-[1.75]" aria-hidden="true" />
       {isAuthenticated && unread > 0 && (
         <span
           data-testid="notification-badge"
-          className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white leading-none shadow-sm"
+          className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white leading-none tabular-nums"
         >
           {unread > 99 ? "99+" : unread}
         </span>
@@ -200,7 +213,7 @@ function AdminNavGroup(): React.ReactElement | null {
 
   return (
     <div className="mt-4 border-t border-slate-200 pt-3 dark:border-slate-800">
-      <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+      <p className="px-3 pb-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
         Administration
       </p>
       <nav aria-label="Administration" className="space-y-1">
@@ -209,18 +222,23 @@ function AdminNavGroup(): React.ReactElement | null {
           className={navLinkClasses}
           data-testid="admin-reports-link"
         >
-          {() => (
+          {({ isActive }) => (
             <span className="flex w-full items-center justify-between gap-2">
               <span className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-[20px]" data-icon="flag" aria-hidden="true">
-                  flag
-                </span>
+                <Flag
+                  className={`h-[18px] w-[18px] ${
+                    isActive
+                      ? "text-brand-700 dark:text-brand-400 stroke-[2]"
+                      : "text-slate-500 dark:text-slate-400 stroke-[1.75]"
+                  }`}
+                  aria-hidden="true"
+                />
                 <span>Reports</span>
               </span>
               {openReports !== null && openReports > 0 && (
                 <span
                   data-testid="admin-reports-count"
-                  className="min-w-[20px] rounded-full bg-amber-100 text-amber-800 dark:bg-indigo-950 dark:text-indigo-300 dark:border dark:border-indigo-800/60 px-1.5 text-center text-[11px] font-semibold leading-[18px]"
+                  className="min-w-[20px] rounded-full bg-amber-100 text-amber-800 dark:bg-brand-950 dark:text-brand-300 dark:border dark:border-brand-800/60 px-1.5 text-center text-[11px] font-semibold leading-[18px] tabular-nums"
                 >
                   {openReports > 99 ? "99+" : openReports}
                 </span>
@@ -233,11 +251,16 @@ function AdminNavGroup(): React.ReactElement | null {
           className={navLinkClasses}
           data-testid="admin-announcements-link"
         >
-          {() => (
+          {({ isActive }) => (
             <span className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-[20px]" data-icon="campaign" aria-hidden="true">
-                campaign
-              </span>
+              <Megaphone
+                className={`h-[18px] w-[18px] ${
+                  isActive
+                    ? "text-brand-700 dark:text-brand-400 stroke-[2]"
+                    : "text-slate-500 dark:text-slate-400 stroke-[1.75]"
+                }`}
+                aria-hidden="true"
+              />
               <span>Announcements</span>
             </span>
           )}
@@ -247,9 +270,16 @@ function AdminNavGroup(): React.ReactElement | null {
           className={navLinkClasses}
           data-testid="admin-members-link"
         >
-          {() => (
+          {({ isActive }) => (
             <span className="flex items-center gap-3">
-              <UsersRound className="h-5 w-5" aria-hidden="true" />
+              <UsersRound
+                className={`h-[18px] w-[18px] ${
+                  isActive
+                    ? "text-brand-700 dark:text-brand-400 stroke-[2]"
+                    : "text-slate-500 dark:text-slate-400 stroke-[1.75]"
+                }`}
+                aria-hidden="true"
+              />
               <span>Members</span>
             </span>
           )}
@@ -277,37 +307,69 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const railOccupied = useRailOccupied();
   const location = useLocation();
   const navigate = useNavigate();
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const [bannerVisible, setBannerVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState(
     () => new URLSearchParams(location.search).get("search") ?? "",
   );
-  // Mobile menu state (replaces bottom mobile tab bar)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  /**
-   * The composition's sticky offsets assume the 36px announcement banner is
-   * always there; the app's banner is data-driven and dismissible, so the chrome
-   * only offsets while it is actually rendered.
-   */
+
   const stickyOffset = bannerVisible
-    ? "top-9 h-[calc(100vh-36px)]"
-    : "top-0 h-screen";
+    ? "top-9 h-[calc(100dvh-36px)]"
+    : "top-0 h-[100dvh]";
 
   useEffect(() => {
     setSearchQuery(new URLSearchParams(location.search).get("search") ?? "");
   }, [location.search]);
+
+  // Close mobile menu on route change or Escape key
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    function handleGlobalKeyDown(event: KeyboardEvent): void {
+      if (event.key === "Escape" && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+        return;
+      }
+      // Keyboard shortcut `/` focuses the community search input when no form field is focused
+      if (
+        event.key === "/" &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey
+      ) {
+        const active = document.activeElement;
+        const tag = active?.tagName.toLowerCase();
+        const isEditable =
+          tag === "input" ||
+          tag === "textarea" ||
+          tag === "select" ||
+          (active instanceof HTMLElement && active.isContentEditable);
+        if (!isEditable && searchInputRef.current !== null) {
+          event.preventDefault();
+          searchInputRef.current.focus();
+        }
+      }
+    }
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [mobileMenuOpen]);
 
   function handleSearch(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault();
     const query = searchQuery.trim();
     navigate(query === "" ? "/community" : `/community?search=${encodeURIComponent(query)}`);
   }
+
   const railStickyOffset = bannerVisible
-    ? "top-[100px] h-[calc(100vh-100px)]"
-    : "top-16 h-[calc(100vh-64px)]";
+    ? "top-[100px] h-[calc(100dvh-100px)]"
+    : "top-16 h-[calc(100dvh-64px)]";
 
   return (
     <div
-      className="skin-v1 min-h-screen bg-slate-50 text-slate-900 font-body antialiased selection:bg-indigo-100 selection:text-indigo-800 dark:bg-slate-900 dark:text-slate-100 dark:selection:bg-indigo-900 dark:selection:text-indigo-200"
+      className="min-h-[100dvh] bg-slate-50 text-slate-900 font-body antialiased selection:bg-brand-100 selection:text-brand-900 dark:bg-slate-900 dark:text-slate-100 dark:selection:bg-brand-900 dark:selection:text-brand-100"
       data-testid="app-shell"
     >
       <PwaLayer />
@@ -325,26 +387,26 @@ export function AppShell({ children }: { children?: ReactNode }) {
               data-testid="desktop-nav"
               className="space-y-1 font-body text-sm leading-6 tracking-normal"
             >
-              {NAV_ITEMS.map((item) => (
-                <NavLink key={item.to} to={item.to} className={navLinkClasses}>
-                  {({ isActive }) => (
-                    <>
-                      <span
-                        className={`material-symbols-outlined text-[20px] ${
-                          isActive
-                            ? "text-indigo-600 dark:text-indigo-400"
-                            : "text-slate-500 dark:text-slate-400"
-                        }`}
-                        data-icon={item.glyph}
-                        aria-hidden="true"
-                      >
-                        {item.glyph}
-                      </span>
-                      <span>{item.label}</span>
-                    </>
-                  )}
-                </NavLink>
-              ))}
+              {NAV_ITEMS.map((item) => {
+                const ItemIcon = item.icon;
+                return (
+                  <NavLink key={item.to} to={item.to} className={navLinkClasses}>
+                    {({ isActive }) => (
+                      <>
+                        <ItemIcon
+                          className={`h-[18px] w-[18px] shrink-0 ${
+                            isActive
+                              ? "text-brand-700 dark:text-brand-400 stroke-[2]"
+                              : "text-slate-500 dark:text-slate-400 stroke-[1.75]"
+                          }`}
+                          aria-hidden="true"
+                        />
+                        <span>{item.label}</span>
+                      </>
+                    )}
+                  </NavLink>
+                );
+              })}
               <AdminNavGroup />
             </nav>
           </div>
@@ -352,11 +414,9 @@ export function AppShell({ children }: { children?: ReactNode }) {
           <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
             <Link
               to="/community/create"
-              className="w-full flex items-center justify-center gap-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 font-medium text-xs py-2 px-3 rounded-lg border border-indigo-200 dark:border-indigo-800 transition-colors duration-150"
+              className="w-full flex items-center justify-center gap-2 bg-brand-50 hover:bg-brand-100 dark:bg-brand-950/60 dark:hover:bg-brand-900/60 text-brand-700 dark:text-brand-300 font-medium text-xs py-2 px-3 rounded-lg border border-brand-200 dark:border-brand-800 transition-[background-color,transform] duration-150 active:scale-[0.98]"
             >
-              <span className="material-symbols-outlined text-[16px]" data-icon="add" aria-hidden="true">
-                add
-              </span>
+              <Plus className="h-4 w-4 shrink-0" aria-hidden="true" />
               <span>Share Update</span>
             </Link>
             <div className="flex items-center gap-3 px-2 text-xs text-slate-500 dark:text-slate-400">
@@ -372,11 +432,13 @@ export function AppShell({ children }: { children?: ReactNode }) {
                 Terms
               </Link>
             </div>
-            <p className="px-2 text-[10px] text-slate-400 dark:text-slate-500">v2.4.0 Community Edition</p>
+            <p className="px-2 text-[10px] text-slate-400 dark:text-slate-500 tabular-nums">
+              v2.4.0 Community Edition
+            </p>
           </div>
         </aside>
 
-        <div className="flex min-h-screen min-w-0 flex-1 flex-col">
+        <div className="flex min-h-[100dvh] min-w-0 flex-1 flex-col">
           <header
             data-testid="app-header"
             className={`${APP_HEADER_SURFACE} sticky ${
@@ -391,7 +453,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
                   aria-label="Open menu"
                   aria-expanded={mobileMenuOpen}
                   onClick={() => setMobileMenuOpen((s) => !s)}
-                  className="rounded-lg p-2 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden"
+                  className="rounded-lg p-2 transition-[background-color,transform] duration-150 hover:bg-slate-100 active:scale-[0.97] dark:hover:bg-slate-800 lg:hidden"
                 >
                   <Menu className="h-[22px] w-[22px] lg:hidden" aria-hidden="true" />
                 </button>
@@ -402,7 +464,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
                   className="flex items-center gap-2.5"
                 >
                   <BrandMark className="h-9 w-9 shrink-0" />
-                  <span className="hidden text-sm font-bold leading-none tracking-tight text-slate-900 dark:text-slate-100 sm:block">
+                  <span className="hidden text-sm font-semibold leading-none tracking-tight text-slate-900 dark:text-slate-100 sm:block lg:hidden">
                     Recruitment Status
                   </span>
                 </Link>
@@ -418,31 +480,36 @@ export function AppShell({ children }: { children?: ReactNode }) {
                   aria-hidden="true"
                 />
                 <input
+                  ref={searchInputRef}
                   type="search"
                   aria-label="Search community"
                   placeholder="Search community, region, batch…"
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
-                  className="w-full rounded-lg border border-slate-200 bg-slate-50/70 py-2 pl-9 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-100 dark:placeholder:text-slate-500 sm:text-sm"
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50/80 py-2 pl-9 pr-8 text-xs text-slate-800 placeholder:text-slate-400 transition-[border-color,background-color,box-shadow] duration-150 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-slate-900 sm:text-sm"
                 />
+                <kbd
+                  aria-hidden="true"
+                  className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded border border-slate-200 bg-white px-1.5 py-0.5 font-mono text-[10px] font-medium text-slate-400 sm:inline-block dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500"
+                >
+                  /
+                </kbd>
               </form>
 
               <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
                 <div className="hidden lg:block">
                   <Link
                     to="/community/create"
-                    className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-700 active:scale-[0.98] sm:text-sm"
+                    className="flex items-center gap-1.5 rounded-lg bg-brand-700 px-4 py-2 text-xs font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-brand-800 active:scale-[0.98] sm:text-sm"
                   >
-                    <span className="material-symbols-outlined text-[18px]" data-icon="add" aria-hidden="true">
-                      add
-                    </span>
+                    <Plus className="h-4 w-4 shrink-0" aria-hidden="true" />
                     <span>Post</span>
                   </Link>
                 </div>
                 {user !== null && user.is_staff && (
                   <span
                     data-testid="moderator-chip"
-                    className="hidden rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 sm:inline-flex"
+                    className="hidden rounded-full border border-brand-200 bg-brand-50 px-2.5 py-0.5 text-[11px] font-semibold text-brand-700 dark:border-brand-800 dark:bg-brand-950/60 dark:text-brand-300 sm:inline-flex"
                   >
                     Moderator
                   </span>
@@ -452,9 +519,9 @@ export function AppShell({ children }: { children?: ReactNode }) {
                   <Link
                     to="/settings"
                     aria-label="User profile settings"
-                    className="flex min-h-10 min-w-10 items-center justify-center gap-2 rounded-lg p-1 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 sm:px-2"
+                    className="flex min-h-10 min-w-10 items-center justify-center gap-2 rounded-lg p-1 transition-[background-color,transform] duration-150 hover:bg-slate-100 active:scale-[0.98] dark:hover:bg-slate-800 sm:px-2"
                   >
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full border border-indigo-200 bg-indigo-100 text-xs font-semibold text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full border border-brand-200 bg-brand-100 text-xs font-semibold text-brand-700 dark:border-brand-800 dark:bg-brand-950 dark:text-brand-300">
                       {user.email ? user.email.slice(0, 2).toUpperCase() : "CA"}
                     </span>
                     <span className="hidden max-w-36 truncate text-xs font-semibold text-slate-900 dark:text-slate-100 md:block">
@@ -468,43 +535,73 @@ export function AppShell({ children }: { children?: ReactNode }) {
             {mobileMenuOpen && (
               <div className="fixed inset-0 z-50 lg:hidden">
                 <div
-                  className="absolute inset-0 bg-black/40"
+                  className="absolute inset-0 bg-slate-950/40 transition-opacity duration-200"
                   onClick={() => setMobileMenuOpen(false)}
                 />
                 <aside className="absolute bottom-0 left-0 top-0 w-64 overflow-y-auto border-r border-slate-200 bg-white p-4 shadow-xl dark:border-slate-800 dark:bg-slate-900">
-                  <nav aria-label="Mobile primary">
+                  <div className="mb-4 flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                    {BRAND}
+                    <button
+                      type="button"
+                      aria-label="Close menu"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                    >
+                      <X className="h-4 w-4" aria-hidden="true" />
+                    </button>
+                  </div>
+                  <nav aria-label="Mobile primary" className="space-y-1">
                     <Link
                       to="/community/create"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="mb-2 flex items-center gap-3 rounded-lg bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 dark:hover:bg-indigo-900/60"
+                      className="mb-2 flex items-center gap-3 rounded-lg border border-brand-200 bg-brand-50 px-3 py-2.5 text-sm font-semibold text-brand-700 hover:bg-brand-100 dark:border-brand-800/60 dark:bg-brand-950/60 dark:text-brand-300 dark:hover:bg-brand-900/60"
                     >
-                      <span
-                        className="material-symbols-outlined text-[20px]"
-                        aria-hidden="true"
-                      >
-                        add
-                      </span>
+                      <Plus className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
                       <span>Share Update</span>
                     </Link>
-                    {NAV_ITEMS.map((item) => (
-                      <Link
-                        key={item.to}
-                        to={item.to}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
-                      >
-                        <span className="material-symbols-outlined text-[20px]" data-icon={item.glyph} aria-hidden="true">{item.glyph}</span>
-                        <span>{item.label}</span>
-                      </Link>
-                    ))}
+                    {NAV_ITEMS.map((item) => {
+                      const ItemIcon = item.icon;
+                      return (
+                        <Link
+                          key={item.to}
+                          to={item.to}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                        >
+                          <ItemIcon className="h-[18px] w-[18px] shrink-0 text-slate-500 dark:text-slate-400" aria-hidden="true" />
+                          <span>{item.label}</span>
+                        </Link>
+                      );
+                    })}
                     {user !== null && user.is_staff && (
-                      <div className="mt-3 border-t border-slate-200 pt-3 dark:border-slate-800">
-                        <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                      <div className="mt-3 border-t border-slate-200 pt-3 dark:border-slate-800 space-y-1">
+                        <p className="px-3 pb-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
                           Administration
                         </p>
-                        <Link to="/admin/moderation/reports" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">Reports</Link>
-                        <Link to="/admin/announcements" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">Announcements</Link>
-                        <Link to="/admin/members" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">Members</Link>
+                        <Link
+                          to="/admin/moderation/reports"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                        >
+                          <Flag className="h-4 w-4 text-slate-500 dark:text-slate-400" aria-hidden="true" />
+                          <span>Reports</span>
+                        </Link>
+                        <Link
+                          to="/admin/announcements"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                        >
+                          <Megaphone className="h-4 w-4 text-slate-500 dark:text-slate-400" aria-hidden="true" />
+                          <span>Announcements</span>
+                        </Link>
+                        <Link
+                          to="/admin/members"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                        >
+                          <UsersRound className="h-4 w-4 text-slate-500 dark:text-slate-400" aria-hidden="true" />
+                          <span>Members</span>
+                        </Link>
                       </div>
                     )}
                   </nav>
@@ -537,7 +634,6 @@ export function AppShell({ children }: { children?: ReactNode }) {
           </div>
         </div>
       </div>
-
     </div>
   );
 }

@@ -155,13 +155,12 @@ describe("§7.9 AnalyticsPage", () => {
     renderPage();
 
     expect(
-      screen.getByRole("heading", { name: "COMMUNITY RECRUITMENT BENCHMARKS & ANALYTICS" }),
+      screen.getByRole("heading", { name: /Community recruitment benchmarks & analytics/i }),
     ).toBeInTheDocument();
     // UI-04: the string is the constant, not a re-typed copy.
     expect(screen.getByText(ANALYTICS_DISCLAIMER)).toBeInTheDocument();
-    // The always-visible suppression notice (the composition's dark card;
-    // its 🛡️ emoji became a lucide Shield icon in the Phase 12 rebuild).
-    expect(screen.getByText("PRIVACY SUPPRESSION NOTICE")).toBeInTheDocument();
+    // The always-visible k-anonymity suppression notice.
+    expect(screen.getByText(/Privacy suppression notice/i)).toBeInTheDocument();
     expect(
       screen.getByText(
         "To prevent identification of individual candidates, data breakdowns with fewer than 5 submissions are automatically suppressed.",

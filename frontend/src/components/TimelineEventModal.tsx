@@ -1,21 +1,16 @@
 /**
- * The §7.5 add/edit timeline modal, restyled to the
- * `add_edit_milestone_modal` composition (Phase 12): uppercase field labels
- * with rose asterisks, the helper line under the type select, the live char
- * counter on the notes field, and the composition's footer (Esc hint left,
- * Cancel/Save right). Built on Modal.tsx (G-8).
+ * The §7.5 add/edit timeline modal (upgraded in Phase 1 Anti-Slop Overhaul):
+ * sentence-case field labels, Lucide Info icon, Deep Cerulean (`brand-*`)
+ * focus rings and primary actions, and flat architectural containers. Built on
+ * Modal.tsx (G-8).
  *
  * The write body stays exactly {event_type, event_date, description} —
- * `auto_update_status` is server-hardcoded (4.2 R4) and is never sent (the
- * composition's checkbox card is fiction and is not copied). A mapped event
- * advances `current_status` server-side (4.1's walk-the-chain), which the
+ * `auto_update_status` is server-hardcoded (4.2 R4) and is never sent. A mapped
+ * event advances `current_status` server-side (4.1's walk-the-chain), which the
  * auto-status note states in the UI.
- *
- * Validation is surfaced, not pre-empted: a date the server rejects
- * (e.g. the 730-day horizon, or a future JOINING_LETTER) renders the
- * server's message inline next to the field, verbatim.
  */
 import { useEffect, useState, type FormEvent } from "react";
+import { Info } from "lucide-react";
 
 import { ApiError } from "@/api/errors";
 import type { TimelineEventType } from "@/api/timeline";
@@ -119,8 +114,6 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
       await onSubmit(payload);
     } catch (error) {
       if (error instanceof ApiError) {
-        // DRF's raw field-errors shape lands in `details` (errors.ts): render
-        // the first message for the field it names; anything else is form-wide.
         const details = error.details;
         if (details !== null && typeof details === "object" && !Array.isArray(details)) {
           const record = details as Record<string, unknown>;
@@ -145,11 +138,11 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
 
   return (
     <Modal open={open} onClose={onClose} title={event === null ? "Add Timeline Milestone Event" : "Edit Timeline Milestone Event"}>
-      <form onSubmit={(e) => void handleSubmit(e)} className="skin-v1 space-y-5 font-body">
+      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-5 font-body">
         <div>
           <label
             htmlFor="timeline-event-type"
-            className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+            className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300"
           >
             Event Milestone Type <span className="text-rose-500">*</span>
           </label>
@@ -158,7 +151,7 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
             value={eventType}
             onChange={(e) => setEventType(e.target.value as TimelineEventType)}
             required
-            className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 dark:border-slate-600 dark:bg-slate-900"
+            className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 transition-[border-color,box-shadow] duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           >
             {EVENT_TYPE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -167,13 +160,13 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
             ))}
           </select>
           <p className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-            <span className="material-symbols-outlined text-[14px]" aria-hidden="true">info</span>
+            <Info className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
             <span>Milestones advance your status server-side; they never move it backwards.</span>
           </p>
         </div>
 
         <Input
-          label="DATE OCCURRED *"
+          label="Date Occurred *"
           type="date"
           value={eventDate}
           onChange={(e) => handleEventDateChange(e.target.value)}
@@ -182,20 +175,20 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
         />
 
         {eventType === "OFFER_LETTER" && (
-          <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 p-4 space-y-3 dark:border-indigo-900/50 dark:bg-indigo-950/20">
+          <div className="rounded-xl border border-brand-200 bg-brand-50/40 p-4 space-y-3 dark:border-brand-900/50 dark:bg-brand-950/20">
             <div className="flex items-start gap-2.5">
               <input
                 id="auto-complete-prior"
                 type="checkbox"
                 checked={includePriorEvents}
                 onChange={(e) => setIncludePriorEvents(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-800"
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-700 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800"
               />
               <label
                 htmlFor="auto-complete-prior"
                 className="text-xs font-semibold text-slate-800 dark:text-slate-200 cursor-pointer"
               >
-                Mark previous events (Interview & Selection) as complete
+                Mark previous events (Interview &amp; Selection) as complete
                 <p className="text-[11px] font-normal text-slate-500 dark:text-slate-400 mt-0.5">
                   Set the timeline for your interview and selection stages so each milestone is accurately dated.
                 </p>
@@ -203,9 +196,9 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
             </div>
 
             {includePriorEvents && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-indigo-100 dark:border-indigo-900/50">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-brand-100 dark:border-brand-900/50">
                 <Input
-                  label="INTERVIEW DATE *"
+                  label="Interview Date *"
                   type="date"
                   value={interviewDate}
                   onChange={(e) => {
@@ -215,7 +208,7 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
                   required={includePriorEvents}
                 />
                 <Input
-                  label="SELECTION DATE *"
+                  label="Selection Date *"
                   type="date"
                   value={selectionDate}
                   onChange={(e) => {
@@ -233,11 +226,11 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
           <div className="mb-1.5 flex items-center justify-between">
             <label
               htmlFor="timeline-event-notes"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+              className="block text-xs font-medium text-slate-700 dark:text-slate-300"
             >
               Description / Notes (Optional)
             </label>
-            <span className="text-xs font-medium text-slate-400 dark:text-slate-500" aria-live="polite">
+            <span className="text-xs font-medium text-slate-400 tabular-nums dark:text-slate-500" aria-live="polite">
               {description.length} / 500 characters
             </span>
           </div>
@@ -259,10 +252,9 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
           </p>
         )}
 
-        {/* The composition's footer: Esc hint left, Cancel/Save right. */}
         <div className="flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-700">
           <span className="flex items-center gap-1.5 text-xs font-medium text-slate-400 dark:text-slate-500">
-            <kbd className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 shadow-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400">
+            <kbd className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400">
               Esc
             </kbd>
             <span>to close</span>
@@ -271,13 +263,9 @@ export function TimelineEventModal({ open, event, presetType, onClose, onSubmit 
             <Button type="button" variant="secondary" onClick={onClose}>
               Cancel
             </Button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            >
+            <Button type="submit" disabled={saving}>
               {saving ? "Saving..." : event === null ? "Add Event" : "Save Changes"}
-            </button>
+            </Button>
           </span>
         </div>
       </form>

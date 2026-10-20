@@ -16,23 +16,24 @@ const DEFAULT_ILLUSTRATION = (
   <svg
     aria-hidden="true"
     viewBox="0 0 64 64"
-    className="h-16 w-16 text-slate-300 dark:text-slate-600"
-    fill="currentColor"
+    className="h-12 w-12 text-slate-400 dark:text-slate-600"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.75"
+    strokeLinecap="round"
+    strokeLinejoin="round"
   >
-    <path d="M20 14h24a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H34l-8 7v-7h-6a6 6 0 0 1-6-6V20a6 6 0 0 1 6-6Z" />
-    <circle cx="26" cy="28" r="2.5" className="text-slate-500 dark:text-slate-400" />
-    <circle cx="38" cy="28" r="2.5" className="text-slate-500 dark:text-slate-400" />
+    <rect x="12" y="14" width="40" height="36" rx="4" />
+    <line x1="12" y1="24" x2="52" y2="24" />
+    <line x1="20" y1="33" x2="36" y2="33" />
+    <line x1="20" y1="41" x2="28" y2="41" />
   </svg>
 );
 
 /**
- * 11's "every list needs an empty state": illustration slot, headline,
- * supporting line, and an optional primary action.
- *
- * Phase 12 reconciled the presentation to the error-and-empty-states
- * composition: the illustration sits in a tinted disc, and the whole block is a
- * dashed card so an empty list reads as a deliberate state rather than a
- * half-rendered section. The API (slots, labels, action) is unchanged.
+ * 11's "every list needs an empty state" (`app-screens.md §11`):
+ * Keeps the frame intact with a 1px structural border, crisp ledger icon,
+ * headline, supporting line, and optional primary action.
  */
 export function EmptyState({
   illustration,
@@ -43,13 +44,13 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <div
-      className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-slate-200 bg-white p-8 text-center dark:border-slate-700 dark:bg-slate-800"
+      className="flex flex-col items-center justify-center gap-3 rounded-[10px] border border-dashed border-slate-200 bg-white p-8 text-center dark:border-slate-800 dark:bg-slate-900"
       data-testid="empty-state"
     >
-      <span className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-900/40">
+      <span className="flex h-12 w-12 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950/60">
         {illustration ?? DEFAULT_ILLUSTRATION}
       </span>
-      <h3 className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+      <h3 className="font-headline text-base font-semibold tracking-tight text-slate-900 dark:text-slate-100">
         {headline}
       </h3>
       {support !== undefined && (

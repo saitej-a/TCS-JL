@@ -1,5 +1,9 @@
 /**
- * Messages View — Single common channel & category rooms (Phase 13 D-01, D-08, D-11, ui-ux-pro-max).
+ * Messages View — Single common channel & category rooms (Phase 5 Anti-Slop Overhaul):
+ * - `100dvh` mobile-safe flex layout (`h-[calc(100dvh-64px)]`);
+ * - Consecutive-author message grouping (`groupedWithPrev`);
+ * - Spring reply quotes (`--ease-out`) and zero `w-10 h-10` icon-in-tinted-square
+ *   chrome boxes.
  */
 
 import {
@@ -79,7 +83,6 @@ export function MessagesPage() {
         if (active) setRooms(data);
       })
       .catch(() => {
-        // Fallback room if API fails
         if (active) {
           setRooms([
             {
@@ -180,7 +183,10 @@ export function MessagesPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)] max-h-[calc(100vh-64px)] bg-slate-50 dark:bg-slate-950 overflow-hidden">
+    <div
+      data-testid="messages-page"
+      className="flex h-[calc(100dvh-64px)] max-h-[calc(100dvh-64px)] flex-col overflow-hidden bg-slate-50 dark:bg-slate-950"
+    >
       {/* Mobile/Tablet Pill Navigation */}
       <RoomPillsMobile
         rooms={rooms}
@@ -198,30 +204,29 @@ export function MessagesPage() {
 
         {/* Chat Pane */}
         <main
-          className="flex-1 flex flex-col h-full bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 overflow-hidden"
+          className="flex h-full flex-1 flex-col overflow-hidden border-l border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
           aria-label={`Chat channel: ${activeRoom.label}`}
         >
-          {/* Channel Header */}
-          <header className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-brand-50 dark:bg-brand-950/60 border border-brand-200 dark:border-brand-800 flex items-center justify-center text-brand-600 dark:text-brand-400">
-                <Hash className="w-5 h-5" />
-              </div>
-              <div>
-                <h1 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                  {activeRoom.label}
-                  {activeRoom.is_default && (
-                    <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
-                      Default Channel
-                    </span>
-                  )}
-                </h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {activeRoom.slug === "general"
-                    ? "Welcome to #General — open channel for all candidates."
-                    : `Discussions and updates related to ${activeRoom.label}.`}
-                </p>
-              </div>
+          {/* Channel Header — flat architectural header without icon-in-tinted-square box */}
+          <header className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white/90 px-6 py-4 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
+            <div>
+              <h1 className="flex items-center gap-2 text-base font-bold text-slate-900 dark:text-slate-100">
+                <Hash
+                  className="h-4 w-4 shrink-0 text-brand-700 dark:text-brand-400"
+                  aria-hidden="true"
+                />
+                <span>{activeRoom.label}</span>
+                {activeRoom.is_default && (
+                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                    Default Channel
+                  </span>
+                )}
+              </h1>
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                {activeRoom.slug === "general"
+                  ? "Welcome to #General — open channel for all candidates."
+                  : `Discussions and updates related to ${activeRoom.label}.`}
+              </p>
             </div>
 
             <div className="flex items-center gap-2">
@@ -232,21 +237,19 @@ export function MessagesPage() {
                     setCreateRoomError(null);
                     setIsCreateOpen(true);
                   }}
-                  className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+                  className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-slate-200 px-3 text-xs font-semibold text-slate-700 transition-[background-color,transform] duration-150 hover:bg-slate-50 active:scale-[0.98] dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                 >
                   <Plus className="h-4 w-4" aria-hidden="true" />
                   Create channel
                 </button>
               )}
               <span
-                className={`w-2.5 h-2.5 rounded-full ${
-                  isDegraded
-                    ? "bg-amber-500 animate-pulse"
-                    : "bg-emerald-500"
+                className={`h-2.5 w-2.5 rounded-full ${
+                  isDegraded ? "animate-pulse bg-amber-500" : "bg-emerald-500"
                 }`}
                 title={isDegraded ? "Reconnecting..." : "Live updates active"}
               />
-              <span className="text-xs text-slate-500 dark:text-slate-400 hidden sm:inline">
+              <span className="hidden text-xs text-slate-500 sm:inline dark:text-slate-400">
                 {isDegraded ? "Reconnecting" : "Live"}
               </span>
             </div>
@@ -259,17 +262,23 @@ export function MessagesPage() {
                 aria-modal="true"
                 aria-labelledby="create-chat-room-title"
                 onSubmit={handleCreateRoom}
-                className="w-full max-w-md space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-xl dark:border-slate-700 dark:bg-slate-900"
+                className="w-full max-w-md space-y-4 rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900"
               >
                 <div>
-                  <h2 id="create-chat-room-title" className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                  <h2
+                    id="create-chat-room-title"
+                    className="text-lg font-semibold text-slate-900 dark:text-slate-100"
+                  >
                     Create message channel
                   </h2>
                   <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                     All members will be able to join this channel.
                   </p>
                 </div>
-                <label htmlFor="new-chat-room-name" className="block text-sm font-medium text-slate-700 dark:text-slate-200">
+                <label
+                  htmlFor="new-chat-room-name"
+                  className="block text-sm font-medium text-slate-700 dark:text-slate-200"
+                >
                   Channel name
                 </label>
                 <input
@@ -278,10 +287,14 @@ export function MessagesPage() {
                   maxLength={100}
                   value={newRoomLabel}
                   onChange={(event) => setNewRoomLabel(event.target.value)}
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                   required
                 />
-                {createRoomError && <p role="alert" className="text-sm text-rose-600 dark:text-rose-400">{createRoomError}</p>}
+                {createRoomError && (
+                  <p role="alert" className="text-sm text-rose-600 dark:text-rose-400">
+                    {createRoomError}
+                  </p>
+                )}
                 <div className="flex justify-end gap-2">
                   <button
                     type="button"
@@ -293,7 +306,7 @@ export function MessagesPage() {
                   <button
                     type="submit"
                     disabled={!newRoomLabel.trim() || isCreatingRoom}
-                    className="min-h-10 rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
+                    className="min-h-10 rounded-lg bg-brand-700 px-4 text-sm font-semibold text-white hover:bg-brand-800 disabled:opacity-50"
                   >
                     {isCreatingRoom ? "Creating…" : "Create channel"}
                   </button>
@@ -305,10 +318,10 @@ export function MessagesPage() {
           {/* Degraded Connection Banner */}
           {isDegraded && (
             <div
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-200 text-xs shrink-0"
+              className="flex shrink-0 items-center justify-center gap-2 border-b border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-800 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-200"
               role="status"
             >
-              <WifiOff className="w-3.5 h-3.5" />
+              <WifiOff className="h-3.5 w-3.5" />
               <span>
                 Live updates paused — reconnecting. Messages will send via backup.
               </span>
@@ -319,17 +332,17 @@ export function MessagesPage() {
           <div
             ref={scrollContainerRef}
             onScroll={handleScroll}
-            className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 lg:pb-4 space-y-2 relative"
+            className="relative flex-1 space-y-1 overflow-y-auto px-4 py-4 sm:px-6 lg:pb-4"
             role="log"
             aria-live="polite"
             aria-label={`${activeRoom.label} messages`}
           >
             {hasMore && (
-              <div className="flex justify-center mb-4">
+              <div className="mb-4 flex justify-center">
                 <button
                   type="button"
                   onClick={loadOlder}
-                  className="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                  className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                 >
                   Load earlier messages
                 </button>
@@ -337,50 +350,57 @@ export function MessagesPage() {
             )}
 
             {isLoading && messages.length === 0 ? (
-              <div className="space-y-4 py-8 max-w-lg mx-auto">
+              <div className="mx-auto max-w-lg space-y-4 py-8">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 animate-pulse shrink-0" />
+                  <div className="h-8 w-8 shrink-0 animate-pulse rounded-full bg-slate-200 dark:bg-slate-800" />
                   <div className="flex-1 space-y-2">
-                    <div className="w-24 h-3 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-                    <div className="w-64 h-12 bg-slate-200 dark:bg-slate-800 rounded-2xl animate-pulse" />
+                    <div className="h-3 w-24 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
+                    <div className="h-12 w-64 animate-pulse rounded-xl bg-slate-200 dark:bg-slate-800" />
                   </div>
                 </div>
-                <div className="flex items-start gap-3 justify-end">
-                  <div className="flex-1 space-y-2 flex flex-col items-end">
-                    <div className="w-20 h-3 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-                    <div className="w-56 h-10 bg-slate-200 dark:bg-slate-800 rounded-2xl animate-pulse" />
+                <div className="flex items-start justify-end gap-3">
+                  <div className="flex flex-1 flex-col items-end space-y-2">
+                    <div className="h-3 w-20 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
+                    <div className="h-10 w-56 animate-pulse rounded-xl bg-slate-200 dark:bg-slate-800" />
                   </div>
                 </div>
               </div>
             ) : error ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
-                <AlertCircle className="w-8 h-8 text-rose-500 mb-2" />
+                <AlertCircle className="mb-2 h-8 w-8 text-rose-500" />
                 <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
                   {error}
                 </p>
               </div>
             ) : messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center text-slate-400 dark:text-slate-500">
-                <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800/60 flex items-center justify-center mb-3">
-                  <MessageCircle className="w-6 h-6 text-slate-400" />
-                </div>
+                <MessageCircle className="mb-3 h-6 w-6 text-slate-400" aria-hidden="true" />
                 <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   No messages yet
                 </p>
-                <p className="text-xs mt-1">
+                <p className="mt-1 text-xs">
                   Start the conversation in #{activeRoom.label}.
                 </p>
               </div>
             ) : (
-              messages.map((msg) => (
-                <MessageBubble
-                  key={msg.id}
-                  message={msg}
-                  isOwn={msg.author.id === user?.id}
-                  onDelete={deleteMessage}
-                  onReply={(targetMsg) => setReplyingTo(targetMsg)}
-                />
-              ))
+              messages.map((msg, index) => {
+                const prev = index > 0 ? messages[index - 1] : undefined;
+                const groupedWithPrev =
+                  prev !== undefined &&
+                  prev.author.id === msg.author.id &&
+                  !prev.is_deleted &&
+                  !msg.is_deleted;
+                return (
+                  <MessageBubble
+                    key={msg.id}
+                    message={msg}
+                    isOwn={msg.author.id === user?.id}
+                    groupedWithPrev={groupedWithPrev}
+                    onDelete={deleteMessage}
+                    onReply={(targetMsg) => setReplyingTo(targetMsg)}
+                  />
+                );
+              })
             )}
 
             <div ref={messagesEndRef} />
@@ -391,25 +411,25 @@ export function MessagesPage() {
             <button
               type="button"
               onClick={() => scrollToBottom("smooth")}
-              className="absolute bottom-24 right-8 px-3 py-2 rounded-full bg-brand-600 text-white shadow-lg hover:bg-brand-700 transition-all flex items-center gap-1.5 text-xs font-semibold z-10 min-h-[36px]"
+              className="absolute bottom-24 right-8 z-10 flex min-h-[36px] items-center gap-1.5 rounded-full border border-brand-800 bg-brand-700 px-3 py-2 text-xs font-semibold text-white transition-[background-color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-brand-800 active:scale-[0.98]"
               aria-label="Jump to latest messages"
             >
-              <ArrowDown className="w-3.5 h-3.5" />
+              <ArrowDown className="h-3.5 w-3.5" />
               <span>New messages</span>
             </button>
           )}
 
           {/* Composer Footer */}
-          <footer className="p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0 fixed bottom-0 left-0 right-0 z-40 lg:static lg:relative pb-[env(safe-area-inset-bottom,12px)]">
-            <div className="max-w-4xl mx-auto">
+          <footer className="fixed bottom-0 left-0 right-0 z-40 shrink-0 border-t border-slate-200 bg-white p-4 pb-[env(safe-area-inset-bottom,12px)] lg:relative lg:static dark:border-slate-800 dark:bg-slate-900">
+            <div className="mx-auto max-w-4xl">
               {replyingTo && (
                 <div
-                  className="mb-2 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3 text-xs"
+                  className="mb-2 flex items-center justify-between gap-3 rounded-lg border border-slate-200 border-l-2 border-l-brand-700 bg-slate-50 px-3 py-2 text-xs transition-[transform,opacity] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] dark:border-slate-700 dark:border-l-brand-400 dark:bg-slate-800/80"
                   data-testid="reply-banner"
                 >
                   <div className="flex items-center gap-2 overflow-hidden">
-                    <Reply className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 shrink-0 rotate-180" />
-                    <span className="font-semibold text-slate-700 dark:text-slate-300 shrink-0">
+                    <Reply className="h-3.5 w-3.5 shrink-0 rotate-180 text-brand-700 dark:text-brand-400" />
+                    <span className="shrink-0 font-semibold text-slate-700 dark:text-slate-300">
                       Replying to {formatDisplayName(replyingTo.author.display_name)}:
                     </span>
                     <span className="truncate italic text-slate-500 dark:text-slate-400">
@@ -419,17 +439,17 @@ export function MessagesPage() {
                   <button
                     type="button"
                     onClick={() => setReplyingTo(null)}
-                    className="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0"
+                    className="shrink-0 rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-200"
                     aria-label="Cancel reply"
                     title="Cancel reply"
                   >
-                    <X className="w-3.5 h-3.5" />
+                    <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
               )}
               <TypingIndicator users={typingUsers} />
               <form onSubmit={handleSend}>
-                <div className="relative flex items-end gap-2 p-1.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20 transition-all">
+                <div className="relative flex items-end gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1.5 transition-[border-color,box-shadow] duration-150 focus-within:border-brand-600 focus-within:ring-2 focus-within:ring-brand-600/20 dark:border-slate-700/80 dark:bg-slate-800/80">
                   <textarea
                     value={inputBody}
                     onChange={(e) => {
@@ -443,26 +463,32 @@ export function MessagesPage() {
                     placeholder={`Message #${activeRoom.label}...`}
                     maxLength={2000}
                     rows={2}
-                    className="w-full px-3 py-2 text-sm bg-transparent border-0 focus:outline-none focus:ring-0 resize-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 min-h-[48px] max-h-36"
+                    className="max-h-36 min-h-[48px] w-full resize-none border-0 bg-transparent px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-0 dark:text-slate-100"
                     aria-label={`Message #${activeRoom.label}`}
                   />
                   <button
                     type="submit"
                     disabled={!inputBody.trim() || isSubmitting}
-                    className="p-3 rounded-xl bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-40 disabled:hover:bg-brand-600 transition-colors shrink-0 flex items-center justify-center min-w-[44px] min-h-[44px]"
+                    className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-lg bg-brand-700 p-3 text-white transition-[background-color,transform] duration-150 hover:bg-brand-800 active:scale-[0.98] disabled:opacity-40 disabled:hover:bg-brand-700"
                     aria-label="Send message"
                   >
-                    <Send className="w-4 h-4" />
+                    <Send className="h-4 w-4" />
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between mt-2 px-2 text-[11px] text-slate-400">
+                <div className="mt-2 flex items-center justify-between px-2 text-[11px] text-slate-400">
                   <span className="hidden sm:inline">
-                    Press <kbd className="font-mono bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">Enter</kbd> to send, <kbd className="font-mono bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">Shift+Enter</kbd> for newline
+                    Press{" "}
+                    <kbd className="rounded bg-slate-100 px-1 py-0.5 font-mono dark:bg-slate-800">
+                      Enter
+                    </kbd>{" "}
+                    to send,{" "}
+                    <kbd className="rounded bg-slate-100 px-1 py-0.5 font-mono dark:bg-slate-800">
+                      Shift+Enter
+                    </kbd>{" "}
+                    for newline
                   </span>
-                  <span className="ml-auto">
-                    {inputBody.length}/2000
-                  </span>
+                  <span className="ml-auto tabular-nums">{inputBody.length}/2000</span>
                 </div>
               </form>
             </div>

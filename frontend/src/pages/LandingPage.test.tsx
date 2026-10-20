@@ -3,6 +3,7 @@
  * fallback (never fabricated numbers), and the CTAs route correctly.
  */
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
@@ -41,10 +42,10 @@ describe("LandingPage", () => {
     ]);
     renderLanding();
     await waitFor(() => {
-      expect(screen.getByText("1,248")).toBeInTheDocument();
+      expect(screen.getAllByText("1,248").length).toBeGreaterThanOrEqual(1);
     });
     expect(screen.getByText("Community posts")).toBeInTheDocument();
-    expect(screen.getByText("220")).toBeInTheDocument();
+    expect(screen.getAllByText("220").length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders the fallback on API failure — never fabricated numbers", async () => {
@@ -111,5 +112,31 @@ describe("LandingPage", () => {
       "href",
       "/community",
     );
+  });
+
+  it("allows visitors to switch recruitment pipeline stages in the interactive preview", async () => {
+    const user = userEvent.setup();
+    scriptAdapter([
+      { url: "/public/stats/", respond: () => ({ status: 500, data: {} }) },
+    ]);
+    renderLanding();
+    const offerTab = screen.getByRole("tab", { name: /Offer Received/i });
+    await user.click(offerTab);
+    expect(offerTab).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText("Day 0 baseline")).toBeInTheDocument();
+  });
+
+  it("lets visitors toggle the live milestone row in the 3-state showcase", async () => {
+    const user = userEvent.setup();
+    scriptAdapter([
+      { url: "/public/stats/", respond: () => ({ status: 500, data: {} }) },
+    ]);
+    renderLanding();
+    const toggleBtn = screen.getByTestId("interactive-row-toggle");
+    expect(toggleBtn).toHaveTextContent("[Mark as Received]");
+
+    await user.click(toggleBtn);
+    expect(screen.getByText(/Oct 20, 2026: Joining Letter Received/i)).toBeInTheDocument();
+    expect(toggleBtn).toHaveTextContent("Reset demo row");
   });
 });

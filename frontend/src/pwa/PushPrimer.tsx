@@ -18,7 +18,7 @@
  * `PwaLayer`; this component is the modal and its copy.
  */
 import { useState } from "react";
-import { Megaphone, MessageSquare, Sparkles } from "lucide-react";
+import { Bell, Megaphone, MessageSquare } from "lucide-react";
 
 import { Button } from "@/components/Button";
 import { Modal } from "@/components/Modal";
@@ -47,7 +47,7 @@ const PRIMER_VALUES = [
     body: "Moderator announcements reach you as they are published.",
   },
   {
-    icon: Sparkles,
+    icon: Bell,
     title: "Milestone reactions and reminders",
     body: "Reactions on your timeline entries, plus your own timeline reminders.",
   },
@@ -87,13 +87,14 @@ export function PushPrimer({ open, onClose }: PushPrimerProps): React.ReactEleme
     <Modal open={open} onClose={() => onClose(null)} title={PRIMER_TITLE}>
       <div>
         <p className="text-sm text-slate-600 dark:text-slate-300">{PRIMER_BODY}</p>
-        {/* The composition's value rows, over the real notification vocabulary. */}
-        <ul className="mt-4 space-y-3">
+        {/* Value rows over the real notification vocabulary (no icon-in-tinted-square boxes). */}
+        <ul className="mt-4 divide-y divide-slate-100 rounded-lg border border-slate-200 bg-slate-50/70 px-3.5 dark:divide-slate-800 dark:border-slate-800 dark:bg-slate-950/60">
           {PRIMER_VALUES.map((value) => (
-            <li key={value.title} className="flex items-start gap-3">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-900/50 dark:text-brand-300">
-                <value.icon aria-hidden="true" className="h-4 w-4" />
-              </span>
+            <li key={value.title} className="flex items-start gap-2.5 py-3">
+              <value.icon
+                aria-hidden="true"
+                className="mt-0.5 h-4 w-4 shrink-0 text-brand-700 dark:text-brand-400"
+              />
               <div>
                 <p className="text-sm font-medium text-slate-800 dark:text-slate-100">
                   {value.title}

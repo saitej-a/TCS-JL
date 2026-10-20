@@ -53,9 +53,9 @@ export const CATEGORY_BADGE_CLASSES: Record<PostCategory, BadgeClasses> = {
     border: "border-slate-200 dark:border-slate-700",
   },
   INTERVIEW: {
-    bg: "bg-purple-50 dark:bg-purple-950/50",
-    text: "text-purple-700 dark:text-purple-300",
-    border: "border-purple-200 dark:border-purple-800",
+    bg: "bg-cyan-50 dark:bg-cyan-950/50",
+    text: "text-cyan-700 dark:text-cyan-300",
+    border: "border-cyan-200 dark:border-cyan-800",
   },
   // No §4.1.4 row — GENERAL slate treatment as the recorded fallback.
   DOCUMENTS: {
@@ -101,8 +101,8 @@ export const STATUS_BADGE_CLASSES: Record<CandidateStatus, BadgeClasses> = {
     border: "",
   },
   INTERVIEWED: {
-    bg: "bg-purple-100 dark:bg-purple-950/60",
-    text: "text-purple-700 dark:text-purple-300",
+    bg: "bg-cyan-100 dark:bg-cyan-950/60",
+    text: "text-cyan-700 dark:text-cyan-300",
     border: "",
   },
   SELECTED: {

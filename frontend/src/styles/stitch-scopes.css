@@ -1,203 +1,35 @@
 /*
- * The literal-markup presentation layer (Phase 14 D-03/D-04).
+ * Unified Scope Layer (Phase 1 Anti-Slop Overhaul)
  *
- * Phase 12 repainted the compositions onto the v2 vocabulary; Phase 14 copies
- * their markup verbatim instead, which means the library's own two skins have to
- * exist side by side. They are scoped per screen rather than forked into two
- * builds: Tailwind v4 routes every colour and font utility through CSS variables
- * (`.bg-brand-700{background-color:var(--color-brand-700)}`), so a class on a
- * screen's root re-points those variables for that subtree only.
- *
- *   .skin-v1 — the 32 compositions authored before the 9.5 design pass:
- *              Inter, Tailwind's built-in indigo/violet/amber/emerald/slate
- *              scales, the standard radii. Its palette needs nothing added:
- *              those scales ship with Tailwind. Only the typefaces are named.
- *   .skin-v2 — the 13 later compositions: Fira Sans / Fira Code, the brand
- *              (sky) scale — byte-identical to `--color-brand-*` — and
- *              `rounded-card` / `rounded-elem`, which `@theme` now defines.
- *
- * `font-family` is set directly as well as through the variables: the app's base
- * layer puts `font-family` on `body`, and inheritance does not re-read a
- * variable, so a scope that only redefined `--font-sans` would leave its text in
- * the parent's face.
- *
- * The `.material-symbols-outlined` block is the compositions' own <style> body
- * (their documents pair it with Google's stylesheet; we ship that stylesheet's
- * class from the vendored `styles/fonts.css` and layer these axis defaults on
- * top, exactly as they do).
+ * Previously, `.skin-v1` (Inter + Indigo) and `.skin-v2` (Fira + Sky) split the
+ * application into two incompatible visual templates imported from Stitch.
+ * Both classes now resolve to the single canonical typography, surface, and
+ * tabular-numeral system defined in `src/index.css` (`DESIGN.md`), keeping class
+ * hooks non-breaking while eliminating visual schizophrenia.
  */
 
-/*
- * The compositions' scroll-affordance helpers: three of the mockups put an
- * overflowing pill/tab row on screen and name these classes to hide the
- * scrollbar it would otherwise show. Defined here for the same reason as the
- * aliases below — the markup is ported literally, so the class has to resolve.
- */
-.no-scrollbar,
-.hide-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+.skin-v1,
+.skin-v2 {
+  --font-headline: "Fira Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fira Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-label: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-body);
 }
 
-.no-scrollbar::-webkit-scrollbar,
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/*
- * Composition utility aliases.
- *
- * The mockups name a handful of classes their inline Tailwind config never
- * defines — `code-text`, `font-mono-code`, `shadow-subtle`, `focus-ring`,
- * `btn-brand-primary` and friends. Porting that markup literally would otherwise
- * mean writing class names that resolve to nothing, so each one is defined once
- * here with the treatment its composition intends. Values are the mockups' own
- * tokens (`--color-brand-700`, Fira Code under `.skin-v2`); nothing here changes
- * a class the app already emits.
- */
-.code-text,
-.font-mono-code,
-.font-mono-val,
-.font-mono-tabular,
 .font-mono-numbers {
-  font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 
 .shadow-subtle {
-  box-shadow:
-    0 1px 2px rgb(15 23 42 / 0.06),
-    0 1px 3px rgb(15 23 42 / 0.1);
+  box-shadow: none;
 }
 
-.focus-ring:focus-visible {
-  outline: 2px solid var(--color-brand-700);
-  outline-offset: 2px;
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
-
-/*
- * The security composition names two more classes its document never defines —
- * it ships no inline `tailwind.config` at all. `rounded-custom` is its control
- * radius (8px, the value the v2 family stores as `--radius-elem`), and
- * `focus-brand` its brand-coloured focus ring, applied exactly as `focus-ring`
- * is. Defined here for the same reason as the rest of this block: the markup is
- * ported literally, so the class has to resolve.
- */
-.rounded-custom {
-  border-radius: 0.5rem;
-}
-
-.focus-brand:focus-visible {
-  outline: 2px solid var(--color-brand-700);
-  outline-offset: 2px;
-}
-
-.btn-brand-primary {
-  background-color: var(--color-brand-700);
-  color: #fff;
-  transition: background-color 150ms ease;
-}
-
-.btn-brand-primary:hover {
-  background-color: var(--color-brand-800);
-}
-
-.btn-brand-primary:active {
-  background-color: var(--color-brand-900);
-}
-
-/*
- * The privacy composition's own switch rules — verbatim from its <style> block,
- * which is where `switch-checkbox` / `switch-bg` / `switch-dot` get their
- * behaviour (the markup names the classes, the document defines them). The
- * colour is the composition's `#0369A1` — its inline brand scale is one step off
- * `@theme`'s, so the rule, not the class, is what makes the track the right blue.
- * The dot's `translateX(20px)` is the mockup's own distance for a `w-11` track.
- */
-.switch-checkbox:checked + .switch-bg {
-  background-color: #0369a1;
-}
-
-.switch-checkbox:checked + .switch-bg .switch-dot {
-  transform: translateX(20px);
-}
-
-/*
- * The devices composition's own toggle — verbatim from its <style> block: a
- * 44×24 track whose dot is an `::after`, brand-700 when active and slate-300
- * when not. The markup names `switch-toggle active|inactive` and nothing else
- * defines it.
- */
-.switch-toggle {
-  width: 44px;
-  height: 24px;
-  border-radius: 9999px;
-  transition: background-color 0.2s ease;
-  position: relative;
-  cursor: pointer;
-}
-
-.switch-toggle::after {
-  content: "";
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 20px;
-  height: 20px;
-  background-color: white;
-  border-radius: 9999px;
-  transition: transform 0.2s ease;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.15);
-}
-
-.switch-toggle.active {
-  background-color: #0369a1;
-}
-
-.switch-toggle.active::after {
-  transform: translateX(20px);
-}
-
-.switch-toggle.inactive {
-  background-color: #cbd5e1;
-}
-
-/* The compositions' own icon-class rules — verbatim from their <style> blocks. */
-.material-symbols-outlined {
-  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-  display: inline-block;
-  vertical-align: middle;
-  line-height: 1;
-}
-
-.material-symbols-outlined.fill-icon {
-  font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
-}
-
-/*
- * v1 (Inter + Tailwind's built-in accent scales). The four font roles the
- * compositions' inline `tailwind.config` declares all point at Inter.
- */
-.skin-v1 {
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-headline: "Inter", sans-serif;
-  --font-display: "Inter", sans-serif;
-  --font-body: "Inter", sans-serif;
-  --font-label: "Inter", sans-serif;
-  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-
-/*
- * v2 (Fira Sans/Code + the brand scale). The compositions' inline config names
- * only `sans` and `mono`; the four v1 role names are mapped here so a v2 screen
- * that reaches for one still resolves to the family that document loads.
- */
-.skin-v2 {
-  --font-sans: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Fira Code", ui-monospace, monospace;
-  --font-headline: "Fira Sans", sans-serif;
-  --font-display: "Fira Sans", sans-serif;
-  --font-body: "Fira Sans", sans-serif;
-  --font-label: "Fira Sans", sans-serif;
-  font-family: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

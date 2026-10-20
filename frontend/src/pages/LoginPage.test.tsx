@@ -134,4 +134,11 @@ describe("LoginPage", () => {
       expect(screen.getByText("dashboard-here")).toBeInTheDocument();
     });
   });
+
+  it("renders the anonymized candidate timeline specimen without data-awaiting placeholders", () => {
+    const { container } = renderLogin();
+    expect(screen.getByTestId("identity-pill")).toHaveTextContent("Anonymous Candidate");
+    expect(screen.getByRole("list", { name: "Sample candidate recruitment ledger" })).toBeInTheDocument();
+    expect(container.querySelector("[data-awaiting]")).toBeNull();
+  });
 });

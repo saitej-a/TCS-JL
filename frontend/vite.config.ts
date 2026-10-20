@@ -39,11 +39,9 @@ export default defineConfig({
         scope: "/",
         display: "standalone",
         orientation: "portrait-primary",
-        // §10.1 as amended in 9.5: v2 sky-700 (#0369A1) in light (the dark
-        // variant rides index.html's prefers-color-scheme meta, which the
-        // manifest format cannot express).
-        theme_color: "#0369A1",
-        background_color: "#FFFFFF",
+        // Forest Emerald (#047857) & Warm Stone (#FAF9F6)
+        theme_color: "#047857",
+        background_color: "#FAF9F6",
         icons: [
           { src: "icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
           { src: "icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
@@ -121,5 +119,15 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom", "react-router-dom"],
+          "motion-vendor": ["gsap", "@gsap/react"],
+          "icons-vendor": ["lucide-react"],
+          "network-vendor": ["axios"],
+        },
+      },
+    },
   },
 });

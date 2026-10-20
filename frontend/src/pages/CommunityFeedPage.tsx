@@ -7,6 +7,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Pin, Plus, Search } from "lucide-react";
 
 import {
   listCommunityPosts,
@@ -219,11 +220,9 @@ export function CommunityFeedPage(): React.ReactElement {
       <button
         type="button"
         onClick={() => setCreateOpen(true)}
-        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-lg shadow-sm hover:shadow active:scale-[0.98] transition-all dark:bg-indigo-600 dark:hover:bg-indigo-500"
+        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-semibold text-sm rounded-lg active:scale-[0.98] transition-colors dark:bg-brand-600 dark:hover:bg-brand-500"
       >
-        <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-          add
-        </span>
+        <Plus className="h-4 w-4" aria-hidden="true" />
         <span>Create New Post</span>
       </button>
     ),
@@ -238,7 +237,7 @@ export function CommunityFeedPage(): React.ReactElement {
     // columns), so the page carries the column's own rhythm and declares the
     // grid-track class dropped in RECONCILIATION-16.md.
     <main
-      className="skin-v1 flex flex-col gap-5 font-body antialiased"
+      className="flex flex-col gap-5 font-body antialiased"
       data-testid="community-feed"
     >
       {status === "authenticated" && (
@@ -254,11 +253,11 @@ export function CommunityFeedPage(): React.ReactElement {
       <PageHeader
         eyebrow={
           <>
-            <span className="rounded-md border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:border-indigo-800/60 dark:bg-indigo-950/60 dark:text-indigo-300">
+            <span className="rounded-md border border-brand-200 bg-brand-50 px-2 py-0.5 text-[10px] font-bold tracking-tight text-brand-700 dark:border-brand-800/60 dark:bg-brand-950/60 dark:text-brand-300">
               Live Peer Feed
             </span>
             {posts !== null && (
-              <span className="text-xs text-slate-400 dark:text-slate-400">• {total} posts</span>
+              <span className="text-xs tabular-nums text-slate-400 dark:text-slate-400">• {total} posts</span>
             )}
           </>
         }
@@ -270,7 +269,7 @@ export function CommunityFeedPage(): React.ReactElement {
           ) : (
             <Link
               to="/login?next=%2Fcommunity"
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 hover:shadow active:scale-[0.98] dark:bg-indigo-600 dark:hover:bg-indigo-500"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-800 active:scale-[0.98] dark:bg-brand-600 dark:hover:bg-brand-500"
             >
               Sign in to post
             </Link>
@@ -279,34 +278,27 @@ export function CommunityFeedPage(): React.ReactElement {
       />
 
       {pinned !== null && (
-        /* §7.6's pinned announcement card, in the composition's amber gradient
-           shell with its corner flourish. An announcement is not a post — it
-           carries no votes, comments, or author — so none of those are rendered
-           (D9); the composition's vote/comment pills are therefore absent. */
-        <article className="bg-gradient-to-r from-amber-50/70 via-white to-indigo-50/50 rounded-xl p-5 border border-amber-200/90 shadow-sm relative overflow-hidden dark:from-amber-950/40 dark:via-slate-800 dark:to-indigo-950/40 dark:border-amber-800/80">
-          <div
-            className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-bl-full pointer-events-none dark:bg-indigo-400/5"
-            aria-hidden="true"
-          />
+        /* §7.6's pinned announcement card, in the composition's amber architectural
+           shell. An announcement is not a post — it carries no votes, comments,
+           or author — so none of those are rendered (D9); the composition's
+           vote/comment pills are therefore absent. */
+        <article className="bg-amber-50/50 rounded-xl p-5 border border-amber-200/90 relative overflow-hidden dark:bg-amber-950/30 dark:border-amber-800/80">
           <div className="flex items-start justify-between gap-3 mb-2">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-900 border border-amber-200 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-800/70">
-                <span
-                  className="material-symbols-outlined text-xs fill-current text-amber-700 dark:text-amber-400"
-                  data-icon="push_pin"
+                <Pin
+                  className="h-3 w-3 text-amber-700 dark:text-amber-400"
                   aria-hidden="true"
-                >
-                  push_pin
-                </span>
+                />
                 📌 Pinned announcement
               </span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-indigo-100 text-indigo-800 border border-indigo-200 dark:bg-indigo-950/70 dark:text-indigo-300 dark:border-indigo-800/70">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-brand-100 text-brand-800 border border-brand-200 dark:bg-brand-950/70 dark:text-brand-300 dark:border-brand-800/70">
                 Official Advisory
               </span>
             </div>
             <span className="text-xs text-slate-400 dark:text-slate-400 shrink-0">Sticky</span>
           </div>
-          <h2 className="font-headline text-base font-bold text-slate-900 tracking-tight mt-1 hover:text-indigo-600 transition-colors cursor-pointer dark:text-slate-100 dark:hover:text-indigo-400">
+          <h2 className="font-display text-base font-bold text-slate-900 tracking-tight mt-1 hover:text-brand-700 transition-colors cursor-pointer dark:text-slate-100 dark:hover:text-brand-400">
             {pinned.title}
           </h2>
           <p className="text-sm text-slate-600 mt-2 leading-relaxed dark:text-slate-300">{pinned.body}</p>
@@ -332,13 +324,13 @@ export function CommunityFeedPage(): React.ReactElement {
       {/* §7.6 groups the search field, the pills and the tabs in one bordered
           filter block above the list. */}
       {/* 2. Search bar, in the composition's own card. */}
-      <div className="bg-white rounded-xl p-3 border border-slate-200 shadow-sm dark:bg-slate-800 dark:border-slate-700/80">
+      <div className="bg-white rounded-xl p-3 border border-slate-200 dark:bg-slate-800 dark:border-slate-700/80">
         <div className="relative w-full">
           <div
             className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500"
             aria-hidden="true"
           >
-            <span className="material-symbols-outlined text-xl">search</span>
+            <Search className="h-4 w-4" />
           </div>
           <input
             type="search"
@@ -346,7 +338,7 @@ export function CommunityFeedPage(): React.ReactElement {
             onChange={(event) => handleSearchDraftChange(event.target.value)}
             placeholder="Search posts by keyword, location, or batch..."
             aria-label="Search posts"
-            className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition dark:bg-slate-900/70 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:bg-slate-900"
+            className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-600 focus:bg-white transition dark:bg-slate-900/70 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:bg-slate-900"
           />
         </div>
       </div>

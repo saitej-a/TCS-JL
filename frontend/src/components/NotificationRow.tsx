@@ -1,26 +1,19 @@
 /**
- * One §7.10 notification row, rebuilt to the `notification_center`
- * composition's markup **verbatim** (Phase 14 D-01): the classes, the nesting,
- * the Material Symbols ligatures and the per-kind tint are the document's — the
- * class maps live in `@/theme/notificationRows`.
- *
- * Field mapping (recorded — the mockup writes one sentence where the API ships
- * two): `title` is the server's headline and `message` the human sentence, and
- * each treatment puts them in the two content slots the composition draws —
- * headline in the primary line, message in the callout (rows 1/4), the meta line
- * (row 2) or the prose paragraph (rows 3/5). A message-less item drops the second
- * slot, exactly as the composition's own rows vary.
- *
- * Literal markup, not literal behaviour: the composition's affordances are React
- * (G-5). The row is clickable and keyboard-activatable (§7.10's
- * read-then-navigate lives in the page), and the per-kind action button is the
- * composition's own. `data-testid`/`aria-*` attributes are additive — no class or
- * element of the document changed to make this testable.
- *
- * Dark parity (Phase 16 follow-up): the row surface, the read/unread markers and
- * each body shape carry a `dark:` pair, so the center reads on the default dark
- * surface without touching a single light class.
+ * One §7.10 notification row (upgraded in Phase 1 Anti-Slop Overhaul):
+ * Deep Cerulean (`brand-*`) unread markers and callout borders, Lucide SVG icons
+ * replacing Material Symbols font ligatures, and flat 1px architectural rows.
  */
+import type { ComponentType } from "react";
+import {
+  Bell,
+  ExternalLink,
+  MapPin,
+  Megaphone,
+  MessageSquare,
+  ThumbsUp,
+  TrendingUp,
+} from "lucide-react";
+
 import {
   NOTIFICATION_TYPE_LABELS,
   ROW_TREATMENTS,
@@ -33,9 +26,16 @@ export interface NotificationRowProps {
   item: NotificationItem;
   /** Row click: §7.10's mark-read-then-navigate, owned by the page. */
   onSelect: (item: NotificationItem) => void;
-  /** The composition's own action button, whose target the page decides. */
+  /** The row's action button, whose target the page decides. */
   onAction: (item: NotificationItem) => void;
 }
+
+const GLYPH_ICONS: Record<string, ComponentType<{ className?: string }>> = {
+  forum: MessageSquare,
+  thumb_up: ThumbsUp,
+  campaign: Megaphone,
+  pin_drop: MapPin,
+};
 
 export function NotificationRow({
   item,
@@ -45,6 +45,7 @@ export function NotificationRow({
   const treatment = ROW_TREATMENTS[item.type];
   const action: RowAction | null = treatment.action;
   const read = item.is_read;
+  const GlyphIcon = GLYPH_ICONS[treatment.glyph] ?? Bell;
 
   return (
     <article
@@ -62,33 +63,25 @@ export function NotificationRow({
       className={`p-4 sm:p-5 hover:bg-slate-50/80 dark:hover:bg-slate-800/60 transition-colors cursor-pointer group ${
         read
           ? "bg-white opacity-85 hover:opacity-100 dark:bg-slate-900"
-          : "bg-indigo-50/20 dark:bg-indigo-950/30"
+          : "bg-brand-50/25 border-l-2 border-l-brand-600 dark:bg-brand-950/30 dark:border-l-brand-400"
       }`}
     >
       <div className="flex items-start gap-3.5">
-        {/* The composition's leading status dot: filled + ringed when unread. */}
+        {/* Leading status dot: filled + ringed when unread. */}
         <div className="pt-1.5 flex-shrink-0" title={read ? "Already read" : "Unread notification"}>
           <span
             data-testid={`marker-${read ? "read" : "unread"}-${item.id}`}
             className={
               read
                 ? "h-2.5 w-2.5 rounded-full border border-slate-300 bg-transparent block dark:border-slate-600"
-                : "h-2.5 w-2.5 rounded-full bg-indigo-600 ring-4 ring-indigo-100 block dark:ring-indigo-900/60"
+                : "h-2.5 w-2.5 rounded-full bg-brand-700 ring-4 ring-brand-100 block dark:bg-brand-400 dark:ring-brand-900/60"
             }
           />
         </div>
 
-        {/* The tinted icon chip — a Material Symbols ligature, not a component.
-            `notification-snippet-*` marks the row's message line whichever of the
-            document's four body shapes carries it. */}
+        {/* Tinted icon chip with Lucide SVG icon. */}
         <div data-testid={`notification-glyph-${item.id}`} className={treatment.chip}>
-          <span
-            className="material-symbols-outlined text-[20px]"
-            data-icon={treatment.glyph}
-            aria-hidden="true"
-          >
-            {treatment.glyph}
-          </span>
+          <GlyphIcon className="h-4 w-4" aria-hidden="true" />
         </div>
 
         <div className="flex-1 min-w-0">
@@ -100,7 +93,7 @@ export function NotificationRow({
             ) : (
               <p className={treatment.label}>{NOTIFICATION_TYPE_LABELS[item.type]}</p>
             )}
-            <time className="text-xs text-slate-400 whitespace-nowrap dark:text-slate-500">
+            <time className="text-xs text-slate-400 whitespace-nowrap tabular-nums dark:text-slate-500">
               {timeAgoLong(item.created_at)}
             </time>
           </div>
@@ -110,7 +103,7 @@ export function NotificationRow({
           {item.message !== "" && treatment.body === "callout" && (
             <blockquote
               data-testid={`notification-snippet-${item.id}`}
-              className="text-xs text-slate-600 italic bg-slate-50 p-2.5 rounded-lg border-l-2 border-indigo-500 mt-2 font-normal leading-relaxed dark:text-slate-300 dark:bg-slate-800"
+              className="text-xs text-slate-600 italic bg-slate-50 p-2.5 rounded-lg border-l-2 border-brand-600 mt-2 font-normal leading-relaxed dark:text-slate-300 dark:bg-slate-800 dark:border-brand-400"
             >
               {item.message}
             </blockquote>
@@ -139,13 +132,7 @@ export function NotificationRow({
               data-testid={`notification-snippet-${item.id}`}
               className="text-xs text-slate-500 mt-1 flex items-center gap-1.5 dark:text-slate-400"
             >
-              <span
-                className="material-symbols-outlined text-[14px] text-amber-500"
-                data-icon="trending_up"
-                aria-hidden="true"
-              >
-                trending_up
-              </span>
+              <TrendingUp className="h-3.5 w-3.5 text-amber-500 shrink-0" aria-hidden="true" />
               <span>{item.message}</span>
             </p>
           )}
@@ -157,21 +144,13 @@ export function NotificationRow({
                 data-testid={`notification-action-${item.id}`}
                 aria-label={`${action.label} — ${item.title}`}
                 onClick={(event) => {
-                  // The row's own click must not also fire: this button is its own
-                  // destination (the reminder's action goes to the timeline).
                   event.stopPropagation();
                   onAction(item);
                 }}
                 className={action.className}
               >
-                {action.glyph !== undefined && (
-                  <span
-                    className="material-symbols-outlined text-[15px]"
-                    data-icon={action.glyph}
-                    aria-hidden="true"
-                  >
-                    {action.glyph}
-                  </span>
+                {action.glyph === "open_in_new" && (
+                  <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                 )}
                 <span>{action.label}</span>
               </button>

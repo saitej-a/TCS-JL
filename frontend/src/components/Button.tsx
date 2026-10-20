@@ -3,18 +3,23 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
 
-/** §6.1.1 — transcribed verbatim from the spec. */
+/**
+ * §6.1.1 — Flat architectural button treatments (Phase 1 Anti-Slop Overhaul).
+ * Uses Emil Kowalski's custom ease-out (`cubic-bezier(0.23,1,0.32,1)`) and
+ * tactile `:active` scale (`active:scale-[0.98]`) over specific properties
+ * (`transition-[background-color,border-color,color,transform] duration-150`).
+ */
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
-    "bg-brand-700 hover:bg-brand-800 active:bg-brand-900 text-white font-medium rounded-lg shadow-sm focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 transition-colors",
+    "bg-brand-700 hover:bg-brand-800 active:bg-brand-900 text-white font-medium rounded-lg focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 transition-[background-color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)]",
   secondary:
-    "bg-slate-100 hover:bg-slate-200 active:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-medium rounded-lg shadow-xs transition-colors",
+    "bg-slate-100 hover:bg-slate-200 active:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-medium rounded-lg transition-[background-color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)]",
   outline:
-    "border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium rounded-lg transition-colors",
+    "border border-slate-300 dark:border-slate-700 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800/80 text-slate-700 dark:text-slate-200 font-medium rounded-lg transition-[background-color,border-color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)]",
   ghost:
-    "bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium rounded-lg transition-colors",
+    "bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium rounded-lg transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)]",
   danger:
-    "bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-medium rounded-lg shadow-sm focus-visible:ring-2 focus-visible:ring-rose-500 transition-colors",
+    "bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-medium rounded-lg focus-visible:ring-2 focus-visible:ring-rose-500 transition-[background-color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)]",
 };
 
 /** §6.1.2 — heights, padding, text sizes. */
@@ -32,10 +37,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean;
   leadingIcon?: ReactNode;
   /**
-   * Replaces the variant and size classes outright. A Stitch composition draws its
-   * own action button (radius, shadow, ring colour) and two competing utilities are
-   * resolved by stylesheet order rather than by `className` order, so a screen that
-   * claims its mockup's button passes that button's whole class string.
+   * Replaces the variant and size classes outright when a composition specifies
+   * custom geometry.
    */
   controlClassName?: string;
 }
@@ -55,9 +58,9 @@ export function Button({
 }: ButtonProps) {
   const classes = (controlClassName === undefined
     ? [
+        "inline-flex items-center justify-center gap-1.5 cursor-pointer select-none",
         VARIANT_CLASSES[variant],
         SIZE_CLASSES[size],
-        // §6.1.3 active/focus/disabled shared state classes.
         "active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2",
         disabled && "opacity-50 cursor-not-allowed pointer-events-none",
         fullWidth && "w-full",

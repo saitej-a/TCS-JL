@@ -1,26 +1,15 @@
 /**
- * The §7.6 post card, built to the `community_discussions_feed` composition and
- * in its order: the category pill opposite "Posted 2 hours ago", the headline,
- * the body preview, the §6.5 identity row (compact — 24px disc, cohort caption
- * with the region accented), and the composition's action footer:
- * `[▲ Upvote | 42]  💬 18 Comments` on the left, `Share` and `Report` on the
+ * The §7.6 post card (upgraded in Phase 1 Anti-Slop Overhaul):
+ * category pill opposite "Posted 2 hours ago", headline, body preview,
+ * §6.5 identity row (compact — 24px disc, cohort caption), and action footer:
+ * `[▲ Upvote | 42]  18 Comments` on the left, `Share` and `Report` on the
  * right.
  *
- * Per plan Task 8.2 the report/share affordances must never be silently dead:
- * - **Share** is implemented (copy the post's link), because the feed is public
- *   and URL-stateful — this is the honest reading of the spec's Share action.
- * - **Report** stays visible and disabled *with its reason* in the title;
- *   reporting belongs to the moderation surface (9.4/8.1).
- *
- * Tombstoned cards render the API's masked copy with voting and sharing closed.
- *
- * Dark parity (Phase 16 follow-up): the card shell, both pills, the upvote
- * controls and the action footer each carry a `dark:` pair, so the feed reads on
- * the app's default dark surface while the composition's light classes stay
- * byte-identical.
+ * Uses flat 1px architectural borders (no resting drop-shadows), Deep Cerulean
+ * (`brand-*`) accents, Lucide SVG icons, and explicit property transitions.
  */
 import { useEffect, useState } from "react";
-import { Pin, PinOff } from "lucide-react";
+import { Flag, MessageSquare, Pin, PinOff, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import {
@@ -51,22 +40,22 @@ export interface PostCardProps {
   onTogglePin?: (postId: string, nextPinned: boolean) => Promise<void>;
 }
 
-/** The composition's card shell. */
+/** Flat 1px architectural card shell (no resting drop-shadow, no transition-all). */
 const CARD =
-  "bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:border-slate-300 hover:shadow transition-all flex flex-col gap-3 dark:bg-slate-800 dark:border-slate-800 dark:hover:border-slate-700";
-/** The composition's category pill. */
+  "bg-white rounded-xl p-5 border border-slate-200 hover:border-slate-300 transition-[border-color,background-color] duration-150 flex flex-col gap-3 dark:bg-slate-800 dark:border-slate-800 dark:hover:border-slate-700";
+/** Category pill on the Accent Ladder (`brand-*`). */
 const CATEGORY_PILL =
-  "inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100 tracking-wide dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-900/60";
-/** The composition's "pinned" pill (the announcement card's amber pill). */
+  "inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-brand-50 text-brand-700 border border-brand-200 dark:bg-brand-950/60 dark:text-brand-300 dark:border-brand-800/60";
+/** Amber pinned pill. */
 const PINNED_PILL =
   "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-900 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-900/60";
-/** The composition's upvote pill, idle and voted. */
+/** Upvote pill states. */
 const UPVOTE_IDLE =
-  "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 text-slate-700 font-medium hover:bg-slate-50 hover:border-slate-300 active:scale-95 transition dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:border-slate-600";
+  "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 text-slate-700 font-medium hover:bg-slate-50 hover:border-slate-300 active:scale-[0.97] transition-[background-color,border-color,color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:border-slate-600";
 const UPVOTE_ACTIVE =
-  "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-500 text-brand-700 font-semibold shadow-xs dark:bg-brand-950/60 dark:text-brand-300 dark:border-brand-700";
+  "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-500 text-brand-700 font-semibold active:scale-[0.97] transition-[background-color,border-color,color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] dark:bg-brand-950/60 dark:text-brand-300 dark:border-brand-700";
 const FOOTER_ACTION =
-  "inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100";
+  "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800 active:scale-[0.97] transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100";
 
 export function PostCard({
   post,
@@ -138,13 +127,10 @@ export function PostCard({
           </span>
           {isPinned && (
             <span className={PINNED_PILL}>
-              <span
-                className="material-symbols-outlined text-xs fill-current text-amber-700 dark:text-amber-400"
-                data-icon="push_pin"
+              <Pin
+                className="h-3 w-3 text-amber-700 dark:text-amber-400"
                 aria-hidden="true"
-              >
-                push_pin
-              </span>
+              />
               Pinned
             </span>
           )}
@@ -154,12 +140,12 @@ export function PostCard({
             </span>
           )}
         </span>
-        <span className="text-xs text-slate-400 dark:text-slate-500">
+        <span className="text-xs text-slate-400 tabular-nums dark:text-slate-500">
           Posted {timeAgo(post.created_at)}
         </span>
       </div>
 
-      <h2 className="font-headline text-base font-semibold text-slate-900 hover:text-indigo-600 cursor-pointer transition-colors leading-snug dark:text-slate-100 dark:hover:text-indigo-400">
+      <h2 className="font-headline text-base font-semibold text-slate-900 hover:text-brand-700 cursor-pointer transition-colors duration-150 leading-snug dark:text-slate-100 dark:hover:text-brand-400">
         {tombstone ? (
           post.title
         ) : (
@@ -191,16 +177,13 @@ export function PostCard({
             activeControlClassName={UPVOTE_ACTIVE}
           />
           <span
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-100"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150 tabular-nums dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-100"
             title={tombstone ? "Comments are closed on removed posts." : undefined}
           >
-            <span
-              className="material-symbols-outlined text-[17px] text-slate-400 dark:text-slate-500"
-              data-icon="chat_bubble_outline"
+            <MessageSquare
+              className="h-4 w-4 text-slate-400 dark:text-slate-500"
               aria-hidden="true"
-            >
-              chat_bubble_outline
-            </span>
+            />
             <span>
               {post.comment_count} Comment{post.comment_count === 1 ? "" : "s"}
             </span>
@@ -214,7 +197,7 @@ export function PostCard({
               disabled={tombstone || pinning}
               title={isPinned ? "Unpin post" : "Pin post"}
               aria-label={isPinned ? "Unpin post" : "Pin post"}
-              className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition active:scale-95 disabled:opacity-50 ${
+              className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] disabled:opacity-50 ${
                 isPinned
                   ? "text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/60 dark:hover:bg-amber-900/60"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-100"
@@ -235,20 +218,16 @@ export function PostCard({
             title={tombstone ? "Removed posts cannot be shared." : "Share discussion link"}
             className={`${FOOTER_ACTION}${tombstone ? " cursor-not-allowed opacity-50" : ""}`}
           >
-            <span className="material-symbols-outlined text-[17px]" data-icon="share" aria-hidden="true">
-              share
-            </span>
+            <Share2 className="h-4 w-4" aria-hidden="true" />
             <span>Share</span>
           </button>
           <button
             type="button"
             disabled
             title="Reporting arrives with the moderation surface (Phase 9.4)."
-            className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-not-allowed opacity-60 dark:hover:bg-rose-950/40 dark:hover:text-rose-400"
+            className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors duration-150 cursor-not-allowed opacity-60 dark:hover:bg-rose-950/40 dark:hover:text-rose-400"
           >
-            <span className="material-symbols-outlined text-[17px]" data-icon="flag" aria-hidden="true">
-              flag
-            </span>
+            <Flag className="h-4 w-4" aria-hidden="true" />
             <span>Report</span>
           </button>
         </div>

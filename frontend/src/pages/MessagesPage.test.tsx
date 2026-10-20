@@ -566,5 +566,30 @@ describe("MessagesPage", () => {
 
     expect(screen.queryByTestId("reply-banner")).not.toBeInTheDocument();
   });
+
+  it("groups consecutive messages from the same author and uses 100dvh layout", async () => {
+    vi.mocked(chatApi.listChatMessages).mockResolvedValue({
+      results: [
+        {
+          ...MOCK_MESSAGES[0],
+          id: "m-1b",
+          body: "Follow-up message from same author",
+          created_at: "2026-09-30T10:01:00Z",
+        },
+        MOCK_MESSAGES[0],
+      ],
+      has_more: false,
+    });
+
+    renderMessages();
+
+    await waitFor(() => {
+      expect(screen.getByText("Follow-up message from same author")).toBeInTheDocument();
+    });
+
+    expect(screen.getByTestId("messages-page").className).toContain("100dvh");
+    expect(screen.getByTestId("message-bubble-m-1")).not.toHaveAttribute("data-grouped");
+    expect(screen.getByTestId("message-bubble-m-1b")).toHaveAttribute("data-grouped", "true");
+  });
 });
 

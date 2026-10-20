@@ -4,6 +4,7 @@ import {
   useRef,
   type ReactNode,
 } from "react";
+import { X } from "lucide-react";
 
 import { SURFACES } from "@/theme/tokens";
 
@@ -87,7 +88,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/60 p-0 sm:p-4 transition-opacity duration-150 ease-[cubic-bezier(0.23,1,0.32,1)]"
       onClick={onClose}
       data-testid="modal-backdrop"
     >
@@ -97,20 +98,22 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
         aria-modal="true"
         aria-label={title}
         data-testid="modal-dialog"
-        className={`${SURFACES.dialog} w-full max-w-md rounded-b-none sm:rounded-2xl sm:max-w-md`}
+        className={`${SURFACES.dialog} animate-modal-in w-full max-w-md rounded-b-none sm:rounded-xl sm:max-w-md transition-[transform,opacity] duration-180 ease-[cubic-bezier(0.23,1,0.32,1)]`}
         onClick={(event) => event.stopPropagation()}
       >
         {/* §6.6's tactile pull-handle bar (mobile bottom sheet). */}
-        <div className="sm:hidden w-12 h-1.5 bg-slate-300 dark:bg-slate-600 rounded-full mx-auto mb-4" />
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">{title}</h2>
+        <div className="sm:hidden w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mb-4" />
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <h2 className="font-headline text-base font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+            {title}
+          </h2>
           <button
             type="button"
             aria-label="Close dialog"
             onClick={onClose}
-            className="bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium rounded-lg transition-colors h-8 w-8"
+            className="inline-flex items-center justify-center bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg transition-colors duration-150 h-8 w-8 active:scale-[0.96]"
           >
-            ×
+            <X className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
         <div>{children}</div>

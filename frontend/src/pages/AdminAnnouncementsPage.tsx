@@ -42,15 +42,10 @@ const PUSH_NOTE =
   "Publishing queues a push broadcast for the announcement. Actual delivery depends on each candidate's devices, their notification preferences, and quiet hours — publishing cannot force a delivery.";
 
 const CARD =
-  "rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800";
+  "rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-800";
 
-/** Composition labels are uppercase micro-caps (same treatment as Input.tsx). */
 const LABEL =
-  "block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300";
-
-/** Tinted icon chip that heads each card (composition's card-header anatomy). */
-const CHIP =
-  "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-brand-700 dark:bg-sky-950/60 dark:text-brand-300";
+  "block text-xs font-semibold tracking-tight text-slate-700 dark:text-slate-300";
 
 const INPUT =
   "mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100";
@@ -170,7 +165,7 @@ export function AdminAnnouncementsPage(): ReactElement {
   }
 
   return (
-    <main className="skin-v1 mx-auto w-full max-w-6xl space-y-4 p-4 sm:p-6 font-body antialiased" data-testid="admin-announcements">
+    <main className="mx-auto w-full max-w-6xl space-y-4 p-4 sm:p-6 font-body antialiased" data-testid="admin-announcements">
       <nav
         aria-label="Breadcrumb"
         className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400"
@@ -204,15 +199,12 @@ export function AdminAnnouncementsPage(): ReactElement {
 
       {/* Composer */}
       <section className={`${CARD} overflow-hidden`} aria-label="Compose announcement">
-        <div className="flex items-center gap-2.5 border-b border-slate-100 px-4 py-3.5 dark:border-slate-700">
-          <span className={CHIP}>
-            <Pencil className="h-4 w-4" aria-hidden="true" />
-          </span>
+        <div className="flex items-center gap-2 border-b border-slate-100 px-4 py-3.5 dark:border-slate-700">
+          <Pencil className="h-4 w-4 text-brand-700 dark:text-brand-400" aria-hidden="true" />
           <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
             New announcement
           </h2>
-          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-emerald-200/60 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/50 dark:text-emerald-300">
-            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+          <span className="ml-auto rounded border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
             Draft until published
           </span>
         </div>
@@ -377,12 +369,33 @@ export function AdminAnnouncementsPage(): ReactElement {
 
       </div>
 
-      {/* Published list (the public feed — no staff list exists) */}
+      {/* Published list + Live Announcement Preview */}
       <section aria-label="Published announcements" className="space-y-3">
-        <div className={`${CARD} flex items-center gap-2.5 px-4 py-3.5`}>
-          <span className={CHIP}>
-            <Megaphone className="h-4 w-4" aria-hidden="true" />
-          </span>
+        <div
+          data-ui="true"
+          data-testid="live-announcement-preview"
+          className={`${CARD} space-y-2 p-4`}
+        >
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-semibold text-slate-700 dark:text-slate-300">
+              Live banner preview
+            </span>
+            <span className="text-[11px] font-medium text-slate-400">
+              {composer.isPinned ? "Pinned strip" : "Standard feed"}
+            </span>
+          </div>
+          <div className="rounded-lg border border-brand-200 bg-brand-50/60 p-3 dark:border-brand-900/60 dark:bg-brand-950/40">
+            <p className="text-xs font-semibold text-brand-950 dark:text-brand-100">
+              {composer.title.trim() || "Announcement headline preview"}
+            </p>
+            <p className="mt-1 line-clamp-2 whitespace-pre-line text-xs text-slate-600 dark:text-slate-300">
+              {composer.body.trim() || "Type a title and body on the left to preview how candidates will see this notice."}
+            </p>
+          </div>
+        </div>
+
+        <div className={`${CARD} flex items-center gap-2 px-4 py-3.5`}>
+          <Megaphone className="h-4 w-4 text-brand-700 dark:text-brand-400" aria-hidden="true" />
           <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">Published</h2>
         </div>
         {published === null && !loadError && (

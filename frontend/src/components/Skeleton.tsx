@@ -27,11 +27,11 @@ export function Skeleton({ shape = "rect", className = "", ...rest }: SkeletonPr
   );
 }
 
-/** §6.7.2's structural card placeholder (avatar line + full lines). */
+/** §6.7.2's structural card placeholder (flat 1px-bordered frame). */
 export function SkeletonCard({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 sm:p-5 space-y-3 ${className}`.trim()}
+      className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[10px] p-4 sm:p-5 space-y-3 ${className}`.trim()}
     >
       <div className="flex items-center justify-between">
         <Skeleton shape="rect" className="h-5 w-[120px]" />

@@ -364,7 +364,7 @@ export function SettingsDevicesPage(): ReactElement {
   const tone = banner === null ? null : TONES[banner.tone];
 
   return (
-    <div className="skin-v2 max-w-[1040px] w-full font-body antialiased">
+    <div className="max-w-[1040px] w-full font-body antialiased">
       <header className="mb-7">
         <nav
           className="flex items-center space-x-2 text-xs text-slate-500 mb-2 dark:text-slate-400"
@@ -391,7 +391,7 @@ export function SettingsDevicesPage(): ReactElement {
 
       {(prefs === null || devices === null) && !failed && <SkeletonCard />}
       {failed && (
-        <div className="rounded-[12px] border border-slate-200 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-800">
+        <div className="rounded-[12px] border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-800">
           <div className="flex items-center justify-between gap-4">
             <p className="text-sm font-medium text-rose-600 dark:text-rose-400">
               Could not load your devices and preferences. Try again in a moment.
@@ -417,7 +417,7 @@ export function SettingsDevicesPage(): ReactElement {
           <div
             data-testid="push-banner"
             role="status"
-            className={`mb-6 rounded-[12px] p-4 sm:p-5 shadow-sm ${tone.card}`}
+            className={`mb-6 rounded-[12px] p-4 sm:p-5 ${tone.card}`}
           >
             <div className="flex items-start gap-4">
               <div

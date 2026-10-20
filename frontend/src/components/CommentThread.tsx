@@ -1,29 +1,22 @@
 /**
- * §7.8's comment thread (9.4 Task 5; reshaped by Phase 11 per 11-UI-SPEC.md).
+ * §7.8's comment thread (9.4 Task 5; reshaped by Phase 11 per 11-UI-SPEC.md,
+ * upgraded in Phase 1 Anti-Slop Overhaul).
  *
- * The rules that replaced the one-level design:
  * - **Recursive rendering** (D-01/D-02): a `CommentRow` renders its own
  *   children; depth is whatever the bounded API assembled.
  * - **Capped-indent rails** (D-07): each of the first INDENT_LEVELS levels adds
  *   one 16px unit (2px rail + 14px content gap); deeper rows share the
- *   level-3 indent while that rail continues alongside them — a depth-50 chain
- *   costs the same width as depth 3 (05 §2.5's mobile rationale, answered).
- *   The unit is one constant in one module; never per-row ml- arithmetic.
+ *   level-3 indent while that rail continues alongside them.
  * - **Reply context** (D-07): depth ≥ 2 rows carry `replying to @author`
- *   between the IdentityPill and the body; the name resolves through the same
- *   author payload IdentityPill already consumes — never a second renderer.
+ *   between the IdentityPill and the body.
  * - **Reply + Report on every node** (D-09), unlocked + authenticated; the
- *   inline autofocused form works from any node (9.4's rule 2, generalised).
+ *   inline autofocused form works from any node.
  * - **Breadth collapse** (D-10): more than BREADTH_VISIBLE direct replies
- *   renders the first BREADTH_VISIBLE + `Show N more replies`; the count is
- *   always visible; a newly inserted reply auto-expands its own row.
+ *   renders the first BREADTH_VISIBLE + `Show N more replies`.
  * - **Continue this thread** (D-08): a node truncated by the server's depth
- *   bound renders `N more replies — continue this thread` (N = the API's true
- *   descendant_count, never a guess); clicking fetches the subtree and expands
- *   it in place; the same control becomes `Collapse thread`.
- * - **Closed branch** (D-06): `is_branch_closed` from the API (never derived
- *   from is_deleted ancestry client-side) disables the composer with the
- *   reason inline. A locked thread still wins thread-wide.
+ *   bound renders `N more replies — continue this thread`.
+ * - **Closed branch** (D-06): `is_branch_closed` from the API disables the
+ *   composer with the reason inline.
  */
 import { useState } from "react";
 
@@ -97,7 +90,7 @@ function ReportButton({
   return (
     <button
       type="button"
-      className="min-h-[32px] rounded-lg px-2 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40"
+      className="min-h-[32px] rounded-lg px-2 text-xs font-medium text-rose-600 hover:bg-rose-50 transition-colors active:scale-[0.98] dark:text-rose-400 dark:hover:bg-rose-950/40"
       onClick={() => {
         createReport({ comment_id: commentId, reason: "OTHER" })
           .then(() => {
@@ -213,11 +206,11 @@ function CommentRow({
         {node.body}
       </p>
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs text-slate-500 dark:text-slate-400">{timeAgo(node.created_at)}</span>
+        <span className="text-xs text-slate-500 tabular-nums dark:text-slate-400">{timeAgo(node.created_at)}</span>
         {writable && (
           <button
             type="button"
-            className="min-h-[32px] rounded-lg px-2 text-xs font-medium text-brand-700 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-brand-950/40"
+            className="min-h-[32px] rounded-lg px-2 text-xs font-medium text-brand-700 hover:bg-brand-50 transition-colors active:scale-[0.98] dark:text-brand-400 dark:hover:bg-brand-950/40"
             aria-expanded={replyingTo}
             onClick={() => {
               setReplyingTo((current) => !current);
@@ -248,7 +241,7 @@ function CommentRow({
   const childDepth = depth + 1;
   const childRail =
     childDepth <= INDENT_LEVELS
-      ? "mt-3 space-y-3 border-l-2 border-slate-200 pl-4 dark:border-slate-700"
+      ? "mt-3 space-y-3 border-l-2 border-slate-200/80 pl-4 transition-colors duration-150 hover:border-brand-600 dark:border-slate-700/80 dark:hover:border-brand-400"
       : "mt-3 space-y-3";
 
   const showChildren = hasReplies || truncated || (threadExpanded && fetchedChildren !== null);
@@ -273,7 +266,7 @@ function CommentRow({
           }}
         >
           <Textarea
-            label="WRITE A REPLY:"
+            label="Write a reply"
             value={replyDraft}
             onChange={(event) => setReplyDraft(event.target.value)}
             maxLength={2000}
@@ -284,7 +277,7 @@ function CommentRow({
             <button
               type="submit"
               disabled={submitting || replyDraft.trim() === ""}
-              className="flex min-h-[40px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800 disabled:opacity-50"
+              className="flex min-h-[40px] items-center rounded-lg bg-brand-700 px-4 text-sm font-medium text-white hover:bg-brand-800 transition-[background-color,transform] duration-150 active:scale-[0.98] disabled:opacity-50"
             >
               {REPLY_SUBMIT_LABEL}
             </button>
@@ -294,7 +287,7 @@ function CommentRow({
                 setReplyingTo(false);
                 setReplyDraft("");
               }}
-              className="min-h-[40px] rounded-lg px-3 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"
+              className="min-h-[40px] rounded-lg px-3 text-sm text-slate-600 hover:bg-slate-100 transition-colors active:scale-[0.98] dark:text-slate-300 dark:hover:bg-slate-700"
             >
               Cancel
             </button>
@@ -326,7 +319,7 @@ function CommentRow({
               <button
                 type="button"
                 data-testid="breadth-toggle"
-                className="min-h-[32px] rounded-lg px-2 text-xs font-medium text-brand-700 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-brand-950/40"
+                className="min-h-[32px] rounded-lg px-2 text-xs font-medium text-brand-700 hover:bg-brand-50 transition-colors dark:text-brand-400 dark:hover:bg-brand-950/40"
                 aria-expanded={!breadthCollapsed}
                 onClick={() => setBreadthCollapsed((current) => !current)}
               >
@@ -343,7 +336,7 @@ function CommentRow({
               <button
                 type="button"
                 data-testid="continue-thread"
-                className="min-h-[32px] rounded-lg px-2 text-xs font-medium text-brand-700 hover:bg-brand-50 disabled:opacity-50 dark:text-brand-400 dark:hover:bg-brand-950/40"
+                className="min-h-[32px] rounded-lg px-2 text-xs font-medium text-brand-700 hover:bg-brand-50 disabled:opacity-50 transition-colors dark:text-brand-400 dark:hover:bg-brand-950/40"
                 aria-expanded={threadExpanded}
                 disabled={loadingSubtree}
                 onClick={() => {
@@ -364,7 +357,7 @@ function CommentRow({
                 <button
                   type="button"
                   data-testid="subtree-retry"
-                  className="ml-2 min-h-[32px] rounded-lg px-2 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40"
+                  className="ml-2 min-h-[32px] rounded-lg px-2 text-xs font-medium text-rose-600 hover:bg-rose-50 transition-colors dark:text-rose-400 dark:hover:bg-rose-950/40"
                   onClick={continueThread}
                 >
                   {SUBTREE_RETRY_COPY}

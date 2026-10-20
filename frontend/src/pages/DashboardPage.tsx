@@ -1,34 +1,22 @@
 /**
- * The §7.4 dashboard, built to the `candidate_dashboard_1` composition: the
- * 12-column `max-w-[1600px]` workspace with an 8-column center feed and the
- * composition's 4-column rail, the welcome card with its inline status chip and
- * both header CTAs, the progression card with its header rule and rule-anchored
- * stepper, the two side-by-side comparison cards, and the discussions card with
- * per-row vote/comment pills.
- *
- * Two honesty rules govern every block (unchanged):
- * - **Suppression** (4.2 D2): a suppressed analytics block renders the API's
- *   message and the COMMUNITY_REPORTED attribution — never zeros, never a
- *   blank card. The `DashboardAnalytics` union forces this at compile time.
- * - **D6's labelling**: the discussions block shows the community's newest
- *   posts and says exactly that. The composition's "LATEST DISCUSSIONS IN
- *   YOUR STREAM (DIGITAL)" heading and its "Filtered peer discussions" subline
- *   are mock fiction (the feed endpoint has no stream filter) — the heading
- *   never implies stream filtering.
- *
- * Every figure the composition prints (1,248 candidates, 75.3%, 210 received,
- * Bangalore 42%, 64-day average, 22.3% dispatch, +18 this week, "126 days since
- * survey", "Above Avg", "Verified Stage 4", the regional telemetry and the
- * external-channel cards) has no API basis and is not copied; the real payload
- * fills the composition's own rows instead. Recorded in RECONCILIATION-16.md.
- *
- * Dark parity (Phase 16 follow-up): the card shells, the comparison rows, the
- * callouts and the discussions list carry their `dark:` pairs. The dense
- * repeated blocks (section headings, stat icons, provenance lines) are collected
- * here rather than sprinkled per call site.
+ * The §7.4 candidate dashboard (Phase 5 Anti-Slop Overhaul):
+ * - Typographic KPIs (`tabular-nums`, zero icon circles);
+ * - Precision 6-stage horizontal milestone track with stage-to-stage day-deltas;
+ * - Cohort comparison ledger with zero `data-awaiting` mock placeholders;
+ * -Suppression & D6 honesty rules preserved.
  */
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  Activity,
+  CalendarPlus,
+  ChevronRight,
+  ChevronUp,
+  HelpCircle,
+  Info,
+  MessageSquare,
+  TrendingUp,
+} from "lucide-react";
 
 import { getDashboard, type DashboardPayload } from "@/api/dashboard";
 import { listCommunityPosts, type PostCard } from "@/api/community";
@@ -46,20 +34,20 @@ import { STATUS_LABELS } from "@/theme/badges";
 import type { CandidateStatus } from "@/types/user";
 import { daysSince, formatDateShort, timeAgo } from "@/utils/date";
 
-/** The composition's card shell. */
+/** Flat architectural card shell (1px border, zero resting shadow). */
 const CARD =
-  "bg-white rounded-xl border border-slate-200 p-6 shadow-sm dark:bg-slate-800 dark:border-slate-800";
+  "bg-white rounded-xl border border-slate-200 p-6 dark:bg-slate-800 dark:border-slate-800";
 
-/** The composition's stat-card shell (p-5, not p-6). */
+/** Flat stat-card shell (p-5). */
 const STAT_CARD =
-  "bg-white rounded-xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between dark:bg-slate-800 dark:border-slate-800";
+  "bg-white rounded-xl border border-slate-200 p-5 flex flex-col justify-between dark:bg-slate-800 dark:border-slate-800";
 
-/** The stat/progression section heading shared by both comparison cards. */
+/** Section heading shared across ledger cards. */
 const SECTION_HEADING =
-  "text-xs font-bold tracking-tight text-slate-900 uppercase dark:text-slate-100";
+  "text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-100";
 
-/** The composition's stat icon. */
-const STAT_ICON = "material-symbols-outlined text-indigo-600 text-lg dark:text-indigo-400";
+/** Subtle inline mark for comparison section titles (never inside a tinted square). */
+const STAT_ICON = "h-4 w-4 text-brand-700 shrink-0 dark:text-brand-400";
 
 /**
  * The candidate's own wait (§7.4's "Your wait time"), taken from their record:
@@ -90,20 +78,22 @@ interface DashboardData {
   posts: PostCard[];
 }
 
-/** One divider-separated comparison row (the composition's `py-1 border-b` row). */
+/** One divider-separated comparison row (`py-1.5 border-b`). */
 function CompareRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between text-xs py-1 border-b border-slate-100 dark:border-slate-700">
+    <div className="flex items-center justify-between border-b border-slate-100 py-1.5 text-xs dark:border-slate-700">
       <span className="text-slate-600 dark:text-slate-300">{label}</span>
-      <span className="font-semibold text-slate-900 dark:text-slate-100">{value}</span>
+      <span className="font-mono-code font-semibold tabular-nums text-slate-900 dark:text-slate-100">
+        {value}
+      </span>
     </div>
   );
 }
 
-/** The composition's italic provenance line under each comparison card. */
+/** Provenance footnote under each comparison card. */
 function ProvenanceNote({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mt-4 pt-3 border-t border-slate-100 text-[10px] text-slate-400 italic dark:border-slate-700 dark:text-slate-500">
+    <div className="mt-4 border-t border-slate-100 pt-3 text-[11px] text-slate-400 dark:border-slate-700 dark:text-slate-500">
       {children}
     </div>
   );
@@ -124,65 +114,55 @@ function BenchmarkCard({ data }: { data: DashboardData | null }) {
     return (
       <div className={STAT_CARD} data-testid="benchmark-card">
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <span
-              className={STAT_ICON}
-              data-icon="insights"
-              aria-hidden="true"
-            >
-              insights
-            </span>
+          <div className="mb-3 flex items-center gap-2">
+            <TrendingUp className={STAT_ICON} aria-hidden="true" />
             <h3 className={SECTION_HEADING}>How you compare</h3>
           </div>
           <p className="text-sm text-slate-600 dark:text-slate-300">{analytics.message}</p>
         </div>
-        <ProvenanceNote>*Community-reported data. Aggregated anonymously.</ProvenanceNote>
+        <ProvenanceNote>Community-reported data · Aggregated anonymously (k ≥ 5).</ProvenanceNote>
       </div>
     );
   }
   const distribution = analytics.status_distribution;
   const wait = ownWaitDays(data.events);
+  const surveyAndOfferCount =
+    (distribution.OFFER_RECEIVED ?? 0) + (distribution.READINESS_SURVEY ?? 0);
+  const joiningConfirmedCount = distribution.JOINING_DATE_RECEIVED ?? 0;
+
   return (
     <div className={STAT_CARD} data-testid="benchmark-card">
       <div>
-        <div className="flex items-center gap-2 mb-3">
-          <span
-            className={STAT_ICON}
-            data-icon="insights"
-            aria-hidden="true"
-          >
-            insights
-          </span>
+        <div className="mb-3 flex items-center gap-2">
+          <TrendingUp className={STAT_ICON} aria-hidden="true" />
           <h3 className={SECTION_HEADING}>How you compare</h3>
         </div>
-        {/* The composition's rows, each filled from a real payload field. */}
-        <div className="space-y-3 mt-4">
+        {/* Real cohort ledger rows — zero data-awaiting placeholders. */}
+        <div className="mt-4 space-y-2.5">
           <CompareRow
             label="Candidates currently waiting"
             value={`${analytics.community_waiting_count}`}
           />
           <CompareRow
+            label="Offer & readiness survey stage"
+            value={`${surveyAndOfferCount}`}
+          />
+          <CompareRow
             label="Reported receiving their JL"
             value={`${distribution.JOINING_LETTER_RECEIVED}`}
           />
+          <CompareRow
+            label="Joining date confirmed"
+            value={`${joiningConfirmedCount}`}
+          />
           <CompareRow label="Reported joining" value={`${distribution.JOINED}`} />
-          <CompareRow
-            label="Salary structure breakdown"
-            value={<span data-awaiting="dashboard.salary_breakdown">—</span>}
-          />
-          <CompareRow
-            label="Regional track cohort"
-            value={<span data-awaiting="dashboard.role_track">—</span>}
-          />
         </div>
-        {/* The composition's highlighted wait block, honest number only —
-            no "Above Avg" badge (the API ships no cohort average). */}
         {wait !== null && (
-          <div className="mt-4 p-3 bg-slate-50 border border-slate-200 rounded-lg dark:bg-slate-900/60 dark:border-slate-700">
-            <div className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold dark:text-slate-400">
-              Your Wait Time
+          <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+            <div className="text-[11px] font-semibold tracking-tight text-slate-500 dark:text-slate-400">
+              Your wait time
             </div>
-            <div className="text-sm font-bold text-amber-700 mt-1 flex items-center justify-between dark:text-amber-400">
+            <div className="mt-1 flex items-center justify-between font-mono-code text-sm font-bold tabular-nums text-amber-700 dark:text-amber-400">
               <span>
                 {wait} {wait === 1 ? "day" : "days"} since survey
               </span>
@@ -191,8 +171,7 @@ function BenchmarkCard({ data }: { data: DashboardData | null }) {
         )}
       </div>
       <ProvenanceNote>
-        *Community-reported data ({analytics.data_source.toLowerCase()}). Aggregated anonymously
-        across verification nodes.
+        Community-reported data ({analytics.data_source.toLowerCase()}) · Aggregated anonymously.
       </ProvenanceNote>
     </div>
   );
@@ -210,23 +189,16 @@ function PulseCard({ data }: { data: DashboardData | null }) {
   }
   const analytics = data.dashboard.analytics;
   if (analytics.suppressed) {
-    // Same discipline as the benchmark: the message, never fabricated numbers.
     return (
       <div className={STAT_CARD}>
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <span
-              className={STAT_ICON}
-              data-icon="query_stats"
-              aria-hidden="true"
-            >
-              query_stats
-            </span>
+          <div className="mb-3 flex items-center gap-2">
+            <Activity className={STAT_ICON} aria-hidden="true" />
             <h3 className={SECTION_HEADING}>Community pulse</h3>
           </div>
           <p className="text-sm text-slate-600 dark:text-slate-300">{analytics.message}</p>
         </div>
-        <ProvenanceNote>*Community-reported data. Aggregated anonymously.</ProvenanceNote>
+        <ProvenanceNote>Community-reported data · Aggregated anonymously (k ≥ 5).</ProvenanceNote>
       </div>
     );
   }
@@ -234,18 +206,12 @@ function PulseCard({ data }: { data: DashboardData | null }) {
   const rows = (Object.entries(distribution) as [CandidateStatus, number][])
     .filter(([, count]) => count > 0)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 4);
+    .slice(0, 5);
   return (
     <div className={STAT_CARD}>
       <div>
-        <div className="flex items-center gap-2 mb-3">
-          <span
-            className={STAT_ICON}
-            data-icon="query_stats"
-            aria-hidden="true"
-          >
-            query_stats
-          </span>
+        <div className="mb-3 flex items-center gap-2">
+          <Activity className={STAT_ICON} aria-hidden="true" />
           <h3 className={SECTION_HEADING}>Community pulse</h3>
         </div>
         {rows.length === 0 ? (
@@ -253,8 +219,7 @@ function PulseCard({ data }: { data: DashboardData | null }) {
             No community activity has been reported yet.
           </p>
         ) : (
-          /* The composition's rows over the real distribution. */
-          <div className="space-y-3 mt-4">
+          <div className="mt-4 space-y-2.5">
             {rows.map(([status, count]) => (
               <CompareRow
                 key={status}
@@ -265,7 +230,7 @@ function PulseCard({ data }: { data: DashboardData | null }) {
           </div>
         )}
       </div>
-      <ProvenanceNote>*Community-reported status counts.</ProvenanceNote>
+      <ProvenanceNote>Community-reported status counts across active cohorts.</ProvenanceNote>
     </div>
   );
 }
@@ -309,73 +274,104 @@ export function DashboardPage(): React.ReactElement {
   const status = data?.dashboard.profile.current_status ?? null;
   const latest = data?.dashboard.timeline.latest_event ?? null;
   const since = latest !== null ? formatDateShort(latest.event_date) : null;
+  const waitDays = data !== null ? ownWaitDays(data.events) : null;
+  const completionPct = data?.dashboard.profile.completion_percentage ?? null;
 
   return (
     <main
-      className="skin-v1 flex-1 p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-[1600px] w-full mx-auto font-body antialiased"
+      className="mx-auto grid w-full max-w-[1600px] flex-1 grid-cols-1 items-start gap-8 p-4 font-body antialiased sm:p-6 lg:grid-cols-12 lg:p-8"
       data-testid="dashboard-page"
     >
-      {/* CENTER COLUMN — the composition's 8 columns */}
-      <div className="lg:col-span-8 flex flex-col gap-6">
-        {/* SECTION 1: welcome header card with inline status chip + both CTAs */}
-        <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 dark:bg-slate-800 dark:border-slate-800">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <h1 className="font-headline text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-                Hello, Candidate!
-              </h1>
-              {status !== null ? (
-                <Badge.status value={status} />
-              ) : (
-                <Skeleton className="h-5 w-36 rounded-full" />
-              )}
+      {/* CENTER COLUMN — 8 columns */}
+      <div className="flex flex-col gap-6 lg:col-span-8">
+        {/* SECTION 1: welcome header + typographic KPI ledger strip (zero icon circles) */}
+        <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-6 dark:border-slate-800 dark:bg-slate-800">
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+                  Hello, Candidate!
+                </h1>
+                {status !== null ? (
+                  <Badge.status value={status} />
+                ) : (
+                  <Skeleton className="h-5 w-36 rounded-full" />
+                )}
+              </div>
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                {since !== null
+                  ? `Latest milestone since ${since}`
+                  : "Your recruitment at a glance"}
+              </p>
             </div>
-            {/* The composition's batch line ("Recruitment batch 2025 • TCS Digital
-                Stream") is fiction — the account carries no batch. This states the
-                real latest milestone instead. */}
-            <p className="text-xs text-slate-500 font-medium dark:text-slate-400">
-              {since !== null ? `Latest milestone since ${since}` : "Your recruitment at a glance"}
-            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                to="/timeline"
+                className="flex items-center gap-1.5 rounded-lg bg-brand-700 px-3.5 py-2 text-xs font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-brand-800 active:scale-[0.98]"
+              >
+                <CalendarPlus className="h-3.5 w-3.5" aria-hidden="true" />
+                <span>Update Timeline</span>
+              </Link>
+              <Link
+                to="/community/create"
+                className="flex items-center gap-1.5 rounded-lg border border-slate-300 px-3.5 py-2 text-xs font-semibold text-slate-700 transition-[background-color,border-color,transform] duration-150 hover:bg-slate-50 active:scale-[0.98] dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
+              >
+                <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
+                <span>Ask Question</span>
+              </Link>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              to="/timeline"
-              className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition active:scale-[0.98] flex items-center gap-1.5"
+
+          {/* Typographic KPI strip (tabular-nums, no icon boxes) */}
+          {data !== null && (
+            <dl
+              data-testid="dashboard-kpi-strip"
+              className="mt-5 grid grid-cols-3 gap-4 border-t border-slate-100 pt-4 dark:border-slate-700/80"
             >
-              <span className="material-symbols-outlined text-sm" data-icon="edit_calendar" aria-hidden="true">
-                edit_calendar
-              </span>
-              <span>Update Timeline</span>
-            </Link>
-            <Link
-              to="/community/create"
-              className="px-3.5 py-2 border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg transition active:scale-[0.98] flex items-center gap-1.5 dark:border-slate-600 dark:hover:bg-slate-700 dark:text-slate-200"
-            >
-              <span className="material-symbols-outlined text-sm" data-icon="help_outline" aria-hidden="true">
-                help_outline
-              </span>
-              <span>Ask Question</span>
-            </Link>
-          </div>
+              <div>
+                <dt className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                  Logged milestones
+                </dt>
+                <dd className="mt-0.5 font-mono-code text-lg font-bold text-slate-900 tabular-nums dark:text-slate-100">
+                  {data.events.length}{" "}
+                  <span className="text-xs font-normal text-slate-400 dark:text-slate-500">
+                    / 6
+                  </span>
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                  Elapsed wait
+                </dt>
+                <dd className="mt-0.5 font-mono-code text-lg font-bold text-slate-900 tabular-nums dark:text-slate-100">
+                  {waitDays !== null ? `${waitDays}d` : "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                  Profile completion
+                </dt>
+                <dd className="mt-0.5 font-mono-code text-lg font-bold text-brand-700 tabular-nums dark:text-brand-300">
+                  {completionPct !== null ? `${completionPct}%` : "—"}
+                </dd>
+              </div>
+            </dl>
+          )}
         </div>
 
         {/* SECTION 2: recruitment progression — header rule + stepper diagram */}
         <div className={CARD} aria-label="Your recruitment progression">
-          <div className="flex items-center justify-between pb-6 border-b border-slate-100 dark:border-slate-700">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-6 dark:border-slate-700">
             <div>
-              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
-                YOUR RECRUITMENT PROGRESSION
+              <h2 className="text-base font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+                Your recruitment progression
               </h2>
-              {/* The composition's subline promises "real-time milestone
-                  transitions against reported batch batches"; this says what the
-                  block actually shows. */}
-              <p className="text-xs text-slate-500 mt-0.5 dark:text-slate-400">
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                 Real milestones from your own reported timeline — never estimated dates.
               </p>
             </div>
-            {/* The composition's "Verified Stage 4" chip is fiction (nothing
-                verifies the stage); the real current status is the chip. */}
-            {status !== null && (                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-900/60">
+            {status !== null && (
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-medium text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/60 dark:text-emerald-300">
                 {STATUS_LABELS[status]}
               </span>
             )}
@@ -387,17 +383,12 @@ export function DashboardPage(): React.ReactElement {
           ) : (
             <MilestoneStepper events={data.events} />
           )}
-          {/* The composition's "Next anticipated rollout" callout stated a
-              forecast ("Mid-June to early-July") nothing here can support. */}
-          <div className="mt-2 bg-indigo-50 border border-indigo-100 rounded-lg p-3 flex items-start gap-2.5 dark:bg-indigo-950/40 dark:border-indigo-900/60">
-            <span
-              className="material-symbols-outlined text-indigo-600 text-lg flex-shrink-0 mt-0.5 dark:text-indigo-400"
-              data-icon="info"
+          <div className="mt-2 flex items-start gap-2.5 rounded-lg border border-brand-200 bg-brand-50/70 p-3 dark:border-brand-900/60 dark:bg-brand-950/40">
+            <Info
+              className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-700 dark:text-brand-400"
               aria-hidden="true"
-            >
-              info
-            </span>
-            <div className="text-xs text-indigo-900 leading-relaxed dark:text-indigo-200">
+            />
+            <div className="text-xs leading-relaxed text-brand-950 dark:text-brand-200">
               <span className="font-semibold">Every date here is yours:</span> nodes fill in from
               the timeline events you report, and nothing is estimated on your behalf.
             </div>
@@ -405,20 +396,17 @@ export function DashboardPage(): React.ReactElement {
         </div>
 
         {/* SECTION 3: the two comparison cards, side by side */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <BenchmarkCard data={data} />
           <PulseCard data={data} />
         </div>
 
         {/* SECTION 4: latest discussions */}
         <div className={CARD}>
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <div>
-              {/* The composition's "IN YOUR STREAM (DIGITAL)" heading and its
-                  "Filtered peer discussions for Digital 2025 track" subline are
-                  mock fiction (D6) — this block is the community's newest posts. */}
-              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
-                LATEST DISCUSSIONS
+              <h2 className="text-base font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+                Latest discussions
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 The community's newest posts — every candidate's discussions, not filtered to
@@ -427,12 +415,10 @@ export function DashboardPage(): React.ReactElement {
             </div>
             <Link
               to="/community"
-              className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 dark:text-indigo-400 dark:hover:text-indigo-300"
+              className="flex items-center gap-1 text-xs font-semibold text-brand-700 hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300"
             >
               <span>View All Discussions</span>
-              <span className="material-symbols-outlined text-sm" data-icon="chevron_right" aria-hidden="true">
-                chevron_right
-              </span>
+              <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
             </Link>
           </div>
           {data === null ? (
@@ -449,28 +435,25 @@ export function DashboardPage(): React.ReactElement {
           ) : (
             <div className="divide-y divide-slate-100 dark:divide-slate-800">
               {data.posts.map((post) => {
-                // The composition's row caption: author • when. Cohort detail
-                // (hiring_type/region) is real `PostCardSerializer` data
-                // (author is redaction-safe).
                 const cohort = [post.author.hiring_type, post.author.region]
                   .filter((part) => part !== null && part !== "")
                   .join(" • ");
                 return (
                   <div
                     key={post.id}
-                    className="py-3.5 flex items-start justify-between gap-4 hover:bg-slate-50/70 px-2 rounded-lg transition-colors dark:hover:bg-slate-700/40"
+                    className="flex items-start justify-between gap-4 rounded-lg px-2 py-3.5 transition-colors hover:bg-slate-50/70 dark:hover:bg-slate-700/40"
                   >
-                    <div className="space-y-1.5 flex-1 min-w-0">
+                    <div className="min-w-0 flex-1 space-y-1.5">
                       <div className="flex items-center gap-2">
                         <Badge.category code={post.category} />
                         <Link
                           to={`/community/posts/${post.id}`}
-                          className="text-xs font-semibold text-slate-900 hover:text-indigo-600 cursor-pointer truncate dark:text-slate-100 dark:hover:text-indigo-400"
+                          className="cursor-pointer truncate text-xs font-semibold text-slate-900 hover:text-brand-700 dark:text-slate-100 dark:hover:text-brand-400"
                         >
                           {post.title}
                         </Link>
                       </div>
-                      <div className="flex items-center gap-2 text-slate-400 text-xs dark:text-slate-500">
+                      <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500">
                         <span>{post.author.display_name}</span>
                         <span aria-hidden="true">•</span>
                         <span>{timeAgo(post.created_at)}</span>
@@ -482,15 +465,14 @@ export function DashboardPage(): React.ReactElement {
                         )}
                       </div>
                     </div>
-                    {/* The composition's vote & comment pills. */}
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className="flex items-center gap-1 px-2 py-1 rounded bg-slate-100 text-slate-700 text-xs font-medium dark:bg-slate-700 dark:text-slate-200">
+                    <div className="flex flex-shrink-0 items-center gap-2">
+                      <span className="flex items-center gap-1 rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700 tabular-nums dark:bg-slate-700 dark:text-slate-200">
                         <span className="font-bold">{post.vote_count}</span>
-                        <span aria-hidden="true">▲</span>
+                        <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
                       </span>
-                      <div className="flex items-center gap-1 px-2 py-1 rounded bg-slate-100 text-slate-600 text-xs font-medium dark:bg-slate-700 dark:text-slate-300">
+                      <div className="flex items-center gap-1 rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600 tabular-nums dark:bg-slate-700 dark:text-slate-300">
                         <span className="font-semibold">{post.comment_count}</span>
-                        <span aria-hidden="true">💬</span>
+                        <MessageSquare className="h-3 w-3" aria-hidden="true" />
                       </div>
                     </div>
                   </div>
@@ -501,8 +483,8 @@ export function DashboardPage(): React.ReactElement {
         </div>
       </div>
 
-      {/* RIGHT RAIL — the composition's 4 columns */}
-      <aside className="lg:col-span-4 flex flex-col gap-6">
+      {/* RIGHT RAIL — 4 columns */}
+      <aside className="flex flex-col gap-6 lg:col-span-4">
         <RailStatusSummary
           status={status}
           events={data?.events ?? null}

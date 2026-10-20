@@ -1,25 +1,22 @@
 /**
- * The §7.5 personal timeline, built to the
- * `personal_recruitment_timeline_1` composition: the `max-w-7xl` two-column
- * workspace whose center column holds the page header, the status bar with its
- * quick-stat chips and the `rounded-2xl` roadmap card, and whose rail holds the
- * composition's "MY STATUS SUMMARY" card. The vertical roadmap itself lives in
- * `TimelineRoadmap`.
+ * The §7.5 personal timeline (Phase 5 Anti-Slop Overhaul):
+ * Vertical engineering-log recruitment ledger with verified badges, date diffs,
+ * and inline milestone actions.
  *
- * The candidate's status badge mirrors the server's forward-only sync (a mapped
- * event advances `current_status`; deletion never recalculates it).
- *
- * Destructive actions get a §6.6 confirm dialog, never an instant delete;
- * success and failure surface as §6.7.1 toasts; the server's validation message
- * renders inline in the modal, verbatim.
- *
- * Recorded divergences (RECONCILIATION-16.md): the composition's rail community
- * pulse (1,248 tracked / 210 received / 87 confirmed / 42 joined and their
- * "+84 this wk" deltas) and its external-community links are not copied — the
- * page reads no analytics endpoint and has no verified external channels. Its
- * quick-stat chips are, in contrast, all fillable from the record, so they are.
+ * Behavior contracts preserved:
+ * - Status badge mirrors the server's forward-only sync;
+ * - Destructive actions require confirmation before DELETE;
+ * - Server validation messages render inline in the modal verbatim.
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Calendar,
+  CheckCircle2,
+  ListChecks,
+  PlusCircle,
+  ShieldCheck,
+  type LucideIcon,
+} from "lucide-react";
 
 import {
   deleteTimelineEvent,
@@ -50,39 +47,42 @@ interface ModalState {
   presetType?: TimelineEventType;
 }
 
-/** The composition's quick-stat chip. */
+/** Quick-stat chip in the timeline status bar. */
 function StatChip({
-  glyph,
+  icon: Icon,
   label,
   value,
   accent,
 }: {
-  glyph: string;
+  icon: LucideIcon;
   label: string;
   value: string;
-  /** The composition's emerald "verified" variant. */
   accent?: boolean;
 }) {
   return (
     <span
       className={
         accent
-          ? "inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs px-2.5 py-1 rounded-md font-medium dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/60"
-          : "inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 text-xs px-2.5 py-1 rounded-md font-medium dark:bg-slate-900/60 dark:text-slate-300 dark:border dark:border-slate-700/80"
+          ? "inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-800 dark:border-emerald-800/60 dark:bg-emerald-950/60 dark:text-emerald-300"
+          : "inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 dark:border dark:border-slate-700/80 dark:bg-slate-900/60 dark:text-slate-300"
       }
     >
-      <span
+      <Icon
         className={
           accent
-            ? "material-symbols-outlined text-xs text-emerald-600 dark:text-emerald-400"
-            : "material-symbols-outlined text-xs text-slate-500 dark:text-slate-400"
+            ? "h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400"
+            : "h-3.5 w-3.5 text-slate-500 dark:text-slate-400"
         }
         aria-hidden="true"
-      >
-        {glyph}
-      </span>
+      />
       {label}:{" "}
-      <strong className={accent ? "font-semibold text-emerald-900 dark:text-emerald-200" : "font-semibold text-slate-900 dark:text-slate-100"}>
+      <strong
+        className={
+          accent
+            ? "font-semibold text-emerald-900 tabular-nums dark:text-emerald-200"
+            : "font-semibold text-slate-900 tabular-nums dark:text-slate-100"
+        }
+      >
         {value}
       </strong>
     </span>
@@ -98,7 +98,6 @@ export function TimelinePage(): React.ReactElement {
   const [modalOpen, setModalOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<TimelineEventPrivate | null>(null);
   const [deleting, setDeleting] = useState(false);
-  /** The composition's "Expand all notes" control. */
   const [expandNotes, setExpandNotes] = useState(false);
 
   const refresh = useCallback(async (): Promise<TimelineEventPrivate[]> => {
@@ -135,9 +134,6 @@ export function TimelinePage(): React.ReactElement {
       selectionDate?: string;
     };
   }): Promise<void> {
-    // Read the target once: `modal?.event === null || modal.event === undefined`
-    // left `modal` unnarrowed (a null state dereferenced below) and only
-    // typechecked because the build's project references were never gated.
     const editing = modal?.event ?? null;
     if (editing === null) {
       await createTimelineEvent({
@@ -145,8 +141,6 @@ export function TimelinePage(): React.ReactElement {
         event_date: payload.event_date,
         description: payload.description,
       });
-      // §10.1's install trigger: account created + ≥1 timeline milestone
-      // (9.4 Task 8). Only a real creation counts, not an edit.
       recordMilestoneAdded();
     } else {
       await updateTimelineEvent(editing.id, {
@@ -155,8 +149,6 @@ export function TimelinePage(): React.ReactElement {
         description: payload.description,
       });
     }
-    // When a person enters offer letter received date, mark previous events (Interview, Selection) as complete.
-    // Distinct timeline dates are used (never the same date as the offer letter).
     if (payload.event_type === "OFFER_LETTER") {
       const recordedTypes = new Set((events ?? []).map((e) => e.event_type));
       const interviewDate =
@@ -196,7 +188,10 @@ export function TimelinePage(): React.ReactElement {
     try {
       await deleteTimelineEvent(pendingDelete.id);
       await refresh();
-      toast({ message: "Milestone event deleted. Your status history is unchanged.", variant: "success" });
+      toast({
+        message: "Milestone event deleted. Your status history is unchanged.",
+        variant: "success",
+      });
     } catch {
       toast({ message: "Could not delete the event. Please try again.", variant: "error" });
     } finally {
@@ -205,10 +200,10 @@ export function TimelinePage(): React.ReactElement {
     }
   }
 
-  const list = events ?? [];
+  const list = useMemo(() => events ?? [], [events]);
   const unverifiedCount = list.filter((event) => !event.is_verified).length;
 
-  /** The composition's quick-stat chips, from the record itself. */
+  /** Quick-stat chips derived strictly from the candidate's record. */
   const chips = useMemo(() => {
     const earliestOf = (type: TimelineEventType): TimelineEventPrivate | null => {
       const matches = list.filter((event) => event.event_type === type);
@@ -225,8 +220,8 @@ export function TimelinePage(): React.ReactElement {
     };
   }, [list, unverifiedCount]);
 
-  /** The rail's status line: since when, and how long that has been. */
-  const latest = list.length === 0 ? null : list.reduce((a, b) => (a.event_date > b.event_date ? a : b));
+  const latest =
+    list.length === 0 ? null : list.reduce((a, b) => (a.event_date > b.event_date ? a : b));
   const offerEvent = useMemo(() => {
     const matches = list.filter((event) => event.event_type === "OFFER_LETTER");
     return matches.length === 0
@@ -241,18 +236,18 @@ export function TimelinePage(): React.ReactElement {
 
   return (
     <main
-      className="skin-v1 flex-1 flex flex-col xl:flex-row p-6 gap-6 max-w-7xl w-full mx-auto font-body antialiased max-sm:p-4"
+      className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 p-6 font-body antialiased max-sm:p-4 xl:flex-row"
       data-testid="timeline-page"
     >
       {/* CENTER COLUMN */}
-      <section className="flex-1 flex flex-col gap-6 min-w-0">
+      <section className="flex min-w-0 flex-1 flex-col gap-6">
         {/* Page header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="font-headline text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-              MY RECRUITMENT TIMELINE
+            <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+              My recruitment timeline
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
+            <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
               Track, log, and verify each milestone in your TCS recruitment journey.
             </p>
           </div>
@@ -260,46 +255,48 @@ export function TimelinePage(): React.ReactElement {
             <button
               type="button"
               onClick={() => openAdd()}
-              className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm px-4 py-2.5 rounded-lg shadow-sm transition-all active:scale-[0.98] dark:bg-indigo-600 dark:hover:bg-indigo-500"
+              className="inline-flex items-center gap-2 rounded-lg bg-brand-700 px-4 py-2.5 text-sm font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-brand-800 active:scale-[0.98] dark:bg-brand-600 dark:hover:bg-brand-500"
             >
-              <span className="material-symbols-outlined text-lg" aria-hidden="true">
-                add_circle
-              </span>
+              <PlusCircle className="h-4 w-4" aria-hidden="true" />
               <span>Add Milestone Event</span>
             </button>
           </div>
         </div>
 
         {/* Status bar with the record's own quick-stat chips */}
-        <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3 dark:bg-slate-800 dark:border-slate-700/80">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-700/80 dark:bg-slate-800">
           <div className="flex items-center gap-2.5">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-              Current Status:
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+              Current status:
             </span>
             {currentStatus === null ? (
               <Skeleton className="h-6 w-40 rounded-full" />
             ) : (
-              <span className="inline-flex items-center gap-2 bg-amber-50 text-amber-800 border border-amber-300 font-semibold text-xs px-3 py-1.5 rounded-full hover:bg-amber-100 transition-colors dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/60 dark:hover:bg-amber-900/60">
-                <span className="w-2 h-2 rounded-full bg-amber-500 dark:bg-amber-400 animate-pulse" aria-hidden="true" />
+              <span className="inline-flex items-center gap-2 rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 dark:border-amber-800/60 dark:bg-amber-950/60 dark:text-amber-300">
+                <span
+                  className="h-2 w-2 rounded-full bg-amber-500 dark:bg-amber-400"
+                  aria-hidden="true"
+                />
                 <span>{STATUS_LABELS[currentStatus as CandidateStatus] ?? currentStatus}</span>
-                <span className="material-symbols-outlined text-xs text-amber-700 dark:text-amber-400" aria-hidden="true">
-                  arrow_drop_down
-                </span>
               </span>
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {chips.offerDays !== null && (
-              <StatChip glyph="calendar_month" label="Days since offer" value={`${chips.offerDays} days`} />
+              <StatChip icon={Calendar} label="Days since offer" value={`${chips.offerDays} days`} />
             )}
             {chips.surveyDays !== null && (
-              <StatChip glyph="checklist" label="Survey completed" value={`${chips.surveyDays} days ago`} />
+              <StatChip
+                icon={ListChecks}
+                label="Survey completed"
+                value={`${chips.surveyDays} days ago`}
+              />
             )}
             {list.length > 0 && (
               <StatChip
-                glyph="verified"
+                icon={ShieldCheck}
                 label="Verification"
-                value={chips.allVerified ? "Hash Verified" : `${unverifiedCount} pending`}
+                value={chips.allVerified ? "Verified" : `${unverifiedCount} pending`}
                 accent={chips.allVerified}
               />
             )}
@@ -307,17 +304,19 @@ export function TimelinePage(): React.ReactElement {
         </div>
 
         {/* Roadmap card */}
-        <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 border border-slate-200 shadow-sm dark:bg-slate-800 dark:border-slate-700/80">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-6 border-b border-slate-100 dark:border-slate-700/60 gap-2">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 lg:p-8 dark:border-slate-700/80 dark:bg-slate-800">
+          <div className="mb-6 flex flex-col justify-between gap-2 border-b border-slate-100 pb-6 sm:flex-row sm:items-center dark:border-slate-700/60">
             <div>
-              <h2 className="font-headline text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-                MILESTONE TIMELINE
+              <h2 className="font-display text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
+                Milestone timeline
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Reverse chronological view (Latest first)</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Reverse chronological view (latest first)
+              </p>
             </div>
             <div className="flex items-center gap-2">
               {events !== null && (
-                <span className="text-xs bg-slate-100 text-slate-600 dark:bg-slate-900/60 dark:text-slate-300 dark:border dark:border-slate-700/80 px-2.5 py-1 rounded-full font-medium">
+                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 tabular-nums dark:border dark:border-slate-700/80 dark:bg-slate-900/60 dark:text-slate-300">
                   {events.length} {events.length === 1 ? "Milestone" : "Total Milestones"}
                 </span>
               )}
@@ -325,7 +324,7 @@ export function TimelinePage(): React.ReactElement {
                 type="button"
                 onClick={() => setExpandNotes((open) => !open)}
                 aria-pressed={expandNotes}
-                className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+                className="text-xs font-semibold text-brand-700 hover:underline dark:text-brand-400"
               >
                 Expand all notes
               </button>
@@ -360,15 +359,15 @@ export function TimelinePage(): React.ReactElement {
         </div>
       </section>
 
-      {/* RIGHT RAIL — the composition's MY STATUS SUMMARY card, real fields */}
-      <aside className="w-full xl:w-80 flex flex-col gap-6 shrink-0">
+      {/* RIGHT RAIL — shared status summary card */}
+      <aside className="flex w-full shrink-0 flex-col gap-6 xl:w-80">
         <RailStatusSummary
           status={currentStatus}
           statusDescription={
             latest !== null && (
               <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
                 Since {formatDateShort(latest.event_date)} (
-                <strong className="text-slate-700 dark:text-slate-200">
+                <strong className="text-slate-700 tabular-nums dark:text-slate-200">
                   {daysSince(latest.event_date)} days pending
                 </strong>
                 )
@@ -379,31 +378,29 @@ export function TimelinePage(): React.ReactElement {
             <>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500 dark:text-slate-400">Latest milestone:</span>
-                <span className="text-right font-semibold text-slate-800 dark:text-slate-200">
+                <span className="text-right font-semibold text-slate-800 tabular-nums dark:text-slate-200">
                   {latest === null ? "—" : formatDateShort(latest.event_date)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500 dark:text-slate-400">Offer Date:</span>
-                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                <span className="font-semibold text-slate-800 tabular-nums dark:text-slate-200">
                   {offerEvent === null ? "Not reported" : formatDateShort(offerEvent.event_date)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500 dark:text-slate-400">Recorded milestones:</span>
-                <span className="rounded bg-slate-100 px-2 py-0.5 font-semibold text-slate-800 dark:border dark:border-slate-700/70 dark:bg-slate-900/60 dark:text-slate-200">
+                <span className="rounded bg-slate-100 px-2 py-0.5 font-semibold text-slate-800 tabular-nums dark:border dark:border-slate-700/70 dark:bg-slate-900/60 dark:text-slate-200">
                   {list.length}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500 dark:text-slate-400">Verification:</span>
                 <span className="inline-flex items-center gap-1 rounded border border-emerald-100 bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700 dark:border-emerald-800/60 dark:bg-emerald-950/60 dark:text-emerald-300">
-                  <span
-                    className="material-symbols-outlined text-xs font-bold text-emerald-600 dark:text-emerald-400"
+                  <CheckCircle2
+                    className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400"
                     aria-hidden="true"
-                  >
-                    check_circle
-                  </span>
+                  />
                   {unverifiedCount === 0 ? "All verified" : `${unverifiedCount} pending`}
                 </span>
               </div>

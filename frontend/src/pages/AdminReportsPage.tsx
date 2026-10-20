@@ -95,7 +95,7 @@ const ACTION_DETAILS: Record<ReviewAction, string> = {
 };
 
 const CARD =
-  "rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800";
+  "rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-800";
 
 /** Row accent bar (the composition's severity strip): rose for SCAM, amber for
  *  the mid tier, sky/slate for the rest. */
@@ -109,9 +109,20 @@ const SEVERITY_BAR: Record<ReportReason, string> = {
   OTHER: "bg-slate-300 dark:bg-slate-600",
 };
 
-/** The queue's grid: checkbox | content | reason | filed | action. */
+/** Severity weight matching the backend ordering (SCAM 100 -> OTHER 10). */
+const SEVERITY_WEIGHT: Record<ReportReason, number> = {
+  SCAM: 100,
+  HARASSMENT: 80,
+  PERSONAL_INFORMATION: 70,
+  MISINFORMATION: 60,
+  ABUSIVE_CONTENT: 60,
+  SPAM: 30,
+  OTHER: 10,
+};
+
+/** The queue's grid: checkbox | content | reason + weight | filed | actions. */
 const QUEUE_GRID =
-  "grid grid-cols-[2rem_minmax(0,1fr)_10rem_7.5rem_5rem] items-start gap-3";
+  "grid grid-cols-[2rem_minmax(0,1fr)_12rem_7.5rem_9rem] items-start gap-3";
 
 /** CSV for the bulk export — pure so tests can assert content without Blobs. */
 export function buildReportsCsv(rows: ModerationReport[]): string {
@@ -215,7 +226,7 @@ export function AdminReportsPage(): ReactElement {
   }
 
   return (
-    <main className="skin-v1 mx-auto w-full max-w-5xl space-y-4 p-4 sm:p-6 font-body antialiased" data-testid="admin-reports">
+    <main className="mx-auto w-full max-w-5xl space-y-4 p-4 sm:p-6 font-body antialiased" data-testid="admin-reports">
       <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
         <a
           href="/dashboard"
@@ -254,7 +265,7 @@ export function AdminReportsPage(): ReactElement {
           >
             {STATUS_LABELS[s]}
             {counts !== null && (
-              <span className="ml-1.5 text-xs opacity-80" data-testid={`count-${s}`}>
+              <span className="ml-1.5 text-xs tabular-nums opacity-80" data-testid={`count-${s}`}>
                 {counts[s]}
               </span>
             )}
@@ -381,26 +392,55 @@ export function AdminReportsPage(): ReactElement {
                       </p>
                     )}
                   </div>
-                  <div className="min-w-0 pt-0.5">
+                  <div className="flex min-w-0 items-center justify-between gap-2 pt-0.5">
                     <span
-                      className={`inline-flex rounded border px-2 py-0.5 text-[11px] font-medium ${REASON_ACCENT[report.reason]}`}
+                      className={`inline-flex truncate rounded border px-2 py-0.5 text-[11px] font-medium ${REASON_ACCENT[report.reason]}`}
                       data-testid={`reason-${report.id}`}
                     >
                       {REASON_LABELS[report.reason]}
                     </span>
+                    <span
+                      data-testid={`severity-${report.id}`}
+                      className="shrink-0 font-mono-code text-xs font-semibold text-slate-500 tabular-nums dark:text-slate-400"
+                      title="Severity weight"
+                    >
+                      {SEVERITY_WEIGHT[report.reason]}
+                    </span>
                   </div>
-                  <div className="pt-0.5 font-mono text-xs text-slate-600 dark:text-slate-400">
+                  <div className="pt-0.5 font-mono text-xs text-slate-600 tabular-nums dark:text-slate-400">
                     <div>{new Date(report.created_at).toLocaleDateString()}</div>
                     <div className="text-[10px] text-slate-400 dark:text-slate-500">
                       {new Date(report.created_at).toLocaleTimeString()}
                     </div>
                   </div>
-                  <div className="flex justify-end pt-0.5">
+                  <div className="flex justify-end gap-1.5 pt-0.5">
+                    {report.status === "PENDING" && (
+                      <button
+                        type="button"
+                        data-testid={`quick-dismiss-${report.id}`}
+                        onClick={() => {
+                          void reviewReport(report.id, {
+                            action: "DISMISS",
+                            moderator_notes: "Quick-dismissed from queue",
+                          })
+                            .then((res) => applyReview({ ...report, status: res.status }, "DISMISS"))
+                            .catch(() =>
+                              toast({
+                                message: "Could not dismiss report.",
+                                variant: "error",
+                              }),
+                            );
+                        }}
+                        className="rounded border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                      >
+                        Dismiss
+                      </button>
+                    )}
                     <button
                       type="button"
                       data-testid={`review-${report.id}`}
                       onClick={() => setReviewing(report)}
-                      className="rounded border border-brand-200 bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-800 hover:bg-brand-100 dark:border-brand-900 dark:bg-brand-950/60 dark:text-brand-300 dark:hover:bg-brand-950"
+                      className="rounded border border-brand-200 bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-800 transition-[background-color,transform] duration-150 hover:bg-brand-100 active:scale-[0.98] dark:border-brand-900 dark:bg-brand-950/60 dark:text-brand-300 dark:hover:bg-brand-950"
                     >
                       Review
                     </button>

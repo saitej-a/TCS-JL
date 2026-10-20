@@ -15,6 +15,7 @@ function displayValue(value: string | null): string {
 
 export function AdminMembersPage() {
   const [members, setMembers] = useState<AdminMember[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,6 +27,7 @@ export function AdminMembersPage() {
     try {
       const response = await listAdminMembers(page);
       setMembers(response.results);
+      setTotalCount(response.count);
       setPageCount(Math.max(1, Math.ceil(response.count / 20)));
     } catch {
       setLoadError(true);
@@ -40,19 +42,27 @@ export function AdminMembersPage() {
 
   return (
     <main className="mx-auto w-full max-w-6xl space-y-5 p-4 sm:p-6">
-      <header className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-50 text-brand-700 dark:bg-sky-950/60 dark:text-brand-300">
-          <UsersRound className="h-5 w-5" aria-hidden="true" />
-        </div>
+      <header className="flex items-center justify-between gap-4 border-b border-slate-200 pb-4 dark:border-slate-800">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Members</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <h1 className="flex items-center gap-2 font-display text-xl font-bold text-slate-900 dark:text-slate-100">
+            <UsersRound className="h-5 w-5 text-brand-700 dark:text-brand-400" aria-hidden="true" />
+            <span>Members</span>
+          </h1>
+          <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
             Active accounts and their candidate profile details.
           </p>
         </div>
+        {!isLoading && !loadError && (
+          <span
+            data-testid="members-total"
+            className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 font-mono-code text-xs font-semibold text-slate-700 tabular-nums dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+          >
+            {totalCount} total
+          </span>
+        )}
       </header>
 
-      <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800">
+      <section className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-800">
         {isLoading ? (
           <div className="p-6 text-sm text-slate-500 dark:text-slate-400" role="status">Loading members…</div>
         ) : loadError ? (
@@ -67,7 +77,7 @@ export function AdminMembersPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-[850px] w-full text-left text-sm">
-              <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-900/70 dark:text-slate-400">
+              <thead className="bg-slate-50 text-xs tracking-tight text-slate-500 dark:bg-slate-900/70 dark:text-slate-400">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Member</th>
                   <th className="px-4 py-3 font-semibold">Batch</th>
@@ -86,7 +96,7 @@ export function AdminMembersPage() {
                         {member.email}
                       </a>
                     </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{member.batch ?? "—"}</td>
+                    <td className="px-4 py-3 tabular-nums text-slate-600 dark:text-slate-300">{member.batch ?? "—"}</td>
                     <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{displayValue(member.hiring_type)}</td>
                     <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{member.region ?? "—"}</td>
                     <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{displayValue(member.current_status)}</td>
@@ -98,7 +108,7 @@ export function AdminMembersPage() {
         )}
         {!isLoading && !loadError && pageCount > 1 && (
           <div className="flex items-center justify-between border-t border-slate-200 px-4 py-3 text-sm dark:border-slate-700">
-            <span className="text-slate-500 dark:text-slate-400">Page {page} of {pageCount}</span>
+            <span className="tabular-nums text-slate-500 dark:text-slate-400">Page {page} of {pageCount}</span>
             <div className="flex gap-2">
               <button
                 type="button"

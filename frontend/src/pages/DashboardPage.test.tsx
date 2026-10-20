@@ -138,6 +138,8 @@ describe("DashboardPage", () => {
     });
     expect(screen.getByText(/newest posts/i)).toBeInTheDocument();
     expect(screen.queryByText(/in your stream/i)).not.toBeInTheDocument();
+    expect(screen.getByTestId("dashboard-kpi-strip")).toBeInTheDocument();
+    expect(document.querySelector("[data-awaiting]")).toBeNull();
   });
 
   it("renders the failure path as EmptyState, never fabricated numbers", async () => {

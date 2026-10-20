@@ -8,14 +8,15 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { X } from "lucide-react";
 
 export type ToastVariant = "success" | "error" | "info";
 
 /** §6.7.1's exact variant classes (dark surfaces, per-variant borders). */
 const VARIANT_CLASSES: Record<ToastVariant, string> = {
-  success: "bg-emerald-900/90 text-emerald-100 border border-emerald-700",
-  error: "bg-rose-900/90 text-rose-100 border border-rose-700",
-  info: "bg-slate-900/90 text-slate-100 border border-slate-700",
+  success: "bg-emerald-950/95 text-emerald-100 border border-emerald-700/80",
+  error: "bg-rose-950/95 text-rose-100 border border-rose-700/80",
+  info: "bg-slate-900/95 text-slate-100 border border-slate-700/80",
 };
 
 const VARIANT_ROLE: Record<ToastVariant, "status" | "alert"> = {
@@ -125,21 +126,21 @@ function ToastItem({
   return (
     <div
       role={VARIANT_ROLE[entry.variant]}
-      className={`${VARIANT_CLASSES[entry.variant]} rounded-lg shadow-lg px-4 py-3 text-sm flex items-center gap-3 min-w-[280px] max-sm:min-w-0 max-sm:w-full`}
+      className={`${VARIANT_CLASSES[entry.variant]} rounded-lg shadow-lg px-4 py-3 text-sm flex items-center gap-3 min-w-[280px] max-sm:min-w-0 max-sm:w-full transition-[transform,opacity] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]`}
       onMouseEnter={pauseTimer}
       onMouseLeave={startTimer}
       onFocus={pauseTimer}
       onBlur={startTimer}
       data-testid="toast"
     >
-      <span className="flex-1">{entry.message}</span>
+      <span className="flex-1 leading-snug">{entry.message}</span>
       <button
         type="button"
         aria-label="Dismiss notification"
         onClick={() => onDismiss(entry.id)}
-        className="shrink-0 opacity-70 hover:opacity-100 focus:outline-none"
+        className="shrink-0 opacity-70 hover:opacity-100 focus:outline-none p-1 rounded transition-opacity duration-150"
       >
-        ×
+        <X className="h-3.5 w-3.5" aria-hidden="true" />
       </button>
     </div>
   );

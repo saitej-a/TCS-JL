@@ -36,3 +36,6 @@ frontend/dev-dist/
 
 # Temporary 9.4 drill override (throwaway VAPID keypair; delete after prod keys)
 docker-compose.override.yml
+
+brag
+brag-output

@@ -98,6 +98,18 @@ describe("AppShell", () => {
     expect(search).toHaveValue("Hyderabad batch");
   });
 
+  it("focuses the community search input when pressing `/` outside form fields", async () => {
+    const user = userEvent.setup();
+    scriptAnnouncements([]);
+    renderShell();
+
+    const search = await screen.findByRole("searchbox", { name: "Search community" });
+    expect(search).not.toHaveFocus();
+
+    await user.keyboard("/");
+    expect(search).toHaveFocus();
+  });
+
   it("shows Post without a literal plus and puts Share Update in the mobile menu", async () => {
     const user = userEvent.setup();
     scriptAnnouncements([]);

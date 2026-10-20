@@ -100,4 +100,11 @@ describe("RegisterPage", () => {
       expect(screen.getByText("verify-pending-here")).toBeInTheDocument();
     });
   });
+
+  it("renders the shared 2-column architectural frame with the candidate timeline specimen", () => {
+    const { container } = renderRegister();
+    expect(screen.getByTestId("identity-pill")).toHaveTextContent("Anonymous Candidate");
+    expect(screen.getByRole("list", { name: "Sample candidate recruitment ledger" })).toBeInTheDocument();
+    expect(container.querySelector("[data-awaiting]")).toBeNull();
+  });
 });

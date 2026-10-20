@@ -1,31 +1,23 @@
 import { useId, useState, type InputHTMLAttributes, type ReactNode } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 const CONTROL_CLASSES =
-  "w-full h-10 px-3.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all";
+  "w-full h-10 px-3.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-600/25 focus:border-brand-600 dark:focus:border-brand-400 transition-[border-color,box-shadow] duration-150";
 
-/** The composition's own reveal-button treatment, when the screen specifies one. */
+/** The reveal-button treatment for password fields. */
 const REVEAL_CLASSES =
-  "absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 focus:outline-none flex items-center justify-center";
+  "absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 focus:outline-none flex items-center justify-center transition-colors duration-150";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   helperText?: string;
   errorText?: string;
-  /**
-   * Replaces the control's default treatment outright. Every Stitch composition
-   * draws its own field — padding, border colour, ring, background tint — and two
-   * competing utilities on one element are resolved by stylesheet order rather than
-   * by the order they appear in `className`, so a screen that claims its mockup's
-   * field passes the whole class string instead of appending to the default.
-   */
   controlClassName?: string;
-  /** The composition's reveal-button classes, when its field is a password. */
   revealClassName?: string;
-  /** The composition's reveal glyph, when it draws one instead of the ligature. */
   revealIcon?: (revealed: boolean) => ReactNode;
 }
 
-/** §6.2.1: label + control + helper/error, with aria wiring for announcement. */
+/** §6.2.1: sentence-case label + 40px control + helper/error, with aria wiring. */
 export function Input({
   label,
   helperText,
@@ -54,7 +46,7 @@ export function Input({
       {label !== undefined && (
         <label
           htmlFor={inputId}
-          className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center justify-between"
+          className="text-[13px] font-medium text-slate-700 dark:text-slate-300 flex items-center justify-between"
         >
           {label}
         </label>
@@ -80,16 +72,19 @@ export function Input({
           >
             {revealIcon !== undefined ? (
               revealIcon(revealed)
+            ) : revealed ? (
+              <EyeOff className="h-4 w-4" aria-hidden="true" />
             ) : (
-              <span className="material-symbols-outlined text-[18px]" data-icon="visibility">
-                {revealed ? "visibility_off" : "visibility"}
-              </span>
+              <Eye className="h-4 w-4" aria-hidden="true" />
             )}
           </button>
         )}
       </div>
       {errorText !== undefined && (
-        <p id={errorId} className="text-xs text-rose-600 dark:text-rose-400 flex items-center gap-1 font-medium mt-0.5">
+        <p
+          id={errorId}
+          className="text-xs text-rose-600 dark:text-rose-400 flex items-center gap-1 font-medium mt-0.5"
+        >
           <ErrorGlyph /> {errorText}
         </p>
       )}
@@ -104,7 +99,7 @@ export function Input({
 
 function ErrorGlyph(): ReactNode {
   return (
-    <svg aria-hidden="true" viewBox="0 0 16 16" className="h-3.5 w-3.5 fill-current">
+    <svg aria-hidden="true" viewBox="0 0 16 16" className="h-3.5 w-3.5 shrink-0 fill-current">
       <path d="M8 1.5 15 14H1L8 1.5Zm0 4.5a.75.75 0 0 0-.75.75v3a.75.75 0 0 0 1.5 0v-3A.75.75 0 0 0 8 6Zm0 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" />
     </svg>
   );

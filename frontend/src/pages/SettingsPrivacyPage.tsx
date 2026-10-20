@@ -46,7 +46,7 @@ import { SkeletonCard } from "@/components/Skeleton";
 import { useAuth } from "@/context/AuthContext";
 import type { ReactElement, ReactNode } from "react";
 
-const CARD = "bg-white rounded-card border border-slate-200 p-4 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800";
+const CARD = "bg-white rounded-card border border-slate-200 p-4 sm:p-6 dark:border-slate-800 dark:bg-slate-800";
 const CARD_HEAD = "mb-4";
 const CARD_H2 = "text-base font-semibold text-slate-900 dark:text-slate-100";
 const CARD_SUB = "text-xs text-slate-500 mt-0.5 dark:text-slate-400";
@@ -217,7 +217,7 @@ export function SettingsPrivacyPage(): ReactElement {
   const isAnonymous = mode === "ANONYMOUS";
 
   return (
-    <div className="skin-v2 max-w-[1040px] mx-auto font-body antialiased">
+    <div className="max-w-[1040px] mx-auto font-body antialiased">
       <header className="mb-6">
         <nav className="flex items-center gap-2 text-xs text-slate-500 mb-2 dark:text-slate-400" aria-label="Breadcrumb">
           <Link to="/dashboard" className="hover:text-slate-900 transition-colors dark:hover:text-slate-100">
@@ -265,7 +265,7 @@ export function SettingsPrivacyPage(): ReactElement {
                 <label
                   className={`${RADIO_ROW} ${
                     isAnonymous
-                      ? "border-2 border-brand-600 bg-brand-50/40"
+                      ? "border border-brand-600 bg-brand-50/60 ring-1 ring-inset ring-brand-600"
                       : "border border-slate-200 bg-white hover:bg-slate-50/60 dark:border-slate-700 dark:bg-slate-800"
                   }`}
                 >
@@ -289,7 +289,7 @@ export function SettingsPrivacyPage(): ReactElement {
                 <label
                   className={`${RADIO_ROW} ${
                     !isAnonymous
-                      ? "border-2 border-brand-600 bg-brand-50/40"
+                      ? "border border-brand-600 bg-brand-50/60 ring-1 ring-inset ring-brand-600"
                       : "border border-slate-200 bg-white hover:bg-slate-50/60 dark:border-slate-700 dark:bg-slate-800"
                   }`}
                 >

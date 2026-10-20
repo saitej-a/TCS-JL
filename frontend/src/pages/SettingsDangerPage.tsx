@@ -38,17 +38,17 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/Toast";
 import type { ReactElement } from "react";
 
-const CARD = "bg-white rounded-custom border border-slate-200 p-4 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800";
+const CARD = "bg-white rounded-xl border border-slate-200 p-4 sm:p-6 dark:border-slate-800 dark:bg-slate-800";
 const CARD_ICON =
-  "w-10 h-10 rounded-xl border flex items-center justify-center flex-shrink-0 mt-0.5";
+  "w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5";
 const CARD_H2 = "text-base font-semibold text-slate-900 dark:text-slate-100";
 const CARD_BODY = "text-sm text-slate-600 mt-1 leading-relaxed dark:text-slate-400";
 const CARD_ACTION =
-  "inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border text-xs font-semibold transition-colors shadow-xs active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed";
+  "inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border text-xs font-semibold transition-colors active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed";
 const CHIP =
   "inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium border";
 const FIELD =
-  "w-full text-sm bg-white border border-slate-300 rounded-lg px-3.5 py-2 shadow-xs focus:ring-2 focus:ring-rose-500 focus:border-rose-500 focus:outline-none dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100";
+  "w-full text-sm bg-white border border-slate-300 rounded-lg px-3.5 py-2 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 focus:outline-none dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100";
 const FIELD_LABEL = "block text-xs font-semibold text-slate-800 mb-1.5 dark:text-slate-200";
 
 /** The composition's breadcrumb chevron. */
@@ -116,7 +116,7 @@ function Alternative({
           <div className="text-[11px] text-slate-500 mt-0.5 dark:text-slate-400">{detail}</div>
           <Link
             to={to}
-            className="inline-flex items-center gap-1 text-xs font-medium text-[#0369A1] hover:underline mt-1.5 dark:text-brand-300"
+            className="inline-flex items-center gap-1 text-xs font-medium text-brand-700 hover:underline mt-1.5 dark:text-brand-300"
           >
             {linkLabel}
             <svg
@@ -175,7 +175,7 @@ export function SettingsDangerPage(): ReactElement {
   }
 
   return (
-    <div className="skin-v2 max-w-[1040px] w-full font-body antialiased">
+    <div className="max-w-[1040px] w-full font-body antialiased">
       <nav
         className="flex items-center gap-2 text-xs text-slate-500 mb-3 dark:text-slate-400"
         aria-label="Breadcrumb"

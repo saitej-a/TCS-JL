@@ -1,20 +1,13 @@
 /**
- * The §7.2.5 forgot-password screen, rebuilt to the `forgot_password_screen`
- * composition (Phase 12): card with heading + explanatory subheader, the
- * send-reset-link CTA with a leading arrow glyph, the emerald success strip
- * with the inbox/spam hint line, a lock-hint row, and the back link.
+ * The §7.2.5 forgot-password screen (Phase 4 Anti-Slop Overhaul):
+ * Clean single-column recovery card built on `AuthCard`.
  *
- * The success copy is enumeration-safe: the same response regardless of
- * whether the email exists (the shipped contract — the composition's shown
- * success banner is the same honest wording, not a confirmation the address
- * exists).
- *
- * Dark parity (Phase 16 follow-up): the shell's card and dot-grid come from
- * `AuthCard`; the field, the emerald sent strip and the lock hint here carry
- * their own `dark:` pairs.
+ * Enumeration-safe contract preserved: presents the exact same sent status
+ * regardless of whether the email exists or the request errors.
  */
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
+import { ArrowLeft, ArrowRight, CheckCircle2, KeyRound } from "lucide-react";
 
 import { requestPasswordReset } from "@/api/auth";
 import { Input } from "@/components/Input";
@@ -47,7 +40,6 @@ export function ForgotPasswordPage() {
     <AuthCard
       title="Reset your password"
       subtitle="Enter the email you registered with and we will send you a reset link."
-      skin="skin-v1"
       shell="forgot"
     >
       <form onSubmit={handleSubmit} noValidate>
@@ -63,29 +55,27 @@ export function ForgotPasswordPage() {
               id="forgot-email"
               type="email"
               autoComplete="email"
+              placeholder="name@domain.in"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              controlClassName="border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-all w-full bg-slate-50/30 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder:text-slate-500 dark:hover:border-slate-600"
             />
           </div>
 
           {sent && (
             <div
               role="status"
-              className="bg-emerald-50 rounded-lg border border-emerald-200/80 p-3.5 flex items-start gap-3 mt-4 transition-all duration-300 dark:bg-emerald-950/50 dark:border-emerald-900/60"
+              className="mt-4 flex items-start gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3.5 transition-opacity duration-200 dark:border-emerald-900/60 dark:bg-emerald-950/50"
             >
-              <span
-                className="material-symbols-outlined text-emerald-600 text-xl shrink-0 select-none dark:text-emerald-400"
-                data-icon="check_circle"
-              >
-                check_circle
-              </span>
+              <CheckCircle2
+                className="h-5 w-5 shrink-0 select-none text-emerald-600 dark:text-emerald-400"
+                aria-hidden="true"
+              />
               <div className="flex-1">
-                <p className="text-xs sm:text-sm font-medium text-emerald-700 leading-snug dark:text-emerald-300">
+                <p className="text-xs font-medium leading-snug text-emerald-800 sm:text-sm dark:text-emerald-200">
                   {SENT_TEXT}
                 </p>
-                <p className="text-[12px] text-emerald-600/90 mt-0.5 dark:text-emerald-400/90">
+                <p className="mt-0.5 text-xs text-emerald-700 dark:text-emerald-300">
                   {SENT_HINT}
                 </p>
               </div>
@@ -95,32 +85,31 @@ export function ForgotPasswordPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-medium text-sm rounded-lg shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 flex items-center justify-center gap-2 mt-5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-5 flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-brand-700 text-sm font-medium text-white transition-[background-color,transform] duration-150 hover:bg-brand-800 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <span>{submitting ? "Sending reset link..." : "Send reset link"}</span>
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
       </form>
 
-      <div className="mt-6 flex items-center gap-2.5 border-t border-slate-100 pt-5 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400">
-        <span
-          className="material-symbols-outlined text-slate-400 text-base shrink-0 dark:text-slate-500"
-          data-icon="lock_reset"
-        >
-          lock_reset
-        </span>
+      <div className="mt-6 flex items-center gap-2.5 border-t border-slate-100 pt-5 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
+        <KeyRound
+          className="h-4 w-4 shrink-0 text-slate-400 dark:text-slate-500"
+          aria-hidden="true"
+        />
         <span>Secure password reset with single-use magic link verification.</span>
       </div>
 
       <div className="mt-6 text-center">
         <Link
           to="/login"
-          className="group inline-flex items-center gap-1.5 py-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 hover:underline transition-colors dark:text-indigo-400 dark:hover:text-indigo-300"
+          className="group inline-flex items-center gap-1.5 py-1 text-sm font-medium text-brand-700 transition-colors hover:text-brand-800 hover:underline dark:text-brand-300 dark:hover:text-brand-200"
         >
-          <span className="material-symbols-outlined text-base transition-transform group-hover:-translate-x-0.5">
-            arrow_back
-          </span>
+          <ArrowLeft
+            className="h-4 w-4 transition-transform duration-150 group-hover:-translate-x-0.5"
+            aria-hidden="true"
+          />
           <span>Back to sign in</span>
         </Link>
       </div>

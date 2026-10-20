@@ -167,10 +167,13 @@ describe("§7.10 NotificationsPage (notification_center composition)", () => {
     expect(screen.getByText("All Notifications")).toBeInTheDocument();
     expect(screen.getByText(/Unread Only/)).toBeInTheDocument();
 
-    // Marker dots and Material Symbols glyph chips per row, and the quoted snippet callout.
+    // Marker dots and Lucide glyph chips per row, and the quoted snippet callout.
     expect(screen.getByTestId("marker-unread-n1")).toBeInTheDocument();
     expect(screen.getByTestId("marker-read-n3")).toBeInTheDocument();
     expect(screen.getByTestId("notification-glyph-n2")).toBeInTheDocument();
+    expect(screen.getByTestId("notifications-group-unread")).toHaveTextContent("Unread (2)");
+    expect(screen.getByTestId("notifications-group-earlier")).toHaveTextContent("Earlier");
+    expect(document.querySelector("[data-awaiting]")).toBeNull();
     const snippet = screen.getByTestId("notification-snippet-n1");
     expect(snippet).toHaveTextContent("Mine arrived last week.");
     // A row with no message renders no quoted line.

@@ -1,6 +1,4 @@
 @import "tailwindcss";
-/* Phase 14's literal-markup layer: the vendored faces the Stitch compositions
-   name (no CDN request) and the per-screen `.skin-v1` / `.skin-v2` scopes. */
 @import "./styles/fonts.css";
 @import "./styles/stitch-scopes.css";
 
@@ -8,87 +6,160 @@
    variant, and ThemeContext toggles it on <html>. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* The design-token layer (D5, 05 §4.1). Brand values are transcribed
-   byte-exactly from 05 §4.1.1 as amended in 9.5 (token v2): the v1 accent
-   scale was superseded by the professional-blue (Tailwind sky) spectrum of
-   the 9.5 design pass — see 09.5-CONTEXT.md §4.2 for the exact mapping and
-   the role rules (white-on-brand rests at brand-700; hover 800; pressed
-   900; dark-mode accents stay on the bright brand-400 family). 200/300/950
-   are kept so §6.8's upvote-pill classes (brand-300, brand-950) resolve. */
+/* ============================================================================
+ * UNIFIED DESIGN TOKEN SYSTEM (Phase 1 Anti-Slop Overhaul)
+ *
+ * Visual Authority:
+ * - Palette Direction: "Forest Emerald & Warm Stone"
+ *   Warm stone ground (#FAF9F6) + deep forest emerald (#047857) + charcoal
+ *   stone ink (#1C1917). Calm, editorial, financial-grade clarity.
+ * - Page Direction: `product-performs` (seed 1472701302)
+ * - App Workspace: `Accent ladder / Open plane` (seed 1948030239)
+ * - Motion Philosophy: Emil Kowalski (`emil-design-eng`)
+ *
+ * House Rules Enforced Here:
+ * 1. One unified token world across all 26 routes.
+ * 2. Zero violet or indigo: legacy `indigo-*`, `violet-*`, `purple-*`, and
+ *    `fuchsia-*` utilities are aliased to the canonical Forest Emerald
+ *    (`--color-brand-*`) ladder so no purple AI-template tint ever renders.
+ * 3. Warm Stone Neutral Scale: `slate-*` utilities are mapped to the warm
+ *    editorial stone scale (#FAF9F6 -> #0C0A09) so every panel, border, and
+ *    text step shares warm architectural cohesion.
+ * 4. UI & body copy in `Inter` for dense ledger legibility; headlines & display
+ *    statements in `Fira Sans`; tabular figures in `Fira Code`.
+ * 5. Custom easing curves (`--ease-out`, `--ease-in-out`, `--ease-drawer`) with
+ *    <300ms duration discipline.
+ * ========================================================================== */
 @theme {
-  --color-brand-50: #f0f9ff;
-  --color-brand-100: #e0f2fe;
-  --color-brand-200: #bae6fd;
-  --color-brand-300: #7dd3fc;
-  --color-brand-400: #38bdf8;
-  --color-brand-500: #0ea5e9;
-  --color-brand-600: #0284c7;
-  --color-brand-700: #0369a1;
-  --color-brand-800: #075985;
-  --color-brand-900: #0c4a6e;
-  --color-brand-950: #082f49;
+  /* Canonical Brand Ladder (Forest Emerald) */
+  --color-brand-50: #ecfdf5;
+  --color-brand-100: #d1fae5;
+  --color-brand-200: #a7f3d0;
+  --color-brand-300: #6ee7b7;
+  --color-brand-400: #34d399;
+  --color-brand-500: #10b981;
+  --color-brand-600: #059669;
+  --color-brand-700: #047857;
+  --color-brand-800: #065f46;
+  --color-brand-900: #064e3b;
+  --color-brand-950: #022c22;
 
-  --font-sans: "Fira Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, Helvetica, Arial, sans-serif;
+  /* Warm Stone Neutral Scale (mapped onto `slate-*` for universal cohesion) */
+  --color-slate-50: #faf9f6;
+  --color-slate-100: #f5f4f0;
+  --color-slate-200: #e7e5e0;
+  --color-slate-300: #d6d3cd;
+  --color-slate-400: #a8a29e;
+  --color-slate-500: #78716c;
+  --color-slate-600: #57534e;
+  --color-slate-700: #44403c;
+  --color-slate-800: #292524;
+  --color-slate-900: #1c1917;
+  --color-slate-950: #0c0a09;
+
+  /* Anti-Slop Ban on Violet/Indigo/Purple/Fuchsia: remap onto the canonical
+     Forest Emerald (`--color-brand-*`) scale so zero purple/indigo hues ever
+     render anywhere in the application. */
+  --color-indigo-50: var(--color-brand-50); /* taste-skill-ignore */
+  --color-indigo-100: var(--color-brand-100); /* taste-skill-ignore */
+  --color-indigo-200: var(--color-brand-200); /* taste-skill-ignore */
+  --color-indigo-300: var(--color-brand-300); /* taste-skill-ignore */
+  --color-indigo-400: var(--color-brand-400); /* taste-skill-ignore */
+  --color-indigo-500: var(--color-brand-500); /* taste-skill-ignore */
+  --color-indigo-600: var(--color-brand-700); /* taste-skill-ignore */
+  --color-indigo-700: var(--color-brand-800); /* taste-skill-ignore */
+  --color-indigo-800: var(--color-brand-900); /* taste-skill-ignore */
+  --color-indigo-900: var(--color-brand-900); /* taste-skill-ignore */
+  --color-indigo-950: var(--color-brand-950); /* taste-skill-ignore */
+
+  --color-violet-50: var(--color-brand-50); /* taste-skill-ignore */
+  --color-violet-100: var(--color-brand-100); /* taste-skill-ignore */
+  --color-violet-200: var(--color-brand-200); /* taste-skill-ignore */
+  --color-violet-300: var(--color-brand-300); /* taste-skill-ignore */
+  --color-violet-400: var(--color-brand-400); /* taste-skill-ignore */
+  --color-violet-500: var(--color-brand-500); /* taste-skill-ignore */
+  --color-violet-600: var(--color-brand-600); /* taste-skill-ignore */
+  --color-violet-700: var(--color-brand-700); /* taste-skill-ignore */
+  --color-violet-800: var(--color-brand-800); /* taste-skill-ignore */
+  --color-violet-900: var(--color-brand-900); /* taste-skill-ignore */
+  --color-violet-950: var(--color-brand-950); /* taste-skill-ignore */
+
+  --color-purple-50: var(--color-brand-50); /* taste-skill-ignore */
+  --color-purple-100: var(--color-brand-100); /* taste-skill-ignore */
+  --color-purple-200: var(--color-brand-200); /* taste-skill-ignore */
+  --color-purple-300: var(--color-brand-300); /* taste-skill-ignore */
+  --color-purple-400: var(--color-brand-400); /* taste-skill-ignore */
+  --color-purple-500: var(--color-brand-500); /* taste-skill-ignore */
+  --color-purple-600: var(--color-brand-600); /* taste-skill-ignore */
+  --color-purple-700: var(--color-brand-700); /* taste-skill-ignore */
+  --color-purple-800: var(--color-brand-800); /* taste-skill-ignore */
+  --color-purple-900: var(--color-brand-900); /* taste-skill-ignore */
+  --color-purple-950: var(--color-brand-950); /* taste-skill-ignore */
+
+  --color-fuchsia-50: var(--color-brand-50); /* taste-skill-ignore */
+  --color-fuchsia-100: var(--color-brand-100); /* taste-skill-ignore */
+  --color-fuchsia-200: var(--color-brand-200); /* taste-skill-ignore */
+  --color-fuchsia-300: var(--color-brand-300); /* taste-skill-ignore */
+  --color-fuchsia-400: var(--color-brand-400); /* taste-skill-ignore */
+  --color-fuchsia-500: var(--color-brand-500); /* taste-skill-ignore */
+  --color-fuchsia-600: var(--color-brand-600); /* taste-skill-ignore */
+  --color-fuchsia-700: var(--color-brand-700); /* taste-skill-ignore */
+  --color-fuchsia-800: var(--color-brand-800); /* taste-skill-ignore */
+  --color-fuchsia-900: var(--color-brand-900); /* taste-skill-ignore */
+  --color-fuchsia-950: var(--color-brand-950); /* taste-skill-ignore */
+
+  /* Unified Typography Hierarchy */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
   --font-mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco,
     Consolas, monospace;
 
-  /* Phase 14 D-03: the type roles the compositions' inline configs declare
-     (`font-headline`/`display`/`body`/`label` — Inter in the v1 family, Fira in
-     v2) and the two radii the v2 family uses. Defaults are the v2 family, so an
-     unported screen keeps the vocabulary it has today; `.skin-v1` re-points the
-     roles for a v1 screen. */
-  --font-headline: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-label: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
-  --radius-card: 0.75rem;
+  --font-headline: "Fira Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fira Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --font-label: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+
+  /* Structural Radii — disciplined 8px/10px architectural geometry */
+  --radius-card: 0.625rem;
   --radius-elem: 0.5rem;
-
-  /* Phase 16: the token names the settings compositions' inline `tailwind.config`
-     declares — the brand DEFAULT/hover/tint/light set, the named slate roles
-     (page/border/primary/secondary/muted), `borderRadius.control` and
-     `boxShadow.hover`. Declaring them lets a ported screen keep the
-     composition's own class names (`text-slate-primary`, `bg-brand-tint`,
-     `rounded-control`, `hover:shadow-hover`) instead of having every one
-     rewritten to the numeric scale carrying the same value — the same treatment
-     `rounded-card`, `shadow-subtle` and `font-mono-numbers` already get, and the
-     classes resolve to nothing without it. Values are the configs' bytes
-     (`#0369A1` is exactly `--color-brand-700`; `#E2E8F0` exactly slate-200).
-
-     These stay *static light* values. Dark mode in this app is the `dark:`
-     variant on the light markup (05 §4.2), so a ported screen pairs an alias with
-     an explicit `dark:` class rather than the token flipping underneath it — which
-     also keeps `bg-brand text-white` readable on both themes. */
-  --color-brand: #0369a1;
-  --color-brand-hover: #075985;
-  --color-brand-tint: #e0f2fe;
-  --color-brand-light: #f0f9ff;
-  --color-slate-page: #f8fafc;
-  --color-slate-border: #e2e8f0;
-  --color-slate-primary: #0f172a;
-  --color-slate-secondary: #475569;
-  --color-slate-muted: #64748b;
   --radius-control: 0.5rem;
-  --shadow-hover: 0 4px 6px -1px rgb(15 23 42 / 0.07),
-    0 2px 4px -2px rgb(15 23 42 / 0.05);
 
-  /* 05 §4.2 semantic aliases — light values. Utilities read these variables,
-     so `bg-background` / `border-default` flip with the theme below while
-     every explicit `bg-slate-50 dark:bg-slate-900` pair still works. */
-  --color-background: #f8fafc; /* slate-50 */
-  --color-surface: #ffffff; /* white */
-  --color-surface-elevated: #f1f5f9; /* slate-100 */
-  --color-primary: #0f172a; /* slate-900 */
-  --color-secondary: #475569; /* slate-600 */
-  --color-muted: #94a3b8; /* slate-400 */
-  --color-default: #e2e8f0; /* slate-200 (border) */
-  --color-input: #cbd5e1; /* slate-300 (input border idle) */
+  /* Named Brand & Stone Roles (Settings & Workspace compatibility) */
+  --color-brand: #047857;
+  --color-brand-hover: #065f46;
+  --color-brand-tint: #d1fae5;
+  --color-brand-light: #ecfdf5;
+  --color-slate-page: #faf9f6;
+  --color-slate-border: #e7e5e0;
+  --color-slate-primary: #1c1917;
+  --color-slate-secondary: #57534e;
+  --color-slate-muted: #78716c;
 
-  --animate-typing-wave: typing-wave 1.2s ease-in-out infinite;
+  /* Flat surface discipline: resting cards use 1px borders, not drop shadows */
+  --shadow-hover: none;
+
+  /* Semantic Surface & Ink Tokens — Light Mode Default (Warm Stone) */
+  --color-background: #faf9f6; /* warm stone paper ground */
+  --color-surface: #ffffff; /* crisp white panel */
+  --color-surface-elevated: #f5f4f0; /* warm stone-100 subtle tone step */
+  --color-primary: #1c1917; /* charcoal stone-900 full ink */
+  --color-secondary: #57534e; /* stone-600 supporting copy */
+  --color-muted: #78716c; /* stone-500 accessible metadata (≥4.6:1 on white) */
+  --color-default: #e7e5e0; /* stone-200 1px structural hairline */
+  --color-input: #d6d3cd; /* stone-300 control border */
+
+  /* Emil Kowalski Motion Tokens (`emil-design-eng`) */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --animate-typing-wave: typing-wave 1.1s var(--ease-in-out) infinite;
 
   @keyframes typing-wave {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 0.35;
       transform: translateY(0);
     }
@@ -99,29 +170,110 @@
   }
 }
 
-/* 05 §4.2 dark values override the same custom properties under `.dark`. */
 @layer base {
-  /* Native scrollbars, form controls and the browser chrome follow the active
-     theme. The `.dark` class outranks this element selector, so the pair flips
-     with the root class the ThemeContext toggles. */
   html {
     color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
   }
 
   .dark {
     color-scheme: dark;
-    --color-background: #0f172a; /* slate-900 */
-    --color-surface: #1e293b; /* slate-800 */
-    --color-surface-elevated: #334155; /* slate-700 */
-    --color-primary: #f8fafc; /* slate-50 */
-    --color-secondary: #94a3b8; /* slate-400 */
-    --color-muted: #64748b; /* slate-500 */
-    --color-default: #334155; /* slate-700 (border) */
-    --color-input: #475569; /* slate-600 (input border idle) */
+    --color-background: #0c0a09; /* warm carbon-stone 950 ground */
+    --color-surface: #1c1917; /* warm stone-900 panel surface */
+    --color-surface-elevated: #292524; /* stone-800 interactive well */
+    --color-primary: #faf9f6; /* warm stone-50 crisp ink */
+    --color-secondary: #a8a29e; /* stone-400 supporting copy */
+    --color-muted: #78716c; /* stone-500 metadata */
+    --color-default: #292524; /* stone-800 1px structural hairline */
+    --color-input: #44403c; /* stone-700 control border */
   }
 
   body {
-    @apply bg-background text-primary;
+    @apply bg-background text-primary antialiased;
     font-family: var(--font-sans);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    caret-color: var(--color-brand-600);
+  }
+
+  /* Impeccable Craft Floor: Browser-owned surfaces match Forest Emerald & Warm Stone */
+  ::selection {
+    background-color: #a7f3d0;
+    color: #022c22;
+  }
+
+  .dark ::selection {
+    background-color: #064e3b;
+    color: #ecfdf5;
+  }
+
+  /* Crisp keyboard focus ring across interactive primitives */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+  }
+
+  .dark :focus-visible {
+    outline-color: var(--color-brand-400);
+  }
+
+  /* Typography underline discipline for links */
+  a {
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+
+  /* Numeric alignment for tables, KPIs, and wait-time deltas */
+  .tabular-nums,
+  .font-mono-numbers,
+  table td,
+  time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Thin, quiet warm-stone scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgb(168 162 158 / 0.4);
+    border-radius: 3px;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: rgb(87 83 78 / 0.55);
+  }
+
+  @keyframes modal-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96) translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .animate-modal-in {
+    animation: modal-in 180ms var(--ease-out) both;
+  }
+
+  /* Reduced-motion safety (`emil-design-eng` & `mobile-native`) */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }

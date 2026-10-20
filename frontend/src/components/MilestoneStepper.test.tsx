@@ -31,6 +31,7 @@ describe("MilestoneStepper", () => {
     expect(nodes).toHaveLength(6);
     expect(screen.getByText("23 Apr 2026")).toBeInTheDocument();
     expect(screen.getByText("05 May 2026")).toBeInTheDocument();
+    expect(screen.getByTestId("stepper-delta-SELECTION")).toHaveTextContent("+12d");
     expect(screen.getAllByText("Pending")).toHaveLength(4);
   });
 

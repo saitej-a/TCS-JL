@@ -1,22 +1,17 @@
 /**
  * The §7.7 create-post form as a Modal.tsx content component (Phase 12
- * D-03), rebuilt to the `create_community_discussion_post_modal`
- * composition: uppercase field labels, live character counters, a category
- * select over the real D7 vocabulary, the posting-as identity preview, and
- * the Esc-hint footer with Cancel/Publish.
+ * D-03, upgraded in Phase 1 Anti-Slop Overhaul): sentence-case field labels,
+ * live character counters, a category select over the real D7 vocabulary,
+ * the posting-as identity preview, and the Esc-hint footer with Cancel/Publish.
  *
- * Behavior contracts (moved verbatim from the former page): client-side
- * required/length checks pre-validate; the server's two writer rejections
- * render **distinctly**:
+ * Behavior contracts: client-side required/length checks pre-validate; the
+ * server's two writer rejections render **distinctly**:
  *
  * - `scam_pattern_detected` — the text was blocked by 8.1's scanner. The copy
  *   never implies "try rewording": posting variations of scam text is what
  *   the scanner exists to stop.
  * - `duplicate_post` — 8.1 D6's 60-minute debounce on (title, body) hashes.
  *   The copy names the window so the delay is legible.
- *
- * The composition's "Encrypted Hash Verified" chip and "Markdown supported"
- * line are mock fiction (the API does neither) and are not copied.
  */
 import { useEffect, useState, type FormEvent } from "react";
 import { Drama } from "lucide-react";
@@ -75,8 +70,6 @@ export function CreatePostModal({ open, onClose, onPublished }: CreatePostModalP
 
   useEffect(() => {
     if (!open) return;
-    // Fresh form per open; identity preview fetched per open (membership of
-    // the modal means the profile may have changed since mount).
     setTitle("");
     setBody("");
     setCategory(POST_CATEGORIES[0] ?? "GENERAL");
@@ -138,17 +131,17 @@ export function CreatePostModal({ open, onClose, onPublished }: CreatePostModalP
 
   return (
     <Modal open={open} onClose={onClose} title="Create Community Discussion Post">
-      <form onSubmit={(e) => void handleSubmit(e)} className="skin-v1 space-y-5 font-body" noValidate data-testid="create-post-modal">
+      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-5 font-body" noValidate data-testid="create-post-modal">
         <div>
           <Input
-            label="TITLE *"
+            label="Title *"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             maxLength={TITLE_MAX}
             required
             placeholder="e.g. Anyone from Hyderabad received the JL email today?"
           />
-          <p className="mt-1 text-right text-xs text-slate-400 dark:text-slate-500">
+          <p className="mt-1 text-right text-xs text-slate-400 tabular-nums dark:text-slate-500">
             {title.length} / {TITLE_MAX} characters
           </p>
         </div>
@@ -156,7 +149,7 @@ export function CreatePostModal({ open, onClose, onPublished }: CreatePostModalP
         <div>
           <label
             htmlFor="create-post-category"
-            className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
+            className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300"
           >
             Category *
           </label>
@@ -164,7 +157,7 @@ export function CreatePostModal({ open, onClose, onPublished }: CreatePostModalP
             id="create-post-category"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-600 dark:border-slate-600 dark:bg-slate-900"
+            className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 transition-[border-color,box-shadow] duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           >
             {POST_CATEGORIES.map((key) => (
               <option key={key} value={key}>
@@ -176,7 +169,7 @@ export function CreatePostModal({ open, onClose, onPublished }: CreatePostModalP
 
         <div>
           <Textarea
-            label="DISCUSSION BODY *"
+            label="Discussion Body *"
             value={body}
             onChange={(e) => setBody(e.target.value)}
             maxLength={BODY_MAX}
@@ -184,13 +177,13 @@ export function CreatePostModal({ open, onClose, onPublished }: CreatePostModalP
             rows={6}
             placeholder="Provide context, batch details, and relevant dates without sharing personal identifiers..."
           />
-          <p className="mt-1 text-right text-xs text-slate-400 dark:text-slate-500">
+          <p className="mt-1 text-right text-xs text-slate-400 tabular-nums dark:text-slate-500">
             {body.length} / {BODY_MAX.toLocaleString()} characters
           </p>
         </div>
 
         {identity !== null && (
-          <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-3.5 dark:border-slate-700 dark:bg-slate-800/60">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5 dark:border-slate-700 dark:bg-slate-800/60">
             <p className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-slate-800 dark:text-slate-200">
               <Drama
                 className="h-4 w-4 text-slate-500"
@@ -203,7 +196,7 @@ export function CreatePostModal({ open, onClose, onPublished }: CreatePostModalP
             {identity.anonymous && (
               <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
                 To post with your display name instead, update your{" "}
-                <Link to="/settings/privacy" className="text-indigo-600 hover:underline dark:text-indigo-400 font-medium">
+                <Link to="/settings/privacy" className="text-brand-700 hover:underline dark:text-brand-400 font-medium">
                   Privacy Settings
                 </Link>
                 .
@@ -226,10 +219,9 @@ export function CreatePostModal({ open, onClose, onPublished }: CreatePostModalP
           </div>
         )}
 
-        {/* The composition's footer: Esc hint left, Cancel/Publish right. */}
         <div className="flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-700">
           <span className="flex items-center gap-1.5 text-xs font-medium text-slate-400 dark:text-slate-500">
-            <kbd className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 shadow-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400">
+            <kbd className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400">
               Esc
             </kbd>
             <span>to close</span>

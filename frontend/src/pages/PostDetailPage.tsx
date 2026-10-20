@@ -31,6 +31,7 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Flag, MessageSquare, Share2 } from "lucide-react";
 
 import {
   copyPostLink,
@@ -54,7 +55,7 @@ import { useAuth } from "@/context/AuthContext";
 import { timeAgo } from "@/utils/date";
 
 const BACK_LINK_COPY = "← Back to Community Feed";
-const COMPOSER_LABEL = "WRITE A COMMENT:";
+const COMPOSER_LABEL = "Write a comment";
 const COMPOSER_PLACEHOLDER = "Share your timeline update or reply to this candidate...";
 const COMPOSER_SUBMIT = "Post Comment";
 const LOCKED_BANNER_COPY =
@@ -185,24 +186,24 @@ export function PostDetailPage(): React.ReactElement {
   const locked = post.is_locked;
 
   return (
-    <main className="skin-v1 mx-auto max-w-3xl space-y-4 font-body antialiased" data-testid="post-detail">
+    <main className="mx-auto max-w-3xl space-y-4 font-body antialiased" data-testid="post-detail">
       <Link
         to="/community"
-        className="inline-flex min-h-[36px] items-center text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+        className="inline-flex min-h-[36px] items-center text-sm font-medium text-brand-700 hover:text-brand-800 dark:text-brand-400"
       >
         {BACK_LINK_COPY}
       </Link>
 
       {/* §7.8's post card: badge + relative time, headline, structured body,
           author row over a top border, then the action row. */}
-      <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-800">
+      <article className="rounded-xl border border-slate-200 bg-white p-4 sm:p-6 dark:border-slate-800 dark:bg-slate-800">
         <div className="mb-3 flex items-center justify-between">
           <Badge.category code={post.category} />
           <span className="text-xs font-normal text-slate-400 dark:text-slate-500">
             Posted {timeAgo(post.created_at)}
           </span>
         </div>
-        <h1 className="text-2xl font-bold leading-snug tracking-tight text-slate-900 dark:text-slate-50 font-headline">
+        <h1 className="text-2xl font-bold leading-snug tracking-tight text-slate-900 dark:text-slate-50 font-display">
           {post.title}
         </h1>
         <div className="mt-4 space-y-3 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300">
@@ -216,7 +217,7 @@ export function PostDetailPage(): React.ReactElement {
           <IdentityPill author={post.author} />
         </div>
 
-        {/* §6.8 action row: UpvotePill reused untouched, then 💬/Share/Report. */}
+        {/* §6.8 action row: UpvotePill reused untouched, then Comment/Share/Report. */}
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 dark:border-slate-700">
           <div className="flex flex-wrap items-center gap-2">
             <UpvotePill
@@ -227,8 +228,8 @@ export function PostDetailPage(): React.ReactElement {
               request={handleVote}
               onCommit={setVote}
             />
-            <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400">
-              <span className="material-symbols-outlined text-[15px]" aria-hidden="true">chat_bubble</span>
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium tabular-nums text-slate-500 dark:text-slate-400">
+              <MessageSquare className="h-3.5 w-3.5" aria-hidden="true" />
               <span>{totalComments} Comment{totalComments === 1 ? "" : "s"}</span>
             </span>
           </div>
@@ -237,18 +238,18 @@ export function PostDetailPage(): React.ReactElement {
               type="button"
               onClick={() => void handleShare()}
               disabled={post.is_deleted}
-              className="inline-flex min-h-[32px] items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+              className="inline-flex min-h-[32px] items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
             >
-              <span className="material-symbols-outlined text-[15px]" aria-hidden="true">share</span>
+              <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
               <span>Share</span>
             </button>
             {!post.is_deleted && authenticated && (
               <button
                 type="button"
                 onClick={handleReport}
-                className="inline-flex min-h-[32px] items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-rose-600 transition-colors hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40"
+                className="inline-flex min-h-[32px] items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-rose-600 transition-colors hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40"
               >
-                <span className="material-symbols-outlined text-[15px]" aria-hidden="true">flag</span>
+                <Flag className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>Report</span>
               </button>
             )}
@@ -256,7 +257,7 @@ export function PostDetailPage(): React.ReactElement {
         </div>
       </article>
 
-      {/* The composition's composer card with the uppercase section header;
+      {/* The composition's composer card with the section header;
           the composer rules (locked → anonymous → form) are unchanged. */}
       {locked ? (
         <div
@@ -267,15 +268,12 @@ export function PostDetailPage(): React.ReactElement {
         </div>
       ) : authenticated ? (
         <form
-          className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 dark:border-slate-800 dark:bg-slate-800"
+          className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-800"
           onSubmit={(event) => {
             event.preventDefault();
             void submitComment();
           }}
         >
-          <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            Write a comment
-          </h2>
           <Textarea
             label={COMPOSER_LABEL}
             placeholder={COMPOSER_PLACEHOLDER}
@@ -296,7 +294,7 @@ export function PostDetailPage(): React.ReactElement {
             <button
               type="submit"
               disabled={submitting || draft.trim() === ""}
-              className="flex min-h-[40px] items-center rounded-lg bg-brand-700 px-5 text-sm font-medium text-white shadow-sm hover:bg-brand-800 disabled:opacity-50"
+              className="flex min-h-[40px] items-center rounded-lg bg-brand-700 px-5 text-sm font-medium text-white transition-[background-color,transform] duration-150 hover:bg-brand-800 active:scale-[0.98] disabled:opacity-50"
             >
               {COMPOSER_SUBMIT}
             </button>
@@ -317,9 +315,9 @@ export function PostDetailPage(): React.ReactElement {
       {/* The thread as one card with the composition's header-rule strip
           ("COMMENTS & REPLIES (n)"); CommentThread's internals are untouched
           (G-4) — this page only restyles the container around it. */}
-      <section className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-800">
+      <section className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-800">
         <div className="flex items-center justify-between border-b border-slate-100 px-4 pb-4 pt-5 sm:px-6 dark:border-slate-700">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+          <h2 className="text-xs font-bold tabular-nums tracking-tight text-slate-700 dark:text-slate-300">
             Comments &amp; Replies ({totalComments})
           </h2>
         </div>

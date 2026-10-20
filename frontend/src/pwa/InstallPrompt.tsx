@@ -70,13 +70,14 @@ export function InstallPrompt(): React.ReactElement | null {
   return (
     <div
       data-testid="install-prompt"
-      className="skin-v1 border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900"
+      className="border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900"
     >
       <div className="mx-auto flex max-w-5xl flex-wrap items-start justify-between gap-3">
-        <div className="flex min-w-0 items-start gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-900/50 dark:text-brand-300">
-            <Smartphone aria-hidden="true" className="h-5 w-5" />
-          </span>
+        <div className="flex min-w-0 items-start gap-2.5">
+          <Smartphone
+            aria-hidden="true"
+            className="mt-0.5 h-4 w-4 shrink-0 text-brand-700 dark:text-brand-400"
+          />
           <div className="min-w-0">
             <p className="flex flex-wrap items-center gap-2">
               <span className={`${TYPOGRAPHY.subheadLabel} text-slate-900 dark:text-slate-100`}>
@@ -94,7 +95,7 @@ export function InstallPrompt(): React.ReactElement | null {
             type="button"
             data-testid="install-dismiss"
             onClick={handleDismiss}
-            className="flex min-h-[40px] items-center rounded-lg px-4 text-sm font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="flex min-h-[40px] items-center rounded-lg px-4 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
           >
             {INSTALL_DISMISS}
           </button>
@@ -102,7 +103,7 @@ export function InstallPrompt(): React.ReactElement | null {
             type="button"
             data-testid="install-accept"
             onClick={handleInstall}
-            className="flex min-h-[40px] items-center gap-1.5 rounded-lg bg-brand-700 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-800"
+            className="flex min-h-[40px] items-center gap-1.5 rounded-lg bg-brand-700 px-4 text-sm font-medium text-white transition-[background-color,transform] duration-150 hover:bg-brand-800 active:scale-[0.98]"
           >
             <Download aria-hidden="true" className="h-4 w-4" />
             {INSTALL_ACCEPT}

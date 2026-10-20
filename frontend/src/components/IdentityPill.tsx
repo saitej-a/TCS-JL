@@ -49,11 +49,6 @@ interface IdentityPillProps {
  * (`batch • hiring_type • region`, null-safe). Anonymous identities render a
  * mask icon on a deterministic pastel; display names render two-letter
  * initials. NEVER renders an email or a real full name (privacy-first).
- *
- * Recorded divergence from the feed composition: its sample avatar is a single
- * violet disc; the app keeps §6.5's six-hue deterministic palette so two
- * candidates on one page are distinguishable. The row's own anatomy (24px disc,
- * `mx-1` separators, accented region) is carried verbatim.
  */
 export function IdentityPill({ author, className = "", compact = false }: IdentityPillProps) {
   const isAnonymous = author.display_name === ANONYMOUS_SENTINEL;
@@ -67,7 +62,7 @@ export function IdentityPill({ author, className = "", compact = false }: Identi
     return (
       <div className={`flex items-center gap-2.5 ${className}`.trim()} data-testid="identity-pill">
         <div
-          className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] border border-slate-200 dark:border-slate-700 ${pastel}`}
+          className={`w-6 h-6 rounded-full flex items-center justify-center font-semibold text-[10px] border border-slate-200 dark:border-slate-700 ${pastel}`}
           aria-hidden={isAnonymous ? undefined : "true"}
         >
           {isAnonymous ? (
@@ -83,7 +78,7 @@ export function IdentityPill({ author, className = "", compact = false }: Identi
               <span className="mx-1" aria-hidden="true">
                 •
               </span>
-              <span className={part === author.region ? "text-indigo-600 dark:text-indigo-400 font-medium" : undefined}>
+              <span className={part === author.region ? "text-brand-700 dark:text-brand-400 font-medium" : undefined}>
                 {part}
               </span>
             </span>

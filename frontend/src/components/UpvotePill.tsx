@@ -4,8 +4,8 @@
  * never desync a list. The pill only overlays an *optimistic* display while a
  * request is in flight:
  *
- * 1. Optimistic: the count flips immediately and the pill pulses (scale-110,
- *    150ms) before the request resolves (§6.8's micro-interaction).
+ * 1. Optimistic: the count flips immediately and the pill pulses
+ *    before the request resolves (§6.8's micro-interaction).
  * 2. Reconcile: the server's `has_voted` / `vote_count` (D3's fields) commit
  *    back to the feed and the overlay clears.
  * 3. 409 `already_voted`: the vote exists server-side — commit voted=true with
@@ -18,11 +18,11 @@ import { useEffect, useRef, useState } from "react";
 import { ApiError } from "@/api/errors";
 import { useToast } from "@/components/Toast";
 
-/** §6.8's exact class sets. */
+/** §6.8's exact class sets with Emil Kowalski custom ease-out and tabular numerals. */
 const IDLE_CLASSES =
-  "flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 text-xs font-semibold hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700 transition-all";
+  "inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold tabular-nums hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700 dark:hover:bg-brand-950/60 dark:hover:border-brand-700 dark:hover:text-brand-300 active:scale-[0.96] transition-[background-color,border-color,color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)]";
 const ACTIVE_CLASSES =
-  "flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-50 dark:bg-brand-950/80 border border-brand-500 text-brand-700 dark:text-brand-400 text-xs font-semibold shadow-xs";
+  "inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-50 dark:bg-brand-950/80 border border-brand-500 text-brand-700 dark:text-brand-400 text-xs font-semibold tabular-nums active:scale-[0.96] transition-[background-color,border-color,color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)]";
 
 export interface CommitVote {
   voted: boolean;
@@ -41,13 +41,7 @@ export interface UpvotePillProps {
   /** Report the reconciled outcome back to the feed's per-card state. */
   onCommit: (commit: CommitVote) => void;
   className?: string;
-  /**
-   * Replaces §6.8's idle class set outright (not appended — competing Tailwind
-   * utilities resolve by stylesheet order, not by className order). The feed
-   * composition's pill markup goes here.
-   */
   controlClassName?: string;
-  /** Replaces §6.8's voted class set outright, same contract as above. */
   activeControlClassName?: string;
 }
 
@@ -90,21 +84,16 @@ export function UpvotePill({
     pulseTimer.current = setTimeout(() => setPulse(false), PULSE_MS);
     try {
       const result = await request(next);
-      // Reconcile against the server when it answered; otherwise the action's
-      // own semantics carry (DELETE 204 has no body — the caller's intent is
-      // the truth).
       onCommit({
         voted: result?.has_voted ?? next,
         count: result?.vote_count ?? optimisticCount,
       });
-      setOverride(null); // committed values now equal the optimistic ones
+      setOverride(null);
     } catch (error) {
       if (error instanceof ApiError && error.code === "already_voted") {
-        // The vote exists server-side: adopt it, never roll back (UI-03).
         onCommit({ voted: true, count: optimisticCount });
         setOverride(null);
       } else {
-        // Rollback = drop the overlay; the feed's committed values show again.
         setOverride(null);
         toast({
           message: "Your vote could not be saved. Please try again.",
@@ -128,7 +117,7 @@ export function UpvotePill({
         shownVoted
           ? (activeControlClassName ?? ACTIVE_CLASSES)
           : (controlClassName ?? IDLE_CLASSES),
-        pulse ? "scale-110" : "",
+        pulse ? "scale-105" : "",
         disabled ? "cursor-not-allowed opacity-50" : "",
         className,
       ]
@@ -138,7 +127,7 @@ export function UpvotePill({
       <span aria-hidden="true">▲</span>
       {shownVoted ? "Upvoted" : "Upvote"}
       <span aria-hidden="true">|</span>
-      <span>{shownCount}</span>
+      <span className="tabular-nums">{shownCount}</span>
     </button>
   );
 }

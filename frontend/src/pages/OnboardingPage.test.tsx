@@ -254,4 +254,31 @@ describe("OnboardingPage", () => {
     });
     expect(calls.some((c) => String(c.url).endsWith("/me/"))).toBe(true);
   });
+
+  it("renders a live IdentityPill preview on Step 2 that updates with display name and anonymous toggle", async () => {
+    const user = userEvent.setup();
+    scriptAdapter([{ url: "/profile/", respond: () => PROFILE_404 }]);
+    renderWizard();
+
+    await waitFor(() => {
+      expect(screen.getByText("What is your recruitment status?")).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByLabelText(/Offer letter date/i), "2025-03-15");
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+
+    await waitFor(() => screen.getByLabelText("Community display name"));
+
+    // Initially empty display name falls back to Anonymous Candidate
+    expect(screen.getByTestId("identity-pill")).toHaveTextContent("Anonymous Candidate");
+
+    await user.type(screen.getByLabelText("Community display name"), "Rohan V");
+    await user.type(screen.getByLabelText("Region of joining"), "Pune");
+    expect(screen.getByTestId("identity-pill")).toHaveTextContent("Rohan V");
+    expect(screen.getByTestId("identity-pill")).toHaveTextContent("2025 • DIGITAL • Pune");
+
+    // Toggling Stay anonymous switches preview back to Anonymous Candidate
+    await user.click(screen.getByLabelText(/Stay anonymous/i));
+    expect(screen.getByTestId("identity-pill")).toHaveTextContent("Anonymous Candidate");
+  });
 });

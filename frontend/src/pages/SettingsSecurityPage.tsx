@@ -39,7 +39,7 @@ import { useToast } from "@/components/Toast";
 import type { ReactElement } from "react";
 
 const CARD =
-  "bg-white rounded-custom border border-slate-200 shadow-sm p-4 sm:p-6 dark:border-slate-800 dark:bg-slate-800";
+  "bg-white rounded-custom border border-slate-200 p-4 sm:p-6 dark:border-slate-800 dark:bg-slate-800";
 const HEAD_5 = "border-b border-slate-100 pb-4 mb-5 dark:border-slate-800";
 const HEAD_4 = "border-b border-slate-100 pb-4 mb-4 dark:border-slate-800";
 const CARD_H2 = "text-base font-semibold text-slate-900 dark:text-slate-100";
@@ -47,11 +47,11 @@ const CARD_SUB = "text-xs text-slate-500 mt-0.5 dark:text-slate-400";
 const FIELD =
   "w-full h-11 px-3.5 pr-10 text-sm bg-white border border-slate-300 rounded-custom text-slate-900 placeholder-slate-400 focus-brand transition-colors disabled:opacity-60 disabled:cursor-not-allowed dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100";
 const FIELD_LABEL =
-  "block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5 dark:text-slate-300";
+  "block text-xs font-semibold text-slate-700 tracking-tight mb-1.5 dark:text-slate-300";
 const EYE =
   "absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 disabled:cursor-not-allowed";
 const BTN_PRIMARY =
-  "min-h-[44px] px-5 py-2.5 bg-brand-700 hover:bg-brand-800 active:bg-brand-900 text-white text-sm font-semibold rounded-custom transition-colors shadow-sm focus-brand inline-flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed";
+  "min-h-[44px] px-5 py-2.5 bg-brand-700 hover:bg-brand-800 active:bg-brand-900 text-white text-sm font-semibold rounded-custom transition-colors focus-brand inline-flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed";
 const BTN_SECONDARY =
   "min-h-[44px] px-4 py-2 bg-white border border-slate-300 hover:border-slate-400 hover:bg-slate-50 text-slate-700 active:bg-slate-100 text-sm font-semibold rounded-custom transition-colors focus-brand inline-flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700";
 const BTN_ROSE =
@@ -195,7 +195,7 @@ export function SettingsSecurityPage(): ReactElement {
   }
 
   return (
-    <div className="skin-v2 max-w-4xl w-full font-body antialiased">
+    <div className="max-w-4xl w-full font-body antialiased">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900 tracking-tight dark:text-slate-100">
           Security
