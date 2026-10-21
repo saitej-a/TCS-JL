@@ -172,10 +172,35 @@ def send_push_notification(self, notification_id: str, **kwargs: Any) -> bool:
     data_payload = {
         "notification_id": str(notification.id),
         "type": str(notification.type),
-        "click_action": (
-            f"/community/posts/{notification.post_id}" if notification.post_id else "/dashboard"
-        ),
     }
+
+    # Extract push_context for click_action
+    push_context = kwargs.get("push_context", {})
+
+    # Construct click_action based on notification type and available context
+    if notif_type in (
+        Notification.NotificationType.COMMENT,
+        Notification.NotificationType.REPLY,
+        Notification.NotificationType.VOTE_MILESTONE,
+    ):
+        # Community notifications link to the post
+        if notification.post_id:
+            data_payload["click_action"] = f"/community/posts/{notification.post_id}"
+    elif notif_type == Notification.NotificationType.SYSTEM:
+        # Chat notifications - check push_context first, then fallback
+        room_slug = push_context.get("room_slug", "")
+        if room_slug:
+            data_payload["click_action"] = f"/chat/{room_slug}"
+        elif notification.post_id:
+            data_payload["click_action"] = f"/community/posts/{notification.post_id}"
+        else:
+            data_payload["click_action"] = "/dashboard"
+    else:
+        # Default for other notification types
+        if notification.post_id:
+            data_payload["click_action"] = f"/community/posts/{notification.post_id}"
+        else:
+            data_payload["click_action"] = "/dashboard"
 
     tokens = [d.fcm_token for d in deliverable_devices]
 

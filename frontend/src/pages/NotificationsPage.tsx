@@ -56,7 +56,14 @@ const TAB_COPY = {
 
 /** §7.10: post-anchored notifications deep-link; everything else lands home. */
 export function notificationTarget(item: NotificationItem): string {
+  if (item.type === "SYSTEM" && item.comment_id === null && item.post_id === null) {
+    // Chat messages - fallback to dashboard if no post/comment context
+    // Chat notifications don't have post_id/comment_id, so they won't match the condition above
+    // They'll fall through to /dashboard
+    return "/dashboard";
+  }
   if (item.post_id === null) return "/dashboard";
+  // Reply deep-links to the specific comment in the post thread
   return item.comment_id === null
     ? `/community/posts/${item.post_id}`
     : `/community/posts/${item.post_id}#comment-${item.comment_id}`;

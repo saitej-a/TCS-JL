@@ -131,7 +131,6 @@ def send_message(
         from apps.notifications.services import create_notification
 
         author_name = resolve_public_display_name(author)
-        room_url = f"/chat/{room.slug}"
         preview = cleaned_body[:80] + "..." if len(cleaned_body) > 80 else cleaned_body
 
         # Get all users who should be notified (everyone in the room except sender)
@@ -154,7 +153,6 @@ def send_message(
                 push_context={
                     "room_slug": room.slug,
                     "room_label": room.label,
-                    "click_action": room_url,
                 },
             )
     except Exception as exc:
