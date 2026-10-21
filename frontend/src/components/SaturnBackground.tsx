@@ -114,29 +114,33 @@ const SaturnBackground = () => {
 
   return (
     <div
-      className="fixed inset-0 -z-10 overflow-hidden pointer-events-none"
+      className="fixed inset-0 -z-10 pointer-events-none"
       style={{
         visibility: hasHover && !hasReducedMotion ? "visible" : "hidden",
       }}
     >
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="relative w-[600px] h-[600px] md:w-[800px] md:h-[800px] lg:w-[1000px] lg:h-[1000px]">
-          <Canvas
-            camera={{
-              position: [0, 0, 12],
-              fov: 50,
-            }}
-            dpr={[1, 2]}
-            gl={{
-              antialias: true,
-              alpha: true,
-              powerPreference: "high-performance",
-            }}
-          >
-            <Saturn />
-          </Canvas>
-        </div>
-      </div>
+      <Canvas
+        camera={{
+          position: [0, 0, 10],
+          fov: 50,
+        }}
+        dpr={[1, 2]}
+        gl={{
+          antialias: true,
+          alpha: false,
+          powerPreference: "high-performance",
+        }}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          zIndex: -10,
+        }}
+      >
+        <Saturn />
+      </Canvas>
     </div>
   );
 };
