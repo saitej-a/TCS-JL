@@ -285,6 +285,9 @@ class NotificationPreference(models.Model):
     notify_timeline_reminders = models.BooleanField(
         default=True, help_text="Periodic reminders to update timeline"
     )
+    notify_chat_messages = models.BooleanField(
+        default=True, help_text="Notify on new messages in channels"
+    )
     push_enabled = models.BooleanField(
         default=True, help_text="Global master toggle for browser push"
     )

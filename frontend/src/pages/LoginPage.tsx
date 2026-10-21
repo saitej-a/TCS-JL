@@ -82,8 +82,8 @@ export function LoginPage() {
   return (
     <>
       <AuthSplitFrame
-        title="Welcome back to TCSJL"
-        subtitle="Sign in to access your recruitment timeline, peer milestones, and batch updates."
+        title="Sign in to your ledger"
+        subtitle="Track your milestones and compare cohort benchmarks."
         footerNote={
           <p className="text-center text-xs leading-relaxed text-slate-500 dark:text-slate-400">
             By continuing you agree to our{" "}

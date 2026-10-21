@@ -99,6 +99,12 @@ def send_push_notification(self, notification_id: str, **kwargs: Any) -> bool:
             recipient.id,
         )
         return False
+    if notif_type == Notification.NotificationType.SYSTEM and not pref.notify_chat_messages:
+        logger.info(
+            "PUSH_SKIPPED_PREFERENCES: chat message push disabled for user %s",
+            recipient.id,
+        )
+        return False
 
     # 2. Fetch active devices for recipient
     devices = list(Device.objects.filter(user=recipient, is_active=True))

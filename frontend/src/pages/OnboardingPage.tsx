@@ -380,21 +380,16 @@ function CardHeader({ step }: { step: 1 | 2 | 3 }) {
 function StepIndicator({ step }: { step: 1 | 2 | 3 }) {
   return (
     <div aria-label={`Step ${step} of 3`} className="pt-5">
-      <div className="mb-2.5 flex items-center justify-between">
-        <span className="text-xs font-semibold text-brand-700 dark:text-brand-300">
-          Step {step} of 3 · {STEP_LABELS[step - 1]}
-        </span>
-        <span className="font-mono-code text-xs font-medium text-slate-500 tabular-nums dark:text-slate-400">
-          {step === 1 ? "33" : step === 2 ? "66" : "100"}% Completed
-        </span>
-      </div>
-      <div className="mb-2 grid grid-cols-3 gap-2.5">
+      <span className="text-xs font-semibold text-brand-700 dark:text-brand-300">
+        Step {step} of 3 · {STEP_LABELS[step - 1]}
+      </span>
+      <div className="mt-2 grid grid-cols-3 gap-2.5">
         {STEP_LABELS.map((label, i) => {
           const seg = i + 1;
           return (
-            <div key={label} className="flex flex-col gap-1.5">
+            <div key={label} className="flex flex-col gap-1">
               <div
-                className={`h-1.5 w-full rounded-full ${
+                className={`h-1 rounded-full ${
                   seg <= step ? "bg-brand-700 dark:bg-brand-500" : "bg-slate-200 dark:bg-slate-800"
                 }`}
               />
@@ -403,11 +398,11 @@ function StepIndicator({ step }: { step: 1 | 2 | 3 }) {
                   seg === step
                     ? "font-semibold text-brand-700 dark:text-brand-300"
                     : seg < step
-                      ? "font-medium text-emerald-700 dark:text-emerald-400"
-                      : "font-medium text-slate-400 dark:text-slate-500"
+                      ? "font-medium text-slate-400 dark:text-slate-500"
+                      : "text-slate-400 dark:text-slate-500"
                 }`}
               >
-                {seg}. {label}
+                {label}
               </span>
             </div>
           );
@@ -615,8 +610,8 @@ export function OnboardingPage() {
   const previewAuthor = buildPreviewAuthor(cand);
 
   return (
-    <div className="mx-auto w-full max-w-2xl py-4 sm:py-8">
-      <div className="rounded-xl border border-slate-200 bg-white p-6 sm:p-8 md:p-10 dark:border-slate-800 dark:bg-slate-900">
+    <div className="mx-auto w-full max-w-2xl py-3 sm:py-6">
+      <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-6 md:p-8 dark:border-slate-800 dark:bg-slate-900">
         <CardHeader step={step} />
         <StepIndicator step={step} />
 

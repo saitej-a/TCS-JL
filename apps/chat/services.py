@@ -42,7 +42,7 @@ def ensure_default_rooms() -> list[ChatRoom]:
     rooms: list[ChatRoom] = []
     configured = chat_rooms()
     for slug, label in configured:
-        is_default = (slug == "general")
+        is_default = slug == "general"
         room, _created = ChatRoom.objects.get_or_create(
             slug=slug,
             defaults={
@@ -123,6 +123,45 @@ def send_message(
             logging.getLogger("chat").warning("chat reply notification failed: %s", exc)
 
     cache.set(cache_key, 1, timeout=MESSAGE_DUPLICATE_WINDOW)
+
+    # notify all users in the room (except the sender) about new messages
+    try:
+        from apps.candidates.models import resolve_public_display_name
+        from apps.notifications.models import Notification
+        from apps.notifications.services import create_notification
+
+        author_name = resolve_public_display_name(author)
+        room_url = f"/chat/{room.slug}"
+        preview = cleaned_body[:80] + "..." if len(cleaned_body) > 80 else cleaned_body
+
+        # Get all users who should be notified (everyone in the room except sender)
+        from django.contrib.auth import get_user_model
+
+        User = get_user_model()
+        room_users = User.objects.filter(
+            id__in=ChatMessage.objects.filter(room=room)
+            .values_list("author_id", flat=True)
+            .distinct()
+        ).exclude(id=author.id)
+
+        for user in room_users:
+            create_notification(
+                user,
+                notification_type=Notification.NotificationType.SYSTEM,
+                title=f"New Message in #{room.label}",
+                message=f"{author_name}: '{preview}'",
+                actor=author,
+                push_context={
+                    "room_slug": room.slug,
+                    "room_label": room.label,
+                    "click_action": room_url,
+                },
+            )
+    except Exception as exc:
+        import logging
+
+        logging.getLogger("chat").warning("chat message notification failed: %s", exc)
+
     return message
 
 

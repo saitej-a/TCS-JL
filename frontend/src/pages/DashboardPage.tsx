@@ -36,11 +36,11 @@ import { daysSince, formatDateShort, timeAgo } from "@/utils/date";
 
 /** Flat architectural card shell (1px border, zero resting shadow). */
 const CARD =
-  "bg-white rounded-xl border border-slate-200 p-6 dark:bg-slate-800 dark:border-slate-800";
+  "bg-white rounded-xl border border-slate-200 p-4 dark:bg-slate-800 dark:border-slate-800";
 
-/** Flat stat-card shell (p-5). */
+/** Flat stat-card shell (p-4). */
 const STAT_CARD =
-  "bg-white rounded-xl border border-slate-200 p-5 flex flex-col justify-between dark:bg-slate-800 dark:border-slate-800";
+  "bg-white rounded-xl border border-slate-200 p-4 flex flex-col justify-between dark:bg-slate-800 dark:border-slate-800";
 
 /** Section heading shared across ledger cards. */
 const SECTION_HEADING =
@@ -279,84 +279,82 @@ export function DashboardPage(): React.ReactElement {
 
   return (
     <main
-      className="mx-auto grid w-full max-w-[1600px] flex-1 grid-cols-1 items-start gap-8 p-4 font-body antialiased sm:p-6 lg:grid-cols-12 lg:p-8"
+      className="mx-auto grid w-full max-w-[1600px] flex-1 grid-cols-1 items-start gap-6 p-3 font-body antialiased sm:p-5 lg:grid-cols-12 lg:p-6"
       data-testid="dashboard-page"
     >
       {/* CENTER COLUMN — 8 columns */}
       <div className="flex flex-col gap-6 lg:col-span-8">
         {/* SECTION 1: welcome header + typographic KPI ledger strip (zero icon circles) */}
-        <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-6 dark:border-slate-800 dark:bg-slate-800">
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+        <div className="rounded-xl border border-slate-200 bg-white p-3 sm:p-5 dark:border-slate-800 dark:bg-slate-800">
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
             <div className="space-y-1">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-                  Hello, Candidate!
-                </h1>
-                {status !== null ? (
-                  <Badge.status value={status} />
-                ) : (
-                  <Skeleton className="h-5 w-36 rounded-full" />
-                )}
-              </div>
+              <h1 className="font-display text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+                Your recruitment pipeline
+              </h1>
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
                 {since !== null
-                  ? `Latest milestone since ${since}`
-                  : "Your recruitment at a glance"}
+                  ? `Latest milestone logged ${since}`
+                  : "Log your first milestone to start the timeline"}
               </p>
+
+              {/* Typographic KPI strip (tabular-nums, no icon boxes) */}
+              {data !== null && (
+                <dl
+                  data-testid="dashboard-kpi-strip"
+                  className="mt-4 flex flex-wrap items-baseline gap-4 border-t border-slate-100 pt-4 dark:border-slate-700/80"
+                >
+                  <div>
+                    <dt className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                      Milestones
+                    </dt>
+                    <dd className="mt-0.5 font-mono-code text-base font-bold text-slate-900 tabular-nums dark:text-slate-100">
+                      {data.events.length}
+                      <span className="text-xs font-normal text-slate-400 dark:text-slate-500"> / 6</span>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                      Wait
+                    </dt>
+                    <dd className="mt-0.5 font-mono-code text-base font-bold text-slate-900 tabular-nums dark:text-slate-100">
+                      {waitDays !== null ? `${waitDays}d` : "—"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                      Completion
+                    </dt>
+                    <dd className="mt-0.5 font-mono-code text-base font-bold text-brand-700 tabular-nums dark:text-brand-300">
+                      {completionPct !== null ? `${completionPct}%` : "—"}
+                    </dd>
+                  </div>
+                </dl>
+              )}
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Link
-                to="/timeline"
-                className="flex items-center gap-1.5 rounded-lg bg-brand-700 px-3.5 py-2 text-xs font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-brand-800 active:scale-[0.98]"
-              >
-                <CalendarPlus className="h-3.5 w-3.5" aria-hidden="true" />
-                <span>Update Timeline</span>
-              </Link>
-              <Link
-                to="/community/create"
-                className="flex items-center gap-1.5 rounded-lg border border-slate-300 px-3.5 py-2 text-xs font-semibold text-slate-700 transition-[background-color,border-color,transform] duration-150 hover:bg-slate-50 active:scale-[0.98] dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
-              >
-                <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
-                <span>Ask Question</span>
-              </Link>
+            <div className="flex flex-col gap-2">
+              {status !== null ? (
+                <Badge.status value={status} />
+              ) : (
+                <Skeleton className="h-5 w-36 rounded-full" />
+              )}
+              <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  to="/timeline"
+                  className="flex items-center gap-1.5 rounded-lg bg-brand-700 px-3.5 py-2 text-xs font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-brand-800 active:scale-[0.98]"
+                >
+                  <CalendarPlus className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span>Update timeline</span>
+                </Link>
+                <Link
+                  to="/community/create"
+                  className="flex items-center gap-1.5 rounded-lg border border-slate-300 px-3.5 py-2 text-xs font-semibold text-slate-700 transition-[background-color,border-color,transform] duration-150 hover:bg-slate-50 active:scale-[0.98] dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
+                >
+                  <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span>Ask a question</span>
+                </Link>
+              </div>
             </div>
           </div>
-
-          {/* Typographic KPI strip (tabular-nums, no icon boxes) */}
-          {data !== null && (
-            <dl
-              data-testid="dashboard-kpi-strip"
-              className="mt-5 grid grid-cols-3 gap-4 border-t border-slate-100 pt-4 dark:border-slate-700/80"
-            >
-              <div>
-                <dt className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                  Logged milestones
-                </dt>
-                <dd className="mt-0.5 font-mono-code text-lg font-bold text-slate-900 tabular-nums dark:text-slate-100">
-                  {data.events.length}{" "}
-                  <span className="text-xs font-normal text-slate-400 dark:text-slate-500">
-                    / 6
-                  </span>
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                  Elapsed wait
-                </dt>
-                <dd className="mt-0.5 font-mono-code text-lg font-bold text-slate-900 tabular-nums dark:text-slate-100">
-                  {waitDays !== null ? `${waitDays}d` : "—"}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                  Profile completion
-                </dt>
-                <dd className="mt-0.5 font-mono-code text-lg font-bold text-brand-700 tabular-nums dark:text-brand-300">
-                  {completionPct !== null ? `${completionPct}%` : "—"}
-                </dd>
-              </div>
-            </dl>
-          )}
         </div>
 
         {/* SECTION 2: recruitment progression — header rule + stepper diagram */}
@@ -395,10 +393,14 @@ export function DashboardPage(): React.ReactElement {
           </div>
         </div>
 
-        {/* SECTION 3: the two comparison cards, side by side */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <BenchmarkCard data={data} />
-          <PulseCard data={data} />
+        {/* SECTION 3: comparison cards — benchmark prominent, pulse secondary */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          <div className="lg:col-span-7">
+            <BenchmarkCard data={data} />
+          </div>
+          <div className="lg:col-span-5">
+            <PulseCard data={data} />
+          </div>
         </div>
 
         {/* SECTION 4: latest discussions */}

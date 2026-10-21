@@ -184,10 +184,10 @@ export function AuthSplitFrame({
 }: AuthSplitFrameProps) {
   return (
     <div className="flex min-h-[100svh] flex-col justify-between bg-slate-50 font-body text-slate-900 antialiased selection:bg-brand-100 selection:text-brand-900 dark:bg-slate-950 dark:text-slate-100">
-      <main className="flex flex-1 items-center justify-center px-4 py-10 sm:px-6 md:py-14">
+      <main className="flex flex-1 items-center justify-center px-3 py-8 sm:px-6 md:py-12">
         <div className="flex w-full max-w-4xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-white md:flex-row dark:border-slate-800 dark:bg-slate-900">
           {/* Left Column: Candidate Timeline Specimen */}
-          <div className="flex flex-col justify-between border-b border-slate-200 bg-slate-100/75 p-7 sm:p-9 md:w-[44%] md:border-b-0 md:border-r dark:border-slate-800 dark:bg-slate-950/60">
+          <div className="flex flex-col justify-between border-b border-slate-200 bg-slate-100/75 p-5 sm:p-7 md:w-[44%] md:border-b-0 md:border-r dark:border-slate-800 dark:bg-slate-950/60">
             <div>
               <BrandRow />
 
@@ -222,7 +222,7 @@ export function AuthSplitFrame({
           </div>
 
           {/* Right Column: Credential Form */}
-          <div className="flex flex-col justify-between bg-white p-7 sm:p-10 md:w-[56%] dark:bg-slate-900">
+          <div className="flex flex-col justify-between bg-white p-5 sm:p-8 md:w-[56%] dark:bg-slate-900">
             <div>
               <header className="mb-6">
                 <h1 className="font-display text-2xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-[26px] dark:text-slate-100">
@@ -271,8 +271,8 @@ export function AuthCard({
 }: AuthCardProps) {
   return (
     <div className="flex min-h-[100svh] flex-col justify-between bg-slate-50 font-body text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-900 dark:bg-slate-950 dark:text-slate-200">
-      <main className="flex flex-1 items-center justify-center px-4 py-10 sm:px-6">
-        <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-7 sm:p-9 dark:border-slate-800 dark:bg-slate-900">
+      <main className="flex flex-1 items-center justify-center px-3 py-8 sm:px-6">
+        <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-5 sm:p-7 dark:border-slate-800 dark:bg-slate-900">
           <div className="flex items-center justify-between gap-3">
             <BrandRow />
             {breadcrumb}
@@ -288,7 +288,7 @@ export function AuthCard({
           <div className="space-y-4">{children}</div>
         </div>
       </main>
-      <footer className="w-full px-4 pb-6">
+      <footer className="w-full px-3 pb-5">
         <div className="mx-auto max-w-xl text-center">
           <Disclaimer variant={footerVariant} />
         </div>
