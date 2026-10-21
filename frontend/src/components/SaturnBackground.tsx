@@ -1,7 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 import { Stars } from "@react-three/drei";
 import * as THREE from "three";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 
 const Saturn = () => {
@@ -26,32 +26,14 @@ const Saturn = () => {
         speed={1}
       />
 
-      <ambientLight intensity={0.4} color="#ffffff" />
+      <ambientLight intensity={0.4} />
 
-      <directionalLight
-        position={[10, 5, 10]}
-        intensity={2}
-        color="#ffffff"
-        castShadow
-      />
-
-      <spotLight
-        position={[-5, 5, -5]}
-        intensity={1}
-        color="#d6d3d1"
-        angle={0.5}
-        penumbra={1}
-      />
+      <directionalLight position={[10, 5, 10]} intensity={2} castShadow />
 
       <group ref={groupRef}>
         <mesh>
           <sphereGeometry args={[2.5, 64, 64]} />
-          <meshStandardMaterial
-            color="#f4a261"
-            roughness={0.8}
-            metalness={0.1}
-            envMapIntensity={0.5}
-          />
+          <meshStandardMaterial color="#f4a261" roughness={0.8} metalness={0.1} />
         </mesh>
 
         <mesh position={[0, 0.3, 0]}>
@@ -119,26 +101,7 @@ const SaturnBackground = () => {
         visibility: hasHover && !hasReducedMotion ? "visible" : "hidden",
       }}
     >
-      <Canvas
-        camera={{
-          position: [0, 0, 10],
-          fov: 50,
-        }}
-        dpr={[1, 2]}
-        gl={{
-          antialias: true,
-          alpha: false,
-          powerPreference: "high-performance",
-        }}
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          zIndex: -10,
-        }}
-      >
+      <Canvas camera={{ position: [0, 0, 10], fov: 50 }}>
         <Saturn />
       </Canvas>
     </div>
