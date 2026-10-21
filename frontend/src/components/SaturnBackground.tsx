@@ -99,9 +99,14 @@ const SaturnBackground = () => {
       className="fixed inset-0 -z-10 pointer-events-none"
       style={{
         visibility: hasHover && !hasReducedMotion ? "visible" : "hidden",
+        width: "100%",
+        height: "100%",
       }}
     >
-      <Canvas camera={{ position: [0, 0, 10], fov: 50 }}>
+      <Canvas
+        camera={{ position: [0, 0, 10], fov: 50 }}
+        style={{ width: "100%", height: "100%" }}
+      >
         <Saturn />
       </Canvas>
     </div>
