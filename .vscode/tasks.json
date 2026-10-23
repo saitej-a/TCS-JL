@@ -1,0 +1,45 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "disable-broken-claude-hooks",
+			"type": "shell",
+			"command": "cmd.exe /c \"rename \\\".claude\\settings.local.json\\\" \\\"settings.local.json.bak\\\"\""
+		},
+		{
+			"label": "empty-settings",
+			"type": "shell",
+			"command": "cmd.exe /c \"echo {} > \\\".claude\\settings.local.json\\\"\""
+		},
+		{
+			"label": "move-backup",
+			"type": "shell",
+			"command": "cmd.exe /c \"move \\\".claude\\settings.local.json.bak\\\" \\\"c:\\Users\\Sai Teja Ankam\\Desktop\\TCS JL\\temp_hook_backup.txt\\\"\""
+		},
+		{
+			"label": "test-python",
+			"type": "shell",
+			"command": "cmd.exe /c \"python -c \\\"print('Hello from Python!')\\\" > test_out.txt 2>&1\""
+		},
+		{
+			"label": "test-ps",
+			"type": "shell",
+			"command": "python -c 'print(12345)' | Set-Content -Path 'test_out.txt'"
+		},
+		{
+			"label": "docker-ps",
+			"type": "shell",
+			"command": "docker compose ps | Out-File -FilePath task_docker_ps.txt"
+		},
+		{
+			"label": "cleanup-temp",
+			"type": "shell",
+			"command": "python -c \"import os; [os.remove(f) for f in ['test_out.txt', 'task_docker_ps.txt', 'temp_hook_backup.txt'] if os.path.exists(f)]\""
+		},
+		{
+			"label": "cleanup-ps",
+			"type": "shell",
+			"command": "Remove-Item -Path test_out.txt, task_docker_ps.txt, temp_hook_backup.txt -ErrorAction SilentlyContinue"
+		}
+	]
+}

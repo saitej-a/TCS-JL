@@ -1,0 +1,378 @@
+---
+gsd_state_version: "1.0"
+milestone: v1.0
+current_phase: 16
+current_phase_name: replace-the-current-screens-with-the-frontend-stitch-designs
+status: completed
+stopped_at: Phase 16 executed (all 7 waves complete and verified)
+last_updated: "2026-10-05T00:00:00.000Z"
+progress:
+  total_phases: 36
+  completed_phases: 9
+  total_plans: 39
+  completed_plans: 32
+last_activity: 2026-10-05
+milestone_name: milestone
+last_activity_desc: Phase 16 executed (all 7 waves complete and verified)
+---
+
+Total Phases: 22
+
+# Project State
+
+## Project Reference
+
+See: .planning/PROJECT.md (updated 2026-09-19)
+
+**Core value:** Provide anxious candidates with complete clarity on their recruitment progress and community benchmarks without requiring them to expose their real identity or personal credentials.
+**Current focus:** Phase 16 — replace the current screens with the frontend/stitch designs (EXECUTED 2026-10-05)
+
+## Current Position
+
+Phase: 16 (replace-the-current-screens-with-the-frontend-stitch-designs) — EXECUTED
+Plan: 7 of 7 executed (16-01-PLAN.md through 16-07-PLAN.md)
+Previous phase: 15 EXECUTED + VERIFIED (2026-10-04) — Fix real-time chat and add a typing wave indicator (Daphne ASGI WebSocket transport + TypingIndicator wave animation row)
+
+*(Pointer set by hand: `phase.complete 12` rewrote this customized STATE.md's hand-maintained
+values from its own stale phase index — `current_phase` became 1, "Total plans completed" 1, the
+progress bar 42%, and the Current Position line was cut mid-sentence. The legitimate parts were
+kept (phase 12 → Complete, last activity, the new velocity row) and the rest restored by hand
+against ROADMAP.md, which carries 12 as 1/1 Complete.)*
+
+**Next up: the 09.5.1 copy gate.** The three legal content modules are data files —
+`frontend/src/pages/legal/about.ts` (mission + the non-affiliation boundary, no contribution-guidelines
+section), `privacy.ts` (the seven slots in its doc comment: what we collect, email handling **masked**
+(`a***@example.com`) not hashed, the scoped no-tracker claim with FCM's transport role, per-device
+notification scoping, the ONE shipped identity-mode field, immediate/irreversible deletion,
+threshold-suppressed community data) and `terms.ts` (acceptable use mirroring the six report reasons,
+the report flow, non-affiliation). With the copy in place: re-run Task 5's verify block and Task 6's full
+sweep, write `VERIFICATION.md`, flip `09.5.1-01-SUMMARY.md`'s `status:` to `complete`, delete
+`.continue-here.md`, then `/gsd-verify-work 09.5.1`.
+Resume list: `09.5.1-01-SUMMARY.md`; halt handoff: the phase dir's `.continue-here.md`.
+**Delivery order worth knowing:** 9.5.1's second half is what unblocks the design pass's own gap —
+the info/legal routes were the last three stubs (9.1 D9), and `landing`'s header/footer links exist
+because 9.5.1 Task 4 built the §5.4 shell they needed.
+*(Pointer set by hand: the workflow's `state.patch` handler matches field names this project's customized
+STATE.md does not carry — it returned `updated: []` for both `Current Phase`/`Next recommended run` and the
+frontmatter keys. The `state.add-roadmap-evolution` handler did match and logged the insertion.)*
+*(Pointer set by hand: the workflow's `state.patch` handler matches field names this project's customized
+STATE.md does not carry — it returned `updated: []` for both `Current Phase`/`Next recommended run` and the
+frontmatter keys. The `state.add-roadmap-evolution` handler did match and logged the insertion.)*
+
+Progress: [████░░░░░░] 42%
+
+### 9.4 verification record (2026-09-28)
+
+**Verdict: PASS** — every surface ships, every gate re-derives green in **both** push configurations, and the
+four defects the pass found were repaired in-pass with tests and a live re-proof each. One item stays
+unobservable in this environment (the OS-level push display), and it is named, not buried. Detail + repro
+recipes: `.planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/VERIFICATION.md`.
+
+**Defects found — all fixed:** **F-94-1 (HIGH)** `auto` + VAPID handed native FCM tokens to `WebPushBackend`,
+which classes an opaque token as permanently invalid, so the stale-token sweep deactivated the user's
+Android/iOS row on the first push — fixed by giving the seam a device-type vocabulary
+(`PushBackend.device_types` / `handles_device_type()`: WEB owns Web Push, ANDROID/IOS/OTHER own FCM, the
+double stays permissive) and filtering the recipient's devices before dispatch, pinned by
+`test_push_device_routing.py`. **F-94-2 (MEDIUM)** the primer called `requestPermission()` on an origin that
+had already decided, which Chromium can leave pending forever — the modal wedged with a disabled button and
+the denial was never persisted; fixed by treating an existing `granted`/`denied` state as the answer and
+returning `"failed"` (persisting nothing) when the ask itself throws; re-proved live (modal closes, flag set,
+toast shown, primer absent on reload). **F-94-3 (MEDIUM)** six tests were not hermetic w.r.t. VAPID (the
+`auto`-resolution pair never cleared it; four capture tests were guarded by
+`if isinstance(backend, RecordingPushBackend)` and silently asserted nothing), so the recorded "842 passed"
+only held without push keys — fixed with `no_vapid_config` / `recording_push_backend` fixtures in the root
+conftest and by removing the conditional guards. **F-94-4 (LOW)** the offline strip's spec copy ("Showing
+cached data") had nothing behind it — the worker now caches the **viewer-independent public reads**
+(announcements/analytics/public) under a stated rule, proven by reloading `/analytics` from cache with the
+origin killed; the "Actions will sync when online" clause still has no write queue and is recorded as a gap.
+**O-94-1** (in-pass fix): `frontend/eslint.config.js` now ignores `dev-dist`, the gitignored dev-mode worker
+Task 8's `devOptions` generates — the recorded lint gate failed with 10 errors inside that generated file.
+
+**Gates re-derived** (this tree, not execution's): backend `python -m pytest -q` = **849 passed**, and the
+same **849 passed with `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY` set** — the configuration that used to produce
+6 failures; frontend lint **0 errors / 13 pre-existing warnings**, `npm run typecheck` clean, `npx vitest run`
+= **182 passed / 33 files**, `npm run build` clean and emitting `dist/sw.js`, `dist/sw-push.js`,
+`dist/manifest.webmanifest`.
+
+**Wire drills (curl, live stack):** D1's `status-distribution` answers with `COMMUNITY_REPORTED` + the
+disclaimer and per-row counts/shares (`WAITING_FOR_JL` 9 / 13.8 %), combines filters
+(`?batch=2025&hiring_type=DIGITAL` → 48), **suppresses** a below-floor slice with no counts, and **400s**
+`?batch=1999` naming the parameter; `devices/vapid-key/` returns the public half only (the 209-char private
+key from the drill override never appears in the body); notifications = 3 rows / `unread_count` 3;
+`POST /devices/` with a WEB subscription → **201** with `fcm_token` withheld; post detail 200 with the
+anonymized author; comment create **201** and `comment_count` 0 → 1 — the created comment and its cascaded
+notification were then deleted, so the drill left no rows behind.
+
+**Browser drills (Chromium, 1440×900):** the bell renders **3** (the API's unread count — no second source);
+the offline strip renders `⚠️ Offline Mode. Showing cached data. Actions will sync when online.` and clears on
+`online`; the push primer renders the UI-SPEC copy, gated to `/notifications`, before any native dialog.
+**The production offline shell — the leg execution left open — is closed:** over `vite preview` the worker
+registers as `/sw.js`, precaches 7 entries including `/index.html` and `/sw-push.js`, and after the preview
+server was **killed** a deep-link navigation to `/community/posts/…` still loaded the document and mounted the
+shell from cache.
+
+**Fixed and re-proved live:** the denied-origin primer now closes on **Enable Alerts**, persists
+`tjt.push_denied`, shows the "Push alerts stay off" toast, and stays closed after a reload carrying only the
+persisted flag; the worker's new `public-reads` cache (6 entries, announcements + analytics) answers a full
+`/analytics` render with the preview server killed and **no skeletons**, caching nothing account-scoped
+(account-scoped `/api/` cache entries: 0). The deep-link shell leg was already proven by the same technique (origin dead,
+deep link loads the app from precache).
+
+**Not re-derived (recorded, not silent):** the Stitch side-by-side (execution's `09.4-PROOFS.md` record
+stands; 9.3's unreadable-`htmlCode` limitation still applies), the install-banner triggers live (pinned by
+tests only), and the OS push display itself — this machine's Chromium profile has notifications blocked at
+the OS level in both the persistent and a fresh incognito profile, so the *display* leg cannot be observed
+here; the delivery contract behind it is proven server-side and in jsdom.
+
+### 9.3 execution record (2026-09-24)
+
+**Gates**, all green: `npm run lint` (0 errors, 7 pre-existing fast-refresh warnings), `npm run typecheck`,
+`npm run test:run` (28 files / 130 tests), `npm run build`, backend `python -m pytest -q` = **804 passed**
+(790 + 9.3's community tests), `git diff --quiet -- config/settings/` clean (the throttle scoping is on the
+views, not settings). Two of these gates did not pass when the phase started: `npm run build` was failing on
+committed code in `TimelinePage.handleSubmit` (a null-narrowing bug `tsc -b` catches and `tsc --noEmit` does
+not), and two feed tests scripted a StrictMode replay the test renderer never performs.
+
+**Live proofs observed in a browser** (signed-in UAT account `uat93@example.com`, created in the dev DB
+only — labelled, profile + 4 real timeline events, so the stepper/roadmap had genuine data):
+
+- *Anonymous read (D1)*: signed out, `GET /api/v1/community/posts/` → **200, count 21**; `POST /api/v1/community/posts/` →
+  **401**; `POST /api/v1/community/posts/{id}/vote/` → **401**. The public feed renders 20 cards with no session.
+- *Filtering (§7.6)*: clicking `Joining Letter` → `?category=JOINING_LETTER`, 6 posts, first card's badge `Joining Letter`,
+  pager `Showing 1-6 of 6 posts · Page 1 of 1`. Clicking `Trending (Most Active)` → `?tab=trending`. Clicking `All` →
+  category cleared. Typing `drill` → after the 300ms debounce `?tab=trending&search=drill`. `Next` → page 2 of 2,
+  `Showing 21-21 of 21 posts`, 1 card rendered.
+- *Upvote rollback (UI-03, the roadmap's done-when)*, with the vote request failed at the transport layer:
+  committed state `▲ Upvote | 1` · pressed=false → **during flight, before any response: `▲ Upvoted | 2`,
+  aria-pressed=true, aria-busy=true** → **after the failure: `▲ Upvote | 1`, aria-pressed=false, aria-busy=false,
+  toast "Your vote could not be saved. Please try again."** → interceptors removed, real vote re-run:
+  `▲ Upvoted | 2`, no toast, and an independent `GET /posts/{id}/` reported **`vote_count: 2`**.
+- *Walk-the-chain (Task 7)*: `/timeline` → `Mark as Received` on the pending Joining Letter node opened the modal
+  pre-filled with `Joining Letter (JOINING_LETTER)` + today's date; saving moved Current Status to `JL Received`,
+  removed the pending/future slots, and surfaced the unverified warning strip (candidate-authored events are
+  `is_verified=false`). `/dashboard` then showed `Status: JL Received (Since 24 Sep 2026)`, a completed `JL`
+  stepper node dated `24 Sep 2026`, and the rail summary advanced — one mutation, both surfaces.
+- *Pinned announcement (§7.6)*: a published+pinned announcement was created in the dev DB; the feed renders the
+  pinned card (eyebrow, title, body, pinned meta) and `GET /announcements/` serves it anonymously (200).
+
+**Backend proofs, run by name** (not inferred from a green suite): `test_deleted_posts_absent_from_feed`,
+`test_throttle_scope_registered`, `test_throttle_scope_registered_in_settings`, `test_anon_read_throttle_engages`,
+`test_authenticated_reads_unthrottled`, `test_write_throttle_engages` — 6 passed. The old
+`test_feed_requires_authentication` no longer exists under that name: `apps/community/tests/test_feed_api.py:48`
+carries "P5 superseded for reads by 9.3 D1, preserved for writes" and the anonymous-read module holds the
+replacement 200 assertion plus 401s for every write.
+
+**Fail-on-revert check for the repaired test** (Task 3's requirement, so it cannot be another vacuous assertion):
+with `feed_queryset`'s `is_deleted=False` removed the test **FAILED** (AssertionError at
+`test_feed_api.py:155`), and with the line restored it **PASSED** — the filter removal was reverted in place and
+`apps/community/views_services.py` is byte-identical to its committed revision (`git diff` clean).
+
+## Performance Metrics
+
+**Velocity:**
+
+- Total plans completed: 2
+- Average duration: — (per-plan timing not yet instrumented)
+- Total execution time: —
+
+**By Phase:**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| 1. Project Foundation, Docker & Environment Setup | 3/3 | - | - |
+| 2. Authentication, Identity & Custom User System | 3/3 | - | - |
+| 3. Candidate Profiles & Public Identity Controls | 2/2 | - | - |
+| 4. Recruitment Timeline Engine | 2/2 | - | - |
+| 5. Community Discussions & Forum System | 3/3 | - | - |
+| 6. In-App Notifications & FCM Web Push System | 1/3 | - | - |
+| 7. Community Analytics & Privacy Engine | 2/2 | - | - |
+| 8. Moderation, Anti-Spam & Administration | 3/3 | - | - |
+| 9. Frontend Single Page Application (React + Tailwind) | 3/4 | - | - |
+| 10. Security Audits, E2E Testing, Seed Data & Launch Readiness | 0/2 | - | - |
+| 11. Unlimited nested comment replies | 1/1 | - | - |
+| 12. Replace current screens with the Stitch designs | 1/1 | - | - |
+| 15 | 2 | - | - |
+
+**Recent Trend:**
+
+- Last 5 plans: 06-02, 07-01, 07-02, 09-02, 09-03 (09-03: 4 backend repairs + the three content views + create post; frontend 130 tests / backend 804 / build green; both halves of the done-when observed live; and — the lesson of the phase — the design work had to be redone because the mockups were catalogued but never read, which the reconciliation turned into 22 alignments, 14 recorded divergences and 3 real defects)
+- Trend: Stable
+
+## Accumulated Context
+
+### Roadmap Evolution
+
+- Phases 1–10 decomposed into 22 decimal sub-phases (X.1/X.2 pattern; Phase 9 has four) as focused planning/execution units — directories scaffolded under `.planning/phases/`, mappings logged in ROADMAP.md Phase Details and REQUIREMENTS.md Sub-Phase Traceability.
+- **Stitch (MCP server) is the designated UI-design tool** (user directive, 2026-09-23): generate and iterate screen mockups through the `stitch` connector (`generate_screen_from_text`, `generate_variants`, `create_design_system`/`upload_design_md`) instead of hand-describing layouts. **Applied for 9.2 (discuss stage):** Stitch project `3852118218307261541` holds design system `assets/9887579562818178405` (seeded from 05 §4 tokens) and **10 screen mockups** (desktop shell light+dark, mobile shell, landing, login, register, forgot-password, onboarding steps 1–3) — screen IDs catalogued in `09.2-CONTEXT.md`. **Planned for 9.3:** 7 more mockups (dashboard desktop+mobile, timeline roadmap, timeline modal, feed desktop+mobile, create post) from the same project/design system, generated as plan 09.3-01's Task 1 with IDs recorded in `09.3-CONTEXT.md`'s design table. Boundary: Stitch output is design reference, not code; implementation stays in `frontend/` against the 9.1 token layer.
+- Phase 09.5 inserted after Phase 9: UI/UX design pass driven by the ui-ux-pro-max skill: generate the screens on Stitch MCP and implement them one by one (URGENT). **Design half executed 2026-09-28:** the skill selected a professional-blue + Fira Sans/Fira Code direction for the Job Board/Recruitment category; its palette was adopted as the Tailwind `sky` scale with the neutrals/radii/elevation deliberately kept from 05 §4 (the skill's flat, shadowless, tinted-canvas branch was overridden — approval item O-9.5-1 in `09.5-CONTEXT.md` §3.1). Stitch design system `assets/9909951007419684952` created and used for **8 new screens** covering the undesigned surfaces; the project default was **not** changed (the `update_design_system` call was rejected as an invalid argument twice), and the 32 existing screens were **not** re-themed (`apply_design_system` deliberately deferred to plan Task 11). A real trap found by inspecting a generated screenshot: the mocks carry visible "DESIGN NOTE" annotation captions and an appended dark-mode mapping strip — reference-only, never UI.
+- Phase 09.5.1 inserted after Phase 9.5: Generate the missing Stitch screens with ui-ux-pro-max design intelligence (URGENT). **Design half + read-out done 2026-09-29:** the five screens are generated with the v2 design system attached (ids in `09.5.1-CONTEXT.md` §3) and were then read as markup rather than trusted from the generator's summary — screens #3/#4 carry printed states-strip/route artifacts and the copy invents security machinery (passwordless auth, SHA-256 HMAC hashing, a DPO inbox, a WebAuthn rollout promise, and a "three visibility modes" claim that contradicts the shipped single-field API). Layout references only; do-not-copy ledger in `09.5.1-CONTEXT.md` §3.3. The same read-out **corrects a limit carried since 9.3**: the generated `htmlCode` downloads *are* readable via `read_url`. **Both annotated screens were then cleaned in place** (`edit_screens`, session `492342116204158631`, user-approved — editing rather than regenerating keeps one reference per route) and re-read clean; screen #5's fiction-laden copy stays as the build half's do-not-copy list.
+- Phase 09.5.1 changed: Phase 09.5.1 executed through Task 5's structure and HALTED at the D-15/D-16 copy gate (2026-09-29) — a designed stop, not a failure. Committed: the cross-stack passwordRules module with its backend parity guard (fixing the shipped 8-character client/server mismatch), the in-card resend prefill, honest 60-minute reset copy with wrapping-safe tokens, the auth-aware §5.4 visitor shell that Landing now composes, and LegalLayout + three content modules replacing the last three StubPage stubs. Gates at the halt: frontend 264 tests / lint 0 errors / build clean, backend 855 passed, contrast audit all real pairs PASS. Outstanding: the user's own copy for /about, /privacy and /terms; the modules render the honest awaiting-copy state rather than placeholder prose, and VERIFICATION.md is withheld until the copy lands.
+- Phase 11 added: **Unlimited nested comment replies** (2026-09-29) — a comment can be replied to at any depth. Added at the end of the milestone (after Phase 10's launch readiness) because it was invoked as an *add*; landing it pre-launch needs an explicit move. It **supersedes a shipped, documented rule** — 05 §1183's Strict 1-Level Nesting (`parent.parent == NULL` on backend and UI), 05 §75's rationale, PROJECT.md requirement COMM-03 and its *Strict 1-Level Reply Depth* decision row — so recording that supersession deliberately (REQUIREMENTS.md + the two 05 sections + the PROJECT.md row) is part of its work, alongside `validate_reply_depth`'s `nested_reply` code, `Comment.parent`'s `SET_NULL` promotion behaviour at depth, thread assembly beyond one replies level, and the UI's single indent unit. Known surfaces listed in the ROADMAP entry.
+- Phase 12 added: **Replace current screens with the Stitch designs** (2026-09-29) — structural reconciliation of the everyday screens against the 47-composition Stitch library now on disk at `frontend/stitch designs/` (desktop + mobile + dark-mode variants: dashboard ×2, timeline ×2, community feed/detail/create, the settings suite, admin moderation + announcements, auth/onboarding, notification center, PWA install/push/offline states, error/empty route states). Distinct from 9.5's token re-theme and 9.5.1's five *missing* screens: this one restyles screens that already exist. Constraints recorded in the ROADMAP entry — compositions' mock fiction does not ship (the 9.5 divergence ledger governs), and everything stays under v2 tokens + the contrast/accessibility gates. Open planning decisions: commit the library as the reference or consume it untracked; how the desktop/mobile variants map onto the responsive build.
+- Phase 14 added: **Literal Stitch markup in the app** (2026-09-30) — the compositions' markup, classes, glyphs and skins become the app's screens verbatim, replacing phase 12's structure-plus-repaint rule (a recorded supersession in 12's G-1/G-2, 12-VERIFICATION, 05's token-role rules and PROJECT.md's v2 decision row). The user chose this over the three alternatives considered in the discussion: serving the 45 exports as static pages (they compile Tailwind from a CDN at runtime, carry no data layer, cannot authenticate — shipping them would discard auth, the API, the PWA and offline), rebuilding the frontend as Django templates (exact markup but a new frontend without the built PWA stack), and keeping the repaint. Where a composition shows content the backend never produces, the block keeps the mock's exact frame with an enumerated awaiting state (`data-awaiting`) — the user's explicit choice over both shipping the fiction and deleting the blocks. Both skins stay literal, scoped per screen through the CSS variables the build already emits; fonts and the icon set are vendored (no runtime CDN); behaviour becomes React; `lucide-react` is retired at the end; and a fidelity script makes "verbatim" machine-checked. Tracer-first: the notification center proves the pipeline before 35 more screens. Decisions in `14-CONTEXT.md`, plan in `14-01-PLAN.md`.
+- Phase 15 added: **Fix real-time chat and add a typing wave indicator** (2026-10-03) — the user's report that real-time channel messages still do not work, plus a request for a typing indicator with a wave animation. The channel-switch "Live updates paused" cause is **already fixed and sitting uncommitted** in `frontend/src/hooks/useChatRoom.ts` (effect-scoped socket lifecycle with a per-run `cancelled` flag and backoff, request-id-guarded history; regression test in `frontend/src/pages/MessagesPage.test.tsx`) — a planner must not re-fix that, and instead prove real delivery live against the ASGI/Nginx stack (Daphne process, `config/asgi.py`, the `/ws/` proxy in `nginx/nginx.dev.conf` and `nginx.prod.conf`, host/origin checks, `ws-ticket` auth, consumer group broadcast). Feature half: typing presence scoped to the room group with a server-side timeout (no stuck indicators) and a wave animation under the v2 tokens, with tests. Full goal detail recorded in the ROADMAP entry. The phase was appended at the end of the roadmap (after Phase 14, as an *add* does) and its auto-generated `Depends on: Phase 14` was corrected to **Phase 13** — the work touches only the chat stack 13 shipped and is independent of the literal-Stitch port.
+- Phase 15 planned (2026-10-03): **the reported failure is an infrastructure defect, reproduced live this session.** `/ws/` is served by `gunicorn config.wsgi:application` (WSGI), so a websocket upgrade cannot happen: a probe returned `HTTP/1.1 404 Not Found` with **no `Upgrade` header**, both through nginx and directly against `web:8000`, and the browser's socket therefore never opens — messages fall back to REST behind the amber banner, exactly as reported. Two further defects sit in the same path: both nginx confs declare **no `proxy_read_timeout`** for `/ws/` (nginx's default 60 s would cull a working socket), and `config/asgi.py` wraps `URLRouter` with **no origin validation**. All of it, with the commands, is recorded in `15-RESEARCH.md` (F-1…F-6). The plan is therefore two waves: **15-01** runs `/ws/` from a `daphne` `asgi` service, hardens the proxy, and proves handshake / delivery / single-use auth / 75 s idle survival with a two-client probe through nginx — and its Task 2 is a Wave 0 that makes the backend chat suite **runnable at all** (the `web` container has channels/daphne/redis but no pytest; the local `.venv` has pytest but no WS stack and no `pip` — so Phase 13's plan-level `docker compose exec -T web python -m pytest` could never have run as written). **15-02** adds server-authoritative typing presence (6 s Redis TTL, 1.5 s per-connection throttle, sender exclusion, clear on send/disconnect) and the wave row above the composer. Decisions taken at the planning gate — no CONTEXT.md exists, `/gsd-discuss-phase` was not run — are binding: the indicator is **wave dots plus the typist's name** above the composer (D-15-01); the phase authors `15-UI-SPEC.md` itself because the blocking `ui.plan-gate` fired and `/gsd-ui-phase` is **not installed** in this project (D-15-03); and 13-UI-SPEC's "no presence/typing dots" rejection is reopened **only** for in-room typing presence (D-15-04). The ROADMAP requirements line was set to CHAT-01 plus a new **CHAT-03** (typing presence, introduced by this phase). **Deviation recorded:** this runtime has no subagent dispatch (no `Agent` tool; no `claude`/`codex` CLI present), so plan-phase's researcher/planner/plan-checker roles ran in one context instead of three — the two deterministic probes (`verify-command-paths`, `verify-failure-directions`) were executed in the checker's place and both returned **0 blockers / 0 warnings**; an independent `gsd-plan-checker` pass has **not** been done.
+- Phase 16 added: replace the current screens with the frontend/stitch designs (2026-10-04)
+
+### Decisions
+
+Decisions are logged in PROJECT.md Key Decisions table.
+Recent decisions affecting current work:
+
+- [Phase 9.3 — D1–D8, planned 2026-09-23]: D1 open anonymous community reads (05 §3.1's public matrix wins over the shipped 401; writes untouched; `community_reads` throttle scope declared ON the view — 7.2 R1; the 401 test updated deliberately with the supersession documented). D2 `feed_queryset` filters `is_deleted=False` and the vacuous tombstone-title test is repaired to assert by id (default feed + `?search=`), keeping the row-retention assertion (08 §390). D3 the vote mutation response carries `has_voted` — the card's field name, one vocabulary — and 409 `already_voted` is handled as already-voted, never as a rollback. D4 write throttling made real: `throttle_scope` on every view that attaches `CommunityWriteRateThrottle` + `throttle_classes` on `PostListCreateView` + a 429 engagement proof and a scope introspection test. D5 §7.7 create post ships in 9.3 (unassigned by the roadmap; the feed's write path). D6 the dashboard's discussions block shows newest posts — §7.4's "in your stream" narrowing is a recorded divergence (a hiring-stream filter would be new feed API surface). D7 the 12-category vocabulary lives in ONE frontend module with a set-pinning test, because `GET /posts/categories/` stays unbuilt (declined; duplication recorded, reclaimed when the endpoint ships). D8 Stitch mockups for all four 9.3 surfaces before implementation (7 screens, same design system as 9.2).
+
+- [Phase 9.1 — D1–D10, executed]: D1 token storage per 06 §3.3 Option 1 (access memory-only, refresh in `localStorage` under `tjt.refresh_token`, logout blacklists then clears); D2 single-flight refresh with one bounded replay (`_replayed` marker, module-level in-flight promise shared by AuthContext boot and the interceptor — concurrent 401s produce exactly ONE refresh POST, proven by test and live); D3 host Vite proxy on :5173 → nginx :80 (no CORS change; `VITE_API_BASE_URL` read only in `client.ts`); D4 production serving left open (base URL env-driven, history mode, fallback need recorded); D5 Tailwind v4 `@theme` tokens byte-exact from 05 §4 with class-strategy dark mode; D6 React 18 + TS strict + npm, no `any`; D7 axios + hooks + Context (no query/UI library); D8 Vitest + RTL via the adapter-swap technique (no mocking dep), CI wiring deferred; D9 bootable shell (router + `RequireAuth`/`PublicOnly` as layout routes + Error Boundary + stubs for every 05 §3.1 path); D10 T9.3 library + Disclaimer/EmptyState/IdentityPill with the three §5.6 strings stored once and pinned by test.
+
+- [Phase 1]: Modular Django monolith chosen over premature microservices for velocity and ACID consistency.
+- [Phase 1]: Celery + Redis chosen for asynchronous decoupling of third-party Google FCM and transactional emails.
+- [Phase 1]: React 18 + Tailwind CSS + Vite chosen for mobile-first PWA responsiveness.
+- [Phase 4.1 — D1]: Walk-the-chain status sync: event types map to target statuses; sync advances hop-by-hop along the 3.1 legal edges (multi-hop backfills OK); at/past = idempotent no-op; blocked chains (terminal, OTHER-pre-WAITING) raise + roll back the event insert.
+- [Phase 4.1 — D2]: Forward-only status: event edits/deletes never regress `current_status`; only event_type edits re-sync (toward the new mapped target).
+- [Phase 4.2 — D1]: Dashboard ships its complete 04 §28 key contract now: the community block is computed for real from candidate profiles; `community.unread_notifications` is an explicit `0` placeholder wired in Phase 6.
+- [Phase 4.2 — D2]: Benchmark = waiting-state total + per-status distribution, both threshold-suppressed (`ANALYTICS_MIN_COHORT_SIZE = 5`, 04 §53) and labeled `COMMUNITY_REPORTED` (04 §65.20); suppressed output omits the counts rather than zeroing them.
+- [Phase 4.2 — D3]: Timeline `event_date` bound = today + 24 months (settings-driven), applied to every event type, plus a present-or-past carve-out for `JOINING_LETTER`; `JOINING_DATE` stays legitimately future-datable.
+- [Phase 4.2 — R4]: `auto_update_status` is not client-controllable — the API hardcodes `True`, so a caller cannot record a milestone while leaving `current_status` stale (04 §121).
+- [Phase 5.1 — D1]: Post categories are the merged union of three disagreeing spec lists (12 keys, `OFFER` folded into 01's `OFFER_LETTER` so the vocabulary matches `TimelineEvent`), held in `POST_CATEGORIES` and read at call time — the field carries no `choices`, so extending the list needs no migration.
+- [Phase 5.1 — D2]: `Post.author`/`Comment.author` are required and `PROTECT`; the retained anonymized User row (2.2) is the tombstone, which 3.2's author serializer already renders safely — no NULL-author branch anywhere. Consequence: a hard user delete is refused, so F1's fix must delete the *profile*.
+- [Phase 5.1 — D3]: One neutral tombstone copy (`This content has been removed.`) covers author- and moderator-deletion alike, because the single `is_deleted` flag cannot distinguish them; originals stay in the row (08 §390) and masking happens only in `tombstones.display_*`.
+- [Phase 5.1 — D4/P1]: Deleted posts leave the feed (03 §28) while tombstoned comments stay in their threads; `Comment.parent` is `SET_NULL` (not CASCADE/PROTECT) so a disappearing parent promotes a reply instead of destroying it, and post hard-deletion is never blocked.
+- [Phase 5.1 — P4]: Integrity guarantees are deliberately unequal and documented as such — duplicate votes are impossible at the database level (`unique_user_post_vote`), while the 1-level reply rule is application-level because PostgreSQL cannot express a cross-row `CHECK`.
+- [Phase 6.1 — D1/D2]: All seven 07 §3.1 notification types ship as a nested model `TextChoices` (not a settings-held list like 5.1 D1) because the values drive code dispatch in 6.2/6.3 — a settings-added type would reach the dispatcher with no handler. The model `TextChoices` is the closed, system-owned vocabulary; only four types have v1 producers and the docstring says so.
+- [Phase 6.1 — D3/D4]: `title`/`message` are **stored snapshots** written at creation, and 6.1 composes/renders nothing — anonymity-safe labels belong to 6.2's `create_notification` service (via 3.2's `AuthorPublicSerializer` semantics), which is what keeps 07 §8's zero-PII push rule achievable at write time.
+- [Phase 6.1 — D5]: `notification_read_state` (`CHECK (NOT is_read OR read_at IS NOT NULL)`) is the project's first `CheckConstraint` and the phase's hard guarantee; it is deliberately one-directional (`read_at` set while unread is legal). `clean()` mirrors it with code `read_state_inconsistent`, and `mark_as_read()` is the single sanctioned pair writer (one UPDATE naming both columns, idempotent).
+- [Phase 6.1 — D6]: `NotificationManager.unread_count_for(user)` ships now — the seam 4.2 D1 promised; the dashboard keeps its explicit `0` placeholder until 6.2 wires the call.
+- [Phase 6.2 — D1/D2]: `firebase-admin` behind a `PushBackend` seam (first new dependency since Phase 1); the real adapter ships but is verified credential-free — recording backend plus unit tests asserting the `MulticastMessage`, no live FCM call in 6.2.
+- [Phase 6.2 — D3/D4/D5]: thread debounce **suppresses** (cache framework, not raw Redis) and exempts non-thread types plus `VOTE_MILESTONE`; milestone thresholds are settings-held with a count-watermark dedupe needing no migration; the stored row keeps the rich in-app text while the push body comes from a per-type generic template, so no comment body can reach a lock screen.
+- [Phase 6.2 — D6/D7/D8/D9]: a token bound to another user is reassigned last-writer-wins; revoke is a soft deactivate with the daily prune task as the only row deleter; device list uses the standard paginated envelope; `last_seen_at` moves on device endpoints only.
+- [Phase 6.2 — D13/D14]: 6.2 adds `GET|PATCH /api/v1/notifications/preferences/` (07 §11 omits it but NOTIF-06 requires it), and the flags gate the push only — all seven types mapped, with `MODERATION`/`SYSTEM` under `push_enabled` alone.
+- [Phase 6.2 — D15/D16]: announcements are deferred wholesale to Phase 8, so only three types have live producers at 6.2's end (correcting 6.1 D1's "four"); the service worker is deferred to 9.4 with the push payload contract pinned by tests instead.
+- [Phase 6.1 — R1/R2/R3/R9]: The plan's pinned index name `idx_notif_recipient_read_created` is 32 chars and Django rejects names over 30, so it shipped as `idx_notif_recip_read_created`; the constraint uses `condition=` (the deprecated `check=` would warn on Django 5.2); `Device.__str__` renders no email/token (03 §8); `auto_now` fields refresh only when named in `update_fields`.
+- [Phase 7.1 — D1]: The wait-time baseline is the OFFER_LETTER event, then the INTERVIEW event, then `CandidateProfile.offer_letter_date`, then `interview_date`, and the endpoint is the JOINING_LETTER event; per candidate the *earliest* occurrence of each milestone wins, and a candidate whose JL precedes its baseline is dropped rather than clamped (a negative interval is corrupted data, not a negative wait). This is deliberately narrower than ANAL-03's literal "survey submission" baseline — recorded as an open divergence, not silently resolved.
+- [Phase 7.1 — D2]: Suppression is **full-cohort** and keyed on `settings.ANALYTICS_MIN_COHORT_SIZE` (5): a filtered slice below the floor returns only `data_source`/`suppressed`/`message`/`disclaimer` — no counts and no zeroed or partial rows, because a zeroed bucket still discloses that the bucket exists. The floor is applied to the **slice total**, so a single result row inside a large slice can still report a count below 5 (per-bucket floors stay the open 4.2 residual-risk item).
+- [Phase 7.1 — D3]: `apps/analytics` is enforced read-only by `test_phase_boundary.py` rather than by convention — no `models.py`, no `migrations/`, no `views.py`/`urls.py`/`serializers.py`, no `tasks.py`, and no `django.core.cache` import, plus a check that the app config registers zero models. 7.2 cannot grow an endpoint or a cache without failing that test and updating it deliberately.
+- [Phase 7.1 — D4]: Every payload carries `data_source: "COMMUNITY_REPORTED"` **and** the non-affiliation disclaimer — including suppressed payloads, which 04 §53's documented suppression shape omits. The extra field is additive to the spec so a UI can render the disclaimer from any analytics response without a second code path.
+- [Phase 7.2 — D-01/D-02/D-03]: The `<5` floor now applies to **each result row**, and a below-floor row is dropped entirely — not zeroed, not labeled, not counted — because the withheld count is itself a disclosure. If no row clears the floor the response is 04 §53's standard suppression payload (never `suppressed: false` with an empty `results[]`, and never the slice totals with the small rows omitted, which reveals them by subtraction). One `ANALYTICS_MIN_COHORT_SIZE` governs both levels; a second knob was rejected because two values that must stay in a privacy ordering are a misconfiguration risk. This **changes 7.1's shipped payloads** and requires updating its tests deliberately.
+- [Phase 7.2 — D-04/D-05/D-06/D-07]: The cached unit is the **assembled response payload per endpoint + filter signature**, reusing 7.1's functions verbatim (one compute path, one serialize path). TTL is 7200s in a settings key read at call time — a **recorded deviation from `10_MVP_TASKS.md` T7.8's `ttl = 15m`**, which cannot coexist with an hourly warmup (a 15-minute TTL expires three times per cycle, making the beat task decorative); ROADMAP criterion 4 is authoritative. `generated_at` is written into the cached payload at compute time so a cache hit reports when its numbers were computed. `warm_analytics_cache` is routed to the `maintenance` queue, joining `prune_stale_devices`.
+- [Phase 7.2 — D-08…D-12]: All five read endpoints are anonymous — 04 §6 lists "Landing-page information" and "Public aggregate statistics" under Anonymous, so this is spec-mandated, not chosen. 7.2 builds **04 §80 `GET /api/v1/public/stats/`** (the roadmap's "public landing stats endpoint", T7.9, consumed by 05_UI_UX §746) as its own thin endpoint because §80's cross-app count keys are not the analytics overview shape. **04 §52 `/analytics/timeline/` is deferred to backlog** (no requirement owns it, §108's test list omits it). An anon-scoped `analytics_reads` throttle closes the cache-busting path (unfiltered `default` was rejected because a caller can walk region × hiring_type × batch to force uncached computation), and filters are whitelist-validated against model choices + `BATCH_YEARS` with 400 on unknown values — which also bounds the cache key space.
+- [Phase 7.2 — D-13…D-16]: ANAL-03 is closed **literally** by publishing **both intervals as separate metrics** — survey→JL (`READINESS_SURVEY`, the requirement's and T7.7's wording) and D1's offer→JL — each with its own sample size and its own `<5` floor, because the survey is later than the offer (different numbers, not interchangeable) and `12_SEED_DATA` gives only ≈20% of the cohort a survey event (a survey-only metric would routinely suppress). They surface through `/analytics/overview/` (04 defines no wait-time endpoint). Deleted/anonymized accounts **stay counted** exactly as 7.1's aggregations do, accepting 4.2's F1/F2 rather than changing published cohort semantics in an exposure phase. Each metric discloses its baseline and per-source sample sizes, so a mixed average is never presented as one number.
+- [Phase 7.2 — R1]: **DRF's `ScopedRateThrottle` reads the scope from the view, not the class.** `allow_request` does `self.scope = getattr(view, 'throttle_scope', None)` and returns `True` — allowing the request — when the view declares none, so a class-level `scope` alone is inert. 7.2 therefore sets `throttle_scope` on its base view *and* asserts the bucket engages (429 after the rate is exceeded), because declaring the class and trusting it is exactly how a throttle silently does nothing. Found while wiring this: **community's `CommunityWriteRateThrottle` is inert on all six of its views** (see Pending Todos).
+- [Phase 7.2 — R2]: The region filter is bounded by length (100, the model's `max_length`) and charset (`isalnum` plus ` -.'(),/&`) rather than by a vocabulary, because 3.1 D3 makes `region` free text and a whitelist built from regions that *currently* have candidates would 400 a legitimate region with no data yet. Digits are deliberately permitted (`Sector 62`), and safety comes from the key being a sha256 digest rather than the raw value — the charset check is input hygiene, not an injection barrier.
+- [Phase 8.1 — D1]: `apps/moderation.Report` ships 08 §3.2's schema with a **CASCADE deviation**: target FKs use `on_delete=CASCADE`, not SET_NULL, because SET_NULL would UPDATE a surviving report to (NULL, NULL) on target hard-delete and breach `report_exactly_one_target` at delete time. Pending dedup is double-enforced (service query + two conditional UniqueConstraints); the reports throttle declares `throttle_scope` on the view (7.2 R1) and the 429 is asserted by test.
+- [Phase 8.2 — D1/D2]: The ban protocol ships 08 §6's **two-step shape verbatim**: one transaction commits `is_active=False` + `banned_until` + the §11.1 `MODERATION_ACTION_TAKEN` log line, then an idempotent Celery task (`moderation.tasks.sever_banned_user_sessions`, dispatched via `transaction.on_commit` so a rolled-back ban never severs) blacklists every outstanding refresh token and deactivates all devices. Accepted window: a crash between commit and task leaves live sessions until retry — re-banning re-fires the task, and §6.2's 401-on-inactive already closes the API path at the flag. **Unban is one-way**: it reactivates the account but never revives devices or token blacklists (re-registration is the sanctioned path).
+- [Phase 8.2 — D3]: Temporary suspensions ship: `User.banned_until` + `duration_days` on the ban request (0/absent = permanent) + a new hourly beat entry `reinstate-suspended-users-hourly` → `moderation.tasks.auto_reinstate_users`, which flips back only `is_active=False AND banned_until <= now`. Permanent bans (banned_until NULL) are never touched by the clock.
+- [Phase 8.2 — D4/D5]: Five review actions ship (T8.7/MOD-05 over 04 §69's four): DISMISS → `DISMISSED`; REMOVE_CONTENT / LOCK_POST / WARN_USER / BAN_USER → `RESOLVED`; every path writes `reviewed_by`/`reviewed_at`/`moderator_notes`. The REST review endpoint and both Admin surfaces (`ReportAdmin` bulk actions, `UserAdmin` ban/unban) delegate to the **same** `moderation.services` writers, so they cannot drift; LOCK_POST on a comment-targeted report is a 400 with the status write rolled back.
+- [Phase 8.2 — D6]: Queue ordering is 08 §4.1's **static severity weights** (SCAM 100 → OTHER 10) then newest-first, applied in Python over the PENDING page. §4.1's log2 report-velocity multiplier is a recorded divergence.
+- [Phase 8.2 — D7]: The announcement system deferred by 6.2 D15 ships whole: `community.Announcement` (§7.1 shape), `publish()` as the single idempotent broadcast trigger (False→True only, never a post_save signal), in-app `ANNOUNCEMENT` rows created **unconditionally** for active verified users while the existing `send_push_notification` preference gate keeps the push opt-in (6.2 D13/D14 semantics), chunked fan-out via `ANNOUNCEMENT_PUSH_CHUNK = 500`, and byte-exact reserved names honoured (`community.tasks.clean_expired_announcements` beat :15, `notifications.tasks.broadcast_announcement` on the notifications queue).
+- [Phase 8.2 — D9]: The moderation audit trail is §11.1 **structured logging only** — `log_moderation_action` emits one JSON event (with the keys attached as `extra=` LogRecord fields) per action on the `moderation` logger; no AuditLog model, and §4.2.4's infraction counter and §10's day-90 minimization stay unbuilt (recorded divergences).
+- [Phase 8.2 — R1]: **06 §2.6 and 08 §6.2 conflict on suspended logins.** Shipped resolution: 403 `ACCOUNT_SUSPENDED` only after `check_password` proves ownership (a wrong password on a banned account still gets the generic 401), and the pre-existing `test_banned_account_same_body` was updated with the supersession documented in its docstring. Anti-enumeration is preserved because the 403 requires the correct password.
+- [Phase 8.2 — R2]: **DRF stores an exception's `code` on the ErrorDetail, not the instance** — `PermissionDenied(msg, code=...)` puts it at `exc.detail.code`; a handler reading `exc.code` silently falls through to DRF's default body. Also: `revoke_user_refresh_tokens` counts tokens *processed*, not newly blacklisted (outstanding rows survive blacklisting), so the sever task reports a `BlacklistedToken` delta to stay honest under re-runs.
+- [Phase 8.1 — D2]: The scam scanner **hard-blocks** (400 `scam_pattern_detected` pre-publication) rather than publish+auto-report (CONTEXT D1), on post/comment create AND edit with merged-state scanning (D5); the response names the violation category and never the regex (D2). Patterns are code constants per 08 §8.1 (D7 — deploy-gated tuning accepted); repetition detection deferred (user decision). The T8.5 debounce gains a body hash (D6), posts only, create only. Admin-editable patterns remain a deferred roadmap idea, NOT 8.2 scope.
+- [Phase 7.2 — R3]: **Cached analytics have no invalidation on data change.** A payload lives up to `ANALYTICS_CACHE_TTL` (2h) and is refreshed hourly by the warmup, so a manual data fix is not visible publicly until one of those fires. That is the designed trade-off (D-05) rather than a defect, but it is operationally visible: the 7.2 drill had to purge the `analytics:*` namespace before asserting *live* data, having been served the previous run's payload on its first read.
+- [Phase 7.1 — R1/R2]: The aggregations are per-bucket ORM walks (one `values("batch").annotate(Count)` then one status-count query per bucket) rather than a single `GROUP BY (bucket, status)`, so each call costs O(buckets) queries; correct and readable at MVP scale, and 7.2's Redis warmup is what makes it cheap. The plan's unused `Avg`/`Max`/`Min`/`Q`/`Decimal` imports were dropped, and `DISCLAIMER_TEXT` was wrapped to satisfy the 100-char E501 limit.
+
+### Pending Todos
+
+- **Per-type backend fan-out: one deployment cannot serve browser *and* native push** (NEW — surfaced by the
+  9.4 F-94-1 repair): routing now keeps the vocabularies apart, but `get_push_backend()` still resolves **one**
+  backend per deployment, so `PUSH_BACKEND=auto` with VAPID configured serves browsers and *skips* native
+  devices (`PUSH_SKIPPED_NO_COMPATIBLE_DEVICES`) rather than dropping them. That is strictly better than the
+  silent deactivation it replaced, and it matches D2's "FCM stays the explicit setting for Android/iOS paths"
+  — but an operator fielding both clients must currently choose. A per-device-type backend registry (group the
+  recipient's devices, dispatch each group through its own backend, aggregate the results) is the real fix.
+- **O-94-2 (privacy question, undecided) — the `/api/v1/timeline/` runtime cache is account-scoped** (NEW —
+  9.4 verification): a Cache Storage entry outlives a logout inside the browser profile, so after user A signs
+  out, user B could be served *A's* timeline while offline. Narrow (two accounts, one profile, offline) but
+  real; the fix is a cache purge on logout or dropping the entry. Annotated in `frontend/vite.config.ts`
+  beside the entry.
+- **Offline writes have no queue** (NEW — 9.4 F-94-4 residual): the offline strip's "Actions will sync when
+  online" implies one, and mutations made offline simply fail with their error surfaced. Reads are now cached
+  for the viewer-independent public endpoints; a write queue (or narrower copy) is a feature decision.
+- **The 9.4 install-banner triggers were never driven live** (NEW — 9.4 verification): the milestone and
+  two-distinct-community-days rules are pinned by `pwa.test.ts` and the never-before-trigger case, but no live
+  cross-session drive happened.
+- **`/me/`'s `profile_completed` is still a hardcoded `False`** (NEW — surfaced while binding 9.1's client to the real payload). `UserPrivateSerializer.get_profile_completed` returns `False` with a comment saying CandidateProfile arrives in Phase 3.1 — 3.1 shipped and the stub never changed, and `apps/accounts/tests/test_me.py` asserts the stub. **9.2's onboarding wizard gates on this flag**, so every candidate would be sent through onboarding on every sign-in until it reads the real profile. Fix belongs with `/me/` plus a deliberate test update.
+- **The private user payload carries no role flag** (NEW — 9.1 planning). `is_staff` appears in no serializer, so the SPA cannot render 05 §3.1's staff-only nav (`/admin/moderation/reports`, `/admin/announcements`) from `/me/`. Either add it to `UserPrivateSerializer` (1 line — needed before 9.2's nav can exist) or keep staff gating purely server-side and reveal no admin affordance. Recorded, not decided.
+- **The public author payload exposes no identity mode** (NEW — 9.1 planning). `display_name` collapses to the literal `"Anonymous Candidate"` both for anonymous profiles and for profile-less/blank-name users, so 9.1's `IdentityPill` keys off that sentinel string. An explicit `identity_mode` field in `AuthorPublicSerializer` would remove the coupling if preferred. *(9.1 execution addendum: the serializer also ships NO `avatar_seed` despite 04/plan assuming one — IdentityPill derives the pastel deterministically from `display_name` instead; an `avatar_seed` field is typed optional for when the API adds it.)*
+- **Category vocabulary vs the badge table (12 vs 10)** (NEW — 9.1 planning): `POST_CATEGORIES` ships 12 keys while 05 §4.1.4's badge matrix lists 10 — the spec's `OFFER` row is the API's `OFFER_LETTER`, and `LOCATION`/`DOCUMENTS` have no spec badge. 9.1's map covers all 12 with the slate `GENERAL` treatment as the explicit fallback; the spec table is the doc that is out of date.
+- **Fix 05.2's two HIGH defects before any Phase 5 COMPLETE claim survives** (surfaced again by the v1.0 milestone summary): `feed_queryset` in `apps/community/views_services.py` never filters `is_deleted=False` (trending does), so deleted posts still appear in the default feed and in `?search=`; `PostListCreateView` declares no `throttle_classes` and there is no `DEFAULT_THROTTLE_CLASSES`, so `POST /api/v1/community/posts/` is unbounded. Both were verified still present in the current tree. Repair `test_deleted_posts_absent_from_feed` too — it asserts on the masked tombstone title, so it is vacuous and passed while the bug was live. Also open from that verification: the feed card's missing `body_preview` (F3) and the vote response's missing `voted` (F4). **→ Claimed by plan 09.3-01 (2026-09-23): F1 = Task 3 (D2), F2 = Task 4 (D4), F4 = Task 3 (D3, shipping the card's `has_voted` spelling); still live in the tree until 9.3 executes.**
+- **Wire the account-deletion device revocation** (NEW — found by direct code inspection during the milestone summary, never recorded by any phase): `anonymize_delete_account` (`apps/accounts/services.py`) still carries the literal placeholder `# >>> Phase 6 hook: revoke all FCM device registrations here. <<<`, which 6.2's plan promised to replace with `user.devices.all().delete()`. A deleted account therefore keeps active `Device` rows with live FCM tokens, and the push worker will still attempt delivery to them. Fix alongside F1 (delete the profile + let the timeline cascade) in one atomic transaction.
+- **Three UATs closed by attestation — but none of the three phases is verified** (2026-09-22): 6.1, 6.2 and 7.1 recorded 24 `pass` results at the user's instruction with `source: user-attested` and **not one check executed**; each file carries a provenance note naming the attester. These are acceptance decisions, not evidence. All three still need a canonical `VERIFICATION.md`, and the completion predicate cannot even be evaluated in this repo — `gsd_run phase uat-passed 6.1 --require-verification` returns `Error: Phase 6.1 not found` (the project-code resolution failure below). Separately, `workflow.security_enforcement` is on with two active `verify:post` step hooks (`secure-phase` → SECURITY.md, `validate-phase` → VALIDATION.md) and **no phase has ever produced a SECURITY.md**, so the security gate blocks advancement on its own. Do not report 6.1, 6.2 or 7.1 as transitioned.
+- **Decide F1's disposition** (VERIFICATION.md 4.2): `anonymize_delete_account` does not delete the CandidateProfile or its timeline events, contrary to 06 §4.2 step 4 / §2.7 "Zero Orphaned PII". Either fix the 2.2 deletion service (delete the profile inside the same transaction; the FK cascade removes events) or record an explicit decision to retain anonymized profiles — then either way exclude them from the dashboard cohort (F2).
+- ~~**Decide ANAL-03's true wait-time baseline**~~ — **RESOLVED 2026-09-22 by 7.2 D-13**: both intervals are published as separate metrics (survey→JL per the requirement, offer→JL per D1), each with its own sample size, own `<5` floor and baseline disclosure. ANAL-03 can move off Partial when 7.2 executes; no requirement text needs rewriting.
+- Phase 7.2 (next): expose the 7.1 service layer as `GET /api/v1/analytics/overview|batches|hiring-types|regions/` (04 §48-51 shapes already match the service payloads), add `generated_at`, build `GET /api/v1/public/stats/` (04 §80), apply the per-row floor (D-01) and the survey→JL metric (D-13), wrap the helpers in the Redis caching layer with the hourly Celery Beat warmup, and keep every response attributed (`COMMUNITY_REPORTED` + disclaimer). **Context is gathered — plan 07-02 from `07.2-CONTEXT.md`.** Two carry-forward constraints for the planner: 7.2 must **update `test_phase_boundary.py` deliberately** (7.1 D3 asserts the app has no views/urls/tasks), and the route/decorator name must match `config/celery.py`'s reserved `analytics.tasks.warm_analytics_cache` exactly or the `maintenance` route silently does not apply. **04 §52 `/analytics/timeline/` is deferred to backlog by D-10** — it is a recorded gap, not an oversight.
+- Phase 5.2 carried decision: 08 §406 renders a deleted post's author as unattributed — the author-nulling rule for deleted posts (and whether a tombstoned comment keeps its handle) is a 5.2 serializer decision.
+- **Community's write throttle is inert (NEW — found while wiring 7.2's read throttle, never recorded by any phase):** `apps/community/throttles.py`'s `CommunityWriteRateThrottle` subclasses `ScopedRateThrottle`, but **none of the six community views that attach it declare `throttle_scope`**, and DRF's `ScopedRateThrottle.allow_request` returns `True` (allow) whenever the view declares no scope. So post/comment/vote/lock/pin writes are unthrottled in fact, not merely under-specified — the class being attached looks like protection in review. Fix: add `throttle_scope = "community_writes"` to those views (the `apps/accounts/views.py` pattern, which *does* engage) plus a test asserting the bucket actually 429s; also give `PostListCreateView` its missing `throttle_classes` (05.2 F2). `apps/notifications/throttles.py` is unaffected — it uses `UserRateThrottle`, where the class-level `scope` is authoritative. **→ Claimed by plan 09.3-01 (2026-09-23) as Task 4 (D4), with the engagement proof + scope introspection test; still inert until 9.3 executes.**
+- ~~Phase 7 wiring: per-bucket floor still open~~ — **RESOLVED 2026-09-22 by 7.2 D-01/D-02/D-03**: the floor applies per result row, below-floor rows are dropped entirely, and one setting governs both levels. Carries one consequence into execution: 7.1's tests that assert slice-level-only behaviour must be updated rather than deleted. Still open: the dashboard's own analytics block needs 4.2's profile-derived counts extended to the 7.1 helpers.
+- Low-severity polish from 4.2 verification: shared JSON 404 for unresolvable paths (F3), `Allow` header on 405 (F4), whether `WITHDRAWN` should count as profile-completion progress (F5), timeline write throttling if abuse appears (F6).
+
+### Blockers/Concerns
+
+- ~~**`auto` + VAPID silently kills native push devices (HIGH)**~~ — **FIXED 2026-09-28 (9.4 verification):**
+  the backend seam now declares its token vocabulary and dispatch filters devices on it, so a Web Push backend
+  is never handed an FCM id; pinned by `test_push_device_routing.py`. The residual is not data loss but
+  reach — see the fan-out item in Pending Todos.
+- **Phase 5 is marked COMPLETE while independently verified FAIL (HIGH):** 05-02's `VERIFICATION.md` verdict is FAIL on two HIGH acceptance-criteria defects, both re-confirmed live in the current tree (deleted posts in the feed/search; unthrottled post creation). STATE.md's prose, REQUIREMENTS.md (`COMM-01`/`COMM-02` = Complete) and ROADMAP.md (05-02/05-03 ticked, Phase 5 = 3/3) all contradict that verdict, and 05.2's findings were dropped from Pending Todos by later phases writing over this section. Do not carry a Phase 5 or milestone COMPLETE claim until F1/F2 are fixed and re-probed. Details: `.planning/phases/TCS-JL-05.2-feed-comments-and-voting-endpoints/VERIFICATION.md`, summarised in `.planning/reports/MILESTONE_SUMMARY-v1.0.md` § 6.
+- **F1 (HIGH, pre-existing in Phase 2.2, surfaced by 4.2 verification):** deleted candidates retain their profile row (with `display_name`, `batch`, `region`, `current_status`) and all private timeline events. Not a 4.2 regression — 4.1/4.2 assumed the deletion flow was implemented. Blocks any milestone claim of 06 §4.2 compliance until decided. 7.1 inherits it directly: the aggregation cohorts count those retained profiles, so the analytics themselves now include anonymized-but-present candidates (the 4.2 F2 exclusion question is still unanswered).
+- ~~**Per-bucket suppression gap (MEDIUM)**~~ — **RESOLVED 2026-09-22 by 7.2 D-01/D-02** (per-row floor; whole-response suppression when nothing survives). The vector closes when 7.2 executes; until then the live endpoints do not yet exist, so there is no exposure window in the current tree.
+- **Community writes are unthrottled in fact (HIGH, new in 7.2):** see Pending Todos — the throttle class is attached to six views but never engages, because DRF reads the scope from the view and none of them declare one. Adjacent to 05.2's F2 (missing `throttle_classes` on post creation) but distinct from it: even the views that *have* the class attached get no rate limiting.
+- **Public analytics will count anonymized accounts (accepted, new in 7.2 D-15):** 4.2's F1/F2 retention gap means a deleted candidate keeps a profile row, so **every published cohort count includes candidates who have left the community** — and 7.2 D-15 deliberately keeps that behaviour rather than changing cohort semantics inside an exposure phase. The fix belongs with the retention model (delete the profile + let the timeline cascade, alongside the still-unwired device revocation above). Until then, public numbers overstate the present community.
+
+## Deferred Items
+
+Items acknowledged and deferred at milestone close, most recent first:
+
+| Category | Item | Status | Deferred At | Milestone |
+|----------|------|--------|-------------|-----------|
+| Timeline UI | TIME-04's interactive chronological roadmap with edit/delete controls | Deferred to 9.3 (UI-03); API half shipped in 4.2 | 2026-09-22 | v1.0 |
+| Dashboard data | Real unread-notification count | Seam shipped in 6.1 (`unread_count_for`); the dashboard keeps its `0` placeholder until 6.2 wires it | 2026-09-22 | v1.0 |
+| Analytics depth | Batch/hiring-type/region breakdowns + `/api/v1/analytics/*` | Service layer shipped in 7.1 (overview/batch/stream/region helpers + wait-time engine + `<5` suppression); the `/api/v1/analytics/*` endpoints and Redis caching carry to 7.2 | 2026-09-22 | v1.0 |
+| ~~Announcements~~ | ~~`Announcement` model, broadcast task, `notify_on_announcements` verification~~ | **DELIVERED 2026-09-23 by 8.2 (plan 08-03)**: `community.Announcement` + publish/broadcast at the reserved route names + hourly expiry task + staff REST CRUD and an anonymous public read; the 6.2 D15 deferral is closed | 2026-09-22 | v1.0 |
+| Push frontend | `firebase-messaging-sw.js` + soft-primer UX (T6.12) | Deferred from 6.2 to Phase 9.4 by D16; the payload contract is pinned by tests now | 2026-09-22 | v1.0 |
+| Analytics | `GET /api/v1/analytics/timeline/` (04 §52) | Deferred by 7.2 D-10 — no ANAL requirement owns it and §108's required test list omits it; needs an event-level aggregation plus a per-day suppression rule. Recorded as a known gap | 2026-09-22 | v1.0 |
+| API docs | OpenAPI/schema generation (04 §109) | Deferred by 7.2 to Phase 10.2 hardening; the project hand-writes endpoint contracts and the analytics phase stays read-only | 2026-09-22 | v1.0 |
+| Deleted accounts in public analytics | Exclude anonymized profiles from published cohorts (4.2 F1/F2) | **Accepted, not forgotten** (7.2 D-15): belongs with the retention fix, and the consequence is recorded in Blockers/Concerns | 2026-09-22 | v1.0 |
+| Moderation | §4.1's report-velocity multiplier (log2 escalation for multi-reporter targets) | Diverged by 8.2 D6 — static severity weights only; revisit if the queue ever outgrows manual triage | 2026-09-23 | v1.0 |
+| Moderation | A queryable audit trail (`AuditLog` model) and §4.2.4's infraction counting | Diverged by 8.2 D9 — §11.1 structured logging only; `Report.reviewed_by/reviewed_at/moderator_notes` is the durable per-report record | 2026-09-23 | v1.0 |
+| Moderation | §10's day-90 reporter anonymization / retention minimization | No requirement owns it; needs a beat task and a reporter-nulling rule | 2026-09-23 | v1.0 |
+| Moderation | Reactivating devices on unban | Deliberately not built (8.2 D2) — severing is one-way and re-registration is the sanctioned path | 2026-09-23 | v1.0 |
+| Moderation | Admin-editable scam patterns (carried from 8.1) | Still needs a roadmap edit before any phase takes it; not folded into 8.2 | 2026-09-23 | v1.0 |
+| Feed/dashboard | `GET /community/categories/` endpoint (04's inventory lists it; `settings/base.py:169` claims it ships) | **Declined for 9.3 (D7)**: the 12-key vocabulary is duplicated into one frontend constant module pinned by test; reclaim this row the moment the endpoint is built | 2026-09-23 | v1.0 |
+| Dashboard | §7.4's "latest discussions in your stream" hiring-stream filter | **Diverged by 9.3 D6**: the block shows the community's newest posts; a genuine stream filter is new feed API surface (posts carry a category, the stream lives on the author's profile) — buy deliberately later | 2026-09-23 | v1.0 |
+| PWA offline | An offline **write** queue (the strip's "Actions will sync when online") | **Half-closed 2026-09-28**: F-94-4 was fixed by caching the viewer-independent public reads, so "Showing cached data" is now true (proven offline); the sync clause still has no queue behind it | 2026-09-28 | v1.0 |
+| PWA install | The install promotion's live triggers (milestone added / community on two distinct days) | **Verified by test only** (9.4 verification §6): `pwa.test.ts` pins both rules and the never-before-trigger case; no live cross-session drive was performed | 2026-09-28 | v1.0 |
+
+## Session Continuity
+
+**Resume file:** .planning/phases/TCS-JL-12-replace-current-screens-with-the-stitch-designs/12-CONTEXT.md
+
+**Resume files (one open thread):**
+
+- **Phase 09.5.1 — halted at the copy gate:** `.planning/phases/TCS-JL-09.5.1-generate-the-missing-stitch-screens-with-ui-ux-pro-max-desig/.continue-here.md`
+  (resume list in `09.5.1-01-SUMMARY.md`; the user's legal copy is the only outstanding input).
+
+Last session: 2026-09-29T16:18:42.252Z
+Stopped at: Phase 15 complete, ready to plan Phase 1
+Resume files: .planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/VERIFICATION.md (verdict, drills, defect repros + repairs), .planning/phases/TCS-JL-09.4-post-analytics-notifications-pwa/09.4-PROOFS.md (execution's live proofs), apps/notifications/tests/test_push_device_routing.py (the F-94-1 pin), .planning/STATE.md
+
+**Owed from 9.3's execution — open items, none silent:**
+
+- **The four surfaces were reconciled from screenshots, not from the exported markup.** The agent can view a
+  screen's PNG and read its text, but cannot read the `htmlCode` markup (the MCP returns URLs only; the URL reader
+  strips attributes; a cross-origin fetch is refused; the download URL arrives as an attachment). Nine exact-spacing
+  details are therefore eyeballed rather than measured; `design-refs/README.md` lists the 7 screen ids and download
+  links — dropping those files in closes the gap for a pixel-level pass.
+- **Verification has not run.** 9.3 has live proofs recorded above, but no canonical `VERIFICATION.md`; the visual
+  side-by-side and the ≤400px/≥1280px breakpoint checks of the *new* content views are still owed.
+- **The feed's design gaps stay recorded, not papered over** (`09.3-DESIGN-RECONCILIATION.md`): the `LIVE FEED •
+  Updated 2 min ago` eyebrow (no live refresh exists), the notification pill, per-category counts, and the mobile
+  pill row's horizontal scroll.
+- **A dev-only UAT account now exists in the local database** (`uat93@example.com`, labelled, with a profile and 4
+  timeline events) purely to drive the live proofs; it is not seed data and no migration or fixture references it.
+
+**Owed from 9.3's planning (all recorded in the plan, none silently absorbed):** (a) the three planning questions' answers are binding — D1/D2/D3/D4/D5 chosen by the user, D7's categories endpoint explicitly DECLINED (recorded in Deferred Items when 9.3 executes); (b) two vacuous/encoding tests (`test_feed_requires_authentication`, `test_deleted_posts_absent_from_feed`) must be updated deliberately with the fail-on-revert proof, not silently greened; (c) D6's stream-filter divergence and D7's endpoint gap must land in STATE.md Deferred Items at execution, not just in the CONTEXT file; (d) the 7 Stitch screen IDs must replace the CONTEXT design table's "to generate" wording.
+
+**Owed from 9.1's planning (all recorded in the plan, none silently absorbed):** (a) the outer-scope question stays flip-able — 09.1-01 ships the router + `RequireAuth` + Error Boundary + stub pages per D9's default; (b) four cross-phase findings now sit in Pending Todos below (the `profile_completed` stub, the missing `is_staff` in the private payload, the author identity-mode coupling, and the 12-vs-10 category/badge divergence); (c) the production serving model for the built SPA remains unresolved (D4) — whichever wins needs a history-mode fallback or deep links 404.
+
+**Carried from 8.2's verification (small, deliberate, not silently dropped):** O1 — `community.tasks.clean_expired_announcements` has no explicit route, so hourly housekeeping runs on `default` while its peers sit on `maintenance` (harmless and as-planned; one settings line either way). O2 — four of 04 §107's moderation test names are absent but their behavior is covered by differently-named 8.1 tests. O3 — no pytest guard on `ban_user`'s commit→dispatch; the drill covers it live, a mock would put it in CI. O4/O5 are doc-only (CONTEXT's `community.tasks.auto_reinstate_users` typo; the `0005` migration number).
+
+**Still owed elsewhere (unchanged by this session):** 7.1's canonical `VERIFICATION.md` is what unblocks its transition; 6.1/6.2/7.1 UATs remain attestation-only; Phase 5's two HIGH defects and F1's deletion-flow decision are live in the tree.

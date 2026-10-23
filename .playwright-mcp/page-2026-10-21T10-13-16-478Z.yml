@@ -1,0 +1,279 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - link "TCSJL home" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e17]: Recruitment Status
+        - navigation "Visitor" [ref=e18]:
+          - link "Community" [ref=e19] [cursor=pointer]:
+            - /url: /community
+          - link "About" [ref=e20] [cursor=pointer]:
+            - /url: /about
+      - generic [ref=e21]:
+        - link "Sign in" [ref=e22] [cursor=pointer]:
+          - /url: /login
+        - link "Create account" [ref=e23] [cursor=pointer]:
+          - /url: /register
+  - main [ref=e24]:
+    - generic [ref=e26]:
+      - generic [ref=e27]:
+        - heading "Know where you stand. Without the guesswork." [level=1] [ref=e28]
+        - paragraph [ref=e29]: "An independent, community-built recruitment ledger for TCS candidates: track your six joining milestones, compare wait-time benchmarks by stream and city, and stay anonymous by default."
+        - generic [ref=e30]:
+          - link "Track my joining journey" [ref=e31] [cursor=pointer]:
+            - /url: /register
+          - link "Explore community stats" [ref=e35] [cursor=pointer]:
+            - /url: /analytics
+        - generic [ref=e36]:
+          - paragraph [ref=e37]: Built for candidate privacy
+          - paragraph [ref=e38]: Zero document uploads. Zero NextStep or Ultimatix passwords. Switch between Anonymous Candidate and Display Name at any time.
+          - paragraph [ref=e39]:
+            - generic [ref=e40]: Free & pseudonymous
+            - generic [aria-hidden] [ref=e41]: ·
+            - generic [ref=e42]: k-anonymity (<5 suppressed)
+            - generic [aria-hidden] [ref=e43]: ·
+            - generic [ref=e44]: Community-reported telemetry
+      - generic [ref=e47]:
+        - generic [ref=e48]:
+          - generic [ref=e56]:
+            - paragraph [ref=e57]: Anonymous Candidate • 2025 • Digital • Hyderabad
+            - paragraph [ref=e58]: Recruitment milestone ledger · Interactive specimen
+          - group "Filter specimen cohort" [ref=e59]:
+            - button "Digital · Hyderabad" [ref=e60]
+            - button "Ninja · Pune" [ref=e61]
+            - button "Prime · Bengaluru" [ref=e62]
+        - generic [ref=e63]:
+          - generic [ref=e65]:
+            - generic [ref=e66]: Pipeline progression (5 of 6 stages)
+            - generic [ref=e67]: Issued · ILP centre assigned
+          - tablist "Recruitment pipeline stages" [ref=e75]:
+            - tab "Stage 1 Interview Cleared" [ref=e76]:
+              - generic [ref=e77]: Stage 1
+              - generic [ref=e81]: Interview Cleared
+            - tab "Stage 2 Selection Confirmed" [ref=e82]:
+              - generic [ref=e83]: Stage 2
+              - generic [ref=e87]: Selection Confirmed
+            - tab "Stage 3 Offer Received" [ref=e88]:
+              - generic [ref=e89]: Stage 3
+              - generic [ref=e93]: Offer Received
+            - tab "Stage 4 Survey Completed" [ref=e94]:
+              - generic [ref=e95]: Stage 4
+              - generic [ref=e99]: Survey Completed
+            - tab "Stage 5 JL Received" [selected] [ref=e100]:
+              - generic [ref=e101]: Stage 5
+              - generic [ref=e105]: JL Received
+            - tab "Stage 6 Joined TCS" [ref=e106]:
+              - generic [ref=e107]: Stage 6
+              - generic [ref=e109]: Joined TCS
+          - generic [ref=e110]:
+            - generic [ref=e111]:
+              - heading "JL Received" [level=2] [ref=e112]
+              - generic [ref=e113]: Survey to JL benchmark
+            - paragraph [ref=e114]: Joining Letter issued with initial onboarding stream and reporting instructions.
+            - paragraph [ref=e115]: When candidates mark JL Received, the cohort benchmark ledger recalculates minimum, median, and maximum wait days across batches with at least five verified entries.
+            - generic [ref=e117]:
+              - generic [ref=e118]: Filter the analytics ledger by your batch year and stream to see real wait ranges.
+              - link "Open timeline tracker" [ref=e119] [cursor=pointer]:
+                - /url: /timeline
+          - generic "Live community stats" [ref=e120]:
+            - generic [ref=e121]:
+              - heading "Community-reported, updated live" [level=2] [ref=e122]
+              - paragraph [ref=e123]: Community-reported data, not official TCS metrics.
+    - generic [ref=e130]:
+      - generic [ref=e131]:
+        - generic [ref=e132]:
+          - heading "Every milestone is a real submission." [level=2] [ref=e133]
+          - paragraph [ref=e134]: No synthetic benchmarks and no scraped portals. When candidates log an offer, survey, or joining letter, the public ledger updates immediately.
+        - generic [ref=e135]:
+          - paragraph [ref=e136]: ···
+          - paragraph [ref=e137]: Verified candidate submissions power every cohort calculation
+      - generic [ref=e139]:
+        - generic [ref=e140]:
+          - generic [ref=e141]: LEDGER AUDIT SLIP
+          - generic [ref=e142]: COMMUNITY_REPORTED
+        - paragraph [ref=e143]: Live repository counts
+        - generic [ref=e144]:
+          - generic [ref=e145]:
+            - term [ref=e146]: Registered candidates
+            - definition [ref=e148]: —
+          - generic [ref=e149]:
+            - term [ref=e150]: Timeline milestones
+            - definition [ref=e152]: —
+          - generic [ref=e153]:
+            - term [ref=e154]: Community threads
+            - definition [ref=e156]: —
+        - paragraph [ref=e157]: Privacy & verification rules
+        - generic [ref=e158]:
+          - generic [ref=e159]:
+            - term [ref=e160]: Tracked pipeline stages
+            - definition [ref=e162]: "6"
+          - generic [ref=e163]:
+            - term [ref=e164]: Hiring streams indexed
+            - definition [ref=e166]: "4"
+          - generic [ref=e167]:
+            - term [ref=e168]: k-anonymity floor
+            - definition [ref=e170]: ≥5
+          - generic [ref=e171]:
+            - term [ref=e172]: Document uploads stored
+            - definition [ref=e174]: "0"
+          - generic [ref=e175]:
+            - term [ref=e176]: Third-party ad trackers
+            - definition [ref=e178]: "0"
+        - generic [ref=e179]:
+          - generic [ref=e180]: Total ledger entries
+          - generic [ref=e181]: COMMUNITY
+    - region "How the recruitment ledger works" [ref=e182]:
+      - generic [ref=e183]:
+        - generic [ref=e184]:
+          - heading "Built by candidates, for candidates" [level=2] [ref=e186]
+          - generic [ref=e187]:
+            - generic [ref=e188]:
+              - generic [ref=e189]: 2025 · Digital · Hyderabad
+              - generic [ref=e190]: Offer Accepted
+            - list [ref=e193]:
+              - listitem [ref=e194]:
+                - generic [ref=e198]: Offer date anchored
+              - listitem [ref=e199]:
+                - generic [ref=e201]: Readiness survey logged
+              - listitem [ref=e202]:
+                - generic [ref=e204]: Joining letter issued
+            - paragraph [ref=e205]: "Identity: Anonymous Candidate"
+          - generic [ref=e206]:
+            - paragraph [ref=e207]: First you log your offer baseline.
+            - paragraph [ref=e208]: No portal credentials, no PDF uploads. Just the date and your cohort slice.
+        - generic [ref=e209]:
+          - generic [ref=e210]: 02 / 04
+          - generic [ref=e212]:
+            - generic [ref=e213]:
+              - generic [ref=e214]: 2025 · Digital · Hyderabad
+              - generic [ref=e215]: Survey Completed
+            - list [ref=e218]:
+              - listitem [ref=e219]:
+                - generic [ref=e223]: Offer date anchored
+              - listitem [ref=e224]:
+                - generic [ref=e228]: Readiness survey logged
+              - listitem [ref=e229]:
+                - generic [ref=e231]: Joining letter issued
+            - paragraph [ref=e232]: "Cohort slice: ≥5 rule active"
+          - generic [ref=e233]:
+            - paragraph [ref=e234]: Then your readiness survey updates the wave.
+            - paragraph [ref=e235]: Every logged survey helps peers in your stream spot active batch dispatches.
+        - generic [ref=e236]:
+          - generic [ref=e237]: 03 / 04
+          - generic [ref=e239]:
+            - generic [ref=e240]:
+              - generic [ref=e241]: 2025 · Digital · Hyderabad
+              - generic [ref=e242]: Waiting for JL
+            - list [ref=e245]:
+              - listitem [ref=e246]:
+                - generic [ref=e250]: Offer date anchored
+              - listitem [ref=e251]:
+                - generic [ref=e255]: Readiness survey logged
+              - listitem [ref=e256]:
+                - generic [ref=e260]: Cohort median unlocked
+            - paragraph [ref=e261]: Benchmarked by stream & city
+          - generic [ref=e262]:
+            - paragraph [ref=e263]: Next, cohort benchmarks compute wait ranges.
+            - paragraph [ref=e264]: Slices under five candidates are automatically suppressed for k-anonymity.
+        - generic [ref=e265]:
+          - generic [ref=e266]: 04 / 04
+          - generic [ref=e268]:
+            - generic [ref=e269]:
+              - generic [ref=e270]: 2025 · Digital · Hyderabad
+              - generic [ref=e271]: JL Received
+            - list [ref=e274]:
+              - listitem [ref=e275]:
+                - generic [ref=e279]: Offer date anchored
+              - listitem [ref=e280]:
+                - generic [ref=e284]: Readiness survey logged
+              - listitem [ref=e285]:
+                - generic [ref=e289]: Joining letter confirmed
+            - paragraph [ref=e290]: Complete 6-stage record
+          - generic [ref=e291]:
+            - paragraph [ref=e292]: Finally, your Joining Letter closes the loop.
+            - paragraph [ref=e293]: Your completed record stays in the anonymous ledger for the next batch.
+    - generic [ref=e294]:
+      - generic [ref=e296]:
+        - heading "One milestone row, three states" [level=2] [ref=e297]
+        - paragraph [ref=e298]:
+          - text: Try clicking
+          - strong [ref=e299]: "[Mark as Received]"
+          - text: on the middle row to see how a single click updates your status and cohort ledger.
+      - generic [ref=e300]:
+        - generic [ref=e301]:
+          - generic [ref=e302]: Awaiting
+          - generic [ref=e305]:
+            - generic [ref=e311]:
+              - generic [ref=e312]:
+                - generic [ref=e313]: Current Blocker
+                - 'heading "PENDING: Joining Letter" [level=3] [ref=e314]'
+              - paragraph [ref=e315]: Awaiting dispatch. Only what you log is counted; nothing is inferred.
+            - generic [ref=e316]: No date yet
+        - generic [ref=e317]:
+          - generic [ref=e318]: Try it live
+          - generic [ref=e321]:
+            - generic [ref=e327]:
+              - generic [ref=e328]:
+                - generic [ref=e329]: Action Ready
+                - heading "Joining Letter dispatch received?" [level=3] [ref=e330]
+              - paragraph [ref=e331]: Click the quick action to record your Joining Letter and advance your status.
+            - button "[Mark as Received]" [ref=e332]
+        - generic [ref=e336]:
+          - generic [ref=e337]: Recorded
+          - generic [ref=e340]:
+            - generic [ref=e345]:
+              - generic [ref=e346]:
+                - generic [ref=e347]: Verified
+                - 'heading "Oct 14, 2026: Offer Letter Issued" [level=3] [ref=e348]'
+              - paragraph [ref=e349]: Peer-corroborated timeline entry · Digital · Hyderabad cohort
+            - generic [ref=e350]: Day 0 anchor
+    - generic [ref=e352]:
+      - generic [ref=e357]:
+        - heading "Community discussions" [level=2] [ref=e358]
+        - paragraph [ref=e359]: Read what candidates are reporting across batches and cities, or add your own update.
+      - link "Open the community feed" [ref=e360] [cursor=pointer]:
+        - /url: /community
+    - region "Frequently asked questions" [ref=e361]:
+      - generic [ref=e362]:
+        - generic [ref=e363]:
+          - heading "Common questions" [level=2] [ref=e364]
+          - generic [ref=e365]:
+            - button "Is this officially linked to TCS?" [expanded] [ref=e367]
+            - generic [ref=e370]:
+              - button "Does the tracker verify my joining letter?" [ref=e371]
+              - paragraph [ref=e374]: It cannot, and it does not collect one. There is no document upload and no connection to any TCS portal. Everything on the timeline is self-reported by candidates and shown as community-reported data.
+            - generic [ref=e375]:
+              - button "What can other candidates see about me?" [ref=e376]
+              - paragraph [ref=e379]: Only your display name (or nothing at all in anonymous mode) plus the cohort details you choose to publish. Your email address, notification tokens and device list are never shown to other candidates.
+            - generic [ref=e380]:
+              - button "Why are some batch or city charts hidden?" [ref=e381]
+              - paragraph [ref=e384]: Whenever a filtered cohort slice has fewer than five candidate submissions, the platform suppresses the breakdown so small groups can never be singled out or de-anonymized.
+        - generic [ref=e386]:
+          - generic [ref=e387]: Independent community ledger · Zero corporate affiliation
+          - paragraph [ref=e392]: No. This is an independent community project built by and for incoming candidates. It is not affiliated with, endorsed by, or operated by Tata Consultancy Services.
+    - generic [ref=e394]:
+      - generic [ref=e396]: 2024 · 2025 · 2026
+      - generic [ref=e397]:
+        - heading "Add your timeline to the cohort ledger." [level=2] [ref=e398]
+        - paragraph [ref=e399]: Create an account in under a minute, pick Anonymous or Display Name mode, and see where your batch stands today.
+        - generic [ref=e400]:
+          - link "Start tracking free" [ref=e401] [cursor=pointer]:
+            - /url: /register
+          - link "Browse discussions first" [ref=e405] [cursor=pointer]:
+            - /url: /community
+      - generic [ref=e408]: k ≥ 5
+  - contentinfo [ref=e409]:
+    - generic [ref=e410]:
+      - generic [ref=e411]:
+        - generic [ref=e412]: TCS Joining Tracker
+        - navigation "Footer" [ref=e423]:
+          - link "About" [ref=e424] [cursor=pointer]:
+            - /url: /about
+          - link "Privacy Policy" [ref=e425] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms of Service" [ref=e426] [cursor=pointer]:
+            - /url: /terms
+          - link "Explore Community" [ref=e427] [cursor=pointer]:
+            - /url: /community
+      - paragraph [ref=e429]: TCS Joining Tracker is an independent community platform and is not affiliated with, endorsed by, or operated by Tata Consultancy Services (TCS). Information displayed on the platform is primarily user-submitted and may not represent official TCS information.

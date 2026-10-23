@@ -1,0 +1,207 @@
+# Requirements: TCS Joining Tracker
+
+**Defined:** 2026-09-19  
+**Core Value:** Provide anxious candidates with complete clarity on their recruitment progress and community benchmarks without requiring them to expose their real identity or personal credentials.
+
+## v1 Requirements
+
+Requirements for initial release. Each maps to roadmap phases.
+
+### Authentication & Account Security (AUTH)
+
+- [ ] **AUTH-01**: User can register with case-insensitive email, password complexity check, and Argon2id hashing.
+- [ ] **AUTH-02**: User receives an email verification link (24-hour expiry); resend is rate-limited to 1 req/min.
+- [ ] **AUTH-03**: User can request a password reset via email link with 60-minute expiry and session invalidation.
+- [ ] **AUTH-04**: User authenticates via SimpleJWT with 15-minute access token and 7-day rotating blacklisted refresh token.
+- [ ] **AUTH-05**: User can permanently delete their account with complete anonymization of past community contributions.
+- [ ] **AUTH-06**: Login endpoint enforces rate limiting (5/min/IP) and returns generic failure responses to prevent user enumeration.
+
+### Candidate Profile & Identity (PROF)
+
+- [ ] **PROF-01**: Candidate can create and edit profile with batch (2024/2025/2026), stream (Prime/Digital/Ninja), region, and interview center.
+- [ ] **PROF-02**: Candidate controls public identity mode: ANONYMOUS (default pseudonym) or custom DISPLAY_NAME.
+- [ ] **PROF-03**: Profile enforces controlled status choices from REGISTERED to JOINED.
+- [ ] **PROF-04**: Public profile serializers strictly exclude email addresses, phone numbers, and internal authentication identifiers.
+
+### Recruitment Timeline Engine (TIME)
+
+- [ ] **TIME-01**: Candidate can record recruitment milestones (Interview, Selection, Offer, Survey, JL, Date, Joined) with date and notes.
+- [ ] **TIME-02**: Adding or updating milestones atomically synchronizes the candidate's current recruitment status.
+- [x] **TIME-03**: Timeline endpoints enforce object-level ownership and return HTTP 404 on unauthorized access attempts (IDOR defense).
+- [ ] **TIME-04**: Candidate can view an interactive chronological roadmap of their personal milestones with edit/delete controls. *(API half shipped in 4.2 — owners can list/edit/delete their own milestones; the interactive roadmap UI is Phase 9.3)*
+- [x] **TIME-05**: Dashboard endpoint aggregates candidate status progression, latest milestone, and community comparison benchmarks.
+
+### Community Discussions & Forum (COMM)
+
+- [x] **COMM-01**: Candidates can browse a paginated community feed filtered by category, search keywords, and sort order (Latest vs Trending). *(5.2: `GET /community/posts/` with category/search filters, tab + whitelist orderings; trending = windowed activity score)*
+- [x] **COMM-02**: Candidates can create discussion posts categorized by topic (JOINING_LETTER, OFFER, LOCATION, etc.) with rate limiting (5/hr). *(5.2: `POST /community/posts/` via 5.1's create_post; 30/min `community_writes` bucket — spec's 5/hr read as per-action floor, recorded deviation)*
+- [x] **COMM-03**: Candidates can add comments and nested replies (unlimited depth) to discussion posts.
+- [x] **COMM-04**: Candidates can upvote/unvote posts with database-level uniqueness enforcement (1 vote per user per post).
+- [x] **COMM-05**: Content authors and moderators can soft-delete posts and comments, replacing body text with clean tombstones. *(model layer: flags + tombstone helpers; the delete endpoints are 5.2)*
+- [x] **COMM-06**: Moderators can pin announcements and lock controversial threads to disable new comments. *(5.2: staff-only /lock//unlock/ + /pin//unpin/; author cannot lock own thread; locked posts 400 post_locked)*
+- [x] **COMM-07**: Posts display public identity handles with deterministic avatars and cohort tags. *(5.2: AuthorPublicSerializer + server-side HMAC avatar_seed (uncomputable by clients); cohort tags via batch/hiring_type/region fields)*
+- [x] **COMM-08**: Feed and comment querysets use `select_related()` and `.annotate()` to eliminate N+1 database queries. *(5.2: assertNumQueries budgets — feed ≤3, trending ≤3, thread ≤5 — plus distinct=True counts pinning the 3×2 multiplication trap)*
+
+### In-App & Browser Push Notifications (NOTIF)
+
+- [x] **NOTIF-01**: Candidates receive in-app notifications with read tracking for comments, replies, upvote milestones, and announcements. *(model layer shipped in 6.1 — `Notification`/`Device`/`NotificationPreference` with read tracking, the `notification_read_state` constraint, compound indexes, and the `unread_count_for` seam; creation and the list/mark-read endpoints arrive in 6.2; **9.4 shipped the §7.10 notification center, the unread bell badge and the deep-link rows, and the 2026-09-28 verification confirmed `count: 3` / `unread_count: 3` with the badge on the wire and in the browser**)*
+- [x] **NOTIF-02**: Candidates can register multiple browser/mobile devices with FCM tokens stored via write-only serializers. *(6.2 shipped the registration path and the write-only serializer; **9.4 D2 extended it to browser subscriptions — `POST /devices/` with a WEB subscription JSON returned 201 with `fcm_token` withheld, verified on the wire 2026-09-28**)*
+- [ ] **NOTIF-03**: Celery background tasks dispatch FCM push notifications with exponential backoff and zero PII payloads.
+- [ ] **NOTIF-04**: System suppresses self-action notifications and applies Redis thread push debouncing (15m window).
+- [ ] **NOTIF-05**: Stale/unregistered FCM tokens are automatically marked inactive; inactive devices older than 30 days are pruned daily.
+- [ ] **NOTIF-06**: Candidate can manage notification preferences and revoke individual registered devices.
+
+### Community Analytics & Privacy Engine (ANAL)
+
+- [x] **ANAL-01**: Candidates can view aggregated community benchmarks (total tracked, waiting for JL, received JL, joined). *(7.2: `GET /api/v1/analytics/overview/` per 04 §48, plus `GET /api/v1/public/stats/` per 04 §80 for the landing counters — anonymous by 04 §6)*
+- [x] **ANAL-02**: Candidates can filter analytics by batch, hiring stream, and region. *(7.2: `?hiring_type=&region=` on `/batches/`, `?batch=&region=` on `/hiring-types/`, `?batch=&hiring_type=` on `/regions/`; whitelist-validated with a 400 that names the parameter, and values normalized so case/whitespace variants share one cache key)*
+- [x] **ANAL-03**: System calculates average wait times (in days) between survey submission and joining letter issuance. *(7.1 shipped the engine; **7.2 closes the baseline divergence by publishing both intervals as separate metrics** — `survey_to_joining_letter` (READINESS_SURVEY → JOINING_LETTER, this requirement's literal wording and T7.7's) alongside `offer_to_joining_letter` (7.1 D1's chain). Each carries its own sample size, its own `<5` floor and per-source sample disclosure, exposed through the cached overview payload. Publishing one number would have required redefining either the requirement or the shipped engine.)*
+- [x] **ANAL-04**: System strictly suppresses cohort breakdowns with fewer than 5 candidates to protect candidate anonymity. *(7.1 shipped the slice-level rule; **7.2 extends it to every result row** — a below-floor row is dropped entirely (never zeroed or partially revealed) and an all-below-floor response returns the 04 §53 payload. This closes 4.2's residual-risk note about a batch row of 3 inside a large national slice.)*
+- [x] **ANAL-05**: All analytics responses are labeled as COMMUNITY_REPORTED and cached in Redis with hourly warmup tasks. *(7.2: `data_source` + non-affiliation disclaimer on every response including through the cache; payload-level caching via Django's cache framework with `ANALYTICS_CACHE_TTL = 7200` as the backstop behind `analytics.tasks.warm_analytics_cache`, which runs hourly on the `maintenance` queue from the beat entry reserved in `config/celery.py`. TTL deliberately deviates from T7.8's `ttl = 15m`, which cannot coexist with an hourly warmup.)*
+
+### Moderation, Safety & Administration (MOD)
+
+- [x] **MOD-01**: Candidates can report objectionable posts or comments selecting from standardized violation reasons. *(8.1: `POST /api/v1/reports/` with 08 §3.1's seven reasons, tombstone-inclusive targets, 04 §63–§65 envelope)*
+- [x] **MOD-02**: Database enforces XOR check constraint guaranteeing a report targets either a post or a comment, never both. *(8.1: `report_exactly_one_target` CheckConstraint + mirrored `clean()`; target FKs use CASCADE, a documented deviation from 08 §3.2's SET_NULL, which would breach the constraint on target hard-delete)*
+- [x] **MOD-03**: Duplicate pending reports on the same target by the same user are blocked, and reporting is throttled (10/hr). *(8.1: two conditional UniqueConstraints + service check with IntegrityError mapping; `reports` scope with `throttle_scope` on the view per 7.2 R1, 429 asserted)*
+- [x] **MOD-04**: Automated regex heuristics scan post bodies for paid job scams, fee extortion, and NextStep password requests. *(8.1: `heuristics.py` with 08 §8.1's four patterns as code constants; hard-block 400 `scam_pattern_detected` pre-publication on all four write call sites — post/comment, create/edit with merged-state scanning — and a category-naming message that never echoes the regex; T8.5's 60-min debounce extended with a body hash, posts only)*
+- [x] **MOD-05**: Moderators can review reports in Django Admin with bulk actions (Dismiss, Soft-Delete, Lock, Warn, Ban). *(8.2: `ReportAdmin` with the five bulk actions + the REST queue/review/ban surface, both delegating to `moderation.services` so they cannot drift; queue ordered by 08 §4.1's static severity weights — the log2 velocity multiplier is a recorded divergence (CONTEXT D6))*
+- [ ] **MOD-07**: A moderator console covers the report queue and announcement broadcasting, and never renders an unmasked email address or phone number. *(Added by 9.5: 8.2 shipped the APIs and Admin actions but no frontend; reference screens `736288d341c24ac9bfd49aeaaa577bfd` and `404937bf61c04f4f93885cd1aa7ace23`; plan 09.5-01 Tasks 8–9, with a PII test that fails if an unmasked value reaches the DOM.)*
+- [x] **MOD-06**: Banning an account atomically sets `is_active=False`, blacklists refresh tokens, and halts device push alerts. *(8.2: §6's own two-step shape — one transaction commits `is_active=False` + `banned_until` + the §11.1 audit line, then an idempotent Celery task blacklists every outstanding refresh token and deactivates all devices; temporary suspensions auto-reinstate hourly; banned login returns 403 `ACCOUNT_SUSPENDED` after credential validation)*
+
+### Settings & Account Management (SET) *(added by 9.5)*
+
+- [ ] **SET-01**: A settings suite covering profile, privacy, security, devices/notifications and a danger zone — reachable from the app shell, stating real state on every control, and gating irreversible actions behind typed confirmation. *(9.5: six routes exist as 9.1 stub pages; implementation is plan 09.5-01 Tasks 2–7 against Stitch screens `8926c8724c174a81817e8a8e4f5712aa`, `6a758b8acdad4480835bc57cbdfea0cc`, `d88ec4c0e3684fb3a9c4f9e157b5f614`, `8f6ebe935fce467f9804244d4d04da9c`.)*
+
+### User Interface & PWA Client (UI)
+
+- [ ] **UI-01**: Responsive Single Page Application (React 18 + Tailwind) supporting desktop 3-col, tablet 2-col, and mobile bottom tab bar. *(Foundation (9.1) + layout shells (9.2) shipped: AppShell with sidebar ≥640px, 320px rail ≥1280px, mobile tab bar <640px — proven live at 1440px and 400px. 9.3 added dashboard, timeline roadmap, community feed + create post, each checked live; 9.4 added post detail, analytics, notification center; **9.5 added every settings surface, the admin shell (reports + announcements) and the 404/boundary states.** 9.5 also closed all but one Stitch-screen gap; **09.5.1 generated the five remaining reference screens** (security, verification pending, verification action, reset password, informational/legal) — read out as markup 2026-09-29; the two that carried printed annotation strips were cleaned in place and re-read clean, while the copy's invented security machinery keeps them **layout references only** (ledger in `09.5.1-CONTEXT.md` §3.3). Remaining: the three informational pages (`/about`, `/privacy`, `/terms`) are still `StubPage` placeholders — their implementation is 09.5.1's build half — and live responsive spot-checks of the 9.5/09.5.1 screens at the extreme breakpoints remain.)*
+- [x] **UI-02**: Centralized Axios API client with automatic silent JWT refresh interceptors upon receiving HTTP 401. *(Shipped in 9.1: `src/api/client.ts` single-flight 401 → refresh → replay-once; evidence — `client.test.ts` concurrent-401 call-count proof, `tokenStore.test.ts` storage contract, and the live browser observation (401 → one refresh POST → replayed 200, no logout); backend suite unchanged at 788.)*
+- [x] **UI-03**: Optimistic UI state updates on upvoting with automatic rollback on network failure. *(Shipped + **proven live 9.3**: the pill is controlled by the feed's per-card store, so the optimistic overlay is the only thing a failure can desync. Observed verbatim in a browser with the vote request failed at the transport layer — committed `▲ Upvote | 1` · pressed=false → **during flight `▲ Upvoted | 2`, aria-busy=true** → **after the failure `▲ Upvote | 1`, pressed=false, toast "Your vote could not be saved. Please try again."** → real vote re-run: `▲ Upvoted | 2`, no toast, and an independent read reported `vote_count: 2`. A 409 `already_voted` commits the vote rather than rolling it back; five unit tests cover the optimism, the rollback, the 409 and §6.8's two class sets. Fixed en route: the card was reading the stale list snapshot for its count, so a **successful** vote reverted to the pre-vote number once the overlay cleared.)*
+- [x] **UI-04**: Mandatory TCS non-affiliation disclaimer displayed on all public views, headers, footers, and analytics screens. *(9.2: footer disclaimer from the single §5.6 content module on the shell at every breakpoint, the landing page, all six auth screens, and the wizard — proven live. 9.4's analytics half verified 2026-09-28: the §7.9 screen renders that module's header line + notice and the §5.6 footer, and every analytics payload carries the disclaimer.)*
+- [x] **UI-05**: PWA service worker registered for background push display, deep-link routing, and offline mode indicators. *(9.4, verified 2026-09-28: SW registration, the `click_action` deep-link plumbing, WEB device registration, the offline shell **and** offline content all proven live — the built shell loads a deep link, and `/analytics` renders from cache, with the origin unreachable. The device-type routing defect found by verification (F-94-1, which had been deactivating native devices once VAPID was configured) is fixed and pinned. **One observation remains:** an actual OS notification display could not be driven here because this machine blocks notifications at OS level; the delivery contract behind it is proven server-side and in jsdom.)*
+- [x] **UI-06**: Design-token layer v2 — professional-blue brand scale and a Fira Sans/Fira Code type pairing landed through the single `@theme` layer, with both themes stated and 05 §4 reconciled. *(Shipped + **verified 9.5, 2026-09-29**: tokens/`index.html`/manifest/icons swapped, `indigo-*` findings fixed, measured role shifts (light text 600→700, buttons rest 700/hover 800/active 900, focus ring 500→600 light; dark accents 400-family) — contrast audit `scripts/contrast-audit.mjs` passes 10-of-10 real pairs, and 05 §4 carries the mapping table + supersession note so spec, tokens and code agree. Stitch design library re-themed to v2 across all 40 instances (VERIFICATION §4).)*
+- [x] **UI-07**: Error and empty states — a 404 route panel, a render/fetch error boundary carrying a copyable reference id, and an inline per-section retry that leaves the rest of the page usable. *(Shipped + **verified 9.5, 2026-09-29**: the in-app catch-all renders the 404 panel with the shell intact (asserted in tests); the boundary's 500 panel shows a reference id asserted equal to the logged one, with a collapsible detail; `SectionRetry` is wired into the hub's account summary.)*
+
+## v2 Requirements
+
+Deferred to future post-MVP release.
+
+### Advanced Community
+- **COMM-V2-01**: Regional sub-communities with localized chat and batch verification badges.
+- **COMM-V2-02**: Verified update system allowing candidates to submit redacted letter screenshots for mod review.
+- **COMM-V2-03**: Email digest notifications summarizing weekly joining letter release trends.
+
+### Native Platforms
+- **APP-V2-01**: Native Android application via Kotlin / React Native.
+- **APP-V2-02**: Native iOS application via Swift / React Native.
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Official TCS Scraping | Violates terms of service, poses legal liabilities, and breaks credential safety |
+| Private 1-on-1 Chat | Creates unmoderated harassment risks; public forum meets candidate needs safely |
+| Microservices | Premature complexity; modular monolith provides superior velocity and data consistency |
+| Elasticsearch | Unnecessary infrastructure overhead for MVP scale (~2,000 users); PostgreSQL search suffices |
+| Paid Subscriptions | Platform is strictly a free peer-support community tool |
+
+## Traceability
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| AUTH-01 | Phase 2 | Complete — 2.1 model+CITEXT+Argon2id+complexity; 2.2 registration endpoint |
+| AUTH-02 | Phase 2 | Complete — 2.2: 24h single-use verification, 1/min resend |
+| AUTH-03 | Phase 2 | Complete — 2.2: 60-min reset, hash rotation revokes sessions |
+| AUTH-04 | Phase 2 | Complete — 2.2: 15m/7d JWT, rotation + family reuse-revocation |
+| AUTH-05 | Phase 2 | Complete — 2.2: anonymizing deletion, row retained as tombstone seam |
+| AUTH-06 | Phase 2 | Complete — 2.2: 5/min combined-bucket login throttle, generic failures |
+| PROF-01 | Phase 3 | Complete — 3.1: batch/stream/region/center model fields; batch via settings-driven BATCH_YEARS (2024–2026) |
+| PROF-02 | Phase 3 | Complete — 3.1: ANONYMOUS default + DISPLAY_NAME mode; resolver never leaks email |
+| PROF-03 | Phase 3 | Complete — 3.1: transition machine REGISTERED→JOINED per 03 §6; WITHDRAWN terminal (D1) |
+| PROF-04 | Phase 3 | Complete — 3.2: /profile/ CRUD (active+verified gate, 409 duplicates, 405 delete), public /candidates/{id}/ §23 shape, Author/Candidate public serializers, reserved-token blocker |
+| TIME-01 | Phase 4 | Complete — 4.1: TimelineEvent model (UUIDv4, 8 event types, CASCADE FK) with date + notes per 03 §7 |
+| TIME-02 | Phase 4 | Complete — 4.1: record_timeline_event walks the 3.1 chain atomically (04 §85); forward-only D2 semantics; blocked chains roll back the insert |
+| TIME-03 | Phase 4 | Complete — 4.2: every queryset scoped to `request.user` + `IsTimelineOwner` object check; foreign and nonexistent UUIDs return byte-identical 404s (06 §4.2.2, 04 §89) |
+| TIME-04 | Phase 4 | Partial — 4.2: owner list/edit/delete endpoints shipped; interactive roadmap UI tracked with 9.3 |
+| TIME-05 | Phase 4 | Complete — 4.2: /dashboard/ aggregates completion, current status, latest milestone, and threshold-suppressed COMMUNITY_REPORTED benchmarks; `unread_notifications` placeholder until Phase 6 |
+| COMM-01 | Phase 5 | Complete — 5.2: feed with category/search filters, newest/oldest/votes/trending tabs, global pagination |
+| COMM-02 | Phase 5 | Complete — 5.2: post create via 5.1 service; community_writes 30/min (spec's 5/hr deviated, recorded) |
+| COMM-03 | Phase 5, rev. Phase 11 | Complete — 5.1 introduced the Comment model; Phase 11 (2026-09-29) removed the single-level reply cap (nested_reply is gone), added branch closure on removal, and bounded thread assembly. Create-path validation today: parent_post_mismatch / parent_deleted / branch_closed |
+| COMM-04 | Phase 5 | Complete — 5.1: unique_user_post_vote UNIQUE constraint on (user, post), verified at the DB level; toggle endpoints in 5.2 |
+| COMM-05 | Phase 5 | Complete — 5.1+5.2: flags + tombstone helpers; author DELETE endpoints (soft, originals retained); writes into tombstones 404 content_deleted |
+| COMM-06 | Phase 5 | Complete — 5.2: staff-only lock/pin (+unlock/unpin additions); locked posts refuse comments |
+| COMM-07 | Phase 5 | Complete — 5.2: AuthorPublicSerializer + HMAC avatar_seed server-side |
+| COMM-08 | Phase 5 | Complete — 5.2: query budgets as tests (feed ≤3, thread ≤5); distinct=True counts |
+| NOTIF-01 | Phase 6 | Complete — 6.1 models + 6.2 producers/list/mark-read; 9.4's center + bell badge confirmed on the wire and in a browser (2026-09-28) |
+| NOTIF-02 | Phase 6 | Complete — 6.2 registration endpoints + 9.4's WEB-subscription path; `POST /devices/` → 201 with the token withheld, verified on the wire (2026-09-28) |
+| NOTIF-03 | Phase 6 | Pending |
+| NOTIF-04 | Phase 6 | Pending |
+| NOTIF-05 | Phase 6 | Pending |
+| NOTIF-06 | Phase 6 | Pending |
+| ANAL-01 | Phase 7 | Complete — 7.2: `/analytics/overview/`, `/batches/`, `/hiring-types/`, `/regions/` (04 §48–§51) and `/public/stats/` (04 §80), all anonymous per 04 §6, all served through the payload cache |
+| ANAL-02 | Phase 7 | Complete — 7.2: documented filter combinations per endpoint, whitelist-validated against the profile model's choices and `BATCH_YEARS` with 400 `invalid_filter`, and normalized so case/whitespace variants share a cache key |
+| ANAL-03 | Phase 7 | Complete — 7.2: both baselines published separately (`survey_to_joining_letter` = READINESS_SURVEY→JL satisfying this requirement's literal wording, plus `offer_to_joining_letter` = 7.1 D1's chain), each with its own sample size, `<5` floor and per-source disclosure; surfaced through the cached overview payload |
+| ANAL-04 | Phase 7 | Complete — 7.1 shipped slice-level suppression; 7.2 adds the **per-row** floor (below-floor rows dropped entirely, all-below-floor responses suppressed wholesale per 04 §53), with `COMMUNITY_REPORTED` + disclaimer on every payload |
+| ANAL-05 | Phase 7 | Complete — 7.2: labeled + cached with the hourly `warm_analytics_cache` warmup; `ANALYTICS_CACHE_TTL = 7200` deviates from T7.8's `ttl = 15m` by design (see 7.2-SUMMARY.md) |
+| MOD-01 | Phase 8 | Complete — 8.1: reporting endpoint with the seven standardized reasons (04 §63–§65) |
+| MOD-02 | Phase 8 | Complete — 8.1: XOR CheckConstraint at DB level + clean() mirror; CASCADE target FKs documented deviation |
+| MOD-03 | Phase 8 | Complete — 8.1: duplicate pending reports on the same target blocked (two partial UniqueConstraints + service check with IntegrityError mapping) and reporting throttled 10/hr via the `reports` scope on the view, 429 asserted (7.2 R1) |
+| MOD-04 | Phase 8 | Complete — 8.1: scanner on post/comment create+edit, hard-block pre-publication, code-constant patterns |
+| MOD-05 | Phase 8 | Complete (verified — 8.2 round-2 PASS, live Admin HTTP drill): staff queue (`GET /api/v1/moderation/reports/`, severity-ordered, §68 shape) + `POST .../review/` with the five actions + `ReportAdmin` bulk actions (dismiss/soft-delete+resolve/lock/warn/ban) + `UserAdmin` ban/unban, all on the shared services layer; velocity multiplier diverged (D6) |
+| MOD-06 | Phase 8 | Complete (verified — real worker severing observed): `ban_user` transaction (is_active + banned_until + §11.1 log) → idempotent `sever_banned_user_sessions` (token blacklist + device halt) per 08 §6/D1; temporary bans via `banned_until` + hourly `auto_reinstate_users`; 403 `ACCOUNT_SUSPENDED` login; unban never revives devices (D2) |
+| UI-01 | Phase 9 | In Progress — **all §3 surfaces real after 9.5** (shells verified live 9.2; 9.3–9.4 views checked live; 9.5's settings/admin screens await live breakpoint spot-checks) |
+| UI-02 | Phase 9 | Complete (shipped + **verified 9.1** — VERIFICATION.md PASS: 76 frontend tests, wire-level family-reuse drill, live browser concurrency drill: 2×401 → 1 refresh → 2×200) |
+| UI-03 | Phase 9 | Complete (shipped + **proven live 9.3** — optimistic increment observed in flight before the response, rollback of count AND toggle with the §6.7.1 error toast on a transport failure, 409 treated as already-voted, server reconciliation confirmed by an independent vote_count read; 5 unit tests) |
+| UI-04 | Phase 9 | **Complete** — 9.2's half (shell/landing/auth/wizard from the single content module, verified live) plus 9.4's analytics half: the §7.9 page renders the module's header line + notice and the §5.6 footer, and every analytics payload carries the disclaimer (verified 2026-09-28) |
+| UI-05 | Phase 9 | **Complete** — registration, deep-link plumbing, WEB device rows, the offline shell and cached offline content all verified live (built shell served a deep link, `/analytics` rendered from cache, with the origin killed); F-94-1 fixed and pinned. The OS notification display itself is unobservable on this machine (OS-level block), recorded as an observation |
+| UI-06 | Phase 9.5 | **Complete** — token v2 landed and verified (contrast audit 10-of-10 real pairs; 05 §4 reconciled; Stitch library re-themed to v2, all 40 instances) |
+| UI-06b | Phase 9.5 | **Complete** — settings hub/profile/privacy/devices/security/danger, admin reports + announcements, all built to the real API with the 8-divergence honesty ledger (VERIFICATION §3) |
+| UI-07 | Phase 9.5 | **Complete** — 404 panel with shell-intact catch-all, reference-id boundary (shown id = logged id, asserted), inline `SectionRetry` |
+| SET-01 | Phase 9.5 | Planned — six `/settings*` routes implemented from their Stitch references, irreversible actions typed-confirmed (Tasks 2–7) |
+| MOD-07 | Phase 9.5 | Planned — admin shell (role-guarded) + report queue + announcements composer, masked PII enforced by test (Tasks 8–9) |
+| CHAT-01 | Phase 13, rev. Phase 15 | Complete — real-time shared channel messaging with ASGI daphne backend, Redis broadcast, and degraded REST fallback |
+| CHAT-02 | Deferred | Out of scope — private 1-on-1 direct messages deferred to keep candidate safe-space public and moderated |
+| CHAT-03 | Phase 15 | Complete — server-authoritative typing presence wave indicator with Redis TTL and per-connection throttling |
+| CHAT-04 | Phase 17 | Complete — replying to chat messages with inline quoted snippet, tombstone preview, and cross-channel rejection |
+
+**Coverage:**
+- v1 requirements: 51 total *(was 43 before 9.5 added SET-01, UI-06, UI-07, MOD-07; and 13-17 added CHAT-01, CHAT-02, CHAT-03, CHAT-04)*
+- Mapped to phases: 51
+- Unmapped: 0 ✓
+
+## Sub-Phase Traceability
+
+Phases are decomposed into decimal sub-phases (directories under `.planning/phases/`) as the discuss/plan/execute unit. Phase-level mappings above remain the canonical requirement boundary; this table maps sub-phases to requirements and plans.
+
+| Sub-phase | Requirements | Plans |
+|-----------|--------------|-------|
+| 1.1 Containerization & Compose Topology | — (infrastructure) | 01-01 |
+| 1.2 Django Settings, Health Probes & CI | — (infrastructure) | 01-02, 01-03 |
+| 2.1 Custom User Model & Password Hashing | AUTH-01 | 02-01 |
+| 2.2 Registration, JWT & Account Lifecycle | AUTH-02, AUTH-03, AUTH-04, AUTH-05, AUTH-06 | 02-02, 02-03 |
+| 3.1 Candidate Profile Model & Status Machine | PROF-01, PROF-02, PROF-03 | 03-01 |
+| 3.2 Profile API & Privacy Boundaries | PROF-04 | 03-02 |
+| 4.1 Timeline Model & Atomic Status Sync | TIME-01, TIME-02 | 04-01 — Complete (2026-09-21): TimelineEvent + walk-the-chain sync, 30 tests |
+| 4.2 Timeline API, IDOR Defense & Dashboard | TIME-03, TIME-04, TIME-05 | 04-02 — Complete (2026-09-22): timeline CRUD + 404 IDOR defense + dashboard, 81 new tests |
+| 5.1 Forum Models & Deletion Semantics | COMM-03, COMM-04, COMM-05 | 05-01 — Complete (2026-09-22): Post/Comment/PostVote + soft-deletion semantics, 56 tests |
+| 5.2 Feed, Comments & Voting Endpoints | COMM-01, COMM-02, COMM-06, COMM-07, COMM-08 | 05-02, 05-03 |
+| 6.1 Notification & Device Models | NOTIF-01 | 06-01 — Complete (2026-09-22): Notification/Device/NotificationPreference + notification_read_state constraint, 45 new tests |
+| 6.2 Device Registration & FCM Push | NOTIF-02, NOTIF-03, NOTIF-04, NOTIF-05, NOTIF-06 | 06-02, 06-03 |
+| 7.1 Analytics Aggregation & Privacy Suppression | ANAL-03, ANAL-04 | 07-01 — Complete (2026-09-22): `apps/analytics` service layer (read-only, zero models/migrations) + cohort aggregation, wait-time engine, `<5` suppression, 22 tests + 16/16 live drill |
+| 7.2 Analytics Endpoints & Redis Caching | ANAL-01, ANAL-02, ANAL-03, ANAL-05 | 07-02 — Complete (2026-09-22): five anonymous endpoints (04 §48–§51 + §80), payload-level Redis cache with the reserved hourly warmup, per-row `<5` suppression, `analytics_reads` throttle, whitelist filter validation, 32 new tests + 19/19 live HTTP drill checks |
+| 8.1 Report Model & Scam Heuristics | MOD-01, MOD-02, MOD-03, MOD-04 | 08-01, 08-02 |
+| 8.2 Admin Triage & Ban Workflow | MOD-05, MOD-06 | 08-03 — **Verified 2026-09-23** (round-2 PASS): triage REST + Admin bulk actions, ban protocol with async severing + auto-reinstate, full announcement system (model/broadcast/expiry/REST), 94 new tests (788 green), 58/58 independent live-drill checks against a real broker→worker (VERIFICATION.md; observations O1–O3 tracked there) |
+| 9.1 SPA Foundation & API Client | UI-01, UI-02 | 09-01 |
+| 9.2 Auth, Onboarding & Layout Views | UI-01, UI-04 | 09-02 |
+| 9.3 Dashboard, Timeline & Feed Views | UI-03 | 09-03 |
+| 9.4 Post, Analytics, Notifications & PWA | UI-05 | 09-04 — executed 2026-09-27, verified 2026-09-28 (**CONDITIONAL**: F-94-1 open) |
+| 9.5 UI/UX Design Pass (ui-ux-pro-max + Stitch) | SET-01, UI-06, UI-07, MOD-07 (+ UI-04, UI-05) | 09.5-01 — planned 2026-09-28; **design work done** (token v2 proposed, design system + 8 Stitch screens generated), implementation pending |
+| 10.1 Seed Data & E2E Journeys | Full system verification | 10-01 |
+| 10.2 Security Audits, Hardening & Signoff | Full system verification | 10-02 |
+
+Note: UI-01 (responsive SPA) spans sub-phases 9.1–9.4; foundation ownership in 9.1, layout shells in 9.2.
+
+---
+*Requirements defined: 2026-09-19*  
+*Last updated: 2026-09-22 after 7.2 (analytics endpoints + Redis caching) execution*

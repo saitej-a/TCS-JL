@@ -1,0 +1,509 @@
+# Roadmap: TCS Joining Tracker
+
+## Overview
+
+TCS Joining Tracker is delivered in 10 sequential, test-driven phases that establish the containerized infrastructure, custom user authentication system, candidate profiles, recruitment timeline engine, community discussion forums, asynchronous FCM notifications, aggregate privacy-preserving analytics, administrative moderation workflows, responsive React single-page frontend, and end-to-end launch verification.
+
+Each phase is decomposed into decimal **sub-phases** (e.g. 1.1, 1.2 — see Phase Details) with scaffolded directories under `.planning/phases/`. Sub-phases are the discuss/plan/execute unit: plan them with `/gsd:plan-phase <N.M>`; parent phases remain the requirement-mapping and verification boundary.
+
+## Phases
+
+- [ ] **Phase 1: Project Foundation, Docker & Environment Setup** - Containerized stack (Django, PostgreSQL, Redis, Celery, Nginx), Git repo, and CI gates.
+- [ ] **Phase 2: Authentication, Identity & Custom User System** - Custom User model (UUIDv4, case-insensitive email), Argon2id hashing, SimpleJWT rotation, email verification, and password reset.
+- [ ] **Phase 3: Candidate Profiles & Public Identity Controls** - 1:1 CandidateProfile model, status choice state machine, ANONYMOUS vs DISPLAY_NAME modes, and serializer boundaries.
+- [ ] **Phase 4: Recruitment Timeline Engine** - TimelineEvent model, atomic status synchronization service, IDOR protection, and candidate dashboard endpoint.
+- [x] **Phase 5: Community Discussions & Forum System** - Categorized posts, 1-level nested replies, unique upvoting constraint, soft-deletion handling, and N+1 query elimination.
+- [ ] **Phase 6: In-App Notifications & FCM Web Push System** - Notification model, multi-device registration, Celery push tasks with exponential backoff, and background service worker.
+- [ ] **Phase 7: Community Analytics & Privacy Engine** - Cohort aggregation engine, wait-time benchmarks, mandatory `<5` candidate privacy suppression, and Redis caching.
+- [ ] **Phase 8: Moderation, Anti-Spam & Administration** - XOR report model, automated scam regex heuristics, Django Admin triage tools, and session-severing user ban workflows.
+- [ ] **Phase 9: Frontend Single Page Application (React + Tailwind)** - 12 responsive views, centralized Axios client with silent 401 refresh, optimistic upvoting, and PWA integration.
+- [ ] **Phase 10: Security Audits, E2E Testing, Seed Data & Launch Readiness** - Realistic synthetic seed data, Bandit/Pip-audit scans, penetration tests, Nginx hardening, and load testing.
+
+## Phase Details
+
+### Phase 1: Project Foundation, Docker & Environment Setup
+
+**Goal**: Establish a unified, containerized local and production development environment with database extensions, health probes, and CI linting.  
+**Depends on**: Nothing (first phase)  
+**Requirements**: Foundational infrastructure  
+**Success Criteria**:
+
+  1. `docker compose up` boots Django, PostgreSQL 16, Redis 7, Celery Worker, Celery Beat, and Nginx cleanly without container exits.
+  2. Database migrations enable `uuid-ossp` and `citext` extensions.
+  3. Liveness probe (`/health/`) and readiness probe (`/health/ready/`) return HTTP 200 with live DB/Redis connectivity.
+  4. CI pipeline passes Black, Flake8, and pytest test runs.
+
+**Plans**: 3 plans  
+Plans:
+
+- [ ] 01-01: Git repository initialization, branch rules, and Docker Compose topology (web, db, redis, celery, nginx).
+- [ ] 01-02: Django 5.x project initialization with modular split settings and PostgreSQL/Redis connection pooling.
+- [ ] 01-03: Health readiness endpoints (`/health/`, `/health/ready/`) and GitHub Actions CI workflow.
+
+**Sub-phases** (planning & execution units; dirs under `.planning/phases/`):
+
+#### Phase 1.1: Containerization & Compose Topology
+
+**Goal**: Git repo/branch rules plus the full Docker Compose topology (web, db, redis, celery, nginx).
+**Plans**: 01-01
+**Done when**: `docker compose up` builds and boots all services without container exits.
+
+#### Phase 1.2: Django Settings, Health Probes & CI
+
+**Goal**: Django 5.x init with modular split settings, DB/Redis connection pooling, health probes, and CI gates.
+**Plans**: 01-02, 01-03
+**Done when**: Probes return HTTP 200 with live DB/Redis; CI passes Black, Flake8, and pytest.
+
+### Phase 2: Authentication, Identity & Custom User System
+
+**Goal**: Implement secure candidate registration, password hashing, email verification, password reset, and JWT session handling.  
+**Depends on**: Phase 1  
+**Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, AUTH-06  
+**Success Criteria**:
+
+  1. User can register with case-insensitive email and receive a 24-hour verification token.
+  2. Passwords hashed using Argon2id with 64MB memory cost and PBKDF2 fallback.
+  3. SimpleJWT issues 15-minute access tokens and 7-day rotating refresh tokens; replaying rotated tokens revokes the session family.
+  4. Account deletion completely anonymizes candidate records while preserving discussion integrity.
+
+**Plans**: 3 plans  
+Plans:
+
+- [ ] 02-01: Custom `accounts.User` model with UUIDv4 PK, `CITEXT` email, and Argon2id password hasher configuration.
+- [ ] 02-02: Registration, email verification, password reset, and rate-limited login endpoints with anti-enumeration responses.
+- [ ] 02-03: SimpleJWT token rotation/blacklisting configuration, current user (`/me/`) endpoint, and account deletion service.
+
+**Sub-phases** (planning & execution units; dirs under `.planning/phases/`):
+
+#### Phase 2.1: Custom User Model & Password Hashing
+
+**Goal**: `accounts.User` with UUIDv4 PK, case-insensitive CITEXT email, and Argon2id hashing (AUTH-01).
+**Plans**: 02-01
+**Done when**: Custom user model migrates cleanly; Argon2id hashes on the registration path.
+
+#### Phase 2.2: Registration, JWT & Account Lifecycle
+
+**Goal**: Registration, email verification, password reset, rate-limited anti-enumeration login, SimpleJWT rotation/blacklisting, `/me/`, and anonymizing account deletion (AUTH-02..06).
+**Plans**: 02-02, 02-03
+**Done when**: Replaying rotated tokens revokes the session family; deletion anonymizes contributions.
+
+### Phase 3: Candidate Profiles & Public Identity Controls
+
+**Goal**: Build candidate recruitment profiles with strict privacy segregation between private auth credentials and public handles.  
+**Depends on**: Phase 2  
+**Requirements**: PROF-01, PROF-02, PROF-03, PROF-04  
+**Success Criteria**:
+
+  1. Candidate can create and edit their profile with batch, stream, region, and interview center.
+  2. Public identity mode properly toggles between ANONYMOUS (default) and custom DISPLAY_NAME.
+  3. Controlled status choices enforced from REGISTERED to JOINED.
+  4. Public serializers strictly omit email, phone, and internal IDs.
+
+**Plans**: 2 plans  
+Plans:
+
+- [x] 03-01: `CandidateProfile` model (1:1 with User), status choices, and public identity toggle logic. *(executed 2026-09-21)*
+- [x] 03-02: Profile CRUD endpoints (`/api/v1/profile/`), serializer boundary segregation, and display name impersonation blocking. *(executed 2026-09-21)*
+
+**Sub-phases** (planning & execution units; dirs under `.planning/phases/`):
+
+#### Phase 3.1: Candidate Profile Model & Status Machine
+
+**Goal**: 1:1 `CandidateProfile` with batch/stream/region/center fields, REGISTERED→JOINED status choices, and identity-mode toggle (PROF-01..03).
+**Plans**: 03-01
+**Done when**: Profile model and status state machine enforce valid transitions.
+
+#### Phase 3.2: Profile API & Privacy Boundaries
+
+**Goal**: `/api/v1/profile/` CRUD with serializer segregation excluding email/phone/internal IDs, and display-name impersonation blocking (PROF-04).
+**Plans**: 03-02
+**Done when**: Public serializers leak no PII; impersonation attempts are rejected.
+
+### Phase 4: Recruitment Timeline Engine
+
+**Goal**: Implement the personal recruitment timeline, milestone event tracking, and atomic status synchronization.  
+**Depends on**: Phase 3  
+**Requirements**: TIME-01, TIME-02, TIME-03, TIME-04, TIME-05  
+**Success Criteria**:
+
+  1. Candidate can record milestones (Interview, Selection, Offer, Survey, JL, Date, Joined) with date and notes.
+  2. Recording a JL event atomically updates the candidate's profile status in the same database transaction.
+  3. Timeline queries strictly scope to `request.user` and return HTTP 404 on unauthorized access attempts.
+  4. Authenticated dashboard endpoint aggregates status progression, latest milestone, and community comparison benchmarks.
+
+**Plans**: 2 plans  
+Plans:
+
+- [x] 04-01: `TimelineEvent` model, chronological compound indexes, and atomic status synchronization service. *(executed 2026-09-21)*
+- [x] 04-02: Timeline CRUD endpoints (`/api/v1/timeline/`), `IsTimelineOwner` IDOR permissions, and candidate dashboard endpoint. *(executed 2026-09-22)*
+
+**Sub-phases** (planning & execution units; dirs under `.planning/phases/`):
+
+#### Phase 4.1: Timeline Model & Atomic Status Sync
+
+**Goal**: `TimelineEvent` model with chronological compound indexes and transactional status synchronization (TIME-01, TIME-02).
+**Plans**: 04-01
+**Done when**: Recording a milestone updates profile status in the same database transaction.
+
+#### Phase 4.2: Timeline API, IDOR Defense & Dashboard
+
+**Goal**: Timeline CRUD scoped to owner with HTTP 404 IDOR responses, plus aggregated dashboard endpoint (TIME-03..05).
+**Plans**: 04-02
+**Done when**: Unauthorized timeline access returns 404; dashboard aggregates community benchmarks.
+
+### Phase 5: Community Discussions & Forum System
+
+**Goal**: Build categorized discussion threads, 1-level nested comments, unique post voting, and soft deletion.
+**Depends on**: Phase 3  
+**Requirements**: COMM-01, COMM-02, COMM-03, COMM-04, COMM-05, COMM-06, COMM-07, COMM-08  
+**Success Criteria**:
+
+  1. Candidates can browse a paginated feed filtered by category, search keywords, and sorting order.
+  2. Comment replies are strictly capped at 1-level depth (`parent.parent is None`).
+  3. Post upvoting enforces `UNIQUE(user, post)` constraint, preventing duplicate votes.
+  4. Soft-deleted content displays clean tombstones without breaking reply hierarchies.
+  5. Feed querysets use `select_related()` and `.annotate()` to eliminate N+1 queries.
+
+**Plans**: 3 plans  
+Plans:
+
+- [x] 05-01: `Post`, `Comment`, and `PostVote` models with soft-deletion flags, reply depth validators, and unique vote constraints. *(executed 2026-09-22)*
+- [x] 05-02: Feed listing, search, category filtering, post creation (rate-limited), and post detail endpoints. *(executed 2026-09-22)*
+- [x] 05-03: Comment listing/creation, upvote toggle endpoints, and staff lock/pin controls. *(executed 2026-09-22)*
+
+**Sub-phases** (planning & execution units; dirs under `.planning/phases/`):
+
+#### Phase 5.1: Forum Models & Deletion Semantics
+
+**Goal**: `Post`, `Comment`, and `PostVote` models with soft-deletion tombstones, 1-level reply validators, and `UNIQUE(user, post)` vote constraint (COMM-03..05).
+**Plans**: 05-01
+**Done when**: Duplicate votes are impossible at DB level; tombstones preserve reply trees.
+
+#### Phase 5.2: Feed, Comments & Voting Endpoints
+
+**Goal**: Paginated feed with category/search/sort, rate-limited post creation, comment + upvote endpoints, staff lock/pin, and N+1-free querysets (COMM-01, 02, 06..08).
+**Plans**: 05-02, 05-03
+**Done when**: Feed queries show no N+1; moderation controls restrict correctly.
+
+### Phase 6: In-App Notifications & FCM Web Push System
+
+**Goal**: Build persistent in-app notifications and real-time browser push alerts using Firebase Cloud Messaging and Celery.  
+**Depends on**: Phase 5  
+**Requirements**: NOTIF-01, NOTIF-02, NOTIF-03, NOTIF-04, NOTIF-05, NOTIF-06  
+**Success Criteria**:
+
+  1. In-app notifications created for comments, replies, upvote milestones, and announcements with read tracking.
+  2. Multi-device FCM token registration stores tokens via write-only serializers.
+  3. Celery background tasks dispatch FCM push notifications with exponential backoff and zero PII payloads.
+  4. Self-action notifications are suppressed; Redis debounces thread push alerts to 1 per 15 minutes.
+  5. Stale tokens are deactivated on `UnregisteredError`; inactive devices older than 30 days are pruned daily.
+
+**Plans**: 3 plans  
+Plans:
+
+- [x] 06-01: `Notification`, `Device`, and `NotificationPreference` models with compound indexes. *(executed 2026-09-22)*
+- [ ] 06-02: Device registration (write-only token), device revocation, notification list, and mark-read endpoints.
+- [ ] 06-03: Firebase Admin SDK integration, Celery push multicast task, self-action suppression, and service worker push handler.
+
+**Sub-phases** (planning & execution units; dirs under `.planning/phases/`):
+
+#### Phase 6.1: Notification & Device Models
+
+**Goal**: `Notification`, `Device`, and `NotificationPreference` models with compound indexes for read tracking (NOTIF-01).
+**Plans**: 06-01
+**Done when**: Notification models migrate with performant lookup indexes.
+
+#### Phase 6.2: Device Registration & FCM Push
+
+**Goal**: Write-only FCM token registration/revocation, notification list + mark-read endpoints, Celery multicast push with backoff, self-action suppression, and stale-token pruning (NOTIF-02..06).
+**Plans**: 06-02, 06-03
+**Done when**: Push payloads carry zero PII; Redis debounces thread alerts to 1 per 15 minutes.
+
+### Phase 7: Community Analytics & Privacy Engine
+
+**Goal**: Implement cohort-level recruitment analytics, wait-time calculations, and the mandatory `<5` candidate privacy suppression threshold.  
+**Depends on**: Phase 4  
+**Requirements**: ANAL-01, ANAL-02, ANAL-03, ANAL-04, ANAL-05  
+**Success Criteria**:
+
+  1. Aggregate metrics calculate wait times, stream breakdowns, and regional distributions from community data.
+  2. Cohorts with fewer than 5 candidates trigger the mandatory privacy suppression response.
+  3. All analytics responses carry the `COMMUNITY_REPORTED` attribution and non-affiliation disclaimer.
+  4. Overview and batch statistics are cached in Redis with hourly Celery Beat warmup routines.
+
+**Plans**: 2 plans  
+Plans:
+
+- [x] 07-01: Analytics aggregation service, wait-time calculation engine, and `<5` candidate privacy suppression threshold. *(executed 2026-09-22)*
+- [x] 07-02: Overview, batch, stream, regional analytics endpoints, Redis caching layer, and public landing stats endpoint. *(executed 2026-09-22 — 04 §52 timeline analytics deferred by decision; see 07.2-SUMMARY.md)*
+
+**Sub-phases** (planning & execution units; dirs under `.planning/phases/`):
+
+#### Phase 7.1: Analytics Aggregation & Privacy Suppression
+
+**Goal**: Cohort aggregation service, wait-time calculation engine, and mandatory `<5` candidate privacy suppression (ANAL-03, ANAL-04).
+**Plans**: 07-01
+**Done when**: Sub-5 cohorts return the standard privacy notice, never data.
+
+#### Phase 7.2: Analytics Endpoints & Redis Caching
+
+**Goal**: Overview/batch/stream/region endpoints, `COMMUNITY_REPORTED` labeling, and Redis caching with hourly Celery Beat warmup (ANAL-01, 02, 05).
+**Plans**: 07-02
+**Done when**: Cached responses are served with attribution labels intact.
+**Executed**: 2026-09-22 (plan 07-02) — five anonymous endpoints (04 §48–§51 plus §80's `/public/stats/`), payload-level Redis caching behind the reserved hourly warmup, per-row `<5` suppression, `analytics_reads` throttling and whitelist filter validation; 638-test suite green, 19/19 live HTTP drill checks. **04 §52 `/analytics/timeline/` is a recorded gap, not built.**
+
+### Phase 8: Moderation, Anti-Spam & Administration
+
+**Goal**: Build candidate content reporting, automated scam heuristics, Django Admin moderation tools, and user suspension workflows.  
+**Depends on**: Phase 5  
+**Requirements**: MOD-01, MOD-02, MOD-03, MOD-04, MOD-05, MOD-06  
+**Success Criteria**:
+
+  1. Candidate can report posts or comments with database-level XOR constraint enforcing exactly one target.
+  2. Duplicate pending reports on the same target are blocked; report creation is throttled to 10/hour.
+  3. Automated regex heuristics intercept paid job scams, fee extortion, and NextStep password requests.
+  4. Banning an account atomically sets `is_active=False`, blacklists refresh tokens, and halts device push alerts.
+  5. Staff can triage reports and soft-delete content directly in Django Admin.
+
+**Plans**: 3 plans  
+Plans:
+
+- [x] 08-01: `Report` model with database XOR check constraint, reporting endpoint, and pending deduplication. *Executed 2026-09-22 (plan 08.1-01)*
+- [x] 08-02: Automated scam regex heuristics scanner and 60-minute duplicate post debouncing in Redis. *Executed 2026-09-22 (plan 08.1-02)*
+- [x] 08-03: Django Admin `ReportAdmin` customization, announcement model/broadcast task, and user suspension protocol. *Executed 2026-09-23 (plan 08.2-01); verified 2026-09-23 (58/58 live drill, gates green)*
+
+**Sub-phases** (planning & execution units; dirs under `.planning/phases/`):
+
+#### Phase 8.1: Report Model & Scam Heuristics
+
+**Goal**: `Report` model with XOR post/comment constraint, throttled deduplicated reporting, and automated scam regex scanning (MOD-01..04).
+**Plans**: 08-01, 08-02
+**Done when**: XOR constraint enforced at DB level; scam posts are intercepted pre-publication.
+**Executed**: 2026-09-22 (plans 08.1-01 + 08.1-02) — `apps/moderation` with the XOR constraint, pending-dedup UniqueConstraints, throttled reporting endpoint, scam scanner on all four write surfaces, and the title+body debounce; 694 tests green. Done-when met.
+
+#### Phase 8.2: Admin Triage & Ban Workflow
+
+**Goal**: Django Admin triage with bulk actions, announcement broadcasts, and atomic ban protocol — `is_active=False`, token blacklist, push halt (MOD-05, MOD-06).
+**Plans**: 08-03
+**Done when**: Banned accounts lose sessions and device alerts atomically.
+**Verified**: 2026-09-23 (round-2 PASS — `VERIFICATION.md`) — an independent live drill (58/58) proved the two asynchronous contracts complete through a real broker and worker: a `BAN_USER` review over HTTP blacklists refresh tokens and deactivates devices, and a published announcement fans out in-app rows. The Django Admin triage actions were driven over real staff sessions and produce identical DB effects to the REST path. Round 1's FAIL (execution at 2 of 7 tasks) is superseded; its findings F1–F5 are all closed. Observations O1–O3 are tracked in the phase's VERIFICATION.md (expiry task's queue choice; 8.1-inherited §107 naming; a pytest dispatch guard).
+
+**Executed**: 2026-09-23 (plan 08.2-01) — five-action triage over REST (`/api/v1/moderation/reports/`, `.../review/`, `/users/{id}/ban|unban/`) and Django Admin (`ReportAdmin` bulk actions + staff-safe `UserAdmin` ban/unban), the ban protocol of 08 §6 (transaction commits `is_active=False`/`banned_until` + the §11.1 audit line; an **idempotent** Celery task then blacklists refresh tokens and deactivates devices — the spec's own two-step shape, atomic at the user-facing transaction), temporary 7-day suspensions with an hourly auto-reinstate beat entry, 403 `ACCOUNT_SUSPENDED` login, and the announcement system deferred here by 6.2 D15 (model, staff CRUD + public read, chunked FCM broadcast at the byte-exact reserved route name, hourly expiry task). Two migrations (`0005_user_banned_until`, `community 0002_announcement`); 94 new tests, **788 green**, lint/format/drift clean.
+**Verification**: **complete (PASS)** — `VERIFICATION.md` holds the round-2 verdict. The round-1 FAIL record (interrupted execution at 2 of 7 tasks) is superseded, and its F1–F5 findings are all closed and re-checked (F1 beat entry added and observed reinstating a lapsed ban; F2 announcements implemented and observed broadcasting; F3 Admin shipped and driven over HTTP; F4 §107 names present + the wiring test resolves every beat/route entry; F5 commit→dispatch proven end-to-end by the live drill).
+
+### Phase 9: Frontend Single Page Application (React + Tailwind)
+
+**Goal**: Construct the 12 core responsive views, centralized Axios client, optimistic UI mutators, and PWA integration.  
+**Depends on**: Phase 8  
+**Requirements**: UI-01, UI-02, UI-03, UI-04, UI-05  
+**Success Criteria**:
+
+  1. 12 responsive views render cleanly across desktop (3-col), tablet (2-col), and mobile (5-slot bottom tab bar with 44px touch targets).
+  2. Centralized Axios client automatically performs silent JWT refresh on HTTP 401 and replays requests.
+  3. Upvote pill component updates optimistically with automatic rollback on network failure.
+  4. Mandatory TCS non-affiliation disclaimer appears across all public headers, footers, and analytics views.
+  5. Service worker displays background push notifications and deep-links on click.
+
+**Plans**: 4 plans  
+Plans:
+
+- [x] 09-01: Vite + React 18 + TypeScript + Tailwind setup, design system tokens, and centralized Axios client with 401 interceptors. *(Executed 2026-09-23: `frontend/` workspace with the D3 dev proxy + byte-exact 05 §4 token layer, single-flight 401 client (D2), bootable router with guards + stub pages (D9), T9.3 component library + Disclaimer/EmptyState/IdentityPill (D10); 76 frontend tests green, backend unchanged at 788, done-when observed live in a browser: 401 → one refresh POST → replayed 200.)*
+- [x] 09-02: Responsive layout shells, landing screen with live stats, authentication views, and 3-step onboarding wizard. (Executed 2026-09-23: AppShell 3-col/tablet/mobile + §5.5 banner, §7.1 landing with real 3-counter stats, six §7.2 auth screens with error mapping, §7.3 wizard gated on the now-truthful profile_completed flag — step 2 writes a timeline event (walk-the-chain) instead of the single-hop PATCH; 98 frontend tests, backend 790; live journey + both breakpoints proven in-browser.)
+- [x] 09-03: Candidate dashboard with stepper bar, interactive timeline roadmap, and community feed with category tabs. *(Executed 2026-09-24: §7.4 dashboard (stepper over the real timeline rows, suppression-aware benchmark, status-count pulse, newest-discussions block), §7.5 interactive roadmap with add/edit/delete + quick actions, §7.6 feed (URL-stateful pills/tabs/debounced search, pinned card, optimistic upvote pill, pagination) and §7.7 create post; four backend repairs rode along — anonymous community reads (200 read / 401 write, observed), the deleted-post feed filter with its vacuous test repaired, `has_voted` on the vote response, and write throttles that actually engage. Gates: frontend 130 tests / lint / typecheck / build, backend 804, settings clean. Both halves of the done-when observed live in a browser — upvote `Upvoted | 2` during flight → `Upvote | 1` + error toast after a transport failure → `Upvoted | 2` with the server reporting `vote_count: 2`; and filtering/search/pagination all issuing the expected requests. Design: the 7 Stitch mockups were re-read and reconciled (22 aligned, 14 divergences recorded, 3 real defects fixed) in `09.3-DESIGN-RECONCILIATION.md`.)*
+- [ ] 09-04: Post detail with 1-level comments, analytics dashboard with privacy callouts, notification center, and PWA service worker.
+
+**Sub-phases** (planning & execution units; dirs under `.planning/phases/`):
+
+### Phase 09.5: UI/UX design pass: ui-ux-pro-max + Stitch screens (INSERTED)
+
+**Goal**: Design and implement the surfaces 9.2–9.4 left undesigned — the settings suite (currently one-line stubs), the admin console (no frontend at all, though 8.2's APIs exist), and the 404/render-error/empty states — through the `ui-ux-pro-max` design pass and Google Stitch screen mockups, landing a reconciled professional-blue token layer (§4 v2) underneath.
+**Requirements**: SET-01, UI-06, UI-07, MOD-07 (extends UI-04, UI-05)
+**Depends on**: Phase 9
+**Plans:** 1 plan
+
+Plans:
+
+- [x] 09.5-01 — Design token v2 + 05 §4 reconciliation, settings suite (hub/profile/privacy/security/devices/danger), admin console (reports + announcements), 404/error states, v2 re-check of the shipped screens. Design work done: Stitch design system `assets/9909951007419684952` + 8 screens (catalogue in `09.5-CONTEXT.md` §5). *Nothing implemented yet — the code work is the plan's remaining tasks.*
+
+### Phase 09.5.1: Generate the missing Stitch screens with ui-ux-pro-max design intelligence (INSERTED)
+
+**Goal**: Close the design pass's last gap and pay off what reading it exposed — the five Stitch screens generated for 9.2/9.5's undesigned auth/security/legal surfaces are read as markup (not trusted from the generator's summary), the four auth/security screens are reconciled against the shipped pages, and the three informational/legal routes stop being `StubPage` skeletons and become real pages on a §5.4 visitor shell telling the truth about the shipped API.
+**Requirements**: UI-01..UI-07 close in 9.5; this phase's contract is `09.5.1-CONTEXT.md` D-01..D-16 + `09.5.1-UI-SPEC.md` (no new REQUIREMENTS ids)
+**Depends on**: Phase 9.5
+**Plans:** 1 plan
+
+Plans:
+
+- [ ] 09.5.1-01 — **HALTED 2026-09-29 at the D-15/D-16 copy gate (a designed stop, not a failure).** Shipped and committed: the cross-stack `passwordRules` module + backend parity guard (kills the shipped "8 characters" bug both password forms carried), the in-card resend field replacing `window.prompt`, honest 60-minute reset copy with wrapping-safe tokens, the shared auth-aware §5.4 visitor shell, and `LegalLayout` + the three content modules with the last three stubs replaced. Outstanding: the **user's own copy** for `/about`, `/privacy`, `/terms` — the modules hold the paste map and `copy.test.ts` the banned-fiction ledger; the awaiting-copy state renders title + honesty line rather than placeholder prose. Gates at the halt: frontend 264 tests / lint 0 errors / build clean, backend 855, contrast clean apart from 9.5's two deliberate demo rows. Resume steps in `09.5.1-01-SUMMARY.md`; halt handoff in the phase dir's `.continue-here.md`.
+
+### Phase 10: Security Audits, E2E Testing, Seed Data & Launch Readiness
+
+**Goal**: Perform comprehensive security audits, load testing, seed data provisioning, Nginx hardening, and final production sign-off.  
+**Depends on**: Phase 9  
+**Requirements**: Full system verification  
+**Success Criteria**:
+
+  1. Synthetic seed data generator populates 50 realistic candidates, 220+ timeline events, 25 posts, and 8 moderation cases.
+  2. Bandit AST scans and Pip-Audit vulnerability checks report zero high/medium security issues.
+  3. Automated penetration tests confirm IDOR protection on timeline events and zero duplicate voting leaks.
+  4. Nginx security headers (HSTS 1 year, CSP, X-Frame-Options DENY) validated.
+  5. 50-concurrent-user load tests confirm sub-200ms p95 API response times.
+
+**Plans**: 2 plans  
+Plans:
+
+- [ ] 10-01: Synthetic seed data management command (`seed_community_data.py`) and Playwright/Cypress end-to-end user journey tests.
+- [ ] 10-02: Security audits (Bandit, Pip-Audit, IDOR penetration), Nginx TLS hardening, load testing, and production launch sign-off.
+
+**Sub-phases** (planning & execution units; dirs under `.planning/phases/`):
+
+#### Phase 10.1: Seed Data & E2E Journeys
+
+**Goal**: Synthetic seed data (50 candidates, 220+ timeline events, 25 posts, 8 moderation cases) and Playwright/Cypress end-to-end user journeys.
+**Plans**: 10-01
+**Done when**: Seeds reproduce realistic community distributions; E2E journeys pass.
+
+#### Phase 10.2: Security Audits, Hardening & Signoff
+
+**Goal**: Bandit/Pip-Audit scans, IDOR penetration tests, Nginx TLS/header hardening, 50-concurrent-user load test, and production launch sign-off.
+**Plans**: 10-02
+**Done when**: Zero high/medium findings; sub-200ms p95 under load.
+
+## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. Project Foundation, Docker & Environment Setup | 0/3 | Not started | - |
+| 2. Authentication, Identity & Custom User System | 3/3 | Complete | 2026-09-21 |
+| 3. Candidate Profiles & Public Identity Controls | 2/2 | Complete | 2026-09-21 |
+| 4. Recruitment Timeline Engine | 2/2 | Complete | 2026-09-22 |
+| 5. Community Discussions & Forum System | 1/3 | In progress | - |
+| 6. In-App Notifications & FCM Web Push System | 0/3 | Not started | - |
+| 7. Community Analytics & Privacy Engine | 2/2 | Executed — verification pending | - |
+| 8. Moderation, Anti-Spam & Administration | 3/3 | Verified — 8.1 (UAT), 8.2 (round-2 PASS, 58/58 live drill) | - |
+| 9. Frontend Single Page Application (React + Tailwind) | 0/4 | Not started | - |
+| 10. Security Audits, E2E Testing, Seed Data & Launch Readiness | 0/2 | Not started | - |
+| 11. Unlimited nested comment replies | 1/1 | Complete    | 2026-09-29 |
+| 12. Replace current screens with the Stitch designs | 1/1 | Complete    | 2026-09-30 |
+| 15. Fix real-time chat and add a typing wave indicator | 2/2 | Complete | 2026-10-04 |
+| 16. replace the current screens with the frontend/stitch designs | 7/7 | Complete | 2026-10-05 |
+
+### Phase 11: Unlimited nested comment replies
+
+**Goal**: A comment can be replied to at any depth — a reply may itself receive replies, with no application-level depth cap. **This supersedes a shipped, spec'd rule and is the phase's first decision, not a silent edit:** 05 §1183 mandates *"Strict 1-Level Nesting … (`parent.parent == NULL` enforced by backend and UI)"*, 05 §75 justifies it ("no complex nested comment trees"), and PROJECT.md carries it as both requirement **COMM-03** and a key decision (*"Strict 1-Level Reply Depth … ✓ Good"*). The shipped code implements that rule three ways: `validate_reply_depth` (`apps/community/validators.py`, code `nested_reply`), the `Comment.parent = SET_NULL` promotion rule (a deleted parent **promotes** its reply to top level — 5.1 P4), and the UI's single indent unit with no Reply affordance past depth 1 (`CommentThread.tsx`). Recording the supersession deliberately (COMM-03 in REQUIREMENTS.md, the two 05 sections, the PROJECT.md decision row) is part of the work.
+**Requirements**: supersedes COMM-03; 04's comment contracts and 05 §7.7's thread UI to be re-derived
+**Depends on**: Phase 10
+**Plans:** 1/1 plans complete
+
+Plans:
+
+- [ ] **Wave 1** *(no blockers — depends only on Phase 10's ordering, already recorded)* — `11-01-PLAN.md`: delete the depth rule (validator, `nested_reply` vocabulary, the two rule-pinning tests rewritten with fail-on-revert drills); branch closure (`branch_closed_by` self-FK, migration 0003 + backfill, comparison-based restore); bounded thread assembly (render depth 5, true counts, `?parent=` subtree fetch, re-derived COMM-08 budget); the deep-thread UI (capped-indent rails, `replying to @author`, breadth collapse, continue-this-thread, closed-branch composer); full gates; the supersession record across the five sources + VERIFICATION.md.
+
+**Planning preflight (2026-09-29)** — `init.plan-phase` ran with `has_context: false`, so the workflow's context gate stopped planning after the first question. Deterministic gates: context-drift **skipped** (no CONTEXT.md to compare), `assumption-delta` **detected: false**, API-coverage detector **detected: false**. The UI safety gate **blocks** (`frontend: true`, `hasUiSpec: false`) — decided: **the UI-SPEC is written during planning** (as 9.5.1's was), not skipped.
+
+**Context gathered (2026-09-29)** — `11-CONTEXT.md` (12 decisions across three areas: the depth rule + supersession, removal/closed branches, and how depth renders; `11-DISCUSSION-LOG.md` holds the alternatives). The read/assembly mechanism, the render-depth number and the re-derived COMM-08 budget were deliberately left to the planner. **Planned (2026-09-29)** — `11-01-PLAN.md` authored (6 tasks, single wave) and `11-UI-SPEC.md` written during planning as decided (render depth 5, breadth 3 pinned as named constants; the copy contract binding). Gates: plan-structure valid, verify-command paths 19/19, failing-directions 19/19, decision coverage 12/12, references/artifacts/key-links clean; the checker pass repaired a mis-closed verify tag, a guessed manage.py path, the orphaned RESEARCH citation, and added the two "1-level" sites (REQUIREMENTS' status row, PROJECT.md's unchecked COMM-03) to Task 6. **Next: `/gsd-execute-phase 11`**.
+
+**Known surface at add time** (for the planner, from a quick scan — not a design):
+
+- **Write path**: `validate_reply_depth` (`nested_reply`), `parent_post_mismatch`, `parent_deleted` — the depth rule is the one that changes; the other two are cross-post/parent-integrity checks that stay.
+- **`Comment.parent` is `SET_NULL`**: today a deleted parent promotes its reply instead of destroying it (5.1 P4). At unlimited depth, "promote vs keep the branch anchored vs tombstone-in-place" is a real decision, and the reply's indent unit no longer identifies its level.
+- **Read path**: the thread is assembled top-level + one `replies` level. Depth-N assembly is a new query shape (recursive CTE vs `prefetch_related` walk) with N+1 and pagination consequences — `MAX_DEPTH` is **not** in the current model.
+- **UI**: indentation stops being a level marker; 05's mobile rationale for the cap (runaway indentation) has to be answered by the actual design (depth rails, "replying to @author" context, collapse, or a focus-in thread) — `CommentThread.tsx` today renders exactly one `border-l-2 pl-4` unit and a Reply button only on top-level rows.
+- **Tests that pin the old rule by name**: `apps/community/tests/test_reply_depth.py` and `test_comment_api.py`'s `nested_reply` case — these must be rewritten deliberately with the supersession documented, never silently greened.
+
+### Phase 12: Replace current screens with the Stitch designs
+
+**Goal:** Rebuild the everyday screens' *structure* to match the 47 Stitch compositions in `frontend/stitch designs/` — layout, hierarchy, and component arrangement, not the token skin Phase 9.5 already applied. The library covers every major surface (candidate dashboard ×2, recruitment timeline ×2, community feed/post detail/create-post, the settings suite, admin moderation + announcements, auth/onboarding, notification center, PWA install/push/offline states, error/empty route states, plus a desktop dark-mode shell and dedicated mobile shells for app shell, dashboard, and feed). Every screen is reconciled section-by-section against its composition; compositions showing states the current build lacks (empty/filtered feed, the create-post modal, the milestone add/edit modal) are implemented, not skipped.
+
+Two constraints carried into the work: (1) where a composition encodes mock fiction the backend never shipped (9.5's divergence ledger — e.g. profile categories, identity fields), the screen adopts the composition's **layout** but keeps the honest data contract, and the divergence stays recorded; (2) everything this phase moves stays under the v2 token system and passes the same contrast/accessibility gates (05 §4.1.1, the contrast-audit script). Also decided at planning: whether the 47 compositions are committed as the reference library or consumed untracked, and how the desktop/mobile variants map onto the responsive build.
+**Requirements**: TBD
+**Depends on:** Phase 11
+**Plans:** 1/1 plans complete
+
+Plans:
+
+- [ ] `12-01-PLAN.md` — Stitch-designs screen reconciliation (14 tasks, single wave: tracer
+  foundation + first screen → shell → auth/onboarding → dashboard → timeline+modals →
+  community+create-post modal → post detail → settings → admin → analytics → visitor/system
+  states → full gates → 45/45 RECONCILIATION audit). Decisions locked in `12-CONTEXT.md`:
+  structure-from-stale-HTML + v2 repaint (D-01), library committed (D-02), full parity (D-03),
+  landing/privacy now with awaiting-copy intact (D-04), lucide-react (D-05), per-screen-first
+  (D-06). UI contract: `12-UI-SPEC.md`.
+
+### Phase 13: Message in a single common channel
+
+**Goal:** Real-time messaging allowing candidates to communicate in a single common channel ("General") as well as category-specific channels ("Joining Letter", "Interview", etc.). Full-stack implementation: Django models, REST endpoints, Django Channels WebSocket consumers with single-use ticket authentication, and a responsive frontend view using the v2 design system and ui-ux-pro-max guidelines.
+**Requirements:** CHAT-01, CHAT-02
+**Depends on:** Phase 12
+**Plans:** 1 plan
+
+Plans:
+
+- [ ] `13-01-PLAN.md` — Common channel messaging (6 tasks, single wave: backend foundation & models → REST API & tickets → WebSockets & Daphne/Nginx → frontend API, types & hook → frontend UI with ui-ux-pro-max → verification & gates).
+
+### Phase 14: Literal Stitch markup in the app
+
+**Goal:** Make the app's screens **be** the Stitch compositions — the same classes, element tree, glyphs and both skins, copied verbatim into the existing React pages — while keeping auth, the real API, the PWA and the suite. Phase 12 took *structure* from the library and repainted it to token v2; this phase **supersedes that rule in the recorded scope of the ported screens** (12's G-1/G-2, 12-VERIFICATION, 05's token-role rules, PROJECT.md's v2 decision row are amended, the way Phase 11 amended the nesting rule). The library disagrees with itself — 32 documents are the v1 family (Inter, `indigo-*`, standard radii) and 13 are v2 (Fira Sans/Code, `brand-*` byte-identical to the app's sky scale, `rounded-card/elem`) — so both remain literal, scoped per screen through CSS variables (the build already routes utilities through them). Where a composition renders content the backend never produces, the block **keeps the mock's exact frame** and its unavailable value renders an enumerated awaiting state (`data-awaiting`), never fiction and never deletion. Behaviour is React (21 documents carry inline JS for tabs, radio cards, accordions, copy buttons and modals), the runtime Tailwind-CDN and Google-hosted assets are replaced by vendored subsets (Inter, Fira Sans/Code, Material Symbols subset to the 127 glyph names), lucide is retired at the end, and "verbatim" is machine-checked by a fidelity script that fails when a composition class, glyph or section is missing. Tracer first: one screen end to end before 35 more.
+**Requirements**: supersedes phase 12's G-1/G-2 repaint rule and the token-v2-only vocabulary for the ported surfaces; UI-01/UI-06 re-derived rather than rewritten
+**Depends on:** Phase 12
+**Plans:** 1 plan
+
+Plans:
+
+- [ ] `14-01-PLAN.md` — Literal Stitch markup (9 tasks, single wave: presentation layer + the notification center as tracer → shell (dark/mobile) → nine auth/onboarding screens → eight dashboard/timeline compositions → nine community compositions → the v2 settings suite → admin + analytics → visitor/legal/PWA/error states → 45/45 fidelity audit, gate supersession, lucide removal, record). Decisions locked in `14-CONTEXT.md`: literal markup supersedes repaint (D-01), keep-the-frame awaiting states instead of fiction or deletion (D-02), two skins scoped per screen (D-03), vendored fonts and icon subset (D-04), behaviour as React (D-05), the two inverted gates re-derived not deleted (D-06), tracer-first (D-07), verbatim machine-checked (D-08).
+
+### Phase 15: Fix real-time chat and add a typing wave indicator [x] *(completed 2026-10-04)*
+
+**Goal:** Make real-time delivery actually work in the chat channel view and add a typing indicator with a wave animation (the user's two asks: "The real time messages are not working and also introduce a feature like when any one typing in the channel it should show wave type animation"). Reported failure, concretely: the header can read "Live updates active" while messages never arrive live, and switching channels showed "Live updates paused" (then the same on returning to General). One cause is **already fixed but uncommitted and never verified against a live stack** — `frontend/src/hooks/useChatRoom.ts` shared one mounted-ref across WebSocket generations, so a stale socket's `close` flipped the UI to degraded and could schedule a reconnect bound to the old room; the lifecycle now lives in an effect keyed by `[roomSlug, loadInitialHistory]` with a per-run `cancelled` flag, detached handlers, per-run backoff and request-id-guarded history, plus a channel-switch regression test in `frontend/src/pages/MessagesPage.test.tsx`. So this phase's verification half must **prove delivery end to end against a running ASGI stack** — a Daphne/ASGI process, `config/asgi.py` routing, the `/ws/` upgrade actually proxied (`nginx/nginx.dev.conf`, `nginx.prod.conf`), host/origin checks, single-use `ws-ticket` auth (`WsTicketView`) and group broadcast in `apps/chat/consumers.py` — and must not treat a green unit suite as evidence. Feature half: while a participant is composing, the other members of that room see a typing indicator with a wave animation; presence is scoped to the room group, server-authoritative with a timeout so indicators cannot stick, and the animation ships under the v2 token system with tests.
+**Requirements:** CHAT-01, CHAT-03 — CHAT-01 is the shared channel this phase makes actually real-time; **CHAT-03 (server-authoritative typing presence) is introduced by this phase**
+**Depends on:** Phase 13
+**Plans:** 2/2 plans complete
+
+Plans:
+
+**Wave 1**
+
+- [x] `15-01-PLAN.md` — Make real-time delivery work on the live stack (3 tasks: an `asgi` daphne service + hardened `/ws/` proxy locations + an origin-validated router, proven by an unticketed upgrade returning 403-not-404 → a Wave 0 dev-requirements install that makes the backend suite runnable at last, plus ticket/join contract tests → `scripts/ws_live_probe.py`, a two-client proof through nginx of handshake, delivery, single-use auth and 75 s idle survival). Root cause and live evidence in `15-RESEARCH.md` (F-1…F-6). *(completed 2026-10-04)*
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [x] `15-02-PLAN.md` — The typing wave indicator on that proven transport (3 tasks: a consumer `typing` action with a 6 s Redis TTL, a 1.5 s per-connection throttle and sender exclusion + `test_ws_typing.py` → the `ChatWsFrame` union plus `typingUsers`/`notifyTyping()` with expiry sweeping → the `TypingIndicator` wave row above the composer under a new `--animate-typing-wave` token, the live `typing` probe check, and the visual/reduced-motion pass). Locks: wave dots **plus the typist's name** above the composer (D-15-01), server-authoritative TTL so indicators cannot stick, and a narrow supersession of 13-UI-SPEC's no-typing line for in-room presence only (D-15-04). UI contract: `15-UI-SPEC.md`. *(completed 2026-10-04)*
+
+### Phase 16: replace the current screens with the frontend/stitch designs
+
+**Goal:** Replace the current screens in `frontend/src` with the exact markup, hierarchy, classes, and visual structure from the Stitch design compositions in `frontend/stitch designs/`, preserving all existing application functionality, API integrations, authentication state, real-time WebSockets, typing indicators, and test suites.
+**Requirements**: UI-AUTH-01, UI-AUTH-02, UI-AUTH-03, UI-SHELL-01, UI-SHELL-02, UI-DASH-01, UI-DASH-02, UI-COMM-01, UI-COMM-02, UI-SETT-01, UI-SETT-02, UI-MISC-01, UI-MISC-02, UI-FIDE-01
+**Depends on:** Phase 15
+**Plans:** 7/7 plans executed
+
+Plans:
+
+- [x] 16-01-PLAN.md
+- [x] 16-02-PLAN.md
+- [x] 16-03-PLAN.md
+- [x] 16-04-PLAN.md
+- [x] 16-05-PLAN.md
+- [x] 16-06-PLAN.md
+- [x] 16-07-PLAN.md
+
+- [x] `16-01-PLAN.md` — Wave 1: Auth & Onboarding verbatim port (Login, Register, Forgot Password, Reset Password, Email Verification, 3-Step Onboarding Wizard)
+- [x] `16-02-PLAN.md` — Wave 2: Application Shell & Navigation verbatim port (Desktop light/dark shell, mobile shell & tab bar, notification center)
+- [x] `16-03-PLAN.md` — Wave 3: Candidate Dashboard & Recruitment Timeline verbatim port (Dashboard progression variants, roadmap, milestone modals)
+- [x] `16-04-PLAN.md` — Wave 4: Community & Discussions verbatim port (Discussions feed desktop/mobile, post detail, comment threads, post composer modal)
+- [x] `16-05-PLAN.md` — Wave 5: Settings Suite & Admin Tools verbatim port (Profile, privacy, security, danger zone, devices, moderation queue, announcements)
+- [x] `16-06-PLAN.md` — Wave 6: Analytics, Visitor, Legal & PWA verbatim port (Analytics benchmarks, landing page, legal viewer, PWA install/push/offline, error routes)
+- [x] `16-07-PLAN.md` — Wave 7: Machine Fidelity Check, Test Suite Maintenance & Verification Gates (stitch-fidelity.mjs audit, RECONCILIATION-16.md, full regression suite)
+
+### Phase 17: Reply to chat messages
+
+**Goal:** Allow candidates to reply to existing messages in chat channels with quoted preview context across real-time WebSockets and REST fallback.  
+**Requirements**: CHAT-04  
+**Depends on:** Phase 16  
+**Plans:** 1 plan  
+
+Plans:
+
+- [x] `17-01-PLAN.md` — Reply to chat messages across backend models, serializers, services, Channels consumer, frontend hook, and UI composer.
