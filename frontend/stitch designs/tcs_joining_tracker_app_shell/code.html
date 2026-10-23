@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TCS Joining Tracker (TJT) — Recruitment Status</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {},
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            headline: ["Inter", "sans-serif"],
+            display: ["Inter", "sans-serif"],
+            body: ["Inter", "sans-serif"],
+            label: ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      font-size: 20px;
+    }
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 0.9; }
+      50% { opacity: 0.4; }
+    }
+    .skeleton-shimmer {
+      animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-body min-h-screen flex flex-col antialiased selection:bg-indigo-100 selection:text-indigo-800">
+<!-- 1. Top Announcement Banner -->
+<aside class="bg-indigo-600 text-white text-xs sm:text-sm font-medium px-4 sm:px-6 py-2 flex items-center justify-between shadow-sm sticky top-0 z-40 transition-all duration-200" id="global-announcement">
+<div class="flex items-center gap-2 sm:gap-3 min-w-0">
+<span class="p-1 rounded bg-indigo-700/60 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px] text-indigo-100 leading-none" data-icon="campaign">campaign</span>
+</span>
+<p class="truncate">
+<span class="font-bold tracking-wide">NOTICE:</span> TCS 2025 Digital Joining Letters reported in Hyderabad region
+      </p>
+</div>
+<div class="flex items-center gap-3 shrink-0 ml-4">
+<a class="text-xs sm:text-sm underline underline-offset-2 text-indigo-100 hover:text-white font-semibold transition-colors duration-150" href="#updates">
+        Read Update
+      </a>
+<button aria-label="Dismiss banner" class="p-1 rounded hover:bg-indigo-700/70 text-indigo-200 hover:text-white transition-colors duration-150 flex items-center" onclick="document.getElementById('global-announcement').style.display='none'">
+<span class="material-symbols-outlined text-[18px]" data-icon="close">close</span>
+</button>
+</div>
+</aside>
+<!-- 2. Main Desktop 3-Column Shell -->
+<div class="flex flex-1 w-full min-w-0">
+<!-- LEFT SIDEBAR (Shared Component Anchors implemented verbatim: 240px wide) -->
+<aside class="w-60 bg-white border-r border-slate-200 p-4 flex flex-col justify-between shrink-0 sticky top-9 h-[calc(100vh-36px)] z-30 overflow-y-auto">
+<div class="flex flex-col gap-6">
+<!-- Logo Header -->
+<div class="flex items-center gap-2.5 px-2">
+<div class="h-9 w-9 rounded-lg bg-indigo-600 text-white font-headline font-bold text-sm flex items-center justify-center shadow-sm">
+            TJT
+          </div>
+<div>
+<h1 class="font-headline text-base font-bold tracking-tight text-slate-900 leading-none">
+              TJT Tracker
+            </h1>
+<p class="font-body text-[11px] text-slate-500 mt-1 leading-none font-medium">Recruitment Status</p>
+</div>
+</div>
+<!-- Main Nav Pills -->
+<nav class="space-y-1 font-body text-sm leading-6 tracking-normal">
+<!-- Active Pill: Dashboard -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-indigo-50 text-indigo-600 font-semibold transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-indigo-600" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- Inactive: Joining Letters (Maps to Timeline) -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-slate-500" data-icon="mark_email_read">mark_email_read</span>
+<span>Joining Letters</span>
+</a>
+<!-- Inactive: Surveys / Community Forum -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-slate-500" data-icon="forum">forum</span>
+<span>Community Forum</span>
+</a>
+<!-- Inactive: Surveys Analytics -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-slate-500" data-icon="poll">poll</span>
+<span>Surveys</span>
+</a>
+<!-- Inactive: Alerts with Amber Badge -->
+<a class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-500" data-icon="notifications">notifications</span>
+<span>Alerts</span>
+</div>
+<span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-800">
+              3
+            </span>
+</a>
+<!-- Inactive: Settings -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-slate-500" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<!-- Footer & Auxiliary Info in Sidebar -->
+<div class="pt-4 border-t border-slate-200 space-y-3">
+<!-- Sidebar CTA Button -->
+<button class="w-full flex items-center justify-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium text-xs py-2 px-3 rounded-lg border border-indigo-200 transition-colors duration-150" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="add">add</span>
+<span>+ Share Update</span>
+</button>
+<div class="flex items-center gap-3 px-2 text-xs text-slate-500">
+<a class="hover:text-slate-800 transition-colors" href="#">Privacy Policy</a>
+<span>·</span>
+<a class="hover:text-slate-800 transition-colors" href="#">Help &amp; FAQ</a>
+</div>
+<p class="px-2 text-[10px] text-slate-400">v2.4.0 Community Edition</p>
+</div>
+</aside>
+<!-- CENTER COLUMN -->
+<main class="flex-1 min-w-0 bg-slate-50 flex flex-col">
+<!-- Top Bar Sticky Header -->
+<header class="bg-white border-b border-slate-200 px-8 py-3 flex items-center justify-between sticky top-9 z-20 shadow-sm">
+<!-- Search bar on left -->
+<div class="relative w-80">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-slate-400 text-[18px]" data-icon="search">search</span>
+</span>
+<input class="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-slate-50/70 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition duration-150" placeholder="Search community reports, region, batch…" type="text"/>
+</div>
+<!-- Right Side Actions & Profile -->
+<div class="flex items-center gap-4">
+<!-- Primary CTA Button -->
+<button class="bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-lg shadow-sm flex items-center gap-1.5 transition duration-150" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+<span>+ Post</span>
+</button>
+<!-- Notification Bell with Badge -->
+<div class="relative">
+<button aria-label="View notifications" class="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors duration-150 relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white"></span>
+</button>
+</div>
+<div class="h-5 w-px bg-slate-200"></div>
+<!-- User Avatar & Dropdown -->
+<div class="flex items-center gap-2.5 cursor-pointer p-1 rounded-lg hover:bg-slate-100 transition-colors duration-150">
+<div class="h-8 w-8 rounded-full bg-indigo-100 text-indigo-700 font-semibold text-xs flex items-center justify-center border border-indigo-200">
+              ST
+            </div>
+<div class="hidden sm:block text-left">
+<div class="text-xs font-semibold text-slate-900 leading-tight">Sai T.</div>
+<div class="text-[10px] text-slate-500 font-medium">Digital 2025</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[18px]" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</header>
+<!-- Center Page Content Area -->
+<section class="p-8 space-y-6 flex-1">
+<!-- Page Title & Header Summary -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+<div>
+<h2 class="text-2xl font-bold font-headline text-slate-900 tracking-tight">Dashboard</h2>
+<p class="text-sm text-slate-600 mt-1">Track real-time batch onboarding timelines, survey reports, and peer verification.</p>
+</div>
+<div class="flex items-center gap-2 self-start sm:self-auto">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Live Feed Active
+            </span>
+<button class="flex items-center gap-1 px-3 py-1 text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-md hover:bg-slate-50 shadow-sm transition">
+<span class="material-symbols-outlined text-[16px] text-slate-400" data-icon="tune">tune</span>
+<span>Filter View</span>
+</button>
+</div>
+</div>
+<!-- Skeleton-Style Placeholder Card 1: Live Stream -->
+<article class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-5">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+<div class="flex items-center gap-2.5">
+<span class="p-2 rounded-lg bg-indigo-50 text-indigo-600 flex items-center">
+<span class="material-symbols-outlined text-[20px]" data-icon="dynamic_feed">dynamic_feed</span>
+</span>
+<div>
+<h3 class="font-headline font-semibold text-slate-900 text-base">Recent Joining Letter Dispatches (Live Stream)</h3>
+<p class="text-xs text-slate-500">Crowdsourced submissions verified by offer letter hashes</p>
+</div>
+</div>
+<!-- Mock Filter Tabs -->
+<div class="inline-flex p-1 bg-slate-100 rounded-lg text-xs font-medium text-slate-600 self-start">
+<button class="px-3 py-1 bg-white text-indigo-600 rounded-md shadow-xs font-semibold">All Regions</button>
+<button class="px-3 py-1 hover:text-slate-900 transition">Hyderabad</button>
+<button class="px-3 py-1 hover:text-slate-900 transition">Bengaluru</button>
+<button class="px-3 py-1 hover:text-slate-900 transition">Pune</button>
+</div>
+</div>
+<!-- Realistic Mock Table with shimmer & content placeholders -->
+<div class="space-y-3">
+<!-- Row 1 -->
+<div class="flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:bg-slate-50/60 transition-colors">
+<div class="flex items-center gap-4 min-w-0">
+<div class="h-8 w-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-medium text-slate-600 shrink-0 skeleton-shimmer">
+                  HY
+                </div>
+<div class="min-w-0 space-y-1">
+<div class="flex items-center gap-2">
+<span class="text-xs font-semibold text-slate-900">Digital · 2025 Phase 1</span>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">Verified Dispatch</span>
+</div>
+<div class="text-[11px] text-slate-500 truncate flex items-center gap-2">
+<span>Batch: 16 June Joining</span>
+<span>•</span>
+<span>Reported 14m ago by Member #4821</span>
+</div>
+</div>
+</div>
+<div class="text-right shrink-0">
+<span class="text-xs font-semibold text-indigo-600 hover:underline cursor-pointer">View Details →</span>
+</div>
+</div>
+<!-- Row 2 (Skeleton representation) -->
+<div class="flex items-center justify-between p-3 rounded-lg border border-slate-100 bg-slate-50/40">
+<div class="flex items-center gap-4 min-w-0 w-3/4">
+<div class="h-8 w-8 rounded-full bg-slate-200 shrink-0 skeleton-shimmer"></div>
+<div class="space-y-2 flex-1">
+<div class="flex items-center gap-2">
+<div class="h-3.5 bg-slate-200 rounded w-32 skeleton-shimmer"></div>
+<div class="h-3.5 bg-sky-100 rounded w-20 skeleton-shimmer"></div>
+</div>
+<div class="h-3 bg-slate-200 rounded w-48 skeleton-shimmer"></div>
+</div>
+</div>
+<div class="h-4 bg-slate-200 rounded w-16 skeleton-shimmer"></div>
+</div>
+<!-- Row 3 (Skeleton representation) -->
+<div class="flex items-center justify-between p-3 rounded-lg border border-slate-100 bg-slate-50/40">
+<div class="flex items-center gap-4 min-w-0 w-2/3">
+<div class="h-8 w-8 rounded-full bg-slate-200 shrink-0 skeleton-shimmer"></div>
+<div class="space-y-2 flex-1">
+<div class="flex items-center gap-2">
+<div class="h-3.5 bg-slate-200 rounded w-40 skeleton-shimmer"></div>
+<div class="h-3.5 bg-amber-100 rounded w-16 skeleton-shimmer"></div>
+</div>
+<div class="h-3 bg-slate-200 rounded w-52 skeleton-shimmer"></div>
+</div>
+</div>
+<div class="h-4 bg-slate-200 rounded w-16 skeleton-shimmer"></div>
+</div>
+</div>
+<div class="pt-2 flex justify-between items-center text-xs text-slate-500">
+<span>Showing recent verified updates</span>
+<a class="text-indigo-600 font-medium hover:underline" href="#">Open Live Telegram Bridge →</a>
+</div>
+</article>
+<!-- Skeleton-Style Placeholder Card 2: Analytics Grid -->
+<article class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-5">
+<div class="flex items-center justify-between pb-3 border-b border-slate-100">
+<div class="flex items-center gap-2.5">
+<span class="p-2 rounded-lg bg-sky-50 text-sky-600 flex items-center">
+<span class="material-symbols-outlined text-[20px]" data-icon="bar_chart">bar_chart</span>
+</span>
+<div>
+<h3 class="font-headline font-semibold text-slate-900 text-base">Regional Onboarding Waves &amp; Batch Analytics</h3>
+<p class="text-xs text-slate-500">Calculated based on 1,240+ aggregated survey responses</p>
+</div>
+</div>
+<span class="text-xs text-slate-400 font-medium">Updated 10m ago</span>
+</div>
+<!-- Chart Skeleton & Regional metric distribution -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Simulated Metric 1 -->
+<div class="p-4 rounded-lg bg-slate-50/70 border border-slate-200/80 space-y-2">
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Hyderabad Wave</span>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold font-headline text-slate-900">64%</span>
+<span class="text-xs font-semibold text-emerald-600">Dispatched</span>
+</div>
+<div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+<div class="bg-indigo-600 h-2 rounded-full" style="width: 64%"></div>
+</div>
+<p class="text-[11px] text-slate-500">Average wait from survey: 21 days</p>
+</div>
+<!-- Simulated Metric 2 -->
+<div class="p-4 rounded-lg bg-slate-50/70 border border-slate-200/80 space-y-2">
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Bengaluru Wave</span>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold font-headline text-slate-900">38%</span>
+<span class="text-xs font-semibold text-amber-600">In Progress</span>
+</div>
+<div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+<div class="bg-amber-500 h-2 rounded-full" style="width: 38%"></div>
+</div>
+<p class="text-[11px] text-slate-500">Phase 2 allocations scheduled</p>
+</div>
+<!-- Simulated Metric 3 -->
+<div class="p-4 rounded-lg bg-slate-50/70 border border-slate-200/80 space-y-2">
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Chennai Wave</span>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold font-headline text-slate-900">12%</span>
+<span class="text-xs font-semibold text-slate-500">Early Queue</span>
+</div>
+<div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+<div class="bg-slate-400 h-2 rounded-full" style="width: 12%"></div>
+</div>
+<p class="text-[11px] text-slate-500">Anticipated late June 2026</p>
+</div>
+</div>
+<!-- Mock Chart Graphic Container -->
+<div class="border border-dashed border-slate-200 rounded-lg p-6 bg-slate-50/40 flex flex-col items-center justify-center gap-2 text-center">
+<span class="material-symbols-outlined text-slate-400 text-3xl" data-icon="monitoring">monitoring</span>
+<div class="space-y-1">
+<p class="text-xs font-medium text-slate-700">Detailed Onboarding Velocity Curves</p>
+<p class="text-[11px] text-slate-500 max-w-md">Interactive timeline graphs are aggregating responses from verified candidates. Complete your candidate survey to unlock granular cohort percentiles.</p>
+</div>
+</div>
+</article>
+</section>
+</main>
+<!-- RIGHT RAIL (320px wide sticky rail) -->
+<aside class="w-80 bg-white border-l border-slate-200 p-5 space-y-5 shrink-0 sticky top-9 h-[calc(100vh-36px)] z-20 overflow-y-auto hidden lg:block">
+<!-- Card 1: My Status Summary -->
+<section class="border border-slate-200 rounded-xl p-4 shadow-sm bg-white space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="h-8 w-8 rounded-full bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 font-bold text-xs">
+<span class="material-symbols-outlined text-[18px]" data-icon="person">person</span>
+</div>
+<h3 class="font-headline font-semibold text-sm text-slate-900">My Status Summary</h3>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[18px] cursor-pointer hover:text-slate-600" data-icon="edit">edit</span>
+</div>
+<div class="space-y-2">
+<!-- Prominent amber badge -->
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold">
+<span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+            WAITING FOR JOINING LETTER
+          </div>
+<p class="text-xs text-slate-500 font-medium">Since 15 May 2026 (32 days pending)</p>
+</div>
+<!-- Quick details table -->
+<dl class="text-xs space-y-2.5 pt-2 border-t border-slate-100 text-slate-700">
+<div class="flex justify-between items-center">
+<dt class="text-slate-500">Role Track:</dt>
+<dd class="font-semibold text-slate-900">Digital</dd>
+</div>
+<div class="flex justify-between items-center">
+<dt class="text-slate-500">Location Pref:</dt>
+<dd class="font-semibold text-slate-900">Hyderabad / Bengaluru</dd>
+</div>
+<div class="flex justify-between items-center">
+<dt class="text-slate-500">Offer Date:</dt>
+<dd class="font-medium text-slate-800">March 2025</dd>
+</div>
+<div class="flex justify-between items-center">
+<dt class="text-slate-500">BGV Verification:</dt>
+<dd class="inline-flex items-center gap-1 text-emerald-600 font-medium">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+              Approved
+            </dd>
+</div>
+</dl>
+<a class="block text-center text-xs font-semibold text-indigo-600 hover:text-indigo-800 bg-indigo-50/70 hover:bg-indigo-100/70 py-2 rounded-lg transition-colors" href="#update-status">
+          Update my status →
+        </a>
+</section>
+<!-- Card 2: Community Pulse -->
+<section class="border border-slate-200 rounded-xl p-4 shadow-sm bg-white space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<h3 class="font-headline font-semibold text-sm text-slate-900">Community Pulse</h3>
+<span class="flex h-2 w-2 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+</span>
+</div>
+<span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Live</span>
+</div>
+<!-- Big metric counter grid -->
+<div class="grid grid-cols-2 gap-2.5">
+<div class="p-3 bg-slate-50 border border-slate-200/70 rounded-lg text-center">
+<div class="text-xl font-bold font-headline text-slate-900 leading-tight">1,248</div>
+<div class="text-[11px] text-slate-500 font-medium mt-0.5">Candidates Tracked</div>
+</div>
+<div class="p-3 bg-indigo-50/50 border border-indigo-100 rounded-lg text-center">
+<div class="text-xl font-bold font-headline text-indigo-600 leading-tight">210</div>
+<div class="text-[11px] text-slate-600 font-medium mt-0.5">Received JL</div>
+</div>
+<div class="p-3 bg-sky-50/50 border border-sky-100 rounded-lg text-center">
+<div class="text-xl font-bold font-headline text-sky-700 leading-tight">87</div>
+<div class="text-[11px] text-slate-600 font-medium mt-0.5">Confirmed</div>
+</div>
+<div class="p-3 bg-emerald-50/50 border border-emerald-100 rounded-lg text-center">
+<div class="text-xl font-bold font-headline text-emerald-700 leading-tight">42</div>
+<div class="text-[11px] text-slate-600 font-medium mt-0.5">Joined</div>
+</div>
+</div>
+<!-- Verification safety indicator -->
+<div class="p-2.5 bg-slate-50 rounded-lg border border-slate-100 flex items-start gap-2">
+<span class="material-symbols-outlined text-slate-400 text-[18px] shrink-0 mt-0.5" data-icon="shield">shield</span>
+<p class="text-[11px] text-slate-500 leading-tight">
+            Entries are cross-checked through anonymized letter hash verification to prevent false reporting.
+          </p>
+</div>
+<p class="text-[11px] text-slate-400 italic text-center leading-relaxed">
+          Community-reported data, not official TCS metrics
+        </p>
+</section>
+<!-- Useful quick resources link list -->
+<div class="px-2 space-y-2 text-xs">
+<span class="font-semibold text-slate-700 block">External Communities</span>
+<ul class="space-y-1.5 text-slate-500">
+<li>
+<a class="hover:text-indigo-600 flex items-center justify-between" href="#">
+<span>Telegram: TCS Onboarding 2025</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="open_in_new">open_in_new</span>
+</a>
+</li>
+<li>
+<a class="hover:text-indigo-600 flex items-center justify-between" href="#">
+<span>Reddit: r/developersIndia Megathread</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="open_in_new">open_in_new</span>
+</a>
+</li>
+</ul>
+</div>
+</aside>
+</div>
+<!-- 3. Global Sticky Footer (Shared Component Anchor) -->
+<footer class="bg-white border-t border-slate-200 px-6 py-3 sticky bottom-0 z-30 shadow-none">
+<div class="flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] leading-relaxed text-slate-500">
+<div class="max-w-4xl text-center md:text-left">
+<p>
+<strong class="font-semibold text-slate-700">Disclaimer:</strong> TCS Joining Tracker is an independent community project and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Tata Consultancy Services (TCS) or any of its subsidiaries.
+        </p>
+</div>
+<div class="flex items-center gap-4 shrink-0 font-medium">
+<a class="hover:text-slate-900 hover:underline transition-colors duration-150" href="#disclaimer">Disclaimer</a>
+<span>·</span>
+<a class="hover:text-slate-900 hover:underline transition-colors duration-150" href="#privacy">Privacy</a>
+<span>·</span>
+<a class="text-indigo-600 hover:underline transition-colors duration-150" href="#report">Report Data</a>
+</div>
+</div>
+</footer>
+</body></html>

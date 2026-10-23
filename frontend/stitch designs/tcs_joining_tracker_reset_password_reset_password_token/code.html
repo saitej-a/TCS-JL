@@ -1,0 +1,100 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TCS Joining Tracker — Reset Password (/reset-password/:token)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&amp;family=Fira+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Fira Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"Fira Code"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            }
+          },
+          borderRadius: {
+            'card': '0.75rem',
+            'elem': '0.5rem',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Fira Sans', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .token-wrap {
+      overflow-wrap: anywhere;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col justify-between">
+
+  <!-- Unauthenticated Visitor Shell Header -->
+  <header class="w-full bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-elem bg-brand-700 text-white flex items-center justify-center shadow-xs">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"></path>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-slate-900 tracking-tight text-base">Joining Tracker</span>
+            <span class="bg-brand-50 text-brand-700 text-[11px] font-semibold px-2 py-0.5 rounded-full border border-brand-200 uppercase tracking-wide">Candidate Portal</span>
+          </div>
+          <p class="text-[11px] text-slate-500 font-normal leading-none mt-0.5">Independent Community Network</p>
+        </div>
+      </div>
+
+      <nav class="flex items-center gap-6 text-sm font-medium text-slate-600">
+        <a href="#" class="hover:text-brand-700 transition-colors">About</a>
+        <a href="#" class="hover:text-brand-700 transition-colors">Privacy</a>
+        <a href="#" class="hover:text-brand-700 transition-colors">Terms</a>
+        <span class="h-4 w-px bg-slate-200"></span>
+        <a href="#" class="text-brand-700 hover:text-brand-800 font-semibold flex items-center gap-1 transition-colors">
+          <span class="">Sign In</span>
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"></path>
+          </svg>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full"><div class="max-w-md mx-auto w-full"><div class="mb-6 text-center"><div class="flex items-center justify-center gap-2 text-xs font-medium text-slate-500 mb-2"><a href="#" class="hover:text-slate-700">Account Access</a><svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg><span class="text-slate-800 font-semibold">Reset Password</span></div><h1 class="text-2xl font-bold text-slate-900 tracking-tight">Choose a new password</h1><p class="text-sm text-slate-600 mt-2 leading-relaxed">Your reset link is time-limited and single-use. Pick a password you have not used before.</p></div><div class="bg-white rounded-xl border border-slate-200 p-6 sm:p-8 shadow-sm"><form class="space-y-5" onsubmit="event.preventDefault()"><div><label for="new-password" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">New password</label><div class="relative"><input type="password" id="new-password" placeholder="Enter new password" class="w-full h-11 px-3.5 pr-11 bg-white border border-slate-300 rounded-elem text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-brand-600 transition-all shadow-xs"><button type="button" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="Toggle password visibility"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></button></div><div class="mt-2.5"><div class="flex items-center justify-between mb-1"><span class="text-[11px] font-medium text-slate-500">Password strength</span><span class="text-xs font-bold text-emerald-700">Strong</span></div><div class="grid grid-cols-3 gap-1.5 h-1.5 w-full"><div class="h-full rounded-full bg-emerald-500"></div><div class="h-full rounded-full bg-emerald-500"></div><div class="h-full rounded-full bg-emerald-500"></div></div></div></div><div><label for="confirm-password" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">Confirm new password</label><div class="relative"><input type="password" id="confirm-password" placeholder="Re-enter new password" class="w-full h-11 px-3.5 pr-11 bg-white border border-slate-300 rounded-elem text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-brand-600 transition-all shadow-xs"><button type="button" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none" aria-label="Toggle password visibility"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></button></div></div><div class="bg-slate-50 border border-slate-200/80 rounded-elem p-3.5 space-y-2 mt-3"><span class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Security Requirements</span><div class="flex items-center gap-2 text-xs text-slate-700"><span class="flex-shrink-0 w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path></svg></span><span class="font-medium text-slate-800">At least 8 characters</span></div><div class="flex items-center gap-2 text-xs text-slate-700"><span class="flex-shrink-0 w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path></svg></span><span class="font-medium text-slate-800">Not a commonly used password</span></div><div class="flex items-center gap-2 text-xs text-slate-700"><span class="flex-shrink-0 w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path></svg></span><span class="font-medium text-slate-800">Matches the confirmation field</span></div></div><div class="pt-2"><button type="submit" class="w-full h-11 min-h-[44px] bg-brand-700 hover:bg-brand-800 active:bg-brand-900 text-white font-semibold rounded-elem text-sm flex items-center justify-center gap-2 shadow-xs transition-colors focus:ring-2 focus:ring-brand-600 focus:ring-offset-2"><span class="">Set new password</span><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"></path></svg></button></div></form><div class="mt-6 pt-5 border-t border-slate-100 text-center"><a href="#" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-brand-700 min-h-[44px] transition-colors focus:ring-2 focus:ring-brand-600 rounded"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"></path></svg><span class="">Back to sign in</span></a></div></div></div></main>
+
+  <!-- Visitor Shell Footer with Non-Affiliation Disclaimer -->
+  <footer class="w-full bg-white border-t border-slate-200 mt-12">
+    <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <p class="leading-relaxed text-center md:text-left">
+        Independent community tracker. Not affiliated with, endorsed by, or connected to Tata Consultancy Services (TCS) or any of its subsidiaries.
+      </p>
+      <div class="flex items-center gap-6 font-medium flex-shrink-0"><a href="#" class="hover:text-brand-700 transition-colors">Privacy Policy</a><span class="">•</span><a href="#" class="hover:text-brand-700 transition-colors">Terms of Service</a></div>
+    </div>
+  </footer>
+
+
+
+
+
+</body></html>

@@ -1,0 +1,41 @@
+# Environment & secrets (T1.1 — strictly excluded)
+.env
+.env.prod
+.env.render
+*.pem
+*.key
+serviceAccountKey.json
+secrets/
+
+# Local media & dependencies
+media/
+node_modules/
+
+# TLS placeholder certs (generated locally, never committed)
+nginx/certs/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+db.sqlite3
+.pytest_cache/
+.ruff_cache/
+
+# static files
+staticfiles/
+
+
+.vercel
+.env*
+
+celerybeat-schedule
+
+# vite-plugin-pwa's dev-mode service worker output (regenerated on dev start)
+frontend/dev-dist/
+
+# Temporary 9.4 drill override (throwaway VAPID keypair; delete after prod keys)
+docker-compose.override.yml
+
+brag
+brag-output

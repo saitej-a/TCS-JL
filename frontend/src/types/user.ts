@@ -1,0 +1,93 @@
+/**
+ * Backend vocabulary unions (Task 2's types file, consumed by Task 1's maps).
+ *
+ * These are typed to the SHIPPED backend contracts, not to the spec tables:
+ * - `PostCategory` moved to `@/content/postCategories` in 9.3 (D7: the 12 keys
+ *   live in exactly ONE module — this file re-exports for the established
+ *   imports; the settings-added-category compile error now fires at that one
+ *   module and propagates everywhere).
+ * - `CandidateStatus` mirrors `apps/candidates/models.py` Status (11 choices).
+ *
+ * Recorded divergence (Task 1/9.1 finding): 05 §4.1.4's badge matrix lists 10
+ * rows — its `OFFER` is the API's `OFFER_LETTER`, and `LOCATION`/`DOCUMENTS`
+ * have no spec row (they use the GENERAL slate treatment as the fallback).
+ */
+
+export type { PostCategory } from "@/content/postCategories";
+export { POST_CATEGORIES } from "@/content/postCategories";
+
+export type CandidateStatus =
+  | "REGISTERED"
+  | "INTERVIEWED"
+  | "SELECTED"
+  | "OFFER_RECEIVED"
+  | "READINESS_SURVEY"
+  | "WAITING_FOR_JOINING_LETTER"
+  | "JOINING_LETTER_RECEIVED"
+  | "JOINING_DATE_RECEIVED"
+  | "JOINED"
+  | "WITHDRAWN"
+  | "OTHER";
+
+export const CANDIDATE_STATUSES = [
+  "REGISTERED",
+  "INTERVIEWED",
+  "SELECTED",
+  "OFFER_RECEIVED",
+  "READINESS_SURVEY",
+  "WAITING_FOR_JOINING_LETTER",
+  "JOINING_LETTER_RECEIVED",
+  "JOINING_DATE_RECEIVED",
+  "JOINED",
+  "WITHDRAWN",
+  "OTHER",
+] as const satisfies readonly CandidateStatus[];
+
+/**
+ * The self payload exactly as `UserPrivateSerializer` ships it (04 §18):
+ * `{id, email, is_verified, is_staff, created_at, profile_completed}`.
+ *
+ * 9.5: `is_staff` joined the payload so the client can gate the /admin
+ * surfaces on the caller's own role (04 §113) — see RequireStaff.
+ */
+export interface UserPrivate {
+  id: string;
+  email: string;
+  is_verified: boolean;
+  is_staff: boolean;
+  created_at: string;
+  profile_completed: boolean;
+}
+
+/**
+ * The public author payload (`AuthorPublicSerializer`):
+ * `{id, display_name, batch, hiring_type, region}`.
+ *
+ * `display_name` collapses to the literal "Anonymous Candidate" sentinel for
+ * both anonymous profiles and profile-less users (recorded coupling). No
+ * `avatar_seed` field ships despite the plan assuming one — IdentityPill
+ * derives the pastel from `display_name` instead, keeping determinism without
+ * inventing API fields.
+ */
+export interface PublicAuthor {
+  id: string;
+  display_name: string;
+  batch: string | null;
+  hiring_type: string | null;
+  region: string | null;
+  /** Planned-but-unsaf 04 field; tolerated as optional if the API adds it. */
+  avatar_seed?: number;
+}
+
+/** The login response (FamilyTokenObtainPairSerializer): both tokens + user. */
+export interface LoginResponse {
+  access: string;
+  refresh: string;
+  user: UserPrivate;
+}
+
+/** The refresh response (FamilyTokenRefreshSerializer): BOTH rotated tokens. */
+export interface TokenRefreshResponse {
+  access: string;
+  refresh: string;
+}

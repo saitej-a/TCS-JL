@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TCS Joining Tracker — Devices & Notifications Settings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Fira Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"Fira Code"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#F0F9FF',
+              100: '#E0F2FE',
+              200: '#BAE6FD',
+              600: '#0284C7',
+              700: '#0369A1',
+              800: '#075985',
+              900: '#0C4A6E',
+            },
+            slate: {
+              850: '#152033',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Fira Sans', system-ui, sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+    }
+    .font-mono-tabular {
+      font-family: 'Fira Code', monospace;
+      font-feature-settings: "tnum" 1, "zero" 1;
+    }
+    /* Custom switches */
+    .switch-toggle {
+      width: 44px;
+      height: 24px;
+      border-radius: 9999px;
+      transition: background-color 0.2s ease;
+      position: relative;
+      cursor: pointer;
+    }
+    .switch-toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background-color: white;
+      border-radius: 9999px;
+      transition: transform 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+    .switch-toggle.active {
+      background-color: #0369A1;
+    }
+    .switch-toggle.active::after {
+      transform: translateX(20px);
+    }
+    .switch-toggle.inactive {
+      background-color: #CBD5E1;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 antialiased">
+
+  <div class="flex-1 flex w-full">
+    <!-- Left Sidebar (240px wide) -->
+    <aside class="w-60 min-w-[240px] max-w-[240px] bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 fixed top-0 bottom-0 left-0 z-20">
+      <div class="p-5 flex flex-col">
+        <!-- Wordmark / Brand Header -->
+        <div class="flex items-center gap-3 pb-6 border-b border-slate-100">
+          <div class="w-9 h-9 rounded-lg bg-brand-700 flex items-center justify-center text-white font-bold shadow-sm shadow-brand-700/20">
+            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-sm font-bold tracking-tight text-slate-900 leading-tight">Joining Tracker</h1>
+            <p class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Candidate Portal</p>
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="mt-6 flex flex-col space-y-1">
+          <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-sm font-medium transition-colors">
+            <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>
+            </svg>
+            <span>Dashboard</span>
+          </a>
+
+          <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-sm font-medium transition-colors">
+            <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>Timeline</span>
+          </a>
+
+          <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-sm font-medium transition-colors">
+            <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+            </svg>
+            <span>Analytics</span>
+          </a>
+
+          <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-sm font-medium transition-colors">
+            <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <span>Community</span>
+          </a>
+
+          <a href="#" class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-sm font-medium transition-colors">
+            <div class="flex items-center gap-3">
+              <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+              </svg>
+              <span>Notifications</span>
+            </div>
+            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-600 font-mono-tabular">3</span>
+          </a>
+
+          <!-- Active Navigation: Settings -->
+          <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-sky-50 text-brand-700 text-sm font-semibold border-l-2 border-brand-700 -ml-[2px] transition-colors">
+            <svg class="w-4 h-4 text-brand-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <span>Settings</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- User Chip at bottom of sidebar -->
+      <div class="p-4 border-t border-slate-200 bg-white">
+        <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors">
+          <div class="w-8 h-8 rounded-full bg-brand-700 text-white font-semibold flex items-center justify-center text-xs shrink-0 font-mono-tabular">
+            AS
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-semibold text-slate-800 truncate">Ananya S.</span>
+              <span class="px-1.5 py-0.2 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-medium rounded">Verified</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-mono-tabular truncate">a***@example.com</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area (Offset by 240px left sidebar, max width 1280px total screen) -->
+    <main class="ml-60 flex-1 p-8 max-w-[1040px]">
+      
+      <!-- Breadcrumb Header -->
+      <header class="mb-7">
+        <nav class="flex items-center space-x-2 text-xs text-slate-500 mb-2">
+          <a href="#" class="hover:text-slate-800 transition-colors">Home</a>
+          <svg class="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+          <a href="#" class="hover:text-slate-800 transition-colors">Settings</a>
+          <svg class="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+          <span class="font-medium text-slate-800">Devices</span>
+        </nav>
+        
+        <h2 class="text-2xl font-bold tracking-tight text-slate-900">Devices & notifications</h2>
+        <p class="text-sm text-slate-600 mt-1">Manage push alerts and the devices signed in to your account</p>
+      </header>
+
+      <!-- TOP: Push Permission State Banner Card (Push BLOCKED by browser) -->
+      <div class="mb-6 rounded-[12px] bg-amber-50/80 border border-amber-200/90 p-4 sm:p-5 shadow-sm">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-full bg-amber-100 border border-amber-200/80 flex items-center justify-center shrink-0 text-amber-700 mt-0.5">
+            <!-- Bell-off SVG icon -->
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8.7 3A6 6 0 0 1 18 8a21.3 21.3 0 0 0 .6 5"/>
+              <path d="M17 17H3s3-2 3-9a4.67 4.67 0 0 1 .3-1.7"/>
+              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+              <line x1="2" y1="2" x2="22" y2="22"/>
+            </svg>
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2.5">
+              <h3 class="text-sm font-semibold text-amber-900">Push alerts are blocked in this browser</h3>
+              <span class="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded bg-amber-200/80 text-amber-900 border border-amber-300/60 font-mono-tabular">Blocked</span>
+            </div>
+            <p class="text-xs text-amber-800 mt-1 leading-relaxed max-w-2xl">
+              Your browser is blocking notifications for this site. To turn them back on, open your browser site settings and allow notifications.
+            </p>
+            <div class="mt-3 flex items-center gap-4">
+              <button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-amber-300 text-xs font-semibold text-amber-900 hover:bg-amber-100/60 transition-colors shadow-xs">
+                <svg class="w-3.5 h-3.5 text-amber-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+                </svg>
+                <span>How to unblock</span>
+              </button>
+              <span class="text-[11px] text-amber-700/90 font-medium">We will not ask again automatically.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN SECTION: Two Cards Side by Side (Left: 720px, Right: 420px balanced proportionally) -->
+      <div class="grid grid-cols-12 gap-6 items-start mb-6">
+        
+        <!-- LEFT CARD: Alert Types (720px equivalent in grid span 7) -->
+        <section class="col-span-12 lg:col-span-7 bg-white rounded-[12px] border border-slate-200 p-6 shadow-xs">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Alert types</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Customize what you want to be notified about</p>
+            </div>
+            <span class="text-xs font-semibold text-brand-700 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-100 font-mono-tabular">4 of 5 active</span>
+          </div>
+
+          <!-- 5 Toggle Rows -->
+          <div class="divide-y divide-slate-100 mt-1">
+            <!-- Row 1: Joining journey updates (ON) -->
+            <div class="py-4 flex items-center justify-between gap-4">
+              <div class="pr-2">
+                <div class="flex items-center gap-2">
+                  <h4 class="text-sm font-semibold text-slate-800">Joining journey updates</h4>
+                  <span class="px-1.5 py-0.5 bg-sky-50 text-brand-700 text-[10px] font-medium rounded border border-sky-100">Primary</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">Status changes from JL received to joined</p>
+              </div>
+              <div class="switch-toggle active shrink-0" role="switch" aria-checked="true" tabindex="0"></div>
+            </div>
+
+            <!-- Row 2: Survey and joining formalities (ON) -->
+            <div class="py-4 flex items-center justify-between gap-4">
+              <div class="pr-2">
+                <h4 class="text-sm font-semibold text-slate-800">Survey and joining formalities</h4>
+                <p class="text-xs text-slate-500 mt-0.5">Reminders for document submission and onboarding readiness surveys</p>
+              </div>
+              <div class="switch-toggle active shrink-0" role="switch" aria-checked="true" tabindex="0"></div>
+            </div>
+
+            <!-- Row 3: Community replies and mentions (ON) -->
+            <div class="py-4 flex items-center justify-between gap-4">
+              <div class="pr-2">
+                <h4 class="text-sm font-semibold text-slate-800">Community replies and mentions</h4>
+                <p class="text-xs text-slate-500 mt-0.5">When someone answers your discussion post or quotes your timeline</p>
+              </div>
+              <div class="switch-toggle active shrink-0" role="switch" aria-checked="true" tabindex="0"></div>
+            </div>
+
+            <!-- Row 4: Announcements from moderators (ON) -->
+            <div class="py-4 flex items-center justify-between gap-4">
+              <div class="pr-2">
+                <h4 class="text-sm font-semibold text-slate-800">Announcements from moderators</h4>
+                <p class="text-xs text-slate-500 mt-0.5">Critical batch advisory notices, verified wave pulses, and platform alerts</p>
+              </div>
+              <div class="switch-toggle active shrink-0" role="switch" aria-checked="true" tabindex="0"></div>
+            </div>
+
+            <!-- Row 5: Weekly digest email (OFF) -->
+            <div class="py-4 flex items-center justify-between gap-4">
+              <div class="pr-2">
+                <h4 class="text-sm font-semibold text-slate-800">Weekly digest email</h4>
+                <p class="text-xs text-slate-500 mt-0.5">Summary of regional joinings, batch speed metrics, and trending forum threads</p>
+              </div>
+              <div class="switch-toggle inactive shrink-0" role="switch" aria-checked="false" tabindex="0"></div>
+            </div>
+          </div>
+
+          <!-- Quiet Hours Selects Row -->
+          <div class="mt-4 pt-5 border-t border-slate-100 bg-slate-50/70 -mx-6 -mb-6 p-6 rounded-b-[12px]">
+            <div class="flex items-center gap-2 mb-3">
+              <svg class="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+              </svg>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Quiet hours schedule</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <!-- Quiet hours from -->
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Quiet hours from</label>
+                <div class="relative">
+                  <select class="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 font-mono-tabular focus:outline-none focus:ring-1 focus:ring-brand-700 focus:border-brand-700 cursor-pointer">
+                    <option value="20:00">20:00</option>
+                    <option value="21:00">21:00</option>
+                    <option value="22:00" selected>22:00</option>
+                    <option value="23:00">23:00</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Quiet hours to -->
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">to</label>
+                <div class="relative">
+                  <select class="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 font-mono-tabular focus:outline-none focus:ring-1 focus:ring-brand-700 focus:border-brand-700 cursor-pointer">
+                    <option value="06:00">06:00</option>
+                    <option value="07:00" selected>07:00</option>
+                    <option value="08:00">08:00</option>
+                    <option value="09:00">09:00</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Timezone select -->
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Timezone</label>
+                <div class="relative">
+                  <select class="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 font-mono-tabular focus:outline-none focus:ring-1 focus:ring-brand-700 focus:border-brand-700 cursor-pointer">
+                    <option value="Asia/Kolkata" selected>Asia/Kolkata (IST)</option>
+                    <option value="UTC">UTC</option>
+                    <option value="Asia/Dubai">Asia/Dubai (GST)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-[11px] text-slate-500 mt-2.5 flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              <span>Notifications during quiet hours are held until morning.</span>
+            </p>
+          </div>
+        </section>
+
+        <!-- RIGHT CARD: Registered Devices (420px equivalent in grid span 5) -->
+        <section class="col-span-12 lg:col-span-5 bg-white rounded-[12px] border border-slate-200 p-6 shadow-xs flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div>
+                <h3 class="text-base font-bold text-slate-900">Registered devices</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Sessions authorized for your account</p>
+              </div>
+              <span class="px-2 py-0.5 text-xs font-semibold rounded bg-slate-100 text-slate-600 font-mono-tabular">4 online</span>
+            </div>
+
+            <!-- In-browser push registration control for this device -->
+            <div class="my-3.5 p-3 rounded-lg bg-sky-50/60 border border-sky-100">
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <label class="text-[11px] font-semibold text-brand-900">For this browser only</label>
+                <span class="text-[10px] text-slate-500 font-mono-tabular">ID: #DEV-WIN-942</span>
+              </div>
+              <p class="text-[11px] text-slate-600 mb-2.5 leading-snug">Subscribe or unsubscribe this local browser session from receiving web push packets.</p>
+              <button class="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-brand-700 hover:bg-brand-800 text-white text-xs font-semibold shadow-xs transition-colors">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                  <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                </svg>
+                <span>Enable push on this device</span>
+              </button>
+            </div>
+
+            <!-- Table of 4 Device Rows -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-mono-tabular">
+                    <th class="py-2 pr-2 text-left font-semibold">Device</th>
+                    <th class="py-2 px-2 text-left font-semibold">Last active</th>
+                    <th class="py-2 pl-2 text-right font-semibold">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  
+                  <!-- Row 1: Chrome on Windows (This device) -->
+                  <tr class="group hover:bg-slate-50/80 transition-colors">
+                    <td class="py-3 pr-2">
+                      <div class="flex items-start gap-2">
+                        <!-- Laptop SVG -->
+                        <div class="w-7 h-7 rounded bg-slate-100 flex items-center justify-center text-slate-600 shrink-0 mt-0.5">
+                          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="12" x="3" y="4" rx="2"/><line x1="2" x2="22" y1="20" y2="20"/>
+                          </svg>
+                        </div>
+                        <div class="min-w-0">
+                          <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="font-medium text-slate-900 truncate">Chrome on Windows</span>
+                            <span class="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-sky-100 text-brand-800 border border-sky-200">This device</span>
+                          </div>
+                          <span class="text-[10px] text-slate-400 font-mono-tabular">Hyderabad, IN</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-3 px-2 align-middle">
+                      <span class="font-mono-tabular text-[11px] text-slate-600">24 Sep 2026, 09:12</span>
+                    </td>
+                    <td class="py-3 pl-2 text-right align-middle">
+                      <button class="text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2 py-1 rounded font-medium text-xs transition-colors">
+                        Revoke
+                      </button>
+                    </td>
+                  </tr>
+
+                  <!-- Row 2: Safari on iPhone -->
+                  <tr class="group hover:bg-slate-50/80 transition-colors">
+                    <td class="py-3 pr-2">
+                      <div class="flex items-start gap-2">
+                        <!-- Phone SVG -->
+                        <div class="w-7 h-7 rounded bg-slate-100 flex items-center justify-center text-slate-600 shrink-0 mt-0.5">
+                          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/>
+                          </svg>
+                        </div>
+                        <div class="min-w-0">
+                          <div class="font-medium text-slate-900 truncate">Safari on iPhone</div>
+                          <span class="text-[10px] text-slate-400 font-mono-tabular">iOS 19.4 • PWA</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-3 px-2 align-middle">
+                      <span class="font-mono-tabular text-[11px] text-slate-600">23 Sep 2026, 18:45</span>
+                    </td>
+                    <td class="py-3 pl-2 text-right align-middle">
+                      <button class="text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2 py-1 rounded font-medium text-xs transition-colors">
+                        Revoke
+                      </button>
+                    </td>
+                  </tr>
+
+                  <!-- Row 3: Chrome on Android -->
+                  <tr class="group hover:bg-slate-50/80 transition-colors">
+                    <td class="py-3 pr-2">
+                      <div class="flex items-start gap-2">
+                        <!-- Phone SVG -->
+                        <div class="w-7 h-7 rounded bg-slate-100 flex items-center justify-center text-slate-600 shrink-0 mt-0.5">
+                          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/>
+                          </svg>
+                        </div>
+                        <div class="min-w-0">
+                          <div class="font-medium text-slate-900 truncate">Chrome on Android</div>
+                          <span class="text-[10px] text-slate-400 font-mono-tabular">Pixel 9 • WebPush Active</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-3 px-2 align-middle">
+                      <span class="font-mono-tabular text-[11px] text-slate-600">21 Sep 2026, 14:02</span>
+                    </td>
+                    <td class="py-3 pl-2 text-right align-middle">
+                      <button class="text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2 py-1 rounded font-medium text-xs transition-colors">
+                        Revoke
+                      </button>
+                    </td>
+                  </tr>
+
+                  <!-- Row 4: Firefox on Linux -->
+                  <tr class="group hover:bg-slate-50/80 transition-colors">
+                    <td class="py-3 pr-2">
+                      <div class="flex items-start gap-2">
+                        <!-- Laptop / Workstation SVG -->
+                        <div class="w-7 h-7 rounded bg-slate-100 flex items-center justify-center text-slate-600 shrink-0 mt-0.5">
+                          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="12" x="3" y="4" rx="2"/><line x1="2" x2="22" y1="20" y2="20"/>
+                          </svg>
+                        </div>
+                        <div class="min-w-0">
+                          <div class="font-medium text-slate-900 truncate">Firefox on Linux</div>
+                          <span class="text-[10px] text-slate-400 font-mono-tabular">Ubuntu x86_64</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-3 px-2 align-middle">
+                      <span class="font-mono-tabular text-[11px] text-slate-600">18 Sep 2026, 11:20</span>
+                    </td>
+                    <td class="py-3 pl-2 text-right align-middle">
+                      <button class="text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2 py-1 rounded font-medium text-xs transition-colors">
+                        Revoke
+                      </button>
+                    </td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Bottom security reassurance note -->
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-mono-tabular">
+            <span>Tokens refresh every 30 days</span>
+            <span class="text-emerald-700 font-medium">● 4 signed-in keys</span>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- BOTTOM OF PAGE: Empty-state Example Card (No other devices) -->
+      <section class="rounded-[12px] bg-white border border-slate-200 border-dashed p-6 shadow-xs mb-10">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-4 text-center sm:text-left">
+            <div class="w-11 h-11 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 shrink-0">
+              <!-- Bell SVG icon -->
+              <svg class="w-5 h-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+              </svg>
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-slate-800">No other devices</h4>
+              <p class="text-xs text-slate-500 mt-0.5">You are only signed in here. Devices appear after you sign in elsewhere.</p>
+            </div>
+          </div>
+
+          <div class="shrink-0 flex items-center gap-3">
+            <button class="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-3 py-1.5 rounded-lg transition-colors border border-transparent hover:border-rose-200 flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>
+              </svg>
+              <span>Sign out everywhere</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer disclaimer -->
+      <footer class="mt-8 pt-4 border-t border-slate-200 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400">
+        <p>Independent community tracker. Not affiliated with TCS.</p>
+        <div class="flex items-center gap-4 mt-2 sm:mt-0 font-mono-tabular">
+          <span>PWA Push v2.4</span>
+          <span>•</span>
+          <span class="text-slate-500">ServiceWorker State: Active</span>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+</body>
+</html>

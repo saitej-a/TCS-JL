@@ -1,0 +1,29 @@
+# Core (Phase 1.2 — T1.3–T1.6). Pinned; revisit via pip-audit in Phase 10.3.
+Django==5.2.6
+djangorestframework==3.16.1
+psycopg[binary]==3.2.10
+gunicorn==23.0.0
+celery==5.5.3
+redis==6.4.0
+django-redis==6.0.0
+argon2-cffi==25.1.0
+djangorestframework-simplejwt==5.5.1
+django-cors-headers==4.7.0
+# Push notifications (Phase 6.2 — first new dependency since Phase 1 — accepted transitive weight per 6.2 D1)
+firebase-admin==7.6.0
+# Web Push / VAPID for the browser path (Phase 9.4 D2 — the second push dependency, per the
+# plan's "verify the latest 1.x" instruction pinned to 1.14.1 rather than the planned 1.6.1;
+# 2.x exists but is outside the researched/validated major line)
+pywebpush==1.14.1
+# Real-time WebSockets & ASGI (Phase 13 D-04)
+daphne==4.2.3
+channels==4.3.2
+channels-redis==4.3.0
+
+# Google Cloud Storage (Phase 11: Image Uploads)
+google-cloud-storage>=2.14.0
+google-cloud-vision>=3.4.0
+
+# Image processing
+Pillow>=10.0.0
+

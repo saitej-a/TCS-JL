@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TCS Joining Tracker — Announcements Admin (/admin/announcements)</title>
+  <!-- Google Fonts: Fira Sans for UI, Fira Code for metrics and timestamps -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Fira Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"Fira Code"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1', /* Primary Brand #0369A1 */
+              800: '#075985',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Fira Sans', system-ui, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .font-mono-val {
+      font-family: 'Fira Code', monospace;
+    }
+    /* Custom radio and checkbox styling */
+    input[type="checkbox"], input[type="radio"] {
+      accent-color: #0369a1;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 flex flex-col antialiased text-slate-800">
+
+  <!-- Main Container -->
+  <div class="flex-1 flex w-full max-w-[1440px] mx-auto min-h-screen">
+    
+    <!-- 240px Left Sidebar -->
+    <aside class="w-[240px] flex-shrink-0 bg-white border-r border-slate-200 flex flex-col justify-between select-none">
+      <div class="flex flex-col">
+        <!-- Logo & Wordmark -->
+        <div class="h-16 px-5 border-b border-slate-100 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-brand-700 flex items-center justify-center text-white shadow-sm flex-shrink-0">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="leading-none">
+            <div class="font-bold text-[15px] tracking-tight text-slate-900">Joining Tracker</div>
+            <div class="text-[10px] uppercase font-semibold tracking-wider text-brand-700 mt-0.5">Admin Console</div>
+          </div>
+        </div>
+
+        <!-- Primary Candidate Portal Nav -->
+        <div class="px-3 pt-4">
+          <div class="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Portal</div>
+          <nav class="space-y-0.5">
+            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13.5px] font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors">
+              <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/>
+              </svg>
+              <span>Dashboard</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13.5px] font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors">
+              <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span>Timeline</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13.5px] font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors">
+              <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+              </svg>
+              <span>Analytics</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13.5px] font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors">
+              <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+              <span>Community</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13.5px] font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors">
+              <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              <span>Notifications</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13.5px] font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors">
+              <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+              <span>Settings</span>
+            </a>
+          </nav>
+        </div>
+
+        <!-- Administration Nav Group -->
+        <div class="px-3 pt-6">
+          <div class="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Administration</div>
+          <nav class="space-y-1">
+            <!-- Reports Inactive -->
+            <a href="#" class="flex items-center justify-between px-3 py-2 rounded-lg text-[13.5px] font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors">
+              <div class="flex items-center gap-3">
+                <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <span>Reports</span>
+              </div>
+              <span class="font-mono-val text-[11px] bg-rose-100 text-rose-700 font-semibold px-1.5 py-0.5 rounded-full">4</span>
+            </a>
+
+            <!-- Announcements Active (Blue tint with left indicator bar) -->
+            <a href="#" class="relative flex items-center justify-between px-3 py-2 rounded-lg text-[13.5px] font-semibold bg-brand-50 text-brand-700">
+              <!-- Left indicator bar -->
+              <span class="absolute left-0 top-1 bottom-1 w-1 bg-brand-700 rounded-r"></span>
+              <div class="flex items-center gap-3 pl-1">
+                <svg class="w-4 h-4 text-brand-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
+                </svg>
+                <span>Announcements</span>
+              </div>
+              <span class="w-2 h-2 rounded-full bg-brand-700"></span>
+            </a>
+
+            <!-- Members Inactive -->
+            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13.5px] font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors">
+              <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+              <span>Members</span>
+            </a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- User Chip at bottom of Sidebar -->
+      <div class="p-3 border-t border-slate-200">
+        <div class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 border border-slate-200/60">
+          <div class="w-8 h-8 rounded-full bg-brand-700 text-white font-bold text-xs flex items-center justify-center flex-shrink-0 shadow-sm">
+            AS
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-1.5 leading-tight">
+              <span class="text-xs font-semibold text-slate-900 truncate">Ananya S.</span>
+              <span class="text-[9.5px] font-medium px-1.5 py-0.2 rounded bg-sky-100 text-sky-800 border border-sky-200/60 font-mono-val">Moderator</span>
+            </div>
+            <div class="text-[11px] text-slate-500 font-mono-val truncate mt-0.5">a***@example.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 min-w-0 flex flex-col bg-slate-50">
+      
+      <!-- Screen Header with Breadcrumb and Actions -->
+      <header class="px-8 pt-7 pb-6 bg-white border-b border-slate-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-2 text-xs font-medium text-slate-500 mb-1.5">
+              <span>Admin</span>
+              <svg class="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+              <span class="text-slate-900 font-semibold">Announcements</span>
+            </nav>
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Announcements</h1>
+            <p class="text-[13.5px] text-slate-600 mt-1">Broadcast to candidates. Everyone with notifications on also receives a push.</p>
+          </div>
+
+          <!-- Header Right Actions -->
+          <div class="flex items-center gap-3">
+            <button type="button" class="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 active:bg-slate-100 transition-colors shadow-sm">
+              <svg class="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              <span>Preview as member</span>
+            </button>
+            <button type="button" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-700 hover:bg-brand-800 active:bg-brand-900 rounded-lg transition-colors shadow-sm">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+              <span>Publish announcement</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Grid: 720px Composer Column on Left, 420px Published List on Right -->
+      <div class="flex-1 px-8 py-7 overflow-y-auto">
+        <div class="flex gap-7 items-start">
+          
+          <!-- LEFT COMPOSER CARD (720px) -->
+          <div class="w-[720px] flex-shrink-0 bg-white border border-slate-200 rounded-[12px] shadow-sm flex flex-col">
+            <!-- Card Header -->
+            <div class="px-6 py-4.5 border-b border-slate-100 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-sky-50 text-brand-700 flex items-center justify-center">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                  </svg>
+                </div>
+                <h2 class="font-bold text-base text-slate-900">New announcement</h2>
+              </div>
+              <span class="inline-flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full font-medium border border-emerald-200/60">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                Autosaved draft
+              </span>
+            </div>
+
+            <!-- Card Body / Form -->
+            <div class="p-6 space-y-5">
+              
+              <!-- Title Field -->
+              <div>
+                <label for="announcement-title" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Title <span class="text-rose-500">*</span>
+                </label>
+                <input 
+                  type="text" 
+                  id="announcement-title" 
+                  value="Joining formalities checklist updated" 
+                  class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-brand-700 focus:border-brand-700 shadow-sm"
+                />
+              </div>
+
+              <!-- Body Multiline Area with live counter -->
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <label for="announcement-body" class="block text-xs font-semibold uppercase tracking-wider text-slate-700">
+                    Body <span class="text-rose-500">*</span>
+                  </label>
+                  <span class="font-mono-val text-xs text-slate-500 font-medium">182 / 500</span>
+                </div>
+                <textarea 
+                  id="announcement-body" 
+                  rows="4" 
+                  placeholder="Write the update. Keep it under 500 characters." 
+                  class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-800 leading-relaxed focus:outline-none focus:ring-2 focus:ring-brand-700 focus:border-brand-700 shadow-sm resize-none"
+                >The verified list of documents needed for ILP onboarding and biometric enrollment has been refreshed based on September batch requirements. Please review your readiness checklist before reporting.</textarea>
+              </div>
+
+              <!-- Audience Selector as 3 Radio Chips -->
+              <div class="pt-1">
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">
+                  Audience <span class="text-rose-500">*</span>
+                </label>
+                <div class="grid grid-cols-3 gap-2.5">
+                  <!-- Option 1: Everyone -->
+                  <label class="flex items-center gap-2 p-3 rounded-lg border border-slate-200 bg-white hover:border-slate-300 cursor-pointer transition-colors">
+                    <input type="radio" name="audience" value="everyone" class="w-4 h-4 text-brand-700 focus:ring-brand-700">
+                    <div class="leading-tight">
+                      <div class="text-xs font-semibold text-slate-800">Everyone</div>
+                      <div class="font-mono-val text-[11px] text-slate-500 mt-0.5">(1,842)</div>
+                    </div>
+                  </label>
+
+                  <!-- Option 2: By category (Expanded & Selected) -->
+                  <label class="flex items-center gap-2 p-3 rounded-lg border-2 border-brand-700 bg-sky-50/50 cursor-pointer shadow-sm">
+                    <input type="radio" name="audience" value="category" checked class="w-4 h-4 text-brand-700 focus:ring-brand-700">
+                    <div class="leading-tight">
+                      <div class="text-xs font-bold text-brand-900">By category</div>
+                      <div class="font-mono-val text-[11px] text-brand-700 mt-0.5">3 tracks selected</div>
+                    </div>
+                  </label>
+
+                  <!-- Option 3: Selected members -->
+                  <label class="flex items-center gap-2 p-3 rounded-lg border border-slate-200 bg-white hover:border-slate-300 cursor-pointer transition-colors">
+                    <input type="radio" name="audience" value="selected" class="w-4 h-4 text-brand-700 focus:ring-brand-700">
+                    <div class="leading-tight">
+                      <div class="text-xs font-semibold text-slate-800">Selected members</div>
+                      <div class="text-[11px] text-slate-500 mt-0.5">Filter by handle</div>
+                    </div>
+                  </label>
+                </div>
+
+                <!-- Expanded Category Checkboxes Card -->
+                <div class="mt-3 p-3.5 bg-slate-50 border border-slate-200 rounded-lg">
+                  <div class="flex items-center gap-5">
+                    <label class="inline-flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer">
+                      <input type="checkbox" checked class="w-4 h-4 rounded text-brand-700 focus:ring-brand-700">
+                      <span>Assistant Professor</span>
+                    </label>
+                    <label class="inline-flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer">
+                      <input type="checkbox" checked class="w-4 h-4 rounded text-brand-700 focus:ring-brand-700">
+                      <span>Associate Professor</span>
+                    </label>
+                    <label class="inline-flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer">
+                      <input type="checkbox" checked class="w-4 h-4 rounded text-brand-700 focus:ring-brand-700">
+                      <span>System Engineer</span>
+                    </label>
+                  </div>
+                  <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-200/70 text-[11.5px] text-slate-500">
+                    <svg class="w-3.5 h-3.5 text-amber-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    <span>Digital and Prime excluded</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Scheduling Row -->
+              <div class="pt-1">
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-2">
+                  Dispatch Schedule <span class="text-rose-500">*</span>
+                </label>
+                <div class="flex items-center gap-6 p-3 bg-white border border-slate-200 rounded-lg">
+                  <label class="inline-flex items-center gap-2 text-xs font-semibold text-slate-900 cursor-pointer">
+                    <input type="radio" name="scheduling" value="now" checked class="w-4 h-4 text-brand-700 focus:ring-brand-700">
+                    <span>Send now</span>
+                  </label>
+
+                  <div class="h-4 w-px bg-slate-200"></div>
+
+                  <div class="flex items-center gap-3">
+                    <label class="inline-flex items-center gap-2 text-xs font-medium text-slate-500 cursor-pointer">
+                      <input type="radio" name="scheduling" value="later" class="w-4 h-4 text-brand-700 focus:ring-brand-700">
+                      <span>Schedule for later</span>
+                    </label>
+                    <div class="flex items-center gap-2 opacity-50">
+                      <input 
+                        type="date" 
+                        disabled 
+                        value="2026-09-28" 
+                        class="px-2.5 py-1 text-xs bg-slate-100 border border-slate-200 rounded text-slate-400 font-mono-val cursor-not-allowed"
+                      />
+                      <input 
+                        type="time" 
+                        disabled 
+                        value="10:00" 
+                        class="px-2 py-1 text-xs bg-slate-100 border border-slate-200 rounded text-slate-400 font-mono-val cursor-not-allowed"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Two Checkboxes: Push notification & Pin -->
+              <div class="space-y-2.5 pt-1">
+                <label class="flex items-start gap-2.5 cursor-pointer">
+                  <input type="checkbox" checked class="w-4 h-4 rounded text-brand-700 focus:ring-brand-700 mt-0.5">
+                  <div class="text-xs">
+                    <span class="font-medium text-slate-800">Also send a push notification</span>
+                    <p class="text-slate-500 text-[11px] mt-0.5">Pushes to candidates with active WebPush service workers outside quiet hours.</p>
+                  </div>
+                </label>
+                <label class="flex items-start gap-2.5 cursor-pointer">
+                  <input type="checkbox" class="w-4 h-4 rounded text-brand-700 focus:ring-brand-700 mt-0.5">
+                  <div class="text-xs">
+                    <span class="font-medium text-slate-800">Pin to the community feed</span>
+                    <p class="text-slate-500 text-[11px] mt-0.5">Displays a prominent banner at the top of candidate feeds for 72 hours.</p>
+                  </div>
+                </label>
+              </div>
+
+              <!-- Attach Link Field (Optional) -->
+              <div class="pt-1">
+                <label for="attach-link" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">
+                  Attach a link <span class="text-slate-400 font-normal lowercase">(optional)</span>
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                  </div>
+                  <input 
+                    type="url" 
+                    id="attach-link" 
+                    placeholder="https://tjt-tracker.internal/docs/joining-checklist" 
+                    value="https://tjt-tracker.internal/docs/onboarding-checklist-v2"
+                    class="w-full pl-9 pr-3.5 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono-val text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-700 focus:border-brand-700 shadow-sm"
+                  />
+                </div>
+                <p class="text-[11px] text-slate-500 mt-1">Include an internal document or guide for candidates to tap directly from the alert.</p>
+              </div>
+
+            </div>
+
+            <!-- Card Footer / Actions -->
+            <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 rounded-b-[12px] flex items-center justify-between">
+              <span class="text-xs text-slate-500 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                Dispatches broadcast cryptographically signed
+              </span>
+              <div class="flex items-center gap-2.5">
+                <button type="button" class="px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 active:bg-slate-100 transition-colors shadow-sm">
+                  Save as draft
+                </button>
+                <button type="button" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-brand-700 hover:bg-brand-800 active:bg-brand-900 rounded-lg transition-colors shadow-sm">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                  </svg>
+                  <span>Publish announcement</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- RIGHT CARD: PUBLISHED LIST (420px) -->
+          <div class="w-[420px] flex-shrink-0 bg-white border border-slate-200 rounded-[12px] shadow-sm flex flex-col">
+            
+            <!-- Card Header -->
+            <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <h2 class="font-bold text-base text-slate-900">Published</h2>
+                <span class="font-mono-val text-[11px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full border border-slate-200">
+                  7 this month
+                </span>
+              </div>
+              <button class="text-xs font-medium text-brand-700 hover:text-brand-800 hover:underline">
+                Refresh stats
+              </button>
+            </div>
+
+            <!-- Published List Rows -->
+            <div class="divide-y divide-slate-100">
+              
+              <!-- Row 1 -->
+              <div class="p-4 hover:bg-slate-50/70 transition-colors">
+                <div class="flex items-start justify-between gap-2">
+                  <h3 class="text-xs font-semibold text-slate-900 leading-snug">
+                    Joining formalities checklist updated
+                  </h3>
+                  <!-- Overflow Menu Button -->
+                  <div class="relative group flex-shrink-0">
+                    <button class="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+                      </svg>
+                    </button>
+                    <!-- Simulated Dropdown Menu on hover/focus -->
+                    <div class="hidden group-hover:block absolute right-0 top-6 w-32 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10 text-[11.5px]">
+                      <a href="#" class="block px-3 py-1.5 text-slate-700 hover:bg-slate-50">Edit</a>
+                      <a href="#" class="block px-3 py-1.5 text-slate-700 hover:bg-slate-50">Duplicate</a>
+                      <a href="#" class="block px-3 py-1.5 text-rose-600 hover:bg-rose-50 font-medium">Delete</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2 mt-1.5">
+                  <span class="font-mono-val text-[11px] text-slate-500">26 Sep 2026, 10:15</span>
+                  <span class="text-slate-300">·</span>
+                  <span class="text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-200/60 px-1.5 py-0.2 rounded">
+                    Everyone
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-3 mt-2 text-[11.5px] font-mono-val text-slate-600">
+                  <span class="flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    Seen <strong class="font-semibold text-slate-800">1,204</strong>
+                  </span>
+                  <span class="text-slate-300">·</span>
+                  <span class="flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    Pushed <strong class="font-semibold text-slate-800">861</strong>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Row 2 -->
+              <div class="p-4 hover:bg-slate-50/70 transition-colors">
+                <div class="flex items-start justify-between gap-2">
+                  <h3 class="text-xs font-semibold text-slate-900 leading-snug">
+                    Survey window extended to 30 Sep
+                  </h3>
+                  <!-- Overflow Menu Button -->
+                  <div class="relative group flex-shrink-0">
+                    <button class="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+                      </svg>
+                    </button>
+                    <div class="hidden group-hover:block absolute right-0 top-6 w-32 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10 text-[11.5px]">
+                      <a href="#" class="block px-3 py-1.5 text-slate-700 hover:bg-slate-50">Edit</a>
+                      <a href="#" class="block px-3 py-1.5 text-slate-700 hover:bg-slate-50">Duplicate</a>
+                      <a href="#" class="block px-3 py-1.5 text-rose-600 hover:bg-rose-50 font-medium">Delete</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2 mt-1.5">
+                  <span class="font-mono-val text-[11px] text-slate-500">24 Sep 2026, 16:40</span>
+                  <span class="text-slate-300">·</span>
+                  <span class="text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/60 px-1.5 py-0.2 rounded truncate max-w-[140px]">
+                    Assistant Professor
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-3 mt-2 text-[11.5px] font-mono-val text-slate-600">
+                  <span class="flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    Seen <strong class="font-semibold text-slate-800">612</strong>
+                  </span>
+                  <span class="text-slate-300">·</span>
+                  <span class="flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    Pushed <strong class="font-semibold text-slate-800">480</strong>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Row 3 -->
+              <div class="p-4 hover:bg-slate-50/70 transition-colors">
+                <div class="flex items-start justify-between gap-2">
+                  <h3 class="text-xs font-semibold text-slate-900 leading-snug">
+                    Scheduled maintenance on Sunday
+                  </h3>
+                  <!-- Overflow Menu Button -->
+                  <div class="relative group flex-shrink-0">
+                    <button class="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+                      </svg>
+                    </button>
+                    <div class="hidden group-hover:block absolute right-0 top-6 w-32 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10 text-[11.5px]">
+                      <a href="#" class="block px-3 py-1.5 text-slate-700 hover:bg-slate-50">Edit</a>
+                      <a href="#" class="block px-3 py-1.5 text-slate-700 hover:bg-slate-50">Duplicate</a>
+                      <a href="#" class="block px-3 py-1.5 text-rose-600 hover:bg-rose-50 font-medium">Delete</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2 mt-1.5">
+                  <span class="font-mono-val text-[11px] text-slate-500">21 Sep 2026, 09:00</span>
+                  <span class="text-slate-300">·</span>
+                  <span class="text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-200/60 px-1.5 py-0.2 rounded">
+                    Everyone
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-3 mt-2 text-[11.5px] font-mono-val text-slate-600">
+                  <span class="flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    Seen <strong class="font-semibold text-slate-800">998</strong>
+                  </span>
+                  <span class="text-slate-300">·</span>
+                  <span class="flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    Pushed <strong class="font-semibold text-slate-800">700</strong>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Row 4 -->
+              <div class="p-4 hover:bg-slate-50/70 transition-colors">
+                <div class="flex items-start justify-between gap-2">
+                  <h3 class="text-xs font-semibold text-slate-900 leading-snug">
+                    Welcome to the September cohort
+                  </h3>
+                  <!-- Overflow Menu Button -->
+                  <div class="relative group flex-shrink-0">
+                    <button class="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+                      </svg>
+                    </button>
+                    <div class="hidden group-hover:block absolute right-0 top-6 w-32 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10 text-[11.5px]">
+                      <a href="#" class="block px-3 py-1.5 text-slate-700 hover:bg-slate-50">Edit</a>
+                      <a href="#" class="block px-3 py-1.5 text-slate-700 hover:bg-slate-50">Duplicate</a>
+                      <a href="#" class="block px-3 py-1.5 text-rose-600 hover:bg-rose-50 font-medium">Delete</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2 mt-1.5">
+                  <span class="font-mono-val text-[11px] text-slate-500">12 Sep 2026, 08:00</span>
+                  <span class="text-slate-300">·</span>
+                  <span class="text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-200/60 px-1.5 py-0.2 rounded">
+                    Everyone
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-3 mt-2 text-[11.5px] font-mono-val text-slate-600">
+                  <span class="flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    Seen <strong class="font-semibold text-slate-800">1,530</strong>
+                  </span>
+                  <span class="text-slate-300">·</span>
+                  <span class="flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    Pushed <strong class="font-semibold text-slate-800">1,102</strong>
+                  </span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Card Bottom Link & Note -->
+            <div class="p-4 bg-slate-50 border-t border-slate-200 rounded-b-[12px] space-y-2">
+              <a href="#" class="inline-flex items-center gap-1 text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline">
+                <span>View all announcements</span>
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </a>
+              <p class="text-[11px] leading-relaxed text-slate-500">
+                Push delivery depends on each candidate's devices and quiet hours.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Footer 11px muted -->
+      <footer class="py-3 px-8 border-t border-slate-200 bg-white flex items-center justify-between text-[11px] text-slate-400">
+        <div>Independent community tracker. Not affiliated with TCS.</div>
+        <div class="font-mono-val text-[10.5px]">Admin Module v2.4 • System Active</div>
+      </footer>
+
+    </main>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Reset Password — TCS Joining Tracker</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {},
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "full": "9999px"
+          },
+          spacing: {},
+          fontFamily: {
+            headline: ["Inter", "sans-serif"],
+            display: ["Inter", "sans-serif"],
+            body: ["Inter", "sans-serif"],
+            label: ["Inter", "sans-serif"]
+          },
+          fontSize: {}
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .dot-pattern {
+      background-image: radial-gradient(rgba(100, 116, 139, 0.14) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col justify-between relative selection:bg-indigo-100 selection:text-indigo-800">
+<!-- Ambient Dot Grid Background Pattern -->
+<div class="fixed inset-0 pointer-events-none dot-pattern opacity-80 z-0"></div>
+<!-- Subtle Top Decorative Glow -->
+<div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-56 bg-indigo-50/60 blur-3xl pointer-events-none -z-10 rounded-full"></div>
+<!-- Header / Navigation Bar Placeholder (Suppressed shell per 'linear/transactional' rule) -->
+<header class="w-full pt-8 px-6 flex justify-between items-center max-w-6xl mx-auto relative z-10">
+<a class="inline-flex items-center gap-2.5 group transition-transform active:scale-[0.98]" href="#">
+<span class="bg-indigo-600 px-2.5 py-1 rounded-md text-xs font-bold text-white tracking-wide shadow-sm group-hover:bg-indigo-700 transition-colors">TJT</span>
+<span class="font-headline text-slate-900 font-bold text-base tracking-tight">TCS Joining Tracker</span>
+</a>
+<div class="text-xs font-medium text-slate-500 hidden sm:flex items-center gap-1.5 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-slate-200/80 shadow-xs">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      Batch 2024–2025 Active
+    </div>
+</header>
+<!-- Main Content Container: Centered Card -->
+<main class="flex-grow flex items-center justify-center px-4 py-10 relative z-10">
+<div class="max-w-md w-full bg-white rounded-2xl shadow-xl border border-slate-100 p-8 sm:p-10 transition-all duration-200">
+<!-- Brand Row inside Card -->
+<div class="flex items-center gap-2.5 mb-2">
+<span class="bg-indigo-600 px-2.5 py-1 rounded-md text-xs font-bold text-white tracking-wide shadow-xs">TJT</span>
+<span class="text-slate-900 font-bold text-base tracking-tight font-headline">TCS Joining Tracker</span>
+</div>
+<!-- Heading & Explanatory Subheader -->
+<h1 class="text-[28px] font-bold text-slate-900 tracking-tight mt-6 mb-2 leading-tight font-headline">Reset your password</h1>
+<p class="text-sm text-slate-500 leading-relaxed mb-6">
+        Enter the email you registered with and we will send you a reset link.
+      </p>
+<!-- Reset Password Form -->
+<form class="space-y-4" id="reset-form" onsubmit="event.preventDefault(); document.getElementById('success-banner').classList.remove('hidden');">
+<div>
+<label class="text-sm font-medium text-slate-700 mb-1.5 block" for="email">
+            Email address
+          </label>
+<div class="relative">
+<input class="border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-all w-full bg-slate-50/30 hover:border-slate-300" id="email" name="email" placeholder="candidate@outlook.com" required="" type="email"/>
+</div>
+</div>
+<!-- CTA Button -->
+<button class="w-full h-11 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-medium text-sm rounded-lg shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 flex items-center justify-center gap-2 mt-5 cursor-pointer" type="submit">
+<span>Send reset link</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</form>
+<!-- Success Alert Strip (State Showcase) -->
+<div class="bg-emerald-50 rounded-lg border border-emerald-200/80 p-3.5 flex items-start gap-3 mt-4 transition-all duration-300" id="success-banner">
+<span class="material-symbols-outlined text-emerald-600 text-xl shrink-0 select-none" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex-1">
+<p class="text-xs sm:text-sm font-medium text-emerald-700 leading-snug">
+            If that email exists, a reset link is on its way.
+          </p>
+<p class="text-[12px] text-emerald-600/90 mt-0.5">Please check your inbox or spam folder within 2–3 minutes.</p>
+</div>
+</div>
+<!-- Assistance Cardlet / Security Hint -->
+<div class="mt-6 pt-5 border-t border-slate-100 flex items-center gap-2.5 text-slate-500 text-xs">
+<span class="material-symbols-outlined text-slate-400 text-base shrink-0" data-icon="lock_reset">lock_reset</span>
+<span>Secure password reset with single-use magic link verification.</span>
+</div>
+<!-- Back Link -->
+<div class="mt-6 text-center">
+<a class="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors py-1 group" href="#">
+<span class="material-symbols-outlined text-base transition-transform group-hover:-translate-x-0.5" data-icon="arrow_back">arrow_back</span>
+<span>Back to sign in</span>
+</a>
+</div>
+</div>
+</main>
+<!-- Screen Footer with Mandatory Disclaimer -->
+<footer class="w-full relative z-10 px-6 pt-8 pb-6">
+<div class="max-w-xl mx-auto flex flex-col items-center gap-3">
+<div class="flex items-center gap-4 text-xs text-slate-400">
+<a class="hover:text-slate-600 transition-colors" href="#">Privacy Policy</a>
+<span class="text-slate-300">•</span>
+<a class="hover:text-slate-600 transition-colors" href="#">Terms of Service</a>
+<span class="text-slate-300">•</span>
+<a class="hover:text-slate-600 transition-colors" href="#">Community Guidelines</a>
+</div>
+<p class="text-[11px] text-slate-400 text-center leading-relaxed font-normal">
+        TCS Joining Tracker is an independent community project and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Tata Consultancy Services (TCS) or any of its subsidiaries.
+      </p>
+</div>
+</footer>
+</body></html>

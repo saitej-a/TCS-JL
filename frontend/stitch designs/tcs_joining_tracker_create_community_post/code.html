@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-slate-50" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create Community Post - TJT Tracker</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {},
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {},
+          fontFamily: {
+            headline: ["Inter"],
+            display: ["Inter"],
+            body: ["Inter"],
+            label: ["Inter"]
+          },
+          fontSize: {}
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .material-symbols-outlined.fill-icon {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body class="h-full font-body text-slate-900 bg-slate-50 antialiased selection:bg-indigo-100 selection:text-indigo-900">
+<!-- Left Sidebar Shell (JSON Definition Execution) -->
+<aside class="fixed top-0 left-0 h-screen w-60 z-30 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm flex flex-col justify-between p-4">
+<!-- Top Brand & Main Navigation -->
+<div class="space-y-6">
+<div class="flex items-center gap-2.5 px-2">
+<div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-headline font-bold text-base shadow-sm">
+          T
+        </div>
+<div>
+<span class="font-headline text-lg font-bold tracking-tight text-slate-900 dark:text-white block leading-5">TJT Tracker</span>
+<span class="text-[11px] font-medium text-slate-400">Recruitment Status</span>
+</div>
+</div>
+<!-- Quick Action CTA -->
+<button class="w-full py-2 px-3 text-xs font-semibold rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200/60 transition-colors duration-150 flex items-center justify-center gap-1.5 active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[16px]">add_circle</span>
+<span>+ Share Update</span>
+</button>
+<!-- Main Navigation List -->
+<nav class="space-y-1 font-body text-sm leading-6 tracking-normal">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors duration-150 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- Joining Letters -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors duration-150 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="mark_email_read">mark_email_read</span>
+<span>Joining Letters</span>
+</a>
+<!-- Surveys -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors duration-150 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="poll">poll</span>
+<span>Surveys</span>
+</a>
+<!-- Community Forum (ACTIVE) -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-semibold transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px] text-indigo-600 dark:text-indigo-400 fill-icon" data-icon="forum" data-weight="fill" style="font-variation-settings: 'FILL' 1;">forum</span>
+<span>Community Forum</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors duration-150 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<!-- Sidebar Bottom Footer -->
+<div class="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-1 text-xs">
+<a class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="privacy_tip">privacy_tip</span>
+<span>Privacy Policy</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="help">help</span>
+<span>Help &amp; FAQ</span>
+</a>
+</div>
+</aside>
+<!-- Top Navigation Bar (Fixed Pl-60) -->
+<header class="sticky top-0 z-20 w-full pl-60 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-sm">
+<div class="flex items-center justify-between h-16 px-6 gap-4 w-full">
+<!-- Search on Left -->
+<div class="relative w-full max-w-md">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-[18px]" data-icon="search">search</span>
+</span>
+<input class="w-full pl-9 pr-4 py-1.5 text-xs text-slate-800 placeholder-slate-400 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 transition-all" placeholder="Search discussions, wave alerts, batch codes..." type="text"/>
+</div>
+<!-- Trailing Action Cluster -->
+<div class="flex items-center gap-3">
+<!-- Campaign Alert -->
+<button aria-label="Campaign" class="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="campaign">campaign</span>
+</button>
+<!-- Notifications -->
+<button aria-label="Notifications" class="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors relative" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-600 rounded-full ring-2 ring-white"></span>
+</button>
+<div class="h-5 w-px bg-slate-200"></div>
+<!-- Trailing Primary Button -->
+<button class="h-8 px-3 text-xs font-semibold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-all flex items-center gap-1 active:scale-[0.98] shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>+ Post</span>
+</button>
+<!-- User Profile Pill -->
+<div class="flex items-center gap-2 pl-1.5">
+<div class="w-8 h-8 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center text-xs font-bold text-slate-700 uppercase">
+            ST
+          </div>
+<div class="text-left hidden lg:block">
+<span class="block text-xs font-semibold text-slate-800 leading-tight">Sai T.</span>
+<span class="block text-[11px] text-slate-500 font-medium leading-none">Digital 2025</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Viewport Layout Canvas (pl-60) -->
+<div class="pl-60 min-h-[calc(100vh-64px)] flex flex-col justify-between">
+<main class="w-full max-w-7xl mx-auto px-6 py-6 flex-1">
+<!-- Top Breadcrumb Departure Action -->
+<div class="mb-5">
+<a class="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-indigo-600 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[16px] group-hover:-translate-x-0.5 transition-transform" data-icon="arrow_back">arrow_back</span>
+<span>← Back to Community</span>
+</a>
+</div>
+<!-- 2-Column Desktop Grid for Post Form + Right Insights Sidebar -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- CENTER MAIN COLUMN: Post Creation Form (8 Cols) -->
+<div class="lg:col-span-8">
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm p-8">
+<!-- Card Header Section -->
+<div class="border-b border-slate-100 pb-5 mb-6">
+<h1 class="font-headline text-2xl font-bold tracking-tight text-slate-900 mb-1">Create a new post</h1>
+<p class="text-sm text-slate-500 leading-relaxed">
+                Share an update, ask a question, or report a milestone. Be specific — never share OTPs or portal credentials.
+              </p>
+</div>
+<!-- Form Content -->
+<form class="space-y-6" id="post-form">
+<!-- 1. Title Input -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="text-xs font-semibold text-slate-800 tracking-wide" for="post-title">
+                    Title <span class="text-rose-500">*</span>
+</label>
+<span class="text-[11px] text-slate-400 font-medium">Max 200 characters</span>
+</div>
+<input class="w-full px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 transition" id="post-title" maxlength="200" placeholder="e.g. Has anyone from 2025 Digital Hyderabad received their JL yet?" required="" type="text"/>
+</div>
+<!-- 2. Category Pill / Chips -->
+<div>
+<label class="block text-xs font-semibold text-slate-800 mb-2 tracking-wide">
+                  Category <span class="text-rose-500">*</span>
+</label>
+<div class="flex flex-wrap gap-2" id="category-chips">
+<button class="category-chip px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors" type="button">
+                    General
+                  </button>
+<button class="category-chip active-chip px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-600 text-white shadow-sm border border-indigo-600" type="button">
+                    Joining Letter
+                  </button>
+<button class="category-chip px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors" type="button">
+                    Offer Letter
+                  </button>
+<button class="category-chip px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors" type="button">
+                    Joining Date
+                  </button>
+<button class="category-chip px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors" type="button">
+                    Location
+                  </button>
+<button class="category-chip px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors" type="button">
+                    Interview
+                  </button>
+<button class="category-chip px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors" type="button">
+                    Documents
+                  </button>
+<button class="category-chip px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors" type="button">
+                    Discussion
+                  </button>
+<button class="category-chip px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors" type="button">
+                    TCS Process
+                  </button>
+<button class="category-chip px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors" type="button">
+                    Help
+                  </button>
+<button class="category-chip px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors" type="button">
+                    Announcement
+                  </button>
+<button class="category-chip px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors" type="button">
+                    Other
+                  </button>
+</div>
+</div>
+<!-- 3. Body Multiline Textarea -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="text-xs font-semibold text-slate-800 tracking-wide" for="post-body">
+                    Body <span class="text-rose-500">*</span>
+</label>
+<span class="text-[11px] text-slate-400 font-medium" id="char-counter">0 / 5000 characters</span>
+</div>
+<textarea class="w-full px-3.5 py-3 text-sm text-slate-800 placeholder-slate-400 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 transition resize-y leading-relaxed" id="post-body" maxlength="5000" placeholder="Share the details: batch, hiring type, region, dates..." required="" rows="9"></textarea>
+</div>
+<!-- 4. Amber Warning Shield Info Strip -->
+<div class="p-3.5 rounded-lg bg-amber-50 border border-amber-200/80 flex items-start gap-3">
+<span class="material-symbols-outlined text-amber-600 text-[20px] shrink-0 mt-0.5" data-icon="shield">shield</span>
+<p class="text-xs text-amber-900 leading-relaxed font-normal">
+<strong class="font-semibold text-amber-950">Posts are scanned automatically</strong> — content matching known scam patterns is blocked. Identical posts cannot be re-submitted within 60 minutes.
+                </p>
+</div>
+<!-- 5. Anonymity Toggle Row -->
+<div class="p-4 rounded-lg bg-slate-50/80 border border-slate-200 flex items-center justify-between">
+<div>
+<label class="text-xs font-semibold text-slate-900 block cursor-pointer" for="anon-toggle">
+                    Post as Anonymous Candidate
+                  </label>
+<span class="text-[12px] text-slate-500 block leading-tight">
+                    Your identity mode is respected — anonymity is a supported choice.
+                  </span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" id="anon-toggle" type="checkbox"/>
+<div class="w-10 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+</label>
+</div>
+<!-- Actions Footer -->
+<div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+<a class="text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors" href="#">
+                  ← Back to Community
+                </a>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 text-xs font-semibold text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors active:scale-[0.98]" type="button">
+                    Cancel
+                  </button>
+<button class="px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 active:scale-[0.98]" type="submit">
+                    Publish Post
+                  </button>
+</div>
+</div>
+</form>
+</div>
+</div>
+<!-- RIGHT COLUMN: Guidelines & Live Tracker Insights (4 Cols) -->
+<div class="lg:col-span-4 space-y-6">
+<!-- Card 1: Posting Guidelines -->
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-indigo-600 text-[20px]" data-icon="verified_user">verified_user</span>
+<h2 class="font-headline text-sm font-bold text-slate-900 tracking-tight">Posting Guidelines</h2>
+</div>
+<ul class="space-y-3.5 text-xs text-slate-600">
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-emerald-600 text-[18px] shrink-0 mt-0.5" data-icon="check_circle">check_circle</span>
+<span><strong class="font-medium text-slate-900">No confidential OTPs/NextStep passwords:</strong> TCS never requests credentials in forums. Redact all private registration codes.</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-emerald-600 text-[18px] shrink-0 mt-0.5" data-icon="check_circle">check_circle</span>
+<span><strong class="font-medium text-slate-900">Specify batch and location:</strong> Mention candidate stream (Ninja, Digital, Prime) and assigned base location for relevant insights.</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-emerald-600 text-[18px] shrink-0 mt-0.5" data-icon="check_circle">check_circle</span>
+<span><strong class="font-medium text-slate-900">Respect peer privacy:</strong> Refrain from mentioning employee names, recruiter phone numbers, or unverified leaks.</span>
+</li>
+</ul>
+<div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-medium">
+<span>Community Moderation v3.4</span>
+<a class="text-indigo-600 hover:underline" href="#">Read Full Policy</a>
+</div>
+</div>
+<!-- Card 2: Community Pulse Summary -->
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-indigo-600 text-[20px]" data-icon="monitoring">monitoring</span>
+<h2 class="font-headline text-sm font-bold text-slate-900 tracking-tight">Community Pulse</h2>
+</div>
+<span class="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Live
+              </span>
+</div>
+<!-- Bento Mini-Metrics Grid -->
+<div class="grid grid-cols-2 gap-3 mb-4">
+<div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+<div class="text-[11px] text-slate-500 font-medium">Candidates Tracked</div>
+<div class="text-xl font-bold text-slate-900 mt-1">1,248</div>
+<div class="text-[10px] text-emerald-600 font-medium mt-0.5">↑ 42 joined today</div>
+</div>
+<div class="p-3 bg-indigo-50/50 rounded-lg border border-indigo-100/60">
+<div class="text-[11px] text-indigo-800 font-medium">Received JL</div>
+<div class="text-xl font-bold text-indigo-700 mt-1">210</div>
+<div class="text-[10px] text-indigo-600 font-medium mt-0.5">16.8% conversion</div>
+</div>
+</div>
+<!-- Progress Bar -->
+<div>
+<div class="flex items-center justify-between text-[11px] text-slate-500 mb-1.5 font-medium">
+<span>Current Batch Joining Wave (FY25)</span>
+<span class="text-slate-800 font-semibold">Wave 4 Active</span>
+</div>
+<div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+<div class="bg-indigo-600 h-2 rounded-full" style="width: 68%"></div>
+</div>
+</div>
+<!-- Notice Snippet -->
+<p class="mt-4 text-[11px] text-slate-400 leading-relaxed border-t border-slate-100 pt-3">
+              Data aggregated via voluntary candidate reports across Hyderabad, Pune, Bengaluru, and Chennai hubs.
+            </p>
+</div>
+</div>
+</div>
+</main>
+<!-- TCS Disclaimer Footer Strip (Strict Shared Component Execution) -->
+<footer class="sticky bottom-0 z-20 w-full border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+<div class="flex flex-col md:flex-row items-center justify-between py-2 px-6 gap-2 text-center md:text-left">
+<p class="font-body text-[11px] leading-relaxed text-slate-500 dark:text-slate-400 tracking-wide">
+          TCS Joining Tracker is an independent community project and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Tata Consultancy Services (TCS) or any of its subsidiaries.
+        </p>
+<div class="flex items-center gap-4 text-[11px] shrink-0">
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline transition-colors duration-150" href="#">Disclaimer</a>
+<span class="text-slate-300 dark:text-slate-700">•</span>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline transition-colors duration-150" href="#">Privacy</a>
+<span class="text-slate-300 dark:text-slate-700">•</span>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline transition-colors duration-150" href="#">Report Data</a>
+</div>
+</div>
+</footer>
+</div>
+<!-- Inline Interaction Logic -->
+<script>
+    // Live Character Counter for Textarea
+    const bodyInput = document.getElementById('post-body');
+    const counterDisplay = document.getElementById('char-counter');
+    
+    if (bodyInput && counterDisplay) {
+      bodyInput.addEventListener('input', () => {
+        const length = bodyInput.value.length;
+        counterDisplay.textContent = `${length} / 5000 characters`;
+        if (length > 4800) {
+          counterDisplay.classList.add('text-amber-600', 'font-semibold');
+        } else {
+          counterDisplay.classList.remove('text-amber-600', 'font-semibold');
+        }
+      });
+    }
+
+    // Category Chip Selection Toggle
+    const chipButtons = document.querySelectorAll('.category-chip');
+    chipButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        chipButtons.forEach(b => {
+          b.className = 'category-chip px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors';
+        });
+        button.className = 'category-chip active-chip px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-600 text-white shadow-sm border border-indigo-600';
+      });
+    });
+  </script>
+</body></html>

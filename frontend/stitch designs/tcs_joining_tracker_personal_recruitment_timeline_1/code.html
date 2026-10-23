@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-slate-50" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TJT Tracker — Personal Recruitment Timeline</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {},
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            headline: ["Inter", "sans-serif"],
+            display: ["Inter", "sans-serif"],
+            body: ["Inter", "sans-serif"],
+            label: ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800 font-body antialiased flex flex-col">
+<!-- Top Announcement Notification Banner -->
+<aside aria-label="Announcement" class="bg-indigo-900 text-white text-xs py-2 px-4 sticky top-0 z-50 flex items-center justify-center gap-2 border-b border-indigo-800">
+<span class="inline-flex items-center justify-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-500/40 text-indigo-200 tracking-wider">NOTICE</span>
+<span class="font-medium">TCS 2025 Digital Joining Letters reported in Hyderabad region.</span>
+<a class="underline hover:text-indigo-200 font-semibold inline-flex items-center gap-0.5 ml-1 transition-colors" href="#">
+      Read Update <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</aside>
+<div class="flex flex-1">
+<!-- LEFT SIDEBAR (Shared Component: SideNavBar) -->
+<aside class="fixed top-0 left-0 h-screen w-60 z-30 bg-white border-r border-slate-200 shadow-sm flex flex-col justify-between p-4">
+<!-- Top Section -->
+<div class="flex flex-col gap-6">
+<!-- Logo / Brand Header -->
+<div class="flex items-center gap-3 pt-1">
+<div class="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-inner tracking-wider">
+            TJT
+          </div>
+<div class="flex flex-col">
+<span class="font-headline text-base font-bold tracking-tight text-slate-900 leading-tight">TJT Tracker</span>
+<span class="text-[11px] font-medium text-slate-500">Recruitment Status</span>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex flex-col space-y-1 font-body text-sm leading-6 tracking-normal">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-slate-500 text-lg">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- ACTIVE TAB: Timeline -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-indigo-50 text-indigo-600 font-semibold transition-colors duration-150 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-indigo-600 text-lg">timeline</span>
+<span>Timeline</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-slate-500 text-lg">poll</span>
+<span>Surveys</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-slate-500 text-lg">forum</span>
+<span>Community Forum</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-slate-500 text-lg">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<!-- Primary CTA in Sidebar -->
+<div class="pt-2">
+<button class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm py-2.5 px-4 rounded-lg shadow-sm active:scale-[0.98] transition-all" type="button">
+<span class="material-symbols-outlined text-base">add</span>
+<span>+ Share Update</span>
+</button>
+</div>
+</div>
+<!-- Bottom / Footer Mini Links -->
+<div class="border-t border-slate-200 pt-3">
+<ul class="space-y-1 font-body text-xs text-slate-500">
+<li>
+<a class="flex items-center gap-2 px-2 py-1.5 rounded hover:text-slate-900 hover:bg-slate-100 transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">privacy_tip</span>
+<span>Privacy Policy</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-2 px-2 py-1.5 rounded hover:text-slate-900 hover:bg-slate-100 transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">help</span>
+<span>Help &amp; FAQ</span>
+</a>
+</li>
+</ul>
+</div>
+</aside>
+<!-- MAIN WRAPPER (TopNavBar + Center Content + Right Rail) -->
+<div class="flex-1 ml-60 flex flex-col min-h-screen">
+<!-- TOP NAVBAR (Shared Component: TopNavBar) -->
+<header class="sticky top-0 z-20 w-full bg-white border-b border-slate-200 shadow-sm flex items-center justify-between h-16 px-6 gap-4">
+<!-- Search bar on left -->
+<div class="flex items-center flex-1 max-w-lg">
+<div class="relative w-full">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-lg">search</span>
+</span>
+<input class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all" placeholder="Search community reports, batch, region..." type="text"/>
+</div>
+</div>
+<!-- Trailing actions & Profile -->
+<div class="flex items-center gap-3">
+<!-- Quick Post Button -->
+<button class="hidden sm:inline-flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-semibold text-xs px-3 py-2 rounded-lg border border-indigo-200 transition-colors active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-base">post_add</span>
+<span>+ Post</span>
+</button>
+<!-- Campaign / Announce Icon -->
+<button aria-label="Announcements" class="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors relative" type="button">
+<span class="material-symbols-outlined text-xl">campaign</span>
+</button>
+<!-- Notification Bell with Badge (3) -->
+<button aria-label="Notifications" class="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors relative" type="button">
+<span class="material-symbols-outlined text-xl">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white font-bold text-[10px] rounded-full flex items-center justify-center leading-none">3</span>
+</button>
+<div class="h-6 w-px bg-slate-200 mx-1"></div>
+<!-- User avatar badge -->
+<div class="flex items-center gap-2 pl-1 cursor-pointer">
+<div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center ring-2 ring-indigo-100">
+              ST
+            </div>
+<div class="hidden xl:flex flex-col text-left">
+<span class="text-xs font-semibold text-slate-800 leading-tight">Sai T.</span>
+<span class="text-[10px] text-slate-500">Digital 2025</span>
+</div>
+</div>
+</div>
+</header>
+<!-- 2-COLUMN INNER BODY (Center Main Timeline + Right Rail) -->
+<main class="flex-1 flex flex-col xl:flex-row p-6 gap-6 max-w-7xl w-full mx-auto">
+<!-- CENTER MAIN CONTENT AREA -->
+<section class="flex-1 flex flex-col gap-6 min-w-0">
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+<div>
+<h1 class="font-headline text-2xl font-bold tracking-tight text-slate-900">
+                MY RECRUITMENT TIMELINE
+              </h1>
+<p class="text-slate-500 text-sm mt-0.5">
+                Track, log, and verify each milestone in your TCS recruitment journey.
+              </p>
+</div>
+<div>
+<button class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm px-4 py-2.5 rounded-lg shadow-sm transition-all active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-lg">add_circle</span>
+<span>+ Add Milestone Event</span>
+</button>
+</div>
+</div>
+<!-- Status Bar / Filter Row -->
+<div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Current Status:</span>
+<button class="inline-flex items-center gap-2 bg-amber-50 text-amber-800 border border-amber-300 font-semibold text-xs px-3 py-1.5 rounded-full hover:bg-amber-100 transition-colors" type="button">
+<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+<span>Waiting for Joining Letter</span>
+<span class="material-symbols-outlined text-xs">arrow_drop_down</span>
+</button>
+</div>
+<!-- Quick stats chips -->
+<div class="flex flex-wrap items-center gap-2">
+<span class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 text-xs px-2.5 py-1 rounded-md font-medium">
+<span class="material-symbols-outlined text-xs text-slate-500">calendar_month</span>
+                Days since offer: <strong class="font-semibold text-slate-900">42 days</strong>
+</span>
+<span class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 text-xs px-2.5 py-1 rounded-md font-medium">
+<span class="material-symbols-outlined text-xs text-slate-500">checklist</span>
+                Survey completed: <strong class="font-semibold text-slate-900">32 days ago</strong>
+</span>
+<span class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs px-2.5 py-1 rounded-md font-medium">
+<span class="material-symbols-outlined text-xs text-emerald-600">verified</span>
+                Verification: <strong class="font-semibold text-emerald-900">Hash Verified</strong>
+</span>
+</div>
+</div>
+<!-- Main Roadmap Card -->
+<div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-6 border-b border-slate-100 gap-2">
+<div>
+<h2 class="font-headline text-lg font-bold text-slate-900 tracking-tight">MILESTONE TIMELINE</h2>
+<p class="text-xs text-slate-500">Reverse chronological view (Latest first)</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-medium">6 Total Milestones</span>
+<button class="text-xs text-indigo-600 font-semibold hover:underline" type="button">Expand all notes</button>
+</div>
+</div>
+<!-- Vertical Roadmap -->
+<div class="relative pl-6 sm:pl-8 space-y-8 before:absolute before:left-3 sm:before:left-4 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+<!-- PENDING NODE 2 (Top-most future) -->
+<div class="relative group">
+<!-- Amber Circle Node Indicator -->
+<div class="absolute -left-6 sm:-left-8 top-0.5 w-6 h-6 rounded-full bg-amber-100 border-2 border-amber-400 flex items-center justify-center text-amber-600">
+<span class="material-symbols-outlined text-xs animate-spin" style="animation-duration: 4s;">hourglass_top</span>
+</div>
+<div class="bg-amber-50/40 rounded-xl p-4 sm:p-5 border border-amber-200/80 hover:border-amber-300 transition-colors">
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<span class="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-800">Upcoming Step</span>
+<h3 class="text-sm font-semibold tracking-tight text-slate-800 uppercase">
+                          PENDING — JOINING DATE &amp; ONBOARDING
+                        </h3>
+</div>
+<p class="text-slate-500 text-xs mt-1 font-medium">Expected July – August 2026 (Est.)</p>
+<p class="text-slate-600 text-sm mt-2">
+                        Waiting for onboarding batch allocation and official reporting center confirmation.
+                      </p>
+</div>
+<div>
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium shadow-sm transition-colors" type="button">
+<span class="material-symbols-outlined text-xs">edit_calendar</span>
+<span>[Set Date]</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- PENDING NODE 1 -->
+<div class="relative group">
+<!-- Amber Circle Node Indicator -->
+<div class="absolute -left-6 sm:-left-8 top-0.5 w-6 h-6 rounded-full bg-amber-100 border-2 border-amber-500 flex items-center justify-center text-amber-600 shadow-sm">
+<span class="material-symbols-outlined text-xs">schedule</span>
+</div>
+<div class="bg-amber-50/60 rounded-xl p-4 sm:p-5 border border-amber-300/90 shadow-sm hover:border-amber-400 transition-colors">
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<span class="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-amber-200 text-amber-900">Current Blocker</span>
+<h3 class="text-sm font-semibold tracking-tight text-slate-800 uppercase">
+                          PENDING — JOINING LETTER
+                        </h3>
+</div>
+<p class="text-amber-700 text-xs mt-1 font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                        Awaiting dispatch · Expected wave: Wave 2
+                      </p>
+<p class="text-slate-700 text-sm mt-2">
+                        Waiting for official letter issuance. Previous regional batch received letters within 35–45 days.
+                      </p>
+<div class="mt-3 flex items-center gap-2 text-[11px] text-slate-500">
+<span class="material-symbols-outlined text-sm text-slate-400">info</span>
+<span>Tracked against 210 Hyderabad candidates</span>
+</div>
+</div>
+<div>
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-indigo-600 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-all active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-xs">mark_email_read</span>
+<span>[Mark as Received]</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- COMPLETED NODE 1 -->
+<div class="relative group">
+<!-- Emerald-500 Circle Node Indicator -->
+<div class="absolute -left-6 sm:-left-8 top-0.5 w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-xs font-bold">check</span>
+</div>
+<div class="bg-white rounded-xl p-4 sm:p-5 border border-slate-200 hover:border-slate-300 transition-colors">
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+<div class="flex-1">
+<div class="flex items-baseline gap-2">
+<h3 class="text-sm font-semibold tracking-tight text-slate-900 uppercase">
+                          15 May 2026 — JOINING READINESS SURVEY SUBMITTED
+                        </h3>
+</div>
+<p class="text-slate-600 text-sm mt-1.5">
+                        Location preferences: Hyderabad, Bangalore. Declared immediate availability on portal.
+                      </p>
+<div class="flex flex-wrap gap-2 mt-3">
+<span class="text-[11px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                          Survey ID: #SRV-8942
+                        </span>
+<span class="text-[11px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                          Portal: TCS NextStep
+                        </span>
+</div>
+</div>
+<!-- Small ghost actions -->
+<div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
+<button class="text-xs text-slate-400 hover:text-slate-700 px-2 py-1 rounded hover:bg-slate-100 transition-colors" type="button">
+                        [Edit]
+                      </button>
+<button class="text-xs text-slate-400 hover:text-rose-600 px-2 py-1 rounded hover:bg-rose-50 transition-colors" type="button">
+                        [Delete]
+                      </button>
+</div>
+</div>
+</div>
+</div>
+<!-- COMPLETED NODE 2 -->
+<div class="relative group">
+<div class="absolute -left-6 sm:-left-8 top-0.5 w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-xs font-bold">check</span>
+</div>
+<div class="bg-white rounded-xl p-4 sm:p-5 border border-slate-200 hover:border-slate-300 transition-colors">
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+<div class="flex-1">
+<h3 class="text-sm font-semibold tracking-tight text-slate-900 uppercase">
+                        05 May 2026 — OFFER LETTER ISSUED
+                      </h3>
+<p class="text-slate-600 text-sm mt-1.5">
+                        Digital stream offer accepted on TCS NextStep.
+                      </p>
+<div class="flex flex-wrap gap-2 mt-3">
+<span class="text-[11px] font-medium bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded border border-indigo-100">
+                          Digital Stream
+                        </span>
+<span class="text-[11px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                          CTC: 7.0 LPA
+                        </span>
+<span class="text-[11px] font-medium bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-100">
+                          Signed &amp; Submitted
+                        </span>
+</div>
+</div>
+<div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
+<button class="text-xs text-slate-400 hover:text-slate-700 px-2 py-1 rounded hover:bg-slate-100 transition-colors" type="button">
+                        [Edit]
+                      </button>
+<button class="text-xs text-slate-400 hover:text-rose-600 px-2 py-1 rounded hover:bg-rose-50 transition-colors" type="button">
+                        [Delete]
+                      </button>
+</div>
+</div>
+</div>
+</div>
+<!-- COMPLETED NODE 3 -->
+<div class="relative group">
+<div class="absolute -left-6 sm:-left-8 top-0.5 w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-xs font-bold">check</span>
+</div>
+<div class="bg-white rounded-xl p-4 sm:p-5 border border-slate-200 hover:border-slate-300 transition-colors">
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+<div class="flex-1">
+<h3 class="text-sm font-semibold tracking-tight text-slate-900 uppercase">
+                        05 May 2026 — SELECTION COMMUNICATED
+                      </h3>
+<p class="text-slate-600 text-sm mt-1.5">
+                        Received official selection email.
+                      </p>
+</div>
+<div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
+<button class="text-xs text-slate-400 hover:text-slate-700 px-2 py-1 rounded hover:bg-slate-100 transition-colors" type="button">
+                        [Edit]
+                      </button>
+<button class="text-xs text-slate-400 hover:text-rose-600 px-2 py-1 rounded hover:bg-rose-50 transition-colors" type="button">
+                        [Delete]
+                      </button>
+</div>
+</div>
+</div>
+</div>
+<!-- COMPLETED NODE 4 (Bottom-most anchor) -->
+<div class="relative group">
+<div class="absolute -left-6 sm:-left-8 top-0.5 w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-xs font-bold">check</span>
+</div>
+<div class="bg-white rounded-xl p-4 sm:p-5 border border-slate-200 hover:border-slate-300 transition-colors">
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+<div class="flex-1">
+<h3 class="text-sm font-semibold tracking-tight text-slate-900 uppercase">
+                        23 Apr 2026 — TECHNICAL &amp; HR INTERVIEW
+                      </h3>
+<p class="text-slate-600 text-sm mt-1.5">
+                        Conducted at Hyderabad TCS center.
+                      </p>
+<div class="flex flex-wrap gap-2 mt-3">
+<span class="text-[11px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                          Mode: In-Person
+                        </span>
+<span class="text-[11px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                          Cleared on first attempt
+                        </span>
+</div>
+</div>
+<div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
+<button class="text-xs text-slate-400 hover:text-slate-700 px-2 py-1 rounded hover:bg-slate-100 transition-colors" type="button">
+                        [Edit]
+                      </button>
+<button class="text-xs text-slate-400 hover:text-rose-600 px-2 py-1 rounded hover:bg-rose-50 transition-colors" type="button">
+                        [Delete]
+                      </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- RIGHT RAIL (w-80 / 320px) -->
+<aside class="w-full xl:w-80 flex flex-col gap-6 shrink-0">
+<!-- MY STATUS SUMMARY card -->
+<div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-slate-100 pb-3">
+<h2 class="text-xs font-bold tracking-wider text-slate-500 uppercase">
+                MY STATUS SUMMARY
+              </h2>
+<span class="material-symbols-outlined text-slate-400 text-sm">badge</span>
+</div>
+<!-- Status badge -->
+<div>
+<span class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-800 border border-amber-300 font-semibold text-[11px] tracking-wide px-3 py-1 rounded-full uppercase">
+<span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                WAITING FOR JOINING LETTER
+              </span>
+<p class="text-xs text-slate-500 mt-1.5">
+                Since 15 May 2026 (<strong class="text-slate-700">32 days pending</strong>)
+              </p>
+</div>
+<!-- Details Table / Rows -->
+<div class="border-t border-b border-slate-100 py-3 space-y-2.5 text-xs">
+<div class="flex items-center justify-between">
+<span class="text-slate-500">Role Track:</span>
+<span class="font-semibold text-slate-800 bg-slate-100 px-2 py-0.5 rounded">Digital</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-500">Location Pref:</span>
+<span class="font-semibold text-slate-800 text-right">Hyderabad / Bengaluru</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-500">Offer Date:</span>
+<span class="font-semibold text-slate-800">March 2025</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-500">BGV Verification:</span>
+<span class="inline-flex items-center gap-1 text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+<span class="material-symbols-outlined text-xs font-bold text-emerald-600">check_circle</span>
+                  Approved
+                </span>
+</div>
+</div>
+<!-- Primary Action -->
+<button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs py-2.5 px-4 rounded-lg shadow-sm transition-all active:scale-[0.98] flex items-center justify-center gap-1.5" type="button">
+<span>Update my status</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<!-- COMMUNITY PULSE card with live indicator -->
+<div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+</span>
+<h2 class="text-xs font-bold tracking-wider text-slate-900 uppercase">
+                  COMMUNITY PULSE
+                </h2>
+</div>
+<span class="text-[10px] text-slate-400 font-medium">Live sync</span>
+</div>
+<!-- Stat Grid -->
+<div class="grid grid-cols-2 gap-2.5">
+<div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+<span class="text-[10px] text-slate-500 font-medium block">Candidates Tracked</span>
+<span class="text-base font-bold text-slate-900">1,248</span>
+<span class="text-[10px] text-emerald-600 font-semibold block mt-0.5">+84 this wk</span>
+</div>
+<div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+<span class="text-[10px] text-slate-500 font-medium block">Received JL</span>
+<span class="text-base font-bold text-indigo-600">210</span>
+<span class="text-[10px] text-slate-400 block mt-0.5">16.8% of pool</span>
+</div>
+<div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+<span class="text-[10px] text-slate-500 font-medium block">Confirmed</span>
+<span class="text-base font-bold text-slate-900">87</span>
+<span class="text-[10px] text-slate-400 block mt-0.5">Batch assigned</span>
+</div>
+<div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+<span class="text-[10px] text-slate-500 font-medium block">Joined</span>
+<span class="text-base font-bold text-emerald-600">42</span>
+<span class="text-[10px] text-slate-400 block mt-0.5">Active onboarded</span>
+</div>
+</div>
+<!-- Letter Hash Verification Note -->
+<div class="bg-slate-50 rounded-lg p-2.5 border border-slate-200/80 flex items-start gap-2 text-[11px] text-slate-600 leading-relaxed">
+<span class="material-symbols-outlined text-sm text-indigo-500 shrink-0 mt-0.5">lock</span>
+<span>Anonymized letter hash verification ensures zero duplicate entries and privacy-first tracking.</span>
+</div>
+</div>
+<!-- External Communities Box -->
+<div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col gap-3">
+<h2 class="text-xs font-bold tracking-wider text-slate-500 uppercase">
+              External Communities
+            </h2>
+<div class="space-y-2">
+<a class="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 transition-all text-xs font-medium text-slate-700" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sky-500 text-sm">send</span>
+<span>Telegram TCS Onboarding 2025</span>
+</div>
+<span class="material-symbols-outlined text-xs text-slate-400">open_in_new</span>
+</a>
+<a class="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 transition-all text-xs font-medium text-slate-700" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-600 text-sm">forum</span>
+<span>Reddit r/developersIndia Megathread</span>
+</div>
+<span class="material-symbols-outlined text-xs text-slate-400">open_in_new</span>
+</a>
+</div>
+</div>
+</aside>
+</main>
+<!-- FOOTER (Shared Component: Footer) -->
+<footer class="sticky bottom-0 z-20 w-full bg-slate-50 border-t border-slate-200 flex flex-col md:flex-row items-center justify-between py-2 px-6 gap-2">
+<p class="font-body text-[11px] leading-relaxed text-slate-500 tracking-wide text-center md:text-left">
+          TCS Joining Tracker is an independent community project and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Tata Consultancy Services (TCS) or any of its subsidiaries.
+        </p>
+<div class="flex items-center gap-4 shrink-0 font-body text-[11px] text-slate-500">
+<a class="hover:text-slate-900 hover:underline transition-colors duration-150" href="#">Disclaimer</a>
+<a class="hover:text-slate-900 hover:underline transition-colors duration-150" href="#">Privacy</a>
+<a class="hover:text-slate-900 hover:underline transition-colors duration-150" href="#">Report Data</a>
+</div>
+</footer>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-slate-50" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Community Recruitment Benchmarks &amp; Analytics | TCS Joining Tracker</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {},
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {},
+          fontFamily: {
+            headline: ["Inter", "sans-serif"],
+            display: ["Inter", "sans-serif"],
+            body: ["Inter", "sans-serif"],
+            label: ["Inter", "sans-serif"]
+          },
+          fontSize: {}
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+    .material-symbols-fill {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+  </style>
+</head>
+<body class="min-h-full font-body text-slate-800 bg-slate-50 antialiased selection:bg-indigo-500 selection:text-white flex flex-col">
+<!-- SIDEBAR NAVIGATION (Shared Component Anchor) -->
+<aside class="fixed top-0 left-0 h-screen w-60 z-30 bg-white border-r border-slate-200 shadow-sm flex flex-col justify-between p-4">
+<div class="flex flex-col gap-6">
+<!-- Logo Mark -->
+<div class="flex items-center gap-3 px-2 py-1">
+<div class="h-9 w-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">insights</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline text-lg font-bold tracking-tight text-slate-900 leading-tight">TJT Tracker</span>
+<span class="text-[11px] font-medium text-slate-500">Recruitment Status</span>
+</div>
+</div>
+<!-- Primary CTA -->
+<button class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2.5 px-4 rounded-lg shadow-sm hover:shadow transition-all duration-150 active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>+ Share Update</span>
+</button>
+<!-- Nav Items -->
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]">mark_email_read</span>
+<span class="text-sm">Joining Letters</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]">poll</span>
+<span class="text-sm">Surveys</span>
+</a>
+<!-- Active Tab: Community / Analytics -->
+<a class="flex items-center justify-between px-3 py-2 rounded-lg bg-indigo-50 text-indigo-600 font-semibold transition-colors duration-150" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px] text-indigo-600">forum</span>
+<span class="text-sm">Community Forum</span>
+</div>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-700">ANALYTICS</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-sm">Settings</span>
+</a>
+</nav>
+</div>
+<!-- Sidebar Bottom / Footer Links -->
+<div class="pt-4 border-t border-slate-200 flex flex-col gap-2">
+<div class="px-2 py-1 flex items-center justify-between text-xs text-slate-400">
+<span class="font-medium">Tracker Network</span>
+<span class="px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px] border border-emerald-200">v2.4.2</span>
+</div>
+<a class="flex items-center gap-2.5 px-3 py-1.5 text-xs text-slate-500 hover:text-slate-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[16px]">privacy_tip</span>
+<span>Privacy Policy</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-1.5 text-xs text-slate-500 hover:text-slate-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[16px]">help</span>
+<span>Help &amp; FAQ</span>
+</a>
+</div>
+</aside>
+<!-- TOP HEADER BAR (pl-60 accounts for sidebar width) -->
+<header class="sticky top-0 z-20 w-full pl-60 bg-white border-b border-slate-200 shadow-sm flex items-center justify-between h-16 px-6 gap-4">
+<!-- Search on left -->
+<div class="flex items-center gap-4 flex-1 max-w-lg">
+<div class="relative w-full">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-[18px]">search</span>
+</span>
+<input class="w-full text-xs bg-slate-100/70 border-0 focus:ring-2 focus:ring-indigo-500 text-slate-800 placeholder-slate-400 rounded-lg pl-9 pr-14 py-2" placeholder="Search cohorts, colleges, states, batch 2025..." type="text"/>
+<span class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
+<kbd class="px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 bg-white border border-slate-200 rounded shadow-2xs">⌘K</kbd>
+</span>
+</div>
+<div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium shrink-0">
+<span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span>Live Sync Active</span>
+</div>
+</div>
+<!-- Right Header Actions -->
+<div class="flex items-center gap-3 shrink-0">
+<!-- Icons -->
+<button class="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-1 right-1 h-4 w-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">3</span>
+</button>
+<button class="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors" title="Announcements" type="button">
+<span class="material-symbols-outlined text-[20px]">campaign</span>
+</button>
+<div class="h-6 w-px bg-slate-200"></div>
+<!-- Post button -->
+<button class="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-1.5 px-3 rounded-lg transition-colors shadow-2xs active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[16px]">edit_square</span>
+<span>+ Post</span>
+</button>
+<!-- User Profile -->
+<div class="flex items-center gap-2.5 pl-2">
+<div class="h-8 w-8 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-700 font-bold text-xs flex items-center justify-center">
+          ST
+        </div>
+<div class="hidden lg:flex flex-col text-left">
+<span class="text-xs font-semibold text-slate-900 leading-tight">Sai T.</span>
+<span class="text-[11px] text-slate-500">Digital 2025 • Hyd Pref</span>
+</div>
+</div>
+</div>
+</header>
+<!-- MAIN WRAPPER WITH RIGHT RAIL (pl-60 offset) -->
+<div class="pl-60 flex flex-1 overflow-x-hidden">
+<!-- PRIMARY CONTENT CANVAS -->
+<main class="flex-1 p-6 max-w-6xl">
+<!-- Top Notice / Breadcrumb -->
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+<a class="hover:text-indigo-600 transition-colors" href="#">Community Intelligence</a>
+<span class="text-slate-300">/</span>
+<span class="text-slate-800 font-semibold">Cohort Benchmarks &amp; Telemetry</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+            Anonymized hash-verified telemetry
+          </span>
+</div>
+</div>
+<!-- Header Card / Hero Section -->
+<div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm mb-6 relative overflow-hidden">
+<div class="absolute right-0 top-0 translate-x-8 -translate-y-8 w-64 h-64 bg-indigo-50/70 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+<div>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 mb-2">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+              COMMUNITY-REPORTED DATA • VOLUNTARY CANDIDATE SUBMISSIONS • NOT OFFICIAL TCS DATA
+            </div>
+<h1 class="text-2xl font-bold font-headline tracking-tight text-slate-900 uppercase">
+              COMMUNITY RECRUITMENT BENCHMARKS &amp; ANALYTICS
+            </h1>
+<p class="text-xs text-slate-500 mt-1 flex items-center gap-3">
+<span>Cohort Sample: <strong class="text-slate-700 font-semibold">1,248 Candidates</strong></span>
+<span class="inline-block h-1 w-1 rounded-full bg-slate-300"></span>
+<span>Updated 12 mins ago</span>
+<span class="inline-block h-1 w-1 rounded-full bg-slate-300"></span>
+<span class="text-indigo-600 font-medium">Batch of 2025 Focus</span>
+</p>
+</div>
+<div class="flex items-center gap-2.5 shrink-0">
+<button class="inline-flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg shadow-2xs transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">file_download</span>
+<span>Export CSV</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">share</span>
+<span>Share Report</span>
+</button>
+</div>
+</div>
+<!-- Filter Bar -->
+<div class="mt-6 pt-5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+<div class="flex flex-wrap items-center gap-3">
+<div class="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs">
+<span class="text-slate-500 font-medium">Batch:</span>
+<select class="bg-transparent border-0 p-0 pr-4 text-xs font-bold text-slate-800 focus:ring-0 cursor-pointer">
+<option selected="">2025</option>
+<option>2024</option>
+<option>2026</option>
+</select>
+</div>
+<div class="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs">
+<span class="text-slate-500 font-medium">Stream:</span>
+<select class="bg-transparent border-0 p-0 pr-4 text-xs font-bold text-slate-800 focus:ring-0 cursor-pointer">
+<option selected="">All Streams</option>
+<option>Digital</option>
+<option>Ninja</option>
+<option>Prime</option>
+</select>
+</div>
+<div class="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs">
+<span class="text-slate-500 font-medium">Region:</span>
+<select class="bg-transparent border-0 p-0 pr-4 text-xs font-bold text-slate-800 focus:ring-0 cursor-pointer">
+<option selected="">All India</option>
+<option>Hyderabad</option>
+<option>Bengaluru</option>
+<option>Pune</option>
+<option>Chennai</option>
+<option>Delhi NCR</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 text-xs font-medium rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition-colors" type="button">
+              ✓ Verified only
+            </button>
+<button class="px-2.5 py-1 text-xs font-medium rounded-full bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-colors" type="button">
+              Exclude outliers (&gt;180d)
+            </button>
+</div>
+</div>
+</div>
+<!-- 3. OVERVIEW KPI CARDS (4 in a single grid row) -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+<!-- KPI 1 -->
+<div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs font-semibold text-slate-500 tracking-wide uppercase">TOTAL CANDIDATES</span>
+<span class="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+<span class="material-symbols-outlined text-[18px]">groups</span>
+</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-extrabold text-slate-900 tracking-tight font-headline">1,248</span>
+<span class="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">+84 this mo</span>
+</div>
+<p class="text-xs text-slate-500 mt-2">Aggregated candidate submissions</p>
+</div>
+<!-- KPI 2 -->
+<div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs font-semibold text-slate-500 tracking-wide uppercase">WAITING FOR JL</span>
+<span class="p-2 bg-amber-50 rounded-lg text-amber-600">
+<span class="material-symbols-outlined text-[18px]">hourglass_top</span>
+</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-extrabold text-slate-900 tracking-tight font-headline">412</span>
+<span class="flex items-center gap-1 text-[11px] font-medium text-amber-600">
+<span class="h-2 w-2 rounded-full bg-amber-500"></span>
+              Active pool
+            </span>
+</div>
+<p class="text-xs text-slate-500 mt-2">Awaiting official onboarding dispatch</p>
+</div>
+<!-- KPI 3 -->
+<div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs font-semibold text-slate-500 tracking-wide uppercase">REPORTED JL RECVD</span>
+<span class="p-2 bg-sky-50 rounded-lg text-sky-600">
+<span class="material-symbols-outlined text-[18px]">mark_email_read</span>
+</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-extrabold text-slate-900 tracking-tight font-headline">320</span>
+<span class="text-[11px] font-semibold text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded">25.6% conv.</span>
+</div>
+<p class="text-xs text-slate-500 mt-2">Joining letters with reporting dates</p>
+</div>
+<!-- KPI 4 -->
+<div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs font-semibold text-slate-500 tracking-wide uppercase">REPORTED JOINED</span>
+<span class="p-2 bg-emerald-50 rounded-lg text-emerald-600">
+<span class="material-symbols-outlined text-[18px]">task_alt</span>
+</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-extrabold text-slate-900 tracking-tight font-headline">85</span>
+<span class="flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
+<span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+              Inducted
+            </span>
+</div>
+<p class="text-xs text-slate-500 mt-2">Onboarding and ILP officially commenced</p>
+</div>
+</section>
+<!-- 4. TWO-COLUMN ANALYTICAL BAND -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+<!-- Left Column: BREAKDOWN BY HIRING STREAM -->
+<div class="lg:col-span-6 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+<div class="flex items-center justify-between mb-5">
+<div>
+<h2 class="text-sm font-bold text-slate-900 uppercase tracking-tight">BREAKDOWN BY HIRING STREAM</h2>
+<p class="text-xs text-slate-500">Volume and distribution by recruitment profile</p>
+</div>
+<span class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">3 Active Tracks</span>
+</div>
+<div class="space-y-5">
+<!-- Digital -->
+<div>
+<div class="flex items-center justify-between text-xs mb-1.5">
+<div class="flex items-center gap-2">
+<span class="h-2.5 w-2.5 rounded-full bg-indigo-600"></span>
+<span class="font-bold text-slate-800">Digital</span>
+<span class="text-slate-400">·</span>
+<span class="text-slate-600">650 candidates (52%)</span>
+</div>
+<div class="text-[11px] font-medium text-slate-500">
+<span class="text-amber-600 font-semibold">240 waiting</span> · <span class="text-indigo-600 font-semibold">210 recvd JL</span>
+</div>
+</div>
+<div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden flex">
+<div class="bg-indigo-600 h-full rounded-l-full" style="width: 52%"></div>
+<div class="bg-indigo-300 h-full" style="width: 18%"></div>
+</div>
+</div>
+<!-- Ninja -->
+<div>
+<div class="flex items-center justify-between text-xs mb-1.5">
+<div class="flex items-center gap-2">
+<span class="h-2.5 w-2.5 rounded-full bg-blue-500"></span>
+<span class="font-bold text-slate-800">Ninja</span>
+<span class="text-slate-400">·</span>
+<span class="text-slate-600">420 candidates (34%)</span>
+</div>
+<div class="text-[11px] font-medium text-slate-500">
+<span class="text-amber-600 font-semibold">90 waiting</span> · <span class="text-blue-600 font-semibold">80 recvd JL</span>
+</div>
+</div>
+<div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden flex">
+<div class="bg-blue-500 h-full rounded-l-full" style="width: 34%"></div>
+<div class="bg-blue-300 h-full" style="width: 12%"></div>
+</div>
+</div>
+<!-- Prime -->
+<div>
+<div class="flex items-center justify-between text-xs mb-1.5">
+<div class="flex items-center gap-2">
+<span class="h-2.5 w-2.5 rounded-full bg-purple-600"></span>
+<span class="font-bold text-slate-800">Prime</span>
+<span class="text-slate-400">·</span>
+<span class="text-slate-600">178 candidates (14%)</span>
+</div>
+<div class="text-[11px] font-medium text-slate-500">
+<span class="text-amber-600 font-semibold">82 waiting</span> · <span class="text-purple-600 font-semibold">30 recvd JL</span>
+</div>
+</div>
+<div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden flex">
+<div class="bg-purple-600 h-full rounded-l-full" style="width: 14%"></div>
+<div class="bg-purple-300 h-full" style="width: 6%"></div>
+</div>
+</div>
+</div>
+<div class="mt-6 p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between text-xs">
+<span class="text-slate-600">Highest response rate:</span>
+<span class="font-semibold text-slate-900">Digital Track (68.4% verified via candidate portal)</span>
+</div>
+</div>
+<!-- Right Column: CANDIDATE STATUS DISTRIBUTION -->
+<div class="lg:col-span-6 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h2 class="text-sm font-bold text-slate-900 uppercase tracking-tight">CANDIDATE STATUS DISTRIBUTION</h2>
+<p class="text-xs text-slate-500">Lifecycle stage across all verified submissions</p>
+</div>
+<span class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded">100% Total Cohort</span>
+</div>
+<!-- Stacked Bar -->
+<div class="w-full h-4 bg-slate-100 rounded-full overflow-hidden flex shadow-inner mb-5">
+<div class="bg-amber-400 h-full" style="width: 33%" title="Waiting for JL: 33%"></div>
+<div class="bg-indigo-600 h-full" style="width: 26%" title="JL Received: 26%"></div>
+<div class="bg-teal-500 h-full" style="width: 7%" title="Joining Date Received: 7%"></div>
+<div class="bg-emerald-500 h-full" style="width: 3%" title="Joined TCS: 3%"></div>
+<div class="bg-slate-300 h-full" style="width: 31%" title="Survey / Offer stage: 31%"></div>
+</div>
+<!-- Legend Breakdown Rows -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+<div class="flex items-center justify-between p-2 rounded-lg bg-slate-50/70 border border-slate-100">
+<div class="flex items-center gap-2">
+<span class="h-3 w-3 rounded bg-amber-400 shrink-0"></span>
+<span class="text-slate-700">Waiting for JL</span>
+</div>
+<span class="font-bold text-slate-900">412 <span class="font-normal text-slate-500">(33%)</span></span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg bg-slate-50/70 border border-slate-100">
+<div class="flex items-center gap-2">
+<span class="h-3 w-3 rounded bg-indigo-600 shrink-0"></span>
+<span class="text-slate-700">JL Received</span>
+</div>
+<span class="font-bold text-slate-900">320 <span class="font-normal text-slate-500">(26%)</span></span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg bg-slate-50/70 border border-slate-100">
+<div class="flex items-center gap-2">
+<span class="h-3 w-3 rounded bg-teal-500 shrink-0"></span>
+<span class="text-slate-700">Joining Date Recvd</span>
+</div>
+<span class="font-bold text-slate-900">87 <span class="font-normal text-slate-500">(7%)</span></span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg bg-slate-50/70 border border-slate-100">
+<div class="flex items-center gap-2">
+<span class="h-3 w-3 rounded bg-emerald-500 shrink-0"></span>
+<span class="text-slate-700">Joined TCS</span>
+</div>
+<span class="font-bold text-slate-900">42 <span class="font-normal text-slate-500">(3%)</span></span>
+</div>
+<div class="sm:col-span-2 flex items-center justify-between p-2 rounded-lg bg-slate-50/70 border border-slate-100">
+<div class="flex items-center gap-2">
+<span class="h-3 w-3 rounded bg-slate-300 shrink-0"></span>
+<span class="text-slate-700">Survey / Pre-Offer Stage</span>
+</div>
+<span class="font-bold text-slate-900">387 <span class="font-normal text-slate-500">(31%)</span></span>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. DETAILED BENCHMARK SECTION -->
+<section class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mb-6">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2 mb-5">
+<div>
+<h2 class="text-sm font-bold text-slate-900 uppercase tracking-tight">AVERAGE COMMUNITY WAIT TIMES (SURVEY TO JOINING LETTER)</h2>
+<p class="text-xs text-slate-500">Calculated duration between readiness survey completion and physical letter release</p>
+</div>
+<div class="flex items-center gap-2 text-xs text-slate-500">
+<span class="flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-indigo-600"></span> Cohort Median</span>
+<span class="flex items-center gap-1"><span class="h-2 w-4 bg-slate-200 rounded"></span> Normal Range</span>
+</div>
+</div>
+<div class="space-y-6">
+<!-- Digital Metric Row -->
+<div class="flex flex-col md:flex-row md:items-center gap-4">
+<div class="w-48 shrink-0">
+<div class="flex items-center gap-2">
+<span class="font-bold text-sm text-slate-900">2025 Digital</span>
+<span class="text-[10px] font-semibold bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded">Core Stream</span>
+</div>
+<span class="text-xs text-slate-500">Average: <strong class="text-indigo-600 font-bold">54 days</strong></span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between text-[11px] text-slate-400 mb-1">
+<span>Min: 14 days</span>
+<span class="font-semibold text-slate-700">Median 54d</span>
+<span>Max: 92 days</span>
+</div>
+<div class="relative h-4 bg-slate-100 rounded-full overflow-hidden flex items-center">
+<!-- Bar range -->
+<div class="absolute left-[15%] right-[10%] h-2.5 bg-indigo-100 rounded-full"></div>
+<!-- Median pin -->
+<div class="absolute left-[54%] h-4 w-1.5 bg-indigo-600 rounded-full shadow"></div>
+</div>
+</div>
+<div class="w-32 shrink-0 text-right">
+<span class="text-xs font-semibold text-slate-800">Range: 14 – 92d</span>
+<p class="text-[10px] text-slate-400">n=380 verified</p>
+</div>
+</div>
+<!-- Ninja Metric Row -->
+<div class="flex flex-col md:flex-row md:items-center gap-4">
+<div class="w-48 shrink-0">
+<div class="flex items-center gap-2">
+<span class="font-bold text-sm text-slate-900">2025 Ninja</span>
+<span class="text-[10px] font-semibold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">High Volume</span>
+</div>
+<span class="text-xs text-slate-500">Average: <strong class="text-blue-600 font-bold">68 days</strong></span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between text-[11px] text-slate-400 mb-1">
+<span>Min: 21 days</span>
+<span class="font-semibold text-slate-700">Median 68d</span>
+<span>Max: 110 days</span>
+</div>
+<div class="relative h-4 bg-slate-100 rounded-full overflow-hidden flex items-center">
+<!-- Bar range -->
+<div class="absolute left-[20%] right-[5%] h-2.5 bg-blue-100 rounded-full"></div>
+<!-- Median pin -->
+<div class="absolute left-[62%] h-4 w-1.5 bg-blue-600 rounded-full shadow"></div>
+</div>
+</div>
+<div class="w-32 shrink-0 text-right">
+<span class="text-xs font-semibold text-slate-800">Range: 21 – 110d</span>
+<p class="text-[10px] text-slate-400">n=210 verified</p>
+</div>
+</div>
+<!-- Prime Metric Row -->
+<div class="flex flex-col md:flex-row md:items-center gap-4">
+<div class="w-48 shrink-0">
+<div class="flex items-center gap-2">
+<span class="font-bold text-sm text-slate-900">2025 Prime</span>
+<span class="text-[10px] font-semibold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded">Fast-Track</span>
+</div>
+<span class="text-xs text-slate-500">Average: <strong class="text-purple-600 font-bold">38 days</strong></span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between text-[11px] text-slate-400 mb-1">
+<span>Min: 10 days</span>
+<span class="font-semibold text-slate-700">Median 38d</span>
+<span>Max: 60 days</span>
+</div>
+<div class="relative h-4 bg-slate-100 rounded-full overflow-hidden flex items-center">
+<!-- Bar range -->
+<div class="absolute left-[10%] right-[35%] h-2.5 bg-purple-100 rounded-full"></div>
+<!-- Median pin -->
+<div class="absolute left-[38%] h-4 w-1.5 bg-purple-600 rounded-full shadow"></div>
+</div>
+</div>
+<div class="w-32 shrink-0 text-right">
+<span class="text-xs font-semibold text-emerald-600">Range: 10 – 60d</span>
+<p class="text-[10px] text-slate-400">n=94 verified</p>
+</div>
+</div>
+</div>
+<!-- Insight callout box -->
+<div class="mt-6 p-4 rounded-xl bg-amber-50/80 border border-amber-200 flex items-start gap-3">
+<span class="text-lg">💡</span>
+<div class="text-xs text-slate-700">
+<span class="font-bold text-slate-900">Observation:</span> Prime candidates report <strong>44% faster turnaround</strong> from readiness survey submission to joining letter release. Ninja candidates currently experience extended wave spacing due to larger cohort batches.
+          </div>
+</div>
+</section>
+<!-- 6. PRIVACY NOTICE BLOCK -->
+<section class="bg-indigo-900 text-white rounded-xl p-5 shadow-sm mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+<div class="flex items-start gap-3.5">
+<div class="h-10 w-10 rounded-lg bg-indigo-800 border border-indigo-700 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-indigo-200 text-[22px]">shield</span>
+</div>
+<div>
+<h3 class="text-sm font-bold tracking-tight text-white flex items-center gap-2 uppercase">
+              PRIVACY SUPPRESSION NOTICE
+            </h3>
+<p class="text-xs text-indigo-200 mt-0.5">
+              To prevent identification of individual candidates, data breakdowns with fewer than 5 submissions are automatically suppressed from public aggregates.
+            </p>
+</div>
+</div>
+<div class="shrink-0">
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-800/80 border border-indigo-700 text-indigo-100 text-xs font-medium">
+<span class="material-symbols-outlined text-emerald-400 text-[16px]">lock</span>
+<span>k-anonymity (k ≥ 5) enforced</span>
+</span>
+</div>
+</section>
+</main>
+<!-- RIGHT RAIL (Matching Sibling Screens 18 & 21) -->
+<aside class="w-80 border-l border-slate-200 bg-white p-5 shrink-0 hidden xl:flex flex-col gap-5">
+<!-- MY STATUS SUMMARY Card -->
+<div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs font-bold text-slate-900 uppercase tracking-tight">MY STATUS SUMMARY</span>
+<span class="h-2 w-2 rounded-full bg-amber-500"></span>
+</div>
+<div class="mb-3">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-100 text-amber-800 text-xs font-bold leading-tight">
+            WAITING FOR JOINING LETTER
+          </span>
+<p class="text-[11px] text-slate-500 mt-1.5">Since 15 May 2026 • <strong class="text-slate-700">32 days pending</strong></p>
+</div>
+<div class="space-y-2 py-2 border-y border-slate-200 text-xs text-slate-600">
+<div class="flex justify-between">
+<span class="text-slate-500">Role Track:</span>
+<span class="font-semibold text-slate-900">Digital</span>
+</div>
+<div class="flex justify-between">
+<span class="text-slate-500">Location Pref:</span>
+<span class="font-semibold text-slate-900">Hyderabad / BLR</span>
+</div>
+<div class="flex justify-between">
+<span class="text-slate-500">Offer Date:</span>
+<span class="font-semibold text-slate-900">March 2025</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-slate-500">BGV Verification:</span>
+<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+<span class="material-symbols-outlined text-[13px]">check_circle</span> Approved
+            </span>
+</div>
+</div>
+<button class="w-full mt-3 flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50/60 hover:bg-indigo-100/70 rounded-lg transition-colors" type="button">
+<span>Update my status</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+<!-- COMMUNITY PULSE • LIVE Card -->
+<div class="bg-white rounded-xl p-4 border border-slate-200 shadow-2xs">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
+<span class="text-xs font-bold text-slate-900 uppercase tracking-tight">COMMUNITY PULSE</span>
+</div>
+<span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded uppercase">LIVE</span>
+</div>
+<div class="space-y-2.5">
+<div class="flex items-center justify-between text-xs">
+<span class="text-slate-500">Candidates Tracked</span>
+<span class="font-extrabold text-slate-900">1,248</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<span class="text-slate-500">Received JL (Wave 1 &amp; 2)</span>
+<span class="font-bold text-sky-600">210</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<span class="text-slate-500">Confirmed Reporting</span>
+<span class="font-bold text-indigo-600">87</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<span class="text-slate-500">Joined TCS (Induction)</span>
+<span class="font-bold text-emerald-600">42</span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2 text-[10px] text-slate-400">
+<span class="material-symbols-outlined text-[14px] text-slate-400">encrypted</span>
+<span>Cryptographically verified submissions via NextStep portal receipt hashes.</span>
+</div>
+</div>
+<!-- EXTERNAL CHANNELS Widget -->
+<div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-slate-500 text-[18px]">cell_tower</span>
+<span class="text-xs font-bold text-slate-900 uppercase tracking-tight">EXTERNAL CHANNELS</span>
+</div>
+<div class="space-y-2 text-xs">
+<a class="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 hover:border-indigo-300 hover:text-indigo-600 transition-all group" href="#">
+<div class="flex items-center gap-2.5">
+<div class="h-6 w-6 rounded bg-sky-50 text-sky-600 flex items-center justify-center font-bold text-[10px]">TG</div>
+<span class="font-medium text-slate-700 group-hover:text-indigo-600">Telegram TCS 2025</span>
+</div>
+<span class="text-[11px] text-slate-400">4.2k mem</span>
+</a>
+<a class="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 hover:border-indigo-300 hover:text-indigo-600 transition-all group" href="#">
+<div class="flex items-center gap-2.5">
+<div class="h-6 w-6 rounded bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-[10px]">r/</div>
+<span class="font-medium text-slate-700 group-hover:text-indigo-600">r/developersIndia Megathread</span>
+</div>
+<span class="material-symbols-outlined text-[14px] text-slate-400">north_east</span>
+</a>
+</div>
+</div>
+<!-- Quick Tips Box -->
+<div class="p-3.5 bg-indigo-50/50 rounded-xl border border-indigo-100 text-[11px] text-indigo-900 leading-relaxed">
+<div class="font-semibold text-indigo-950 mb-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">info</span>
+          Survey Status Note
+        </div>
+        Received readiness survey email? Update your status on the tracker to help refine regional joining velocity predictions.
+      </div>
+</aside>
+</div>
+<!-- MANDATORY FOOTER (Shared Component Anchor) -->
+<footer class="w-full pl-60 bg-slate-50 border-t border-slate-200 py-3 px-6 z-20">
+<div class="flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] text-slate-500 leading-relaxed">
+<div class="max-w-3xl">
+<span class="font-semibold text-slate-700">TCS Joining Tracker</span> is an independent community project and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Tata Consultancy Services (TCS) or any of its subsidiaries. All company names and trademarks belong to their respective holders.
+      </div>
+<div class="flex items-center gap-4 shrink-0 font-medium">
+<a class="hover:text-slate-900 transition-colors" href="#">Disclaimer</a>
+<span class="text-slate-300">·</span>
+<a class="hover:text-slate-900 transition-colors" href="#">Privacy</a>
+<span class="text-slate-300">·</span>
+<a class="text-indigo-600 hover:underline" href="#">Report Data</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,35 @@
+/*
+ * Unified Scope Layer (Phase 1 Anti-Slop Overhaul)
+ *
+ * Previously, `.skin-v1` (Inter + Indigo) and `.skin-v2` (Fira + Sky) split the
+ * application into two incompatible visual templates imported from Stitch.
+ * Both classes now resolve to the single canonical typography, surface, and
+ * tabular-numeral system defined in `src/index.css` (`DESIGN.md`), keeping class
+ * hooks non-breaking while eliminating visual schizophrenia.
+ */
+
+.skin-v1,
+.skin-v2 {
+  --font-headline: "Fira Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fira Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-label: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-body);
+}
+
+.font-mono-numbers {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.shadow-subtle {
+  box-shadow: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

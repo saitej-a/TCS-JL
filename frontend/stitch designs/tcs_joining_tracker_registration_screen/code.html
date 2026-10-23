@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create your account — TCS Joining Tracker</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {},
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {},
+          fontFamily: {
+            headline: ["Inter", "sans-serif"],
+            display: ["Inter", "sans-serif"],
+            body: ["Inter", "sans-serif"],
+            label: ["Inter", "sans-serif"]
+          },
+          fontSize: {}
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 20px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .bg-dot-pattern {
+      background-color: #F8FAFC;
+      background-image: radial-gradient(#CBD5E1 0.75px, transparent 0.75px);
+      background-size: 16px 16px;
+    }
+  </style>
+</head>
+<body class="bg-dot-pattern font-body text-slate-800 antialiased min-h-screen flex flex-col justify-between selection:bg-indigo-100 selection:text-indigo-900">
+<!-- Minimal Accessibility Skip Link -->
+<a class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium" href="#registration-form">
+    Skip to registration form
+  </a>
+<!-- Centered Layout Container -->
+<main class="flex-grow flex items-center justify-center px-4 py-10 sm:px-6">
+<div class="w-full max-w-[460px] bg-white rounded-2xl shadow-xl border border-slate-100 p-8 sm:p-9 relative transition-all">
+<!-- Brand Identity Row -->
+<div class="flex items-center gap-2.5">
+<span class="bg-indigo-600 text-white font-bold text-sm px-2.5 py-1 rounded-lg tracking-tight select-none shadow-sm">
+          [TJT]
+        </span>
+<span class="font-headline text-slate-900 font-bold text-lg tracking-tight">
+          TCS Joining Tracker
+        </span>
+</div>
+<!-- Header & Scope Note -->
+<div class="mt-6 mb-6">
+<h1 class="text-[28px] font-bold text-slate-900 tracking-tight leading-tight">
+          Create your account
+        </h1>
+<p class="text-slate-500 text-sm mt-1 leading-relaxed">
+          Join the community tracking TCS joining timelines.
+        </p>
+</div>
+<!-- Registration Form -->
+<form class="space-y-4" id="registration-form" onsubmit="event.preventDefault();">
+<!-- Field 1: Pseudonymous Display Name -->
+<div>
+<label class="block text-sm font-medium text-slate-700 mb-1.5" for="display-name">
+            Display name
+          </label>
+<div class="relative">
+<input class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-colors shadow-sm" id="display-name" name="display_name" placeholder="Candidate_hyd_25" required="" type="text"/>
+</div>
+<p class="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+<span class="material-symbols-outlined text-slate-400 text-[14px] shrink-0 translate-y-0.5" data-icon="info">info</span>
+<span>A pseudonymous name shown to the community — never your legal name.</span>
+</p>
+</div>
+<!-- Field 2: Email Address -->
+<div>
+<label class="block text-sm font-medium text-slate-700 mb-1.5" for="email-address">
+            Email address
+          </label>
+<div class="relative">
+<input class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-colors shadow-sm" id="email-address" name="email" placeholder="candidate@outlook.com" required="" type="email"/>
+</div>
+</div>
+<!-- Field 3: Password -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="block text-sm font-medium text-slate-700" for="password">
+              Password
+            </label>
+</div>
+<div class="relative">
+<input class="w-full pl-3.5 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-colors shadow-sm" id="password" name="password" required="" type="password" value="SecurePass123"/>
+<button aria-label="Toggle password visibility" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none" onclick="const p = document.getElementById('password'); const icon = this.querySelector('.material-symbols-outlined'); if(p.type==='password'){p.type='text'; icon.textContent='visibility_off';}else{p.type='password'; icon.textContent='visibility';}" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="visibility">visibility</span>
+</button>
+</div>
+<p class="text-xs text-slate-500 mt-1.5">
+            Must be at least 8 characters
+          </p>
+</div>
+<!-- Field 4: Confirm Password -->
+<div>
+<label class="block text-sm font-medium text-slate-700 mb-1.5" for="confirm-password">
+            Confirm password
+          </label>
+<div class="relative">
+<input class="w-full px-3.5 py-2.5 bg-white border border-rose-300 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-colors shadow-sm" id="confirm-password" name="confirm_password" required="" type="password" value="MismatchPass456"/>
+</div>
+<!-- Inline Validation State Example -->
+<div class="mt-2 bg-rose-50 border border-rose-200 rounded-lg p-2.5 flex items-center gap-2 text-rose-700 text-xs font-medium" role="alert">
+<span class="material-symbols-outlined text-rose-600 text-[16px] shrink-0" data-icon="error">error</span>
+<span>Passwords do not match.</span>
+</div>
+</div>
+<!-- Checkbox Row: Terms & Privacy -->
+<div class="pt-1">
+<label class="flex items-start gap-2.5 cursor-pointer select-none">
+<input class="h-4 w-4 mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600/30 cursor-pointer" name="terms" required="" type="checkbox"/>
+<span class="text-xs text-slate-600 leading-snug">
+              I agree to the <a class="text-indigo-600 hover:text-indigo-700 hover:underline font-medium" href="#">Terms</a> and <a class="text-indigo-600 hover:text-indigo-700 hover:underline font-medium" href="#">Privacy Policy</a>
+</span>
+</label>
+</div>
+<!-- Primary Action -->
+<button class="w-full h-11 mt-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-semibold text-sm rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 transition-all flex items-center justify-center" type="submit">
+          Create account
+        </button>
+<!-- Divider with Centered 'or' -->
+<div class="relative py-2">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-slate-200"></div>
+</div>
+<div class="relative flex justify-center text-xs">
+<span class="bg-white px-3 text-slate-400 font-medium">or</span>
+</div>
+</div>
+<!-- Secondary Action -->
+<a class="w-full flex items-center justify-center py-2.5 border border-slate-200 hover:bg-slate-50 active:scale-[0.98] text-slate-700 font-medium rounded-lg text-sm transition-all focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1 text-center" href="#">
+          I already have an account
+        </a>
+</form>
+</div>
+</main>
+<!-- Non-Affiliation Disclaimer Footer -->
+<footer class="w-full pb-6 px-4">
+<p class="text-[11px] leading-relaxed text-slate-400 max-w-xl mx-auto text-center tracking-normal">
+      TCS Joining Tracker is an independent community project and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Tata Consultancy Services (TCS) or any of its subsidiaries.
+    </p>
+</footer>
+</body></html>
