@@ -108,7 +108,7 @@ describe("LandingPage", () => {
       },
     ]);
     renderLanding();
-    expect(screen.getByRole("link", { name: "Open the community feed" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Open community feed" })).toHaveAttribute(
       "href",
       "/community",
     );
@@ -133,10 +133,10 @@ describe("LandingPage", () => {
     ]);
     renderLanding();
     const toggleBtn = screen.getByTestId("interactive-row-toggle");
-    expect(toggleBtn).toHaveTextContent("[Mark as Received]");
+    expect(toggleBtn).toHaveTextContent("Mark as received");
 
     await user.click(toggleBtn);
-    expect(screen.getByText(/Oct 20, 2026: Joining Letter Received/i)).toBeInTheDocument();
-    expect(toggleBtn).toHaveTextContent("Reset demo row");
+    expect(screen.getByText(/Joining Letter received/i)).toBeInTheDocument();
+    expect(toggleBtn).toHaveTextContent("Reset");
   });
 });
