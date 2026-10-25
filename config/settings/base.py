@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "apps.moderation.apps.ModerationConfig",
     "apps.analytics.apps.AnalyticsConfig",
     "apps.chat.apps.ChatConfig",
+    # Phase 11: Image uploads
+    "apps.images.apps.ImagesConfig",
 ]
 
 MIDDLEWARE = [
