@@ -45,7 +45,7 @@ class ImageUploadTest(TestCase):
 
         response = self.client.post(url, data, format="multipart")
 
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
         self.assertIn("id", response.data)
         self.assertEqual(
             response.data["original_filename"], "test.jpg"

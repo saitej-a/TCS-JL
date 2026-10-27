@@ -63,6 +63,14 @@ class Post(models.Model):
     is_pinned = models.BooleanField(default=False)  # moderator control (Phase 8)
     is_locked = models.BooleanField(default=False)  # disables new comments (COMM-06)
     is_deleted = models.BooleanField(default=False)  # soft delete (COMM-05, 03 §20)
+    image = models.ForeignKey(
+        "images.Image",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="posts",
+        help_text="Optional image attachment for the post",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

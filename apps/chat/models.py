@@ -60,6 +60,14 @@ class ChatMessage(models.Model):
         related_name="chat_messages",
     )
     body = models.TextField()
+    image = models.ForeignKey(
+        "images.Image",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="chat_messages",
+        help_text="Optional image attachment for the message",
+    )
     reply_to = models.ForeignKey(
         "self",
         on_delete=models.SET_NULL,

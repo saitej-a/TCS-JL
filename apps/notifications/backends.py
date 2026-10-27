@@ -203,7 +203,7 @@ class FirebasePushBackend(PushBackend):
         )
 
         multicast_msg = messaging.MulticastMessage(
-            tokens=tokens_list,
+            fids=tokens_list,
             notification=messaging.Notification(title=title, body=body),
             data=data,
             webpush=webpush_config,
