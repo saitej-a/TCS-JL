@@ -73,6 +73,7 @@ class PostCardSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     body = serializers.SerializerMethodField()
     has_voted = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -88,6 +89,7 @@ class PostCardSerializer(serializers.ModelSerializer):
             "vote_count",
             "comment_count",
             "has_voted",
+            "image",
             "created_at",
             "updated_at",
         ]
@@ -97,6 +99,16 @@ class PostCardSerializer(serializers.ModelSerializer):
 
     def get_body(self, obj) -> str:
         return display_body(obj)
+    
+    def get_image(self, obj):
+        if obj.image and not obj.image.is_deleted:
+            return {
+                "id": str(obj.image.id),
+                "url": obj.image.get_url(),
+                "thumbnail_url": obj.image.get_thumbnail_url("small"),
+                "original_filename": obj.image.original_filename,
+            }
+        return None
 
     def get_has_voted(self, obj) -> bool:
         user = self.context["request"].user
@@ -116,6 +128,7 @@ class PostWriteSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=200)
     body = serializers.CharField()
     category = serializers.CharField(max_length=20)
+    image_id = serializers.UUIDField(required=False, allow_null=True)
 
 
 class CommentSerializer(serializers.ModelSerializer):

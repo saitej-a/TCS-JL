@@ -72,7 +72,7 @@ def _reject_comment(error: DjangoValidationError) -> InvalidCommentError:
     return InvalidCommentError(code, error.messages[0])
 
 
-def create_post(author, *, title: str, body: str, category: str) -> Post:
+def create_post(author, *, title: str, body: str, category: str, image_id: str | None = None) -> Post:
     """Validate and persist a post (T5.1, T5.7's model half).
 
     `author` is passed in by the caller from the authentication context — never
@@ -91,7 +91,15 @@ def create_post(author, *, title: str, body: str, category: str) -> Post:
         except DjangoValidationError as exc:
             raise _reject_post(field, exc) from exc
 
-    post = Post.objects.create(author=author, title=title, body=body, category=category)
+    image = None
+    if image_id:
+        from apps.images.models import Image
+        try:
+            image = Image.objects.get(id=image_id, uploaded_by=author, is_deleted=False)
+        except Image.DoesNotExist:
+            raise InvalidPostError("invalid_image", "Image not found or you don't have permission to use it.")
+
+    post = Post.objects.create(author=author, title=title, body=body, category=category, image=image)
 
     def _dispatch_broadcast():
         try:

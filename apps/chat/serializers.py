@@ -131,6 +131,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
     room_slug = serializers.CharField(source="room.slug", read_only=True)
     can_delete = serializers.SerializerMethodField()
     reply_to = ChatMessageReplySummarySerializer(read_only=True)
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = ChatMessage
@@ -140,6 +141,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
             "room_slug",
             "author",
             "body",
+            "image",
             "reply_to",
             "is_deleted",
             "created_at",
@@ -150,6 +152,16 @@ class ChatMessageSerializer(serializers.ModelSerializer):
         if obj.is_deleted:
             return "This message was removed."
         return obj.body
+    
+    def get_image(self, obj: ChatMessage):
+        if obj.image and not obj.image.is_deleted:
+            return {
+                "id": str(obj.image.id),
+                "url": obj.image.get_url(),
+                "thumbnail_url": obj.image.get_thumbnail_url("small"),
+                "original_filename": obj.image.original_filename,
+            }
+        return None
 
     def get_can_delete(self, obj: ChatMessage) -> bool:
         request = self.context.get("request")

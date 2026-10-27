@@ -70,6 +70,7 @@ def send_message(
     *,
     body: str,
     reply_to: ChatMessage | None = None,
+    image_id: str | None = None,
 ) -> ChatMessage:
     """Validate, debounce, and persist a chat message."""
     try:
@@ -94,11 +95,23 @@ def send_message(
                 message="Cannot reply to a message from a different channel.",
             )
 
+    image = None
+    if image_id:
+        from apps.images.models import Image
+        try:
+            image = Image.objects.get(id=image_id, uploaded_by=author, is_deleted=False)
+        except Image.DoesNotExist:
+            raise InvalidMessageError(
+                code="invalid_image",
+                message="Image not found or you don't have permission to use it.",
+            )
+
     message = ChatMessage.objects.create(
         author=author,
         room=room,
         body=cleaned_body,
         reply_to=reply_to,
+        image=image,
     )
 
     if reply_to is not None and reply_to.author_id != author.id:

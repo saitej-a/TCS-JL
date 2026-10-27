@@ -108,6 +108,7 @@ class ChatMessageListCreateView(APIView):
             "reply_to",
             "reply_to__author",
             "reply_to__author__candidate_profile",
+            "image",
         )
 
         before = request.query_params.get("before")
@@ -140,12 +141,13 @@ class ChatMessageListCreateView(APIView):
         room = get_object_or_404(ChatRoom, slug=slug, is_archived=False)
         body = request.data.get("body", "")
         reply_to_id = request.data.get("reply_to_id")
+        image_id = request.data.get("image_id")
         reply_to = None
         if reply_to_id:
             reply_to = get_object_or_404(ChatMessage, pk=reply_to_id, room=room)
 
         try:
-            msg = send_message(request.user, room, body=body, reply_to=reply_to)
+            msg = send_message(request.user, room, body=body, reply_to=reply_to, image_id=image_id)
         except InvalidMessageError as err:
             return Response(
                 {"error": {"code": err.code, "message": str(err)}},
