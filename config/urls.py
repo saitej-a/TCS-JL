@@ -25,4 +25,5 @@ urlpatterns = [
     path("api/v1/", include("apps.moderation.urls")),
     path("api/v1/", include("apps.analytics.urls")),
     path("api/v1/chat/", include("apps.chat.urls")),
+    path("api/v1/images/", include(("apps.images.urls", "images"), namespace="images")),
 ]

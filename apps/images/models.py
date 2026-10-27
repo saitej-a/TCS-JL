@@ -88,7 +88,7 @@ class Image(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"Image {self.id[:8]}... ({self.original_filename})"
+        return f"Image {str(self.id)[:8]}... ({self.original_filename})"
 
     def get_url(self) -> str:
         """Get the full URL for the original image."""
@@ -125,7 +125,7 @@ class Image(models.Model):
     def soft_delete(self) -> None:
         """Soft delete this image."""
         self.is_deleted = True
-        self.save(update_fields=["is_deleted", "updated_at"])
+        self.save(update_fields=["is_deleted"])
 
     def hard_delete(self) -> None:
         """Permanently delete this image from GCS and database."""

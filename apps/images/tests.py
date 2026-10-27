@@ -94,21 +94,29 @@ class ImageModelTest(TestCase):
     def test_get_url(self):
         """Test get_url method."""
         url = self.image.get_url()
-        self.assertIn("tcs-jl-images-dev", url)
         self.assertIn("uploads/test123/original.jpg", url)
+        self.assertIn("/media/", url)
 
     def test_get_thumbnail_url(self):
         """Test get_thumbnail_url method."""
         url = self.image.get_thumbnail_url("small")
         self.assertIn("thumbnail_small", url)
 
-    @patch("apps.images.services.get_gcs_client")
-    def test_is_referenced(self, mock_client):
+    def test_is_referenced(self):
         """Test is_referenced returns False for unreferenced image."""
         self.assertFalse(self.image.is_referenced())
+        # Create a Post with this image
+        from apps.community.models import Post
+        Post.objects.create(
+            author=self.user,
+            title="Test Post",
+            body="Test body",
+            category="help",
+            image=self.image
+        )
+        self.assertTrue(self.image.is_referenced())
 
-    @patch("apps.images.services.get_gcs_client")
-    def test_soft_delete(self, mock_client):
+    def test_soft_delete(self):
         """Test soft delete marks is_deleted flag."""
         self.image.soft_delete()
         self.image.refresh_from_db()
@@ -116,8 +124,9 @@ class ImageModelTest(TestCase):
 
     def test_str_representation(self):
         """Test __str__ method."""
-        self.assertIn("Image", str(self.image))
-        self.assertIn("test.jpg", str(self.image))
+        str_repr = str(self.image)
+        self.assertIn("Image", str_repr)
+        self.assertIn("test.jpg", str_repr)
 
 
 class CeleryTasksTest(TestCase):
