@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('images', '0001_initial'),
-        ('community', '0006_alter_post_category'),
+        ('community', '0003_comment_branch_closed_by'),
     ]
 
     operations = [

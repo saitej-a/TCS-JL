@@ -28,10 +28,10 @@ class ImageUploadTest(TestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
 
-        # Create a simple test image
+        # Create a simple test image (must be > 100 bytes per MIN_IMAGE_SIZE)
         self.test_image = SimpleUploadedFile(
             "test.jpg",
-            b"fake image content",
+            b"fake image content " * 10,  # 200+ bytes to pass validation
             content_type="image/jpeg",
         )
 
